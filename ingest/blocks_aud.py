@@ -34,8 +34,13 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], unit: str, pl: Dict
         e = entry(key, ser, sc["label"], "daily" if freq.startswith("daily") else "weekly" if freq.startswith("weekly") else "monthly" if freq.startswith("monthly") else "weekly",
                   sc.get("unit", unit), cfg, sc.get("id"), sc.get("usd_analog"), status=st, spec=th.get(key), prev_level=pl.get(key),
                   z_window=30 if freq.startswith("daily") else 26 if freq.startswith("weekly") else 12)
-        if key in zero_if_empty and sc.get("id") and not ser:
-            e.update({"status": "fresh", "value": 0.0, "level": "SAFE", "confidence": 100, "date": (data.get("AESAT") or [(None, None)])[-1][0], "equivalence_note": "column empty in A3 = no usage (0)"})
+        if key in zero_if_empty and sc.get("id"):
+            # A3 leaves the cell empty when a facility is unused: no row on the latest ES date means 0, not 'stale last use'
+            latest = (data.get("AESAT") or [(None, None)])[-1][0]
+            if latest and (not ser or ser[-1][0] < latest):
+                e.update({"status": "fresh", "value": 0.0, "prev_value": ser[-1][1] if ser else None, "prev_date": ser[-1][0] if ser else None, "change_abs": None, "change_pct": None,
+                          "level": "SAFE", "confidence": 100, "date": latest, "age_days": 0,
+                          "equivalence_note": ("no usage on %s (last use %s = %s)" % (latest, ser[-1][0], ser[-1][1])) if ser else "column empty in A3 = no usage (0)"})
         if sc.get("freq") == "event" and ser:
             e["status"] = "fresh"
         if sc.get("display_only"):
@@ -273,6 +278,15 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     bb = S.merge_series(raw["bbsw_3m"], pol, lambda a, c: round((a - c) * 100, 2))
     D["bbsw_minus_target_bps"] = entry("bbsw_minus_target_bps", bb, "BBSW 3M − cash rate target (bps; bank funding + expectations)", "daily", "bps", cfg, usd_analog="3M − FF",
                                        status="fresh" if bb else "unavailable", spec=th["bbsw_minus_target_bps"], prev_level=pl.get("bbsw_minus_target_bps"), z_window=30)
+    # BBSW − target embeds rate expectations: percentile alone may only reach WATCH; STRESS/CRISIS need the absolute anchor
+    _bb = D["bbsw_minus_target_bps"]
+    _abs = th["bbsw_minus_target_bps"]["secondary_absolute"]
+    if _bb["value"] is not None:
+        v = _bb["value"]
+        a_lvl = "CRISIS" if v >= _abs["crisis"] else "STRESS" if v >= _abs["stress"] else "WATCH" if v >= _abs["watch"] else "SAFE"
+        p_lvl = _bb["level"]
+        _bb["percentile_level"] = p_lvl
+        _bb["level"] = a_lvl if a_lvl in ("STRESS", "CRISIS") else ("WATCH" if (p_lvl in ("WATCH", "STRESS", "CRISIS") or a_lvl == "WATCH") else "SAFE")
     D["bbsw_ois_3m_bps"] = {"label": "BBSW 3M − OIS 3M", "value": None, "status": "unavailable", "date": None, "level": "NO DATA", "unit": "bps", "equivalence_note": "OIS discontinued in F1 (Dec-2022)"}
     disp = S.merge_series(raw.get("overnight_high", []), raw.get("overnight_low", []), lambda a, c: round((a - c) * 100, 2))
     D["cash_market_dispersion_bps"] = entry("cash_market_dispersion_bps", disp, "Cash market dispersion: highest − lowest AONIA trade (bps)", "daily", "bps", cfg, status="fresh" if disp else "unavailable",
