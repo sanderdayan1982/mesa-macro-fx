@@ -60,7 +60,7 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 ## Phase status
 - Phase 1 Desk Standard + CAD source map: sealed (v0.3, triangulated 2026-09-08).
 - Phase 2 CAD flagship: **this repo**. Pending: StatCan credit tables, auction net issuance, RG archive backfill on first live run.
-- Phase 3 GBP → AUD → JPY (live) → CHF → NZD → USD migration → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
+- Phase 3 GBP → AUD → JPY → CHF (live) → NZD → USD migration → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
 
 ## GBP Command Center (config/gbp.json v0.2.1)
 
@@ -76,6 +76,15 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Anchor: RBA demand estimate for reserves $70–100bn (Jacobs, "The Road to Ample", 25 Aug 2026); OMO full allotment at target + 10 bp since 9 Apr 2025; open repo ends early 2027.
 - Lanes: `.github/workflows/refresh-aud.yml` — daily 02:30 UTC, weekly Fri 08:00 UTC, monthly 2nd, backfill 1st.
 - Offline test: `python -m ingest.run --ccy aud --lane all --backfill --fixtures fixtures/aud --no-rss && python -m ingest.validate --ccy aud`
+
+## CHF Command Center (config/chf.json v0.2)
+
+- Sources (all verified 2026-09-08 on the SNB data portal, no auth): cubes `snbgwdzid` (policy rate, SARON, special rate, tier rates, discount, threshold factor — daily T-1 10:00 CET), `snbgwdchfsgw` (weekly sight deposits: domestic banks GI / other UEB / total TG, Monday 10:00 CET), `snbgwdmigirow` (minimum-reserve sight deposits), `bamire` (minimum reserves, monthly), `snbbipo` (monthly balance sheet: FX investments, SNB Bills ES, absorbing repos VRGSF, supplying repos FRGSF, Confederation VB, foreign sight deposits GBI, swaps GSGSF), `snbmoba`, `snbfxtr` (quarterly FX transactions), `snbmonagg` (M1–M3), `bakredinausbm` / `babilpobm` (banks), `zikrepro` (published mortgage rates), `zirepo` (SAR/compound rates, ~3-week lag), `zimoma` (3m MMDRC monthly), warehouse `SNB1A.SNB.NSS.KZS.EID` (Confederation NSS curve, 11:00 CET), list `snbbillshreg` (SNB Bills register), `gmges.en.xlsx` (money-market operations by transaction, monthly), AFF/EFV `resultate-gmbf.xlsx` (MMDRC weekly auctions) and `resultate-anleihen.xlsx` (bond auctions). Cubes `zimopo` / `snbdevterm` proposed by reviewers do NOT exist; AFF publishes no monthly cash report.
+- Layers: 1 SNB (weekly sight deposits, tier parameters, absorption stock/share, Bills ladder from the register scaled to the balance-sheet ES, FX-intervention proxy, gmges operations, quarterly FX purchases) → 2 Confederation (amounts due to the Confederation monthly = cash footprint, MMDRC bid-to-cover and yield − SARON, bond auctions, own holdings) → 3 banks (loans, mortgages, deposits, liquid assets, M3, mortgage rates) → 4 SARON − absorption anchor (policy − 5 bp; absolute 5/10/20 bp with 3-session persistence, percentile guard because SARON is pinned), tier band position, SAR3M, Confederation curve.
+- Regime: weights CB 0.45 · rates 0.30 · fiscal 0.10 · banking 0.15; quantity dead-man switch = sight deposits / minimum reserve requirement (3× / 1.5× / 1.1×); STERILISATION_STRESS overlay (absorption share, SARON − anchor, MMDRC bid-to-cover, other sight deposits w/w); flags FX_INTERVENTION_SUSPECT, THRESHOLD_FACTOR_CHANGE, FLOOR_LEAK, SNB_SUPPLYING, FOREIGN_SIGHT_DEPOSITS_JUMP, BILLS_ROLL_OFF_AHEAD, CONFED_CASH_BIG_MOVE, MMDRC_DEMAND_WEAK, COLLATERAL_SCARCITY, MPA_WEEK, RESERVE_PERIOD_END.
+- Lanes: `.github/workflows/refresh-chf.yml` — daily 10:00 UTC Mon–Fri, weekly Mon 09:45 UTC, weekly_thu Thu 10:00 UTC (EFV), monthly 13th + 23rd, quarterly 2nd of Jan/Apr/Jul/Oct, backfill 1st. Every lane rebuilds all four blocks from `history/chf/*.csv`.
+- Offline test: `python -m ingest.run --ccy chf --lane all --backfill --fixtures fixtures/chf --no-rss && python -m ingest.validate --ccy chf`
+- Netlify: same site, dashboard at `/chf/`. Units: files in CHF millions, dashboard in bn (10^9). Pending (Phase 3): SIX SARON compound CSV, EFV issuance-calendar PDFs, `ausstehende-anleihen.xlsx`, Quarterly Bulletin tier distribution, publication day of `snbbipo` (confirm on the first live run).
 
 ## JPY Command Center (config/jpy.json v0.2.1)
 
