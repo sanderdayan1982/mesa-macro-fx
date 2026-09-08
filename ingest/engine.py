@@ -22,7 +22,7 @@ def _get(blocks: Dict[str, dict], path: str):
     return (b.get("series", {}).get(key) or b.get("derived", {}).get(key) or {})
 
 
-def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
+def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[dict] = None) -> dict:
     rc = cfg["regime"]
     w = rc["weights"]
     scores, used = {}, 0
@@ -75,7 +75,7 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
         recent = [v for v in qt["sparkline"][-13:] if v is not None]
         if recent and sum(recent) / len(recent) < pace * 1.25:
             flags.append("QT_ACCELERATION")
-    overlays = _overlays(cfg, blocks)
+    overlays = _overlays(cfg, blocks, (prev_regime or {}).get('overlays') or {})
     for ov, st in overlays.items():
         if isinstance(st, str) and st.endswith("_HIGH") and ov not in flags:
             flags.append(ov)
@@ -85,7 +85,7 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
             "rules": rc.get("rules", {})}
 
 
-def _overlays(cfg: dict, blocks: Dict[str, dict]) -> Dict[str, Optional[str]]:
+def _overlays(cfg: dict, blocks: Dict[str, dict], prev: Optional[Dict[str, object]] = None) -> Dict[str, Optional[str]]:
     """Regime overlays (JPY v0.2 QT_STRESS): counted conditions in the scenario mini-language; result <NAME>_LOW/_HIGH or None."""
     out: Dict[str, Optional[str]] = {}
     for name, ov in (cfg.get("regime", {}).get("overlays") or {}).items():
@@ -98,7 +98,16 @@ def _overlays(cfg: dict, blocks: Dict[str, dict]) -> Dict[str, Optional[str]]:
             except Exception:
                 pass
         need = ov.get("min", 2)
-        out[name] = None if not conds else ("%s_HIGH" % name if n >= need else "%s_LOW" % name if n > 0 else None)
+        st = None if not conds else ("%s_HIGH" % name if n >= need else "%s_LOW" % name if n > 0 else None)
+        # persistence (NZD N10): HIGH only when the previous run also met the minimum (or was already HIGH); otherwise LOW + pending
+        pers = ov.get("persistence")
+        if pers and st and st.endswith("_HIGH"):
+            pm = (prev or {}).get(name + "_conditions_met") or 0
+            ps = (prev or {}).get(name)
+            if not (pm >= need or (isinstance(ps, str) and ps.endswith("_HIGH"))):
+                st = "%s_LOW" % name
+                out[name + "_pending_persistence"] = True  # type: ignore
+        out[name] = st
         out[name + "_conditions_met"] = n  # type: ignore
     return out
 
@@ -247,6 +256,8 @@ def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
         return _calendar_jpy(cfg, cal, now)
     if cfg.get("currency") == "CHF":
         return _calendar_chf(cfg, cal, now)
+    if cfg.get("currency") == "NZD":
+        return _calendar_nzd(cfg, cal, now)
     for d in cal.get("boc_decision_dates_2026", []):
         items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
     # next weekly B2 (Friday) and next daily/RG
@@ -405,4 +416,50 @@ def _calendar_chf(cfg: dict, cal: dict, now: datetime) -> dict:
             i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
     return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
             "wat_offset_note": "Zurich = WAT + 1h (CET) / + 2h (CEST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
+
+
+def _calendar_nzd(cfg: dict, cal: dict, now: datetime) -> dict:
+    items = []
+    mps = set(cal.get("rbnz_mps", []))
+    for d in cal.get("rbnz_mpc_2026", []) + cal.get("rbnz_mpc_2027", []):
+        items.append({"date": d, "title": "RBNZ OCR decision" + (" + Monetary Policy Statement" if d in mps else " (Monetary Policy Review)"), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "14:00 Auckland")})
+    d = now.date()
+    nb = d + timedelta(days=1)
+    while nb.weekday() >= 5:
+        nb += timedelta(days=1)
+    items.append({"date": nb.isoformat(), "title": "RBNZ daily tables after 15:00 NZT: B2 rates, D12 settlement cash / ORRF, D3 operations (T-1)", "type": "rates", "impact": "MEDIUM", "time_local": "15:00 Auckland"})
+    def nxt(wd):
+        x = d + timedelta(days=1)
+        while x.weekday() != wd:
+            x += timedelta(days=1)
+        return x
+    items.append({"date": nxt(1).isoformat(), "title": "NZDM Treasury bill tender (results 14:35 NZT, settlement T+1)", "type": "fiscal", "impact": "MEDIUM", "time_local": "14:00–14:30 Wellington"})
+    items.append({"date": nxt(3).isoformat(), "title": "RBNZ weekly reverse-repo OMO (7d + 28d, full allotment at OCR + 10 bp) 11:30 NZT · NZDM bond tender 14:00 (settlement T+3)", "type": "central_bank", "impact": "HIGH", "time_local": "11:30 / 14:00 Auckland"})
+    items.append({"date": nxt(0).isoformat(), "title": "RBNZ D9 weekly NZGB turnover (week to Friday)", "type": "rates", "impact": "LOW", "time_local": "15:00 Auckland"})
+    y, m = now.year, now.month
+    nm = datetime(y + (m == 12), m % 12 + 1, 1).date()
+    d14 = datetime(y, m, 14).date() if now.day < 14 else datetime(nm.year, nm.month, 14).date()
+    items.append({"date": d14.isoformat(), "title": "RBNZ R1 balance sheet + R3 analytical accounts (Crown settlement account, monetary base)", "type": "central_bank", "impact": "MEDIUM", "time_local": "15:00 Auckland"})
+    items.append({"date": (d14 + timedelta(days=1)).isoformat(), "title": "RBNZ LSAP bond sale to NZDM (~NZ$415m, mid-month) — drain", "type": "central_bank", "impact": "LOW", "time_local": ""})
+    import calendar as _c
+    last = datetime(y, m, _c.monthrange(y, m)[1]).date()
+    if last < d:
+        last = datetime(nm.year, nm.month, _c.monthrange(nm.year, nm.month)[1]).date()
+    items.append({"date": last.isoformat(), "title": "RBNZ D10 influences on settlement cash (government cash influence), C5 sector lending, C50 money & credit (previous month)", "type": "fiscal", "impact": "MEDIUM", "time_local": "15:00 Auckland"})
+    d18 = datetime(y, m, 18).date() if now.day < 18 else datetime(nm.year, nm.month, 18).date()
+    items.append({"date": d18.isoformat(), "title": "RBNZ D30 holdings of NZGS by sector (non-residents)", "type": "fiscal", "impact": "LOW", "time_local": ""})
+    for md in cal.get("tax_dates", {}).get("provisional_tax_standard", []):
+        for yy in (y, y + 1):
+            dd = "%d-%s" % (yy, md)
+            if dd >= d.isoformat():
+                items.append({"date": dd, "title": "IRD provisional tax instalment (Crown receipts → settlement cash drain)", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+                break
+    items.append({"date": None, "title": "NZGB coupons on the 15th (Apr/May/Sep/Oct/Nov…) and maturities 15-Apr / 15-May — injections tagged in the residual flow", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= now.date().isoformat()], key=lambda x: x["date"] or "9999")
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "Auckland = WAT + 11h (NZST) / + 12h (NZDT, last Sunday of September to first Sunday of April)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
             "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}

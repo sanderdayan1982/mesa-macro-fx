@@ -19,6 +19,8 @@ from . import blocks_jpy as BJ
 from . import providers_jpy as PJ
 from . import blocks_chf as BC
 from . import providers_chf as PC
+from . import blocks_nzd as BN
+from . import providers_nzd as PN
 from .quality import evaluate_series, system_summary
 from .series import Series, clean
 
@@ -530,11 +532,147 @@ def fetch_chf(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     blocks["banking"] = BC.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
     return blocks
 
+def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    """NZD lanes (RBNZ stable XLSX URLs + NZDM HTML/XLSX; one request per file >= 1 s apart):
+      daily / daily_retry  B2 (rates, T-1 15:00 NZT) + D12 (settlement cash, ORRF, FX swaps, BLF) + D3 (weekly OMO stock, LSAP sales)
+      weekly_tue           NZDM T-bill listing + latest result page (14:35 NZT Tuesday)
+      weekly_thu           NZDM bond listing + latest result page + D3 (Thursday OMO)
+      weekly_mon           D9 weekly turnover
+      monthly              R1, R3, D10, D30, C5, C50, L2 + NZDM XLSX histories + bonds on issue (coupon / maturity calendar)
+    Every lane rebuilds all four blocks from history CSVs."""
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+    fx = a.fixtures
+    raw_dir = os.path.join(ROOT, "logs", "nzd", "raw") if not fx else None
+    lanes = ["daily", "weekly_tue", "weekly_thu", "weekly_mon", "monthly"] if a.lane == "all" else [{"daily_retry": "daily"}.get(a.lane, a.lane)]
+    from datetime import date, timedelta
+    today = date.today()
+
+    def _err(tag: str, e: Exception) -> None:
+        errors.append("%s: %s" % (tag, e))
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": tag, "error": str(e)})
+
+    def _since(days_backfill: int, days_incr: int) -> str:
+        return (today - timedelta(days=days_backfill if a.backfill else days_incr)).isoformat()
+
+    data: Dict[str, Series] = {}
+    T = PN.RbnzTableProvider(fixtures_dir=fx, raw_dir=raw_dir)
+
+    def _tbl(tag: str, table: str, path: str, since: str) -> None:
+        try:
+            got = T.fetch(table, path, since)
+            if not got:
+                raise ProviderError("no series returned")
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err(tag, e)
+
+    d3_rows = None
+    if "daily" in lanes or "weekly_thu" in lanes:
+        _tbl("rbnz_b2", "B2", "b/b2/hb2-daily-close.xlsx", _since(1000, 45))
+        try:
+            got, blf = PN.RbnzD12Provider(fixtures_dir=fx, raw_dir=raw_dir).fetch_d12(_since(1000, 45))
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("rbnz_d12", e)
+        try:
+            d3_rows = PN.RbnzD3Provider(fixtures_dir=fx, raw_dir=raw_dir).fetch_d3("2024-01-01")
+        except Exception as e:  # noqa
+            _err("rbnz_d3", e)
+    if "weekly_mon" in lanes or "daily" in lanes:
+        _tbl("rbnz_d9", "D9", "d/d9/hd9-weekly.xlsx", _since(1000, 60))
+    N = PN.NzdmProvider(fixtures_dir=fx, raw_dir=raw_dir)
+    tender_rows: List[dict] = []
+    upcoming: List[dict] = []
+    for kind, lane in (("tbill", "weekly_tue"), ("bond", "weekly_thu")):
+        if lane in lanes or "daily" in lanes:
+            try:
+                up, comp = N.listing(kind)
+                upcoming += [dict(t, kind=kind) for t in up]
+                # latest completed tender → HTML result (same day); the XLSX history is the backfill (monthly lane)
+                for c in comp[:1 if not a.backfill else 4]:
+                    res = N.result(kind, c["number"], c.get("url"))
+                    for x in res:
+                        tender_rows.append({"tender_date": c["tender"], "settlement_date": c["settlement"], "tender_no": c["number"], "kind": kind, "maturity": x.get("maturity"), "coupon": x.get("coupon"),
+                                            "offered": x.get("offered"), "accepted": x.get("allocated"), "bid": x.get("bid"), "bids_n": x.get("bids_n"), "success_n": x.get("success_n"),
+                                            "coverage": x.get("coverage"), "low_acc": x.get("low_acc"), "high_acc": x.get("high_acc"), "wavg": x.get("wavg"), "source": "html"})
+            except Exception as e:  # noqa
+                _err("nzdm_%s" % kind, e)
+    if "monthly" in lanes or (a.backfill and "daily" in lanes):
+        m_since = "2019-01-01" if a.backfill else _since(0, 120)
+        _tbl("rbnz_r1", "R1", "d-f-r/r1/hr1.xlsx", m_since)
+        _tbl("rbnz_r3", "R3", "d-f-r/r3/hr3.xlsx", m_since)
+        _tbl("rbnz_d30", "D30", "d/d30/hd30.xlsx", m_since)
+        _tbl("rbnz_c5", "C5", "c/c5/hc5.xlsx", m_since)
+        _tbl("rbnz_c50", "C50", "c/c50/hc50.xlsx", m_since)
+        _tbl("rbnz_l2", "L2", "l-s/l2/hl2.xlsx", m_since)
+        try:
+            got = PN.RbnzD10Provider(fixtures_dir=fx, raw_dir=raw_dir).fetch_d10(m_since)
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("rbnz_d10", e)
+        try:
+            links = None if fx else N.data_links()
+            for kind in ("tbill", "bond"):
+                for x in N.history(kind, "2019-01-01" if a.backfill else _since(0, 120), links):
+                    tender_rows.append(dict(x, kind=kind, source="xlsx"))
+            data["_bonds_on_issue"] = N.bonds_on_issue(links)  # type: ignore
+        except Exception as e:  # noqa
+            _err("nzdm_history", e)
+    # persist tender rows / upcoming / bonds on issue as JSON side files (not Series)
+    side = os.path.join(hist_dir, "_side.json")
+    prev_side = load_json(side) or {}
+    if tender_rows:
+        merged = {(r["kind"], r["tender_date"], r.get("maturity")): r for r in prev_side.get("tender_rows", [])}
+        for r in tender_rows:
+            merged[(r["kind"], r["tender_date"], r.get("maturity"))] = r  # HTML rows (same day) overwrite XLSX rows for the same tender
+        tender_rows = sorted(merged.values(), key=lambda r: (r["tender_date"], r["kind"], r.get("maturity") or ""))
+    else:
+        tender_rows = prev_side.get("tender_rows", [])
+    upcoming = upcoming or prev_side.get("upcoming", [])
+    bonds_on_issue = data.get("_bonds_on_issue") or prev_side.get("bonds_on_issue", [])
+    if d3_rows is None:
+        d3_rows = prev_side.get("d3_rows")
+    if not fx:
+        save_json(side, {"tender_rows": tender_rows, "upcoming": upcoming, "bonds_on_issue": bonds_on_issue, "d3_rows": d3_rows})
+    data["_tender_rows"] = tender_rows  # type: ignore
+    data["_upcoming_tenders"] = upcoming  # type: ignore
+    data["_bonds_on_issue"] = bonds_on_issue  # type: ignore
+    # tender series (volume-weighted per tender date)
+    for kind in ("tbill", "bond"):
+        ts = PN.NzdmProvider.tender_series([r for r in tender_rows if r["kind"] == kind])
+        for k, ser in ts.items():
+            data["NZDM:%s_%s" % (kind, k)] = ser
+    # history CSVs (Series only)
+    for i, ser in list(data.items()):
+        if ser and not i.startswith("_") and isinstance(ser, list) and ser and isinstance(ser[0], tuple):
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
+    if not fx:
+        need = sorted(set(v for m in (BN.MAP_CB, BN.MAP_FI, BN.MAP_BK, BN.MAP_RT) for v in m.values() if v) | {"D10:cash_end", "D10:rbnz_transactions", "D10:fx", "D9:BTO.WAF"} |
+                      {k for k in os.listdir(hist_dir) if k.startswith("D9:BTO.WAF.N")} )
+        for k in need:
+            k = k[:-4] if k.endswith(".csv") else k
+            if k not in data:
+                p = os.path.join(hist_dir, "%s.csv" % k)
+                if os.path.exists(p):
+                    data[k] = clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"])
+    # OMO stock on the settlement-cash grid (needs D3 rows + D12 dates)
+    if d3_rows and data.get("D12:settlement_cash"):
+        omo = PN.RbnzD3Provider.omo_series(d3_rows, [d for d, _ in data["D12:settlement_cash"]])
+        data.update(omo)
+        for i, ser in omo.items():
+            if ser:
+                append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
+    blocks["central_bank"] = BN.build_central_bank(cfg, data, prev.get("central_bank"))
+    blocks["rates"] = BN.build_rates(cfg, data, prev.get("rates"))
+    blocks["fiscal"] = BN.build_fiscal(cfg, data, prev.get("fiscal"), blocks["central_bank"])
+    blocks["banking"] = BN.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    return blocks
+
 
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ccy", default="cad")
-    ap.add_argument("--lane", default="all", choices=["weekly", "weekly_thu", "daily", "daily_provisional", "ten_day", "monthly", "quarterly", "all"])
+    ap.add_argument("--lane", default="all", choices=["weekly", "weekly_mon", "weekly_tue", "weekly_thu", "daily", "daily_retry", "daily_provisional", "ten_day", "monthly", "quarterly", "all"])
     ap.add_argument("--backfill", action="store_true", help="fetch full history (first run / monthly revalidation)")
     ap.add_argument("--fixtures", default=None, help="offline mode: read CSV fixtures from this dir instead of HTTP")
     ap.add_argument("--no-rss", action="store_true")
@@ -549,7 +687,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     errors: List[str] = []
 
     prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
-    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf}[ccy]
+    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf, "nzd": fetch_nzd}[ccy]
     blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
 
     # ── quality (system-wide) ──
@@ -569,7 +707,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         blk["source_health"]["errors"] = [x for x in errors]
 
     # ── regime, scenarios, alerts, revisions ──
-    regime = E.classify_regime(cfg, blocks)
+    regime = E.classify_regime(cfg, blocks, load_json(os.path.join(data_dir, "regime.json")))
     scenarios = E.evaluate_scenarios(cfg, blocks)
     alerts_path = os.path.join(log_dir, "alerts.json")
     existing = (load_json(alerts_path) or {}).get("alerts", [])

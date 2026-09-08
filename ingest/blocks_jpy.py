@@ -609,7 +609,7 @@ def _cap_watch(e: dict, absr: dict) -> None:
     v = e.get("value")
     if v is None:
         return
-    a_lvl = "CRISIS" if v >= absr["crisis"] else "STRESS" if v >= absr["stress"] else "WATCH" if v >= absr["watch"] else "SAFE"
+    a_lvl = "CRISIS" if (absr.get("crisis") is not None and v >= absr["crisis"]) else "STRESS" if v >= absr["stress"] else "WATCH" if v >= absr["watch"] else "SAFE"
     p_lvl = e.get("level", "SAFE")
     e["percentile_level"] = p_lvl
     e["level"] = a_lvl if a_lvl in ("STRESS", "CRISIS") else ("WATCH" if (p_lvl in ("WATCH", "STRESS", "CRISIS") or a_lvl == "WATCH") else "SAFE")
