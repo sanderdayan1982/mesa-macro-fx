@@ -77,7 +77,7 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
             flags.append("QT_ACCELERATION")
     overlays = _overlays(cfg, blocks)
     for ov, st in overlays.items():
-        if st and st.endswith("_HIGH") and ov not in flags:
+        if isinstance(st, str) and st.endswith("_HIGH") and ov not in flags:
             flags.append(ov)
     tl = {"LIQUIDITY_INJECTION": "GREEN", "NEUTRAL": "YELLOW", "FLOOR_FRICTION": "YELLOW", "LIQUIDITY_DRAIN": "RED", "LIQUIDITY_SCARCITY": "RED", "NO SIGNAL": "NONE"}[regime]
     return {"regime": regime, "traffic_light": tl, "weighted_score": weighted, "block_scores": scores, "weights": w, "blocks_used": used,
@@ -245,6 +245,8 @@ def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
         return _calendar_aud(cfg, cal, now)
     if cfg.get("currency") == "JPY":
         return _calendar_jpy(cfg, cal, now)
+    if cfg.get("currency") == "CHF":
+        return _calendar_chf(cfg, cal, now)
     for d in cal.get("boc_decision_dates_2026", []):
         items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
     # next weekly B2 (Friday) and next daily/RG
@@ -367,4 +369,40 @@ def _calendar_jpy(cfg: dict, cal: dict, now: datetime) -> dict:
             i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
     return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
             "wat_offset_note": "Tokyo = WAT + 8h all year (JST has no DST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
+
+
+def _calendar_chf(cfg: dict, cal: dict, now: datetime) -> dict:
+    items = []
+    for d in cal.get("snb_mpa_2026", []) + cal.get("snb_mpa_2027", []):
+        items.append({"date": d, "title": "SNB monetary policy assessment (policy rate, threshold factor, FX stance)", "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "09:30 Zurich")})
+    d = now.date()
+    nb = d + timedelta(days=1)
+    while nb.weekday() >= 5:
+        nb += timedelta(days=1)
+    items.append({"date": nb.isoformat(), "title": "SNB policy rates / SARON (T-1, 10:00) + Confederation NSS curve (11:00)", "type": "rates", "impact": "MEDIUM", "time_local": "10:00 / 11:00 Zurich"})
+    mon = d + timedelta(days=1)
+    while mon.weekday() != 0:
+        mon += timedelta(days=1)
+    items.append({"date": mon.isoformat(), "title": "SNB weekly sight deposits (week to Friday) — domestic vs other; FX-intervention proxy", "type": "central_bank", "impact": "HIGH", "time_local": "10:00 Zurich"})
+    tue = d + timedelta(days=1)
+    while tue.weekday() != 1:
+        tue += timedelta(days=1)
+    items.append({"date": tue.isoformat(), "title": "Confederation MMDRC (money market debt register claims) auction — results Thursday", "type": "fiscal", "impact": "MEDIUM", "time_local": "11:00 Bern"})
+    y, m = now.year, now.month
+    d20 = datetime(y, m, 20).date() if now.day < 20 else datetime(y + (m == 12), m % 12 + 1, 20).date()
+    items.append({"date": d20.isoformat(), "title": "Minimum-reserve period starts (20th–19th) — SARON prints often firm on days 18–20 and at month-end", "type": "rates", "impact": "LOW", "time_local": ""})
+    nm = datetime(y + (m == 12), m % 12 + 1, 1).date()
+    last = (nm - timedelta(days=1))
+    items.append({"date": last.isoformat(), "title": "SNB money-market operations (gmges.xlsx, previous month) + SNB Bills register", "type": "central_bank", "impact": "MEDIUM", "time_local": "09:00 Zurich"})
+    items.append({"date": (nm + timedelta(days=12)).isoformat(), "title": "SNB monthly balance sheet (snbbipo) — publication day to confirm", "type": "central_bank", "impact": "MEDIUM", "time_local": ""})
+    items.append({"date": (nm + timedelta(days=19)).isoformat(), "title": "Banks (loans, balance sheets), money stock M1–M3, minimum reserves, mortgage rates", "type": "banking", "impact": "LOW", "time_local": ""})
+    items.append({"date": None, "title": "SNB Bills 28-day auctions (weekly) and 1-week absorbing repos (daily) — sterilisation of excess reserves", "type": "central_bank", "impact": "MEDIUM", "time_local": ""})
+    items.append({"date": None, "title": "Confederation bond auction (monthly, Wednesday; EFV calendar)", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= now.date().isoformat()], key=lambda x: x["date"] or "9999")
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "Zurich = WAT + 1h (CET) / + 2h (CEST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
             "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}

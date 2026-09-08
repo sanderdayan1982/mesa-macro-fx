@@ -17,6 +17,8 @@ from . import blocks_gbp as BG
 from . import blocks_aud as BA
 from . import blocks_jpy as BJ
 from . import providers_jpy as PJ
+from . import blocks_chf as BC
+from . import providers_chf as PC
 from .quality import evaluate_series, system_summary
 from .series import Series, clean
 
@@ -418,11 +420,121 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     blocks["banking"] = BJ.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
     return blocks
 
+def fetch_chf(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    """CHF lanes (SNB data portal, no auth, one request per cube ≥ 1 s apart):
+      daily      snbgwdzid (policy/SARON/tier, T-1 10:00 CET) + warehouse NSS Confederation curve (11:00 CET) + zirepo (3-week lag)
+      weekly     Monday: snbgwdchfsgw sight deposits + snbgwdmigirow (minimum-reserve sight deposits)
+      weekly_thu EFV MMDRC results (Tuesday auction) + bond results (resultate-*.xlsx)
+      monthly    snbbipo balance sheet, snbmoba, bamire, snbbillshreg register, gmges.xlsx operations, banks (bakredinausbm, babilpobm), snbmonagg, zikrepro, zimoma
+      quarterly  snbfxtr FX transactions
+    Every lane rebuilds all four blocks from history CSVs so no card sits unavailable after a partial run."""
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+    src = cfg["sources"]
+    fx = a.fixtures
+    raw_dir = os.path.join(ROOT, "logs", "chf", "raw") if not fx else None
+    lanes = ["daily", "weekly", "weekly_thu", "monthly", "quarterly"] if a.lane == "all" else [a.lane]
+    from datetime import date, timedelta
+    today = date.today()
+
+    def _err(tag: str, e: Exception) -> None:
+        errors.append("%s: %s" % (tag, e))
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": tag, "error": str(e)})
+
+    def _since(days_backfill: int, days_incr: int) -> str:
+        return (today - timedelta(days=days_backfill if a.backfill else days_incr)).isoformat()
+
+    data: Dict[str, Series] = {}
+    cube = PC.SnbCubeProvider(fixtures_dir=fx, raw_dir=raw_dir)
+
+    def _cube(tag: str, cube_id: str, dim_sel, since: str, warehouse: bool = False, fixture=None) -> None:
+        try:
+            got = cube.fetch(cube_id, dim_sel, since, today.isoformat(), warehouse=warehouse, fixture=fixture)
+            if not got:
+                raise ProviderError("no series returned")
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err(tag, e)
+
+    # ── daily ──
+    if "daily" in lanes:
+        # policy/tier parameters are step series: always pull from the last regime change so the fixture and the live run agree
+        _cube("snbgwdzid[policy]", "snbgwdzid", "D0(LZ,ENG,ZIGBL,ZIG,ZIABP,FREI)", "2021-01-01" if a.backfill else _since(0, 45), fixture="snbgwdzid_policy")
+        _cube("snbgwdzid[saron]", "snbgwdzid", "D0(SARON)", _since(900, 45), fixture="snbgwdzid_saron")
+        _cube("nss_curve", src["snb_confed_curve_daily"]["warehouse_cube"], src["snb_confed_curve_daily"]["dimSel"], _since(900, 45), warehouse=True, fixture="nss")
+        _cube("zirepo", "zirepo", "D0(H0,H1,H2,H4,H5,H6,H7,H8)", _since(900, 60))
+    # ── weekly (Monday) ──
+    if "weekly" in lanes or "daily" in lanes:
+        _cube("snbgwdchfsgw", "snbgwdchfsgw", "D0(GI,UEB,TG)", _since(2000, 60))
+        _cube("snbgwdmigirow", "snbgwdmigirow", "D0(GU)", _since(2000, 60))
+    # ── weekly_thu: EFV auctions ──
+    if "weekly_thu" in lanes or "weekly" in lanes or "daily" in lanes:
+        try:
+            got, errs = PC.EfvAuctionsProvider(src["efv_mmdrc_auctions"]["url"], src["efv_bond_auctions"]["url"], fixtures_dir=fx, raw_dir=raw_dir).fetch()
+            for x in errs:
+                _err("efv_auctions", Exception(x))
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("efv_auctions", e)
+    # ── monthly ──
+    if "monthly" in lanes or (a.backfill and "daily" in lanes):
+        m_since = "2019-01-01" if a.backfill else _since(0, 120)
+        _cube("snbbipo", "snbbipo", "D0(GFG,D,FRGSF,GSGSF,GD,T0,N,GB,VB,GBI,US,VRGSF,ES,UT,T1)", m_since)
+        _cube("snbmoba", "snbmoba", src["snb_monetary_base"]["dimSel"], m_since)
+        _cube("bamire", "bamire", src["snb_min_reserves"]["dimSel"], m_since)
+        _cube("bakredinausbm", "bakredinausbm", src["snb_banks_credit"]["dimSel"], m_since)
+        _cube("babilpobm", "babilpobm", src["snb_banks_balance_sheet"]["dimSel"], m_since)
+        _cube("snbmonagg", "snbmonagg", src["snb_monetary_aggregates"]["dimSel"], m_since)
+        _cube("zikrepro", "zikrepro", src["snb_published_rates"]["dimSel"], m_since)
+        _cube("zimoma", "zimoma", "D0(EG3M)", m_since)
+        try:
+            got, ops = PC.SnbOpsProvider(src["snb_money_market_operations"]["url"], fixtures_dir=fx, raw_dir=raw_dir).fetch()
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("snb_money_market_operations", e)
+    # SNB Bills register: small list, needed by the daily ladder → every lane
+    try:
+        rows, pub = PC.SnbBillsRegisterProvider(src["snb_bills_register"]["url"], fixtures_dir=fx, raw_dir=raw_dir).fetch()
+        if rows:
+            data["_bills_rows"] = rows  # type: ignore  (list of dicts; excluded from history CSVs)
+            if pub:
+                E.log_event(oplog, "BILLS_REGISTER", "system", {"publishing_date": pub, "lines": len(rows), "total_m": PC.SnbBillsRegisterProvider.total(rows)})
+    except Exception as e:  # noqa
+        _err("snb_bills_register", e)
+    # ── quarterly ──
+    if "quarterly" in lanes or (a.backfill and "daily" in lanes):
+        _cube("snbfxtr", "snbfxtr", None, "2015-01-01" if a.backfill else _since(0, 400))
+    # history CSVs
+    for i, ser in data.items():
+        if ser and not i.startswith("_"):
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
+    # any lane on a live run: reload every mapped key from history so all four blocks stay complete
+    if not fx:
+        need = sorted(set(v for m in (BC.MAP_CB, BC.MAP_FI, BC.MAP_BK, BC.MAP_RT) for v in m.values() if v) |
+                      {"zirepo:H0", "snbbipo:UT", "snbbipo:T1", "snbbipo:GFG", "bamire:TB|T", "bamire:TB|GN", "snbmonagg:B|S0", "bills_yield_28d", "ops_swaps_month",
+                       "mmdrc_yield", "mmdrc_issued", "bond_yield", "bond_issued", "bond_own_share", "nss:J01M0", "nss:J02M0", "nss:J05M0", "nss:J20M0", "nss:J30M0"})
+        for k in need:
+            if k not in data:
+                p = os.path.join(hist_dir, "%s.csv" % k)
+                if os.path.exists(p):
+                    data[k] = clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"])
+    # tier parameters are step series (the portal repeats them daily; fixtures/history keep only the changes) → carry forward onto the SARON grid
+    sar = data.get("snbgwdzid:SARON")
+    if sar:
+        for k in ("snbgwdzid:LZ", "snbgwdzid:ENG", "snbgwdzid:ZIGBL", "snbgwdzid:ZIG", "snbgwdzid:ZIABP", "snbgwdzid:FREI"):
+            if data.get(k):
+                ev = data[k]
+                data[k] = clean(ev + [x for x in BJ._ffill(ev, sar) if x[0] > ev[-1][0]])
+    blocks["rates"] = BC.build_rates(cfg, data, prev.get("rates"))
+    blocks["central_bank"] = BC.build_central_bank(cfg, data, prev.get("central_bank"))
+    blocks["fiscal"] = BC.build_fiscal(cfg, data, prev.get("fiscal"))
+    blocks["banking"] = BC.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    return blocks
+
 
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ccy", default="cad")
-    ap.add_argument("--lane", default="all", choices=["weekly", "daily", "daily_provisional", "ten_day", "monthly", "all"])
+    ap.add_argument("--lane", default="all", choices=["weekly", "weekly_thu", "daily", "daily_provisional", "ten_day", "monthly", "quarterly", "all"])
     ap.add_argument("--backfill", action="store_true", help="fetch full history (first run / monthly revalidation)")
     ap.add_argument("--fixtures", default=None, help="offline mode: read CSV fixtures from this dir instead of HTTP")
     ap.add_argument("--no-rss", action="store_true")
@@ -437,7 +549,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     errors: List[str] = []
 
     prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
-    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy}[ccy]
+    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf}[ccy]
     blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
 
     # ── quality (system-wide) ──

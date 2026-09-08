@@ -49,7 +49,7 @@ FACILITY_ZERO = ("jgb_purchases_daily", "pooled_collateral_ops_daily", "clf_loan
 
 def _freq(sc: dict) -> str:
     f = sc.get("freq", "daily")
-    return "daily" if f.startswith("daily") else "ten_day" if f.startswith("ten") else "monthly" if f.startswith("monthly") else "weekly" if f.startswith("weekly") else "event" if f == "event" else "daily"
+    return "daily" if f.startswith("daily") else "ten_day" if f.startswith("ten") else "monthly" if f.startswith("monthly") else "weekly" if f.startswith("weekly") else "quarterly" if f.startswith("quarter") else "event" if f == "event" else "daily"
 
 
 def _spec(th: dict, key: str) -> Optional[dict]:
@@ -613,3 +613,9 @@ def _cap_watch(e: dict, absr: dict) -> None:
     p_lvl = e.get("level", "SAFE")
     e["percentile_level"] = p_lvl
     e["level"] = a_lvl if a_lvl in ("STRESS", "CRISIS") else ("WATCH" if (p_lvl in ("WATCH", "STRESS", "CRISIS") or a_lvl == "WATCH") else "SAFE")
+    th = e.get("thresholds") or {}
+    lv = dict(th.get("levels") or {})
+    for k in ("watch", "stress", "crisis"):
+        if absr.get(k) is not None:
+            lv[k.upper() + "_abs"] = absr[k]
+    e["thresholds"] = dict(th, levels=lv, method=th.get("method") or "percentile+absolute")
