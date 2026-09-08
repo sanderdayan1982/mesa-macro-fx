@@ -1,0 +1,1751 @@
+{
+  "$schema": "../schema/config.schema.json",
+  "config_version": "0.2.1",
+  "currency": "JPY",
+  "name": "JPY Command Center",
+  "jurisdiction": "Japan",
+  "central_bank": "Bank of Japan (BoJ)",
+  "treasury": "Ministry of Finance (MoF) — Financial Bureau (JGB issuance, treasury funds)",
+  "monetary_sovereignty": "full (JPY issuer, floating FX, domestic-currency debt; MoF FX intervention possible)",
+  "framework": "Floor system with excess reserves ~28x required: Complementary Deposit Facility (IOER) at the policy rate = floor; Complementary Lending Facility (basic loan rate) = ceiling at policy + 25 bp; uncollateralized overnight call rate target 'around 1.0%' since 2026-06-17 (MPM 2026-06-16, 7-1). QT: monthly JGB purchases stepping down ~0.2 tn per quarter to ~2.0 tn from April 2027 (plan MPM 2026-06-16, no interim review). TONA normally trades 2-3 bp BELOW IOER (non-IOER institutions lend below the floor) — that is structure, not friction.",
+  "timezone_source": "Asia/Tokyo",
+  "timezone_operator": "Africa/Malabo",
+  "units": {
+    "balance_sheet": "JPY 100m (display: tn = 10^12)",
+    "accounts": "JPY thousand (BoJ Accounts) — converted to 100 million at ingest; magnitude guard: total assets must be 5e14–9e14 yen",
+    "rates": "percent",
+    "spreads": "bps",
+    "note": "never write 'bn' — ambiguous ES/EN"
+  },
+  "lineage": {
+    "origin": "JPY Liquidity Command Center v5 (Netlify Function + FRED monthly + frankfurter + Yahoo; BoJ/CAB/gov deposits/TONAR/TIBOR/JGB tenors/fiscal = SEED)",
+    "rescued": [
+      "composite idea 'BoJ assets − government deposits' (now real from BoJ Accounts every 10 days)",
+      "metric wish-list: CAB, excess reserves, TONA, term call rates, JGB curve by tenor, fiscal factors — all now from primary daily sources",
+      "per-metric provenance badge → Desk Standard states"
+    ],
+    "discarded": [
+      "FRED as a JPY source (monthly, lagged)",
+      "all SEED series",
+      "equity/FX/flows tabs",
+      "5-minute auto-refresh of monthly data"
+    ]
+  },
+  "sources": {
+    "boj_daily_cab": {
+      "index": "https://www.boj.or.jp/en/statistics/boj/fm/juq/index.htm",
+      "url_final": "https://www.boj.or.jp/en/statistics/boj/fm/juq/d_release/jd/{YYYY}/jd{YYYYMMDD}.xlsx",
+      "url_provisional": "https://www.boj.or.jp/en/statistics/boj/fm/juq/d_release/jx/jx{YYYYMMDD}.xlsx",
+      "url_projection": "https://www.boj.or.jp/en/statistics/boj/fm/juq/d_release/jp/jp{YYYYMMDD}.xlsx",
+      "backfill_index": "https://www.boj.or.jp/en/statistics/boj/fm/juq/d_release/jd/{YYYY}/index.htm (2026; 2025 from Oct); older = HTML at www3.boj.or.jp/market/en/stat/jd{YYMMDD}.htm",
+      "old_page_suspended": "www3.boj.or.jp/market/en/menu.htm stopped updating 2025-10-06 — never use it for current data",
+      "format": "single-sheet XLSX; labels in columns B-E (JP/EN pairs), values F=projection, G=provisional, H=final; unit 100 million yen rounded to 10 bn; empty cell = 0 for that item that day",
+      "parse_rule": "match rows by English label text (items change: notices 2025-10-31, 2026-01-27, 2026-06-30); fail loudly if a required label is missing",
+      "release_jst": {
+        "final_prev_day": "~10:00",
+        "provisional_same_day": "~18:00 (19:00 last business day of month)",
+        "projection_next_day": "~18:00"
+      },
+      "verified": "2026-09-08 via in-app browser (jd20260907.xlsx read cell by cell)",
+      "auth": "none",
+      "hardening": [
+        "label aliases EN/JP per item",
+        "assert expected item count and structure hash → DATA_DEGRADED on change, never silent remap",
+        "if jd for T-1 is missing at 02:30 UTC retry every 30 min until 06:00 UTC, publish jx as provisional meanwhile",
+        "the daily file has ONE 'Treasury funds and others' row — no sub-table (verified 2026-09-08)"
+      ]
+    },
+    "boj_accounts": {
+      "index": "https://www.boj.or.jp/en/statistics/boj/other/acmai/index.htm",
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/acmai/release/{YYYY}/ac{YYMMDD}.htm",
+      "freq": "every ten days (10th, 20th, month-end), published 2-3 business days later",
+      "format": "HTML tables, thousand yen; annex tables: JGBs vs T-Bills, Loan Support Program, pooled-collateral loans",
+      "verified": "2026-09-08 (ac260831.htm: total assets 644,662,019,610 thousand yen)"
+    },
+    "boj_jgb_holdings_xlsx": {
+      "index": "https://www.boj.or.jp/en/statistics/boj/other/mei/index.htm",
+      "freq": "every ten days",
+      "status": "verified index only; issue-by-issue parser = Phase 3"
+    },
+    "boj_api": {
+      "base": "https://www.stat-search.boj.or.jp/api/v1/",
+      "endpoints": {
+        "data": "getDataCode?db={DB}&code={codes,comma}&format=json&lang=EN&startDate={YYYYMM}&endDate={YYYYMM}[&startPosition=]",
+        "metadata": "getMetadata?db={DB}&format=json&lang=EN",
+        "layer": "getDataLayer?db={DB}&frequency={D|W|M|Q}&layer=..."
+      },
+      "response": "JSON: STATUS 200, RESULTSET[{SERIES_CODE, NAME_OF_TIME_SERIES, UNIT, FREQUENCY, LAST_UPDATE, VALUES:{SURVEY_DATES:[YYYYMMDD], VALUES:[num|null]}}], NEXTPOSITION for paging; daily series return calendar days with null on non-business days",
+      "limits": "max 250 codes per request; startDate/endDate in YYYYMM even for daily",
+      "verified": "2026-09-08 (FM01 STRDCLUCON Aug-Sep 2026; metadata FM01, FM02, MD01, MD02, MD06, MD08, MD11, MD13)",
+      "auth": "none",
+      "rate_limit_rule": "one request per DB per lane, >= 1 s apart; keep raw JSON snapshot",
+      "dbs": {
+        "FM01": "TONA daily",
+        "FM02": "short-term money market rates monthly",
+        "FM08": "FX rates daily (code pending)",
+        "MD01": "monetary base monthly",
+        "MD02": "money stock monthly",
+        "MD06": "sources of changes in CAB monthly (final)",
+        "MD07": "reserves monthly",
+        "MD08": "CAB by sector monthly (foreign banks' excess share = canary)",
+        "MD13": "principal figures of financial institutions (loans/deposits) monthly",
+        "IR01": "basic discount/loan rate"
+      },
+      "history_policy": "pull full history once into history/jpy/*.csv (committed); lanes request only the last 2 months; backoff on 429/403; stat-search refreshes ~9:00/12:00/15:00 JST"
+    },
+    "boj_call_market": {
+      "index": "https://www.boj.or.jp/en/statistics/market/short/mutan/index.htm",
+      "tona_final_xlsx": "https://www.boj.or.jp/en/statistics/market/short/mutan/d_release/md/{YYYY}/md{YYYYMMDD}.xlsx",
+      "tona_provisional_xlsx": "https://www.boj.or.jp/en/statistics/market/short/mutan/d_release/mp/mp{YYYYMMDD}.xlsx",
+      "fcall_xlsx": "https://www.boj.or.jp/en/statistics/market/short/mutan/d_release/others/fcall.xlsx",
+      "fcall_note": "fixed filename overwritten daily: collateralized/uncollateralized call by tenor (min/max/avg), amounts outstanding, O/N volume; must be snapshotted every run to build history",
+      "release_jst": {
+        "tona_provisional": "~17:15",
+        "tona_final_prev_day": "~10:00"
+      },
+      "verified": "2026-09-08 (md20260907: avg 0.977 / max 0.978 / min 0.95; fcall: collateralized O/N 0.93, 1w 1.005, 1m 1.30, 3m 1.39)"
+    },
+    "boj_policy_rates_csv": {
+      "url": "https://www.boj.or.jp/en/statistics/boj/other/discount/cdab0101.csv",
+      "format": "Shift-JIS header junk then 'Effective Date,rate' rows YYYY.MM.DD; basic loan rate = CLF ceiling",
+      "derivation_rule": "policy_rate = basic_loan_rate − 0.25 (verified on 2024-08-01, 2025-01-27, 2025-12-22, 2026-06-17); IOER = policy_rate",
+      "verified": "2026-09-08 (last row 2026.06.17,1.25)"
+    },
+    "boj_mpm": {
+      "releases_index": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_{YYYY}/index.htm",
+      "schedule": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+      "statement_time_jst": "~12:00 on day 2",
+      "verified_docs": {
+        "k260616a.pdf": "Change in the Guideline for Money Market Operations: call rate around 1.0%, IOER 1.0%, basic loan rate 1.25%, effective 2026-06-17, vote 7-1",
+        "k260616b.pdf": "Plan for the Outright Purchases of JGBs: 2.7 tn (Apr-Jun 2026), 2.5 (Jul-Sep), 2.3 (Oct-Dec), 2.1 (Jan-Mar 2027), 2.0 from Apr 2027; expected holdings ~480 tn end-Mar 2027, 430-440 Mar 2028, 390-400 Mar 2029, 350-370 Mar 2030",
+        "k260731a.pdf": "Statement 2026-07-31: unchanged at around 1.0%, vote 8-1 (dissent for 1.25%)"
+      }
+    },
+    "mof_jgb_yields": {
+      "url_current_month": "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv",
+      "url_history": "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/historical/jgbcme_all.csv",
+      "format": "line 1 title, line 2 header 'Date,1Y,2Y,3Y,4Y,5Y,6Y,7Y,8Y,9Y,10Y,15Y,20Y,25Y,30Y,40Y', rows YYYY/M/D, trailing empty row + quoted notice line (skip)",
+      "verified": "2026-09-08 (2026/9/7: 1Y 1.564, 2Y 1.852, 5Y 2.272, 10Y 2.935, 20Y 3.751, 30Y 4.009, 40Y 4.013)",
+      "auth": "none"
+    },
+    "mof_auction_calendar": {
+      "url": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/{YY}{MM}e.htm",
+      "format": "HTML table: Auction Date | Issue | Announcement | Result | Non-price-competitive II; second table = special-account borrowings",
+      "verified": "2026-09-08 (2609e.htm: 10Y Sep 1, 30Y Sep 3, TDB 3m Sep 4, 5Y Sep 8, TDB 6m Sep 9, 20Y Sep 15, TDB 1y Sep 16, 40Y Sep 29, 2Y Sep 30)",
+      "results_parser": "Phase 3 (Detail pages: bid-to-cover, tail)"
+    },
+    "mof_treasury_receipts_payments": {
+      "url": "https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e{YYYYMM}.xls (preliminary of current month: e{YYYYMM}a.xls)",
+      "index": "https://www.mof.go.jp/english/policy/exchequer/receipts_payments/index.htm",
+      "format": "legacy XLS, one sheet; rows: General Account (Taxes, Non-tax, Social Security, Grants…), Special Accounts (FILP, Foreign Exchange Equalization Fund, Insurance/Pension…), Government Bonds >1y, Borrowings, Treasury Discount Bills, Short-term borrowings; columns Receipts/Payments/Balance (preliminary, previous year, change); 100 million yen",
+      "freq": "monthly (~first week of following month)",
+      "verified": "2026-09-08 (e202608.xls: Taxes receipts 85,744.72; FEFSA receipts 162,092.01 vs 5,968.08 prior year; JGB >1y issued 117,046.27)",
+      "status": "verified — replaces the 'pending' entry of v0.1",
+      "auth": "none"
+    },
+    "jsda_tokyo_repo_rate": {
+      "url_daily": "https://www.jsda.or.jp/shiryoshitsu/toukei/trr/files/trr.xls",
+      "url_history": "https://www.jsda.or.jp/shiryoshitsu/toukei/trr/files/trrts.xls",
+      "format": "legacy XLS (BIFF8, parse with xlrd); header rows: 'term' row then 'T+0/T+1' row; columns: date serial | O/N T+0 | O/N T+1 | 1W | 2W | 3W | 1M | 3M | 6M | 1Y; percent; history since 2012-10-29 (3,394 rows)",
+      "release_jst": "~12:30 same day",
+      "verified": "2026-09-08: O/N T+0 1.000, T+1 1.000, 1W 1.000, 3W 1.062, 1M 1.126, 3M 1.234, 6M 1.324, 1Y 1.510",
+      "note": "GC repo benchmark (reference institutions average); BoJ handed compilation to the JSDA on 2012-10-29",
+      "auth": "none"
+    },
+    "mof_auction_results": {
+      "url_jgb": "https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/Auction_Results_for_JGBs.xls",
+      "url_tbills": "https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/Auction_Results_for_T-bills.xls",
+      "url_liquidity": "https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/e-ryudousei_historical_data.xls",
+      "format": "legacy XLS, one sheet per tenor (40, 30, 20, 15-float, 10, GX10, linker, 5, GX5, 2 …); columns: Issue Number | Auction Date | Issue Date | Maturity | Coupon | Offering | Competitive Bids | Bids Accepted | Price at Highest Accepted Yield | Highest Accepted Yield | Non-price II; 100 million yen",
+      "derived": "bid_to_cover = competitive_bids / bids_accepted; tail NOT available (no average yield in the file)",
+      "verified": "2026-09-08 (40Y sheet last rows: issue 19, 3.8% coupon, 3,000 offered)",
+      "auth": "none"
+    },
+    "mof_its_weekly": {
+      "url": "https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv",
+      "index": "https://www.mof.go.jp/english/policy/international_policy/reference/itn_transactions_in_securities/index.htm",
+      "format": "Shift-JIS CSV, ~1,150 lines, bilingual headers; net acquisition (+) / disposition (−) of Japanese securities by non-residents and foreign securities by residents; 100 million yen; weekly (published Thursday of following week) plus monthly/ten-day files",
+      "verified": "2026-09-08 (final update 2026-09-03)",
+      "role": "context: foreign flows into JGBs (carry-unwind signal), display + informational flag"
+    },
+    "jba_tibor": {
+      "url": "https://www.jbatibor.or.jp/english/rate/",
+      "format": "PDF only (current month + yearly archives), terms of use apply; no CSV",
+      "status": "verified PDF-only — Phase 3 optional, state proxy",
+      "verified": "2026-09-08"
+    },
+    "jpx_tona_futures": {
+      "status": "pending verification (CodeWord proposal: 3m TONA futures daily settlement at OSE/JPX as free forward anchor)"
+    }
+  },
+  "blocks": {
+    "central_bank": {
+      "title": "1 · Central bank liquidity — Bank of Japan",
+      "equivalence_quality": "high",
+      "equivalence_note": "DAILY current account balances, excess reserves, required reserves and market operations (T+1 final, same-day provisional) plus a full balance sheet every ten days. Closest G8 analogue to the Fed's daily data.",
+      "series": {
+        "cab_daily": {
+          "id": "label:Current account balances (amount outstanding)",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "label": "BoJ current account balances — daily",
+          "freq": "daily",
+          "usd_analog": "WRESBAL (daily)",
+          "status": "verified",
+          "verified": "2026-09-07 = 4161200"
+        },
+        "reserve_balances_daily": {
+          "id": "label:Reserve balances held by institutions subject to reserve requirements",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 3844200"
+        },
+        "excess_reserves_daily": {
+          "id": "label:Excess reserves",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "label": "Excess reserves (institutions subject to reserve requirements)",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 3844200",
+          "note": "equals reserve balances once the period requirement is met — use required_reserves_daily_avg as the true denominator"
+        },
+        "cab_non_reserve_daily": {
+          "id": "label:Current account balances held by institutions NOT subject to reserve requirements",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 317000",
+          "display_only": true
+        },
+        "required_reserves_daily_avg": {
+          "id": "label:Required reserves for the current maintenance period",
+          "match": "contains 'daily average'",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 134800 (period Aug.16-Sep.15)"
+        },
+        "cab_net_change_daily": {
+          "id": "label:Net change in current account balances",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 2900"
+        },
+        "banknotes_factor_daily": {
+          "id": "label:Banknotes (Minus: net issuance)",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 600"
+        },
+        "ops_subtotal_daily": {
+          "id": "label:BOJ Loans and Market Operations (excluding the Loan Support Program)",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "label": "Market operations net (excl. Loan Support Program)",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = -1000"
+        },
+        "jgb_purchases_daily": {
+          "id": "label:Outright purchases of JGBs",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "zero_if_empty": true
+        },
+        "pooled_collateral_ops_daily": {
+          "id": "label:Funds-supplying operations against pooled collateral (at All offices)",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "zero_if_empty": true,
+          "role": "repo-like funds supply; nimble response tool for rapid yield rises"
+        },
+        "clf_loans_daily": {
+          "id": "label:Loans",
+          "match": "exact row 'Loans' (note 4: Complementary Lending Facility)",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "label": "Complementary Lending Facility usage (penalty rate = basic loan rate)",
+          "freq": "daily",
+          "status": "verified",
+          "zero_if_empty": true,
+          "usd_analog": "Primary credit / BoC Advances",
+          "role": "emergency gauge: > 0 = flag, sustained = stress"
+        },
+        "slf_daily": {
+          "id": "label:Securities lending as a secondary source of JGSs",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "label": "Securities Lending Facility (JGB lending) net",
+          "freq": "daily",
+          "status": "verified",
+          "zero_if_empty": true,
+          "role": "JGB collateral scarcity gauge (used operationally too → percentile, not > 0)"
+        },
+        "monetary_base_daily": {
+          "id": "label:Monetary base",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 5353400",
+          "note": "final file only",
+          "display_only": true
+        },
+        "total_assets": {
+          "id": "Total (Assets)",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "usd_analog": "WALCL",
+          "status": "verified",
+          "verified": "2026-08-31 = 6446620 (100m yen)"
+        },
+        "jgb_holdings": {
+          "id": "Japanese government securities",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "usd_analog": "SOMA",
+          "status": "verified",
+          "verified": "2026-08-31 = 5199277"
+        },
+        "boj_loans": {
+          "id": "Loans (excluding those to the Deposit Insurance Corporation)",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "verified": "2026-08-31 = 718577"
+        },
+        "loan_support_program": {
+          "id": "Annex 2: Fund-Provisioning Measure to Stimulate Bank Lending",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "verified": "2026-08-31 = 391059"
+        },
+        "pooled_collateral_loans": {
+          "id": "Annex 3: Loans by Funds-Supplying Operations against Pooled Collateral (+disaster +climate)",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "verified": "2026-08-31 = 327518"
+        },
+        "foreign_currency_assets": {
+          "id": "Foreign currency assets",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "display_only": true
+        },
+        "banknotes": {
+          "id": "Banknotes",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "verified": "2026-08-31 = 1148672"
+        },
+        "current_deposits": {
+          "id": "Current deposits",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "verified": "2026-08-31 = 4243219",
+          "note": "cross-check of cab_daily on the same date"
+        },
+        "government_account": {
+          "id": "Deposits of the government",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "usd_analog": "WTREGEN (TGA)",
+          "status": "verified",
+          "verified": "2026-08-31 = 92555"
+        },
+        "repos_payable": {
+          "id": "Payables under repurchase agreements",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "display_only": true
+        },
+        "policy_rate": {
+          "id": "derived:basic_loan_rate − 0.25",
+          "table": "boj_policy_rates_csv",
+          "label": "Uncollateralized O/N call rate target ('around')",
+          "freq": "event",
+          "status": "verified",
+          "verified": "1.00 since 2026-06-17 (MPM 2026-06-16)"
+        },
+        "ioer": {
+          "id": "= policy_rate",
+          "label": "Complementary Deposit Facility rate (floor)",
+          "freq": "event",
+          "status": "verified",
+          "verified": "1.00 since 2026-06-17"
+        },
+        "basic_loan_rate": {
+          "id": "cdab0101.csv last row",
+          "table": "boj_policy_rates_csv",
+          "label": "Complementary Lending Facility rate (ceiling)",
+          "freq": "event",
+          "status": "verified",
+          "verified": "1.25 since 2026-06-17"
+        },
+        "monthly_fiscal_breakdown": {
+          "id": "MASDM@01,MASDM253,MASDM254,MASDM255,MASDM273,MASDM26,MASDM58,MASDM5F,MASDM51,MASDM@03,MASDM@07,MABCLE16",
+          "table": "boj_api",
+          "db": "MD06",
+          "freq": "monthly",
+          "status": "verified (metadata)",
+          "role": "attribution of monthly CAB changes; MASDM26 = FX (FEFSA settlement of MoF intervention shows here)"
+        },
+        "cab_by_sector": {
+          "id": "MACAB1013,MACAB1023,MACAB1043,MACAB1053,MACAB1183,MACAB1201",
+          "table": "boj_api",
+          "db": "MD08",
+          "freq": "monthly",
+          "status": "verified (metadata)",
+          "display_only": false,
+          "role": "distribution of excess reserves; foreign banks' share is the funding canary (Gemini/Perplexity/CodeWord)"
+        }
+      },
+      "derived": {
+        "net_liquidity": {
+          "formula": "total_assets - government_account",
+          "usd_analog": "WALCL − TGA (no RRP analogue)",
+          "label": "Balance-sheet liquidity (ten-day)",
+          "note": "kept as the cross-currency analogue; the primary JPY reserves gauge is cab_daily / excess_reserves_daily"
+        },
+        "net_liquidity_change_pct": {
+          "formula": "pct_change(net_liquidity,1)",
+          "note": "ten-day step"
+        },
+        "cab_dod": {
+          "formula": "diff(cab_daily,1)",
+          "note": "should equal cab_net_change_daily — reconciliation check, mismatch > 100 = data_degraded"
+        },
+        "cab_20d_change": {
+          "formula": "cab_daily - lag(cab_daily,20)"
+        },
+        "excess_to_required_ratio": {
+          "formula": "excess_reserves_daily / required_reserves_daily_avg",
+          "note": "ampleness multiple; 28.5x on 2026-09-07 — dead-man switch only, never a scoring driver"
+        },
+        "jgb_holdings_30d_change": {
+          "formula": "jgb_holdings - lag(jgb_holdings, 3 ten-day steps)",
+          "note": "realised QT pace per month (100m yen)"
+        },
+        "boj_credit_dependence": {
+          "formula": "(pooled_collateral_loans + loan_support_program) / cab_daily",
+          "note": "share of reserves supplied by BoJ lending vs outright holdings — analogue of repo_dependence_ratio; 17% on 2026-08-31"
+        },
+        "currency_drain_daily": {
+          "formula": "banknotes_factor_daily",
+          "note": "already signed by the BoJ: minus = net issuance = drain"
+        },
+        "balance_sheet_phase": {
+          "formula": "NIMBLE_SUPPORT if jgb_purchases_vs_plan_pct > +20% or pooled_collateral_ops rising with jgb_10y_5d_change ≥ WATCH; QT if purchases within ±20% of plan and holdings falling; STEADY otherwise"
+        },
+        "jgb_purchases_month_to_date": {
+          "formula": "sum(jgb_purchases_daily) over calendar month (100m yen)",
+          "note": "policy-driven QT pace: compare with calendar.jgb_purchase_plan"
+        },
+        "jgb_purchases_vs_plan_pct": {
+          "formula": "(jgb_purchases_month_to_date_projected − plan) / plan",
+          "note": "projected = month-to-date scaled by business days; > +20% = nimble support (yield spike), < −20% = faster QT than announced"
+        },
+        "holdings_vs_expected_path": {
+          "formula": "jgb_holdings − interpolated expected path (519.9 tn 2026-08-31 → ~480 tn 2027-03-31)",
+          "note": "INFORMATIONAL: run-off is mechanical (redemption calendar); not a policy flag (CodeWord)"
+        }
+      },
+      "thresholds": {
+        "reserves": {
+          "method": "absolute_primary",
+          "direction": "low_is_risk",
+          "applies_to": "excess_to_required_ratio (daily)",
+          "primary_absolute": {
+            "desk_proposal_not_boj": true,
+            "ample_above": 10,
+            "watch_below": 5,
+            "stress_below": 2,
+            "crisis_below": 1.2,
+            "origin": "DESK PROPOSAL — the BoJ publishes no estimate of banks' reserve demand; ratio 28.5x on 2026-09-07 so these are informational for years. Reviewers: point to any BoJ paper quantifying reserve demand under the normalisation",
+            "review_rule": "re-check at every MPM that touches the balance-sheet plan and at every BoJ Review of Monetary Policy",
+            "secondary_level_anchor": {
+              "metric": "excess_reserves_daily",
+              "watch_below": 2000000,
+              "stress_below": 1000000,
+              "unit": "100m yen (¥200 tn / ¥100 tn)",
+              "origin": "DESK PROPOSAL (Qwen/Kimi): operational cushion levels under passive QT; not a BoJ figure; review at every MPM"
+            }
+          },
+          "percentile_note": "no percentile on the LEVEL (structural decline under QT); percentiles on cab_dod, cab_20d_change since 2024-08-01 (post-YCC/QT window) or 750d, whichever shorter"
+        },
+        "cab_dod": {
+          "method": "percentile",
+          "window": "since 2024-08-01 or 750d",
+          "watch_below": "p10",
+          "stress_below": "p3",
+          "hysteresis": {
+            "exit_on": "p20/p10"
+          },
+          "note": "daily reserve impulse — fiscal days and JGB settlement days dominate; informational unless price confirms"
+        },
+        "cab_20d_change": {
+          "method": "percentile",
+          "window": "since 2024-08-01 or 750d",
+          "watch_below": "p15",
+          "stress_below": "p5",
+          "hysteresis": {
+            "exit_on": "p25/p15"
+          }
+        },
+        "net_liquidity_change_pct": {
+          "method": "percentile",
+          "window": "108 ten-day steps (3y)",
+          "risk_on_above": "p85",
+          "risk_off_below": "p15",
+          "hysteresis": {
+            "exit_on": "p75/p25"
+          }
+        },
+        "clf_loans_daily": {
+          "method": "absolute",
+          "watch_above": 0,
+          "stress_above": 1000,
+          "crisis_above": 10000,
+          "persistence": {
+            "stress": "2 consecutive sessions"
+          },
+          "origin": "penalty-rate facility; any use = flag (analogue of Advances > 0)"
+        },
+        "slf_daily": {
+          "method": "percentile",
+          "window": "since 2025-10-06 (XLSX era; ~330 sessions) or 750d",
+          "watch_above": "p95",
+          "stress_above": "p99",
+          "note": "SLF is used operationally (CTD squeezes, futures delivery ~10th) — JGB_COLLATERAL_SQUEEZE only with rates.gc_minus_ioer_bps ≥ 3 persistent (DeepSeek/CodeWord)"
+        },
+        "boj_credit_dependence": {
+          "method": "percentile",
+          "window": "108 ten-day steps",
+          "watch_above": "p80",
+          "stress_above": "p90",
+          "escalation_requires": "rates.tona_minus_policy_bps >= WATCH persistent"
+        },
+        "jgb_purchases_vs_plan_pct": {
+          "method": "absolute",
+          "nimble_above": 0.2,
+          "faster_qt_below": -0.2,
+          "note": "flags JGB_PURCHASES_VS_PLAN"
+        }
+      }
+    },
+    "fiscal": {
+      "title": "2 · Treasury / fiscal equivalent — Ministry of Finance treasury funds (daily via BoJ) + JGB issuance",
+      "equivalence_quality": "high",
+      "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
+      "series": {
+        "treasury_funds_daily": {
+          "id": "label:Treasury funds and others (Minus: net receipt of funds)",
+          "table": "boj_daily_cab",
+          "col": "final",
+          "label": "Treasury funds and others — daily (BoJ sign: minus = net receipt = drain)",
+          "freq": "daily",
+          "usd_analog": "−ΔTGA / DTS net",
+          "status": "verified",
+          "verified": "2026-09-07 = 3300"
+        },
+        "treasury_funds_projection": {
+          "id": "label:Treasury funds and others (Minus: net receipt of funds)",
+          "table": "boj_daily_cab",
+          "col": "projection",
+          "label": "BoJ projection for the next business day",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 projection = 3200",
+          "role": "tomorrow's fiscal impulse — unique to JPY"
+        },
+        "government_account": {
+          "id": "Deposits of the government",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "usd_analog": "WTREGEN",
+          "status": "verified",
+          "verified": "2026-08-31 = 92555",
+          "display_only": true
+        },
+        "net_fiscal_payments_monthly": {
+          "id": "MASDM@01",
+          "table": "boj_api",
+          "db": "MD06",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "jgb_issued_monthly": {
+          "id": "MASDM254",
+          "table": "boj_api",
+          "db": "MD06",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "jgb_redeemed_monthly": {
+          "id": "MASDM255",
+          "table": "boj_api",
+          "db": "MD06",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "tbills_net_monthly": {
+          "id": "MASDM273",
+          "table": "boj_api",
+          "db": "MD06",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "fx_factor_monthly": {
+          "id": "MASDM26",
+          "table": "boj_api",
+          "db": "MD06",
+          "freq": "monthly",
+          "status": "verified (metadata)",
+          "role": "MoF FX intervention settlement shows here"
+        },
+        "auction_calendar": {
+          "id": null,
+          "table": "mof_auction_calendar",
+          "label": "JGB / T-Bill auction dates and tenors (monthly HTML)",
+          "freq": "event",
+          "status": "verified (Sep 2026 table)"
+        },
+        "auction_results": {
+          "id": "sheet per tenor",
+          "table": "mof_auction_results",
+          "label": "JGB auction results: bid-to-cover, highest accepted yield per tenor",
+          "freq": "event",
+          "status": "verified (Phase 2, promoted from Phase 3)"
+        },
+        "receipts_payments_monthly": {
+          "id": "sheet rows by label",
+          "table": "mof_treasury_receipts_payments",
+          "label": "MoF Receipts and Payments of Treasury Funds with the Private Sector (monthly Excel)",
+          "freq": "monthly",
+          "status": "verified",
+          "verified": "e202608.xls read 2026-09-08"
+        },
+        "taxes_monthly": {
+          "id": "label:General Account/Taxes receipts",
+          "table": "mof_treasury_receipts_payments",
+          "freq": "monthly",
+          "status": "verified",
+          "verified": "2026-08 values read 2026-09-08"
+        },
+        "pension_payments_monthly": {
+          "id": "label:Special Accounts/Insurance/Pension payments",
+          "table": "mof_treasury_receipts_payments",
+          "freq": "monthly",
+          "status": "verified",
+          "verified": "2026-08 values read 2026-09-08"
+        },
+        "fefsa_receipts_monthly": {
+          "id": "label:Special Accounts/Foreign Exchange Equalization Fund receipts",
+          "table": "mof_treasury_receipts_payments",
+          "freq": "monthly",
+          "status": "verified",
+          "verified": "2026-08 values read 2026-09-08",
+          "role": "yen-buying FX intervention footprint (receipts = MoF took in yen); Aug-2026 = 162,092 vs 5,968 a year earlier"
+        },
+        "fefsa_payments_monthly": {
+          "id": "label:Special Accounts/Foreign Exchange Equalization Fund payments",
+          "table": "mof_treasury_receipts_payments",
+          "freq": "monthly",
+          "status": "verified",
+          "verified": "2026-08 values read 2026-09-08"
+        },
+        "jgb_issued_monthly_mof": {
+          "id": "label:Government Bonds (over one year) receipts",
+          "table": "mof_treasury_receipts_payments",
+          "freq": "monthly",
+          "status": "verified",
+          "verified": "2026-08 values read 2026-09-08"
+        },
+        "tbills_net_monthly_mof": {
+          "id": "label:Treasury Discount Bills balance",
+          "table": "mof_treasury_receipts_payments",
+          "freq": "monthly",
+          "status": "verified",
+          "verified": "2026-08 values read 2026-09-08"
+        },
+        "foreign_jgb_flow_weekly": {
+          "id": "ITS: non-residents net acquisition of Japanese bonds",
+          "table": "mof_its_weekly",
+          "freq": "weekly",
+          "status": "verified (file), parser pending",
+          "display_only": true,
+          "role": "carry-unwind context"
+        }
+      },
+      "derived": {
+        "fiscal_flow_daily": {
+          "formula": "treasury_funds_daily",
+          "sign": "positive = net government payments = injection into CAB; negative = net receipts (taxes, issuance settlement) = drain",
+          "usd_analog": "−ΔTGA"
+        },
+        "fiscal_flow_5d_cum": {
+          "formula": "rolling_sum(fiscal_flow_daily,5)"
+        },
+        "fiscal_flow_20d_cum": {
+          "formula": "rolling_sum(fiscal_flow_daily,20)"
+        },
+        "fiscal_flow_zscore": {
+          "formula": "zscore(fiscal_flow_daily, window=250)"
+        },
+        "fiscal_big_day": {
+          "formula": "abs(fiscal_flow_daily) >= 30000 or abs(fiscal_flow_zscore) >= 2",
+          "note": "3 tn yen; threshold to be calibrated on the backfilled 2025-2026 history"
+        },
+        "fiscal_projection_gap": {
+          "formula": "treasury_funds_daily(final) - treasury_funds_projection(same date)",
+          "note": "BoJ projection error — large positive surprise with no auction/tax explanation = FX_INTERVENTION_SUSPECT candidate"
+        },
+        "fiscal_regime": {
+          "formula": "regime(fiscal_flow_20d_cum percentile, zscore)",
+          "values": [
+            "INJECTION",
+            "NEUTRAL",
+            "DRAIN"
+          ]
+        },
+        "fx_intervention_suspect": {
+          "formula": "(fiscal_flow_daily negative outlier |z| ≥ 3 on a day with no auction settlement and no tax date) OR (fefsa_receipts_monthly / fefsa_receipts_monthly_prior_year ≥ 3) OR (fx_factor_monthly MASDM26 outlier)",
+          "sign": "yen buying = MoF receives yen = negative daily factor / FEFSA receipts; yen selling = positive / FEFSA payments",
+          "note": "daily = suspect, monthly = confirmation (Gemini/CodeWord/Qwen)"
+        },
+        "bid_to_cover_superlong": {
+          "formula": "mean bid_to_cover of latest 20Y/30Y/40Y auctions",
+          "note": "weak demand gauge for the QT_STRESS overlay"
+        }
+      },
+      "thresholds": {
+        "fiscal_flow_20d_cum": {
+          "method": "percentile",
+          "window": "750d",
+          "injection_above": "p80",
+          "drain_below": "p20",
+          "hysteresis": {
+            "exit_on": "p70/p30"
+          }
+        },
+        "fiscal_flow_zscore": {
+          "method": "absolute",
+          "big_above": 2,
+          "big_below": -2
+        },
+        "score_cap_note": "fiscal score contributes at most ±1.5 of the ±2 range; weight lowered to 0.20 in v0.2 (fiscal flows do not transmit to rates at 28x excess — CodeWord/Gemini/DeepSeek)",
+        "bid_to_cover_superlong": {
+          "method": "percentile",
+          "window": "36 auctions",
+          "watch_below": "p15",
+          "stress_below": "p5"
+        }
+      }
+    },
+    "banking": {
+      "title": "3 · Banking transmission — loans, deposits, money stock, BoJ credit programmes",
+      "equivalence_quality": "medium",
+      "equivalence_note": "Monthly only (loans ~8th, money stock ~2nd week); transmission read as levels + growth, plus BoJ lending programmes every ten days.",
+      "series": {
+        "loans_total": {
+          "id": "FAAP@01",
+          "table": "boj_api",
+          "db": "MD13",
+          "label": "Loans and discounts — major + regional + shinkin banks (avg outstanding)",
+          "freq": "monthly",
+          "status": "verified (metadata; last 2026-08)"
+        },
+        "loans_major_regional": {
+          "id": "FAAPOBAL1",
+          "table": "boj_api",
+          "db": "MD13",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "loans_yoy_pct": {
+          "id": "FAAPOBAL1@",
+          "table": "boj_api",
+          "db": "MD13",
+          "label": "Loans y/y % — major + regional",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "deposits_total": {
+          "id": "FAAPOBRDCD5",
+          "table": "boj_api",
+          "db": "MD13",
+          "label": "Deposits and CDs — city + regional + shinkin",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "m2": {
+          "id": "MAM1NAM2M2MO",
+          "table": "boj_api",
+          "db": "MD02",
+          "freq": "monthly",
+          "status": "verified (metadata; last 2026-07)"
+        },
+        "m3": {
+          "id": "MAM1NAM3M3MO",
+          "table": "boj_api",
+          "db": "MD02",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "m1": {
+          "id": "MAM1NAM3M1MO",
+          "table": "boj_api",
+          "db": "MD02",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "deposit_money": {
+          "id": "MAM1NAM3DMMO",
+          "table": "boj_api",
+          "db": "MD02",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        },
+        "monetary_base_monthly": {
+          "id": "MABS1AN11",
+          "table": "boj_api",
+          "db": "MD01",
+          "freq": "monthly",
+          "status": "verified (metadata)",
+          "display_only": true
+        },
+        "loan_support_program": {
+          "id": "Annex 2: Fund-Provisioning Measure to Stimulate Bank Lending",
+          "table": "boj_accounts",
+          "freq": "ten_day",
+          "status": "verified",
+          "role": "BoJ-funded bank credit (39.1 tn on 2026-08-31)"
+        },
+        "cab_by_sector": {
+          "id": "MACAB1043,MACAB1183",
+          "table": "boj_api",
+          "db": "MD08",
+          "label": "Excess reserves: foreign banks vs all reserve-requirement institutions",
+          "freq": "monthly",
+          "status": "verified (metadata)"
+        }
+      },
+      "derived": {
+        "loans_mom_pct": {
+          "formula": "pct_change(loans_total,1)"
+        },
+        "loans_yoy_pct_calc": {
+          "formula": "pct_change(loans_total,12)",
+          "note": "cross-check against FAAPOBAL1@"
+        },
+        "deposits_yoy_pct": {
+          "formula": "pct_change(deposits_total,12)"
+        },
+        "m2_yoy_pct": {
+          "formula": "pct_change(m2,12)"
+        },
+        "m1_yoy_pct": {
+          "formula": "pct_change(m1,12)"
+        },
+        "loan_to_deposit": {
+          "formula": "loans_total / deposits_total"
+        },
+        "money_multiplier": {
+          "formula": "m2 / monetary_base_monthly",
+          "note": "rises mechanically under QT — display, not score"
+        },
+        "credit_impulse": {
+          "formula": "zscore(diff(loans_yoy_pct,1), window=36)"
+        },
+        "foreign_banks_excess_share": {
+          "formula": "MACAB1043 / MACAB1183",
+          "note": "funding canary: a falling share while TRR/TONA firm = foreign banks short of yen (Gemini/CodeWord)"
+        }
+      },
+      "thresholds": {
+        "loans_yoy_pct": {
+          "method": "percentile",
+          "window": "120m",
+          "watch_below": "p20",
+          "stress_below": "p10",
+          "hysteresis": {
+            "exit_on": "p30/p20"
+          }
+        },
+        "m2_yoy_pct": {
+          "method": "percentile",
+          "window": "120m",
+          "watch_below": "p20",
+          "stress_below": "p10"
+        },
+        "credit_impulse": {
+          "method": "absolute",
+          "green_above": 0.5,
+          "red_below": -1.0
+        },
+        "score_rule": "GREEN needs >= 3 of {loans_mom, loans_yoy, deposits_yoy, m2_yoy, m1_yoy, credit_impulse} improving; min_n guard 12 monthly points",
+        "foreign_banks_excess_share": {
+          "method": "percentile",
+          "window": "60m",
+          "watch_below": "p15",
+          "stress_below": "p5",
+          "escalation_requires": "rates.tona_minus_ioer_bps ≥ WATCH or rates.gc_minus_ioer_bps ≥ 3"
+        }
+      }
+    },
+    "rates": {
+      "title": "4 · Rates and money market — TONA vs the corridor, term call, JGB curve",
+      "equivalence_quality": "high",
+      "equivalence_note": "TONA daily (avg/high/low/volume), collateralized and term call daily, full JGB curve daily from the MoF. Floor system: TONA sits 2-3 bp BELOW IOER by construction.",
+      "series": {
+        "tona": {
+          "id": "STRDCLUCON",
+          "table": "boj_api",
+          "db": "FM01",
+          "label": "TONA — uncollateralized O/N call, average",
+          "freq": "daily",
+          "usd_analog": "EFFR/SOFR",
+          "status": "verified",
+          "verified": "2026-09-04 = 0.977"
+        },
+        "tona_high": {
+          "id": "STRDCLUCONH",
+          "table": "boj_api",
+          "db": "FM01",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-08-24 high = 1.10"
+        },
+        "tona_low": {
+          "id": "STRDCLUCONL",
+          "table": "boj_api",
+          "db": "FM01",
+          "freq": "daily",
+          "status": "verified"
+        },
+        "tona_volume": {
+          "id": "STRDCLUCV",
+          "table": "boj_api",
+          "db": "FM01",
+          "label": "Uncollateralized O/N call volume (100m yen)",
+          "freq": "daily",
+          "status": "verified",
+          "usd_analog": "EFFR volume"
+        },
+        "collateralized_on": {
+          "id": "fcall:Overnight/Collateralized/Same-day-start/Avg",
+          "table": "boj_call_market",
+          "label": "Collateralized O/N call (GC-like)",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 0.93",
+          "display_only": true,
+          "note": "BoJ collateralized call (0.93) is thin; the GC benchmark is the JSDA Tokyo Repo Rate"
+        },
+        "call_1w": {
+          "id": "fcall:1 week/Uncollateralized/Forward-day-start/Avg",
+          "table": "boj_call_market",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 1.005"
+        },
+        "call_1m": {
+          "id": "fcall:1 month/Uncollateralized/Forward-day-start/Avg",
+          "table": "boj_call_market",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 1.30",
+          "note": "thin: may be blank on many days → stale allowed 10 sessions"
+        },
+        "call_3m": {
+          "id": "fcall:3 months/Uncollateralized/Same-day-start/Avg",
+          "table": "boj_call_market",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 1.39",
+          "note": "very thin"
+        },
+        "call_market_outstanding": {
+          "id": "fcall:Amount outstanding of call transactions",
+          "table": "boj_call_market",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 129231",
+          "display_only": true
+        },
+        "policy_rate": {
+          "id": "central_bank.policy_rate",
+          "freq": "event",
+          "status": "verified"
+        },
+        "ioer": {
+          "id": "central_bank.ioer",
+          "freq": "event",
+          "status": "verified"
+        },
+        "basic_loan_rate": {
+          "id": "central_bank.basic_loan_rate",
+          "freq": "event",
+          "status": "verified"
+        },
+        "jgb_1y": {
+          "id": "1Y",
+          "table": "mof_jgb_yields",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 1.564"
+        },
+        "jgb_2y": {
+          "id": "2Y",
+          "table": "mof_jgb_yields",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 1.852"
+        },
+        "jgb_5y": {
+          "id": "5Y",
+          "table": "mof_jgb_yields",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 2.272"
+        },
+        "jgb_10y": {
+          "id": "10Y",
+          "table": "mof_jgb_yields",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 2.935"
+        },
+        "jgb_20y": {
+          "id": "20Y",
+          "table": "mof_jgb_yields",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 3.751"
+        },
+        "jgb_30y": {
+          "id": "30Y",
+          "table": "mof_jgb_yields",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 4.009"
+        },
+        "jgb_40y": {
+          "id": "40Y",
+          "table": "mof_jgb_yields",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-07 = 4.013",
+          "display_only": true
+        },
+        "trr_on": {
+          "id": "O/N T+1",
+          "table": "jsda_tokyo_repo_rate",
+          "label": "Tokyo Repo Rate O/N (GC, T+1)",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-08 = 1.000",
+          "usd_analog": "SOFR/GC"
+        },
+        "trr_on_t0": {
+          "id": "O/N T+0",
+          "table": "jsda_tokyo_repo_rate",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-08 = 1.000",
+          "display_only": true
+        },
+        "trr_1w": {
+          "id": "1W",
+          "table": "jsda_tokyo_repo_rate",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-08 = 1.000"
+        },
+        "trr_1m": {
+          "id": "1M",
+          "table": "jsda_tokyo_repo_rate",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-08 = 1.126"
+        },
+        "trr_3m": {
+          "id": "3M",
+          "table": "jsda_tokyo_repo_rate",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-08 = 1.234"
+        },
+        "trr_1y": {
+          "id": "1Y",
+          "table": "jsda_tokyo_repo_rate",
+          "freq": "daily",
+          "status": "verified",
+          "verified": "2026-09-08 = 1.510",
+          "display_only": true
+        }
+      },
+      "derived": {
+        "tona_minus_policy_bps": {
+          "formula": "(tona - policy_rate)*100",
+          "note": "reference only (policy_rate = basic_loan_rate − 0.25); equals tona_minus_ioer while IOER = target"
+        },
+        "tona_high_minus_ioer_bps": {
+          "formula": "(tona_high - ioer)*100",
+          "note": "dispersion / late-day squeeze gauge; +10 on 2026-08-24"
+        },
+        "tona_range_bps": {
+          "formula": "(tona_high - tona_low)*100"
+        },
+        "band_position": {
+          "formula": "(tona - ioer) / (basic_loan_rate - ioer)",
+          "note": "negative by construction in a floor system; > 0 = trading above the floor; 1 = at the ceiling"
+        },
+        "collateralized_minus_uncollateralized_bps": {
+          "formula": "(collateralized_on - tona)*100",
+          "note": "display only from v0.2 (thin BoJ collateralized call); use gc_minus_tona_bps"
+        },
+        "call_1w_minus_policy_bps": {
+          "formula": "(call_1w - policy_rate)*100"
+        },
+        "call_1m_minus_policy_bps": {
+          "formula": "(call_1m - policy_rate)*100",
+          "note": "embeds hike expectations ahead of MPMs — percentile capped at WATCH, absolute binding (AUD BBSW rule)"
+        },
+        "curve_10y_2y_bps": {
+          "formula": "(jgb_10y - jgb_2y)*100",
+          "note": "2026-09-07 = +108"
+        },
+        "curve_30y_10y_bps": {
+          "formula": "(jgb_30y - jgb_10y)*100",
+          "note": "super-long stress gauge (life insurers/QT); 2026-09-07 = +107"
+        },
+        "policy_minus_2y_bps": {
+          "formula": "(policy_rate - jgb_2y)*100",
+          "note": "2026-09-07 = −85: market prices further hikes"
+        },
+        "jgb_10y_5d_change_bps": {
+          "formula": "(jgb_10y - lag(jgb_10y,5))*100",
+          "note": "'rapid rise' trigger for BoJ nimble purchases"
+        },
+        "friction_confirmed": {
+          "formula": "tona_minus_ioer_bps ≥ 0 for 3 consecutive sessions OR tona_high_minus_ioer_bps ≥ 5 for 3 consecutive sessions",
+          "note": "excludes reserve-period end (15th/16th), quarter-end, 03-31"
+        },
+        "tona_minus_ioer_bps": {
+          "formula": "(tona − ioer)*100",
+          "note": "PRIMARY stress spread (anchored to the floor rate, not the derived policy_rate — CodeWord); structural −2/−3 bp: non-eligible institutions (investment trusts, insurers, CCPs, public FIs) lend below IOER via tanshi (BoJ b37); 2026-09-07 = −2.3"
+        },
+        "gc_minus_ioer_bps": {
+          "formula": "(trr_on − ioer)*100",
+          "note": "GC repo vs floor: 0 on 2026-09-08; ≥ +3 persistent = collateral/cash squeeze"
+        },
+        "gc_minus_tona_bps": {
+          "formula": "(trr_on − tona)*100",
+          "note": "+2.3 on 2026-09-08 (GC at the floor, call below it) — normal; widening = collateral demand"
+        },
+        "trr_3m_minus_ioer_bps": {
+          "formula": "(trr_3m − ioer)*100",
+          "note": "term repo premium; embeds hike expectations → percentile capped at WATCH"
+        },
+        "curve_20y_10y_bps": {
+          "formula": "(jgb_20y − jgb_10y)*100",
+          "note": "20Y = domestic banks' duration sink (Gemini); 2026-09-07 = +82"
+        },
+        "curve_40y_30y_bps": {
+          "formula": "(jgb_40y − jgb_30y)*100",
+          "note": "display: ~0 on 2026-09-07 (flat = distortion, not stress — CodeWord)"
+        },
+        "floor_leak": {
+          "formula": "tona_minus_ioer_bps ≤ −15 for 5 consecutive sessions",
+          "note": "drift toward zero = floor failing (benign discount is −2…−8) — CodeWord/Kimi"
+        }
+      },
+      "thresholds": {
+        "tona_high_minus_ioer_bps": {
+          "method": "absolute",
+          "watch_above": 5,
+          "stress_above": 12,
+          "persistence": "3 sessions",
+          "note": "one-day spikes at month/quarter end are excluded"
+        },
+        "call_1m_minus_policy_bps": {
+          "method": "percentile",
+          "window": "750d",
+          "watch_above": "p80",
+          "stress_above": "p90",
+          "crisis_above": "p97",
+          "secondary_absolute": {
+            "watch": 30,
+            "stress": 45,
+            "crisis": 70
+          },
+          "rule": "absolute binding for STRESS/CRISIS; percentile caps at WATCH (embeds hike expectations)"
+        },
+        "curve_10y_2y_bps": {
+          "method": "absolute",
+          "deep_inversion_below": -30,
+          "inverted_below": 0,
+          "flat_below": 25
+        },
+        "curve_30y_10y_bps": {
+          "method": "percentile",
+          "window": "750d",
+          "watch_above": "p90",
+          "stress_above": "p97",
+          "note": "super-long steepening = term-premium / QT stress"
+        },
+        "policy_minus_2y_bps": {
+          "method": "absolute",
+          "normal_below": 10,
+          "elevated_below": 30,
+          "tight_above": 30,
+          "note": "negative = market prices hikes (2026: −85)"
+        },
+        "jgb_10y_5d_change_bps": {
+          "method": "absolute",
+          "watch_above": 15,
+          "stress_above": 25,
+          "note": "BoJ 'rapid rise' response zone (proposal)"
+        },
+        "band_position": {
+          "method": "absolute",
+          "watch_above": 0.2,
+          "stress_above": 0.6
+        },
+        "tona_minus_ioer_bps": {
+          "method": "percentile",
+          "window": "since 2024-08-01 or 750d",
+          "watch_above": "p85",
+          "stress_above": "p95",
+          "crisis_above": "p99",
+          "hysteresis": {
+            "exit_on": "p75/p85/p95"
+          },
+          "secondary_absolute": {
+            "watch": 0,
+            "stress": 5,
+            "crisis": 15,
+            "persistence": {
+              "watch_and_above": "3 consecutive sessions",
+              "exclude_dates": [
+                "quarter_end",
+                "fiscal_year_end_03_31",
+                "reserve_period_end_15th"
+              ]
+            },
+            "low_side_excess": -15,
+            "origin": "floor system: TONA −2/−3 bp vs IOER normal (non-eligible lenders); down to −8 still benign; ≤ −15 persistent = FLOOR_LEAK; 0 = at the floor; +25 = ceiling (basic loan rate)"
+          },
+          "rule": "absolute is binding for STRESS/CRISIS; percentile alone caps at WATCH"
+        },
+        "gc_minus_ioer_bps": {
+          "method": "absolute",
+          "watch_above": 3,
+          "stress_above": 8,
+          "crisis_above": 20,
+          "persistence": "3 sessions",
+          "note": "JGB_COLLATERAL_SQUEEZE with central_bank.slf_daily ≥ p95"
+        },
+        "gc_minus_tona_bps": {
+          "method": "percentile",
+          "window": "750d",
+          "watch_above": "p90",
+          "stress_above": "p97"
+        },
+        "trr_3m_minus_ioer_bps": {
+          "method": "percentile",
+          "window": "750d",
+          "watch_above": "p80",
+          "stress_above": "p90",
+          "secondary_absolute": {
+            "watch": 30,
+            "stress": 45,
+            "crisis": 70
+          },
+          "rule": "absolute binding; percentile caps at WATCH"
+        },
+        "curve_20y_10y_bps": {
+          "method": "percentile",
+          "window": "750d",
+          "watch_above": "p90",
+          "stress_above": "p97",
+          "note": "primary QT-supply stress gauge (majority of reviewers)"
+        }
+      }
+    }
+  },
+  "regime": {
+    "weights": {
+      "central_bank": 0.35,
+      "rates": 0.35,
+      "fiscal": 0.2,
+      "banking": 0.1
+    },
+    "weights_note": "v0.2: rates raised to 0.35 (DeepSeek), fiscal lowered to 0.20 (Gemini/CodeWord: fiscal flows do not transmit to rates at 28x excess; Perplexity/Qwen kept 0.25) — median of the six. Recalibrate with live history.",
+    "reserves_metric": "central_bank.excess_to_required_ratio",
+    "stress_spread_metric": "rates.tona_minus_ioer_bps",
+    "values": [
+      "LIQUIDITY_INJECTION",
+      "LIQUIDITY_DRAIN",
+      "LIQUIDITY_SCARCITY",
+      "FLOOR_FRICTION",
+      "NEUTRAL"
+    ],
+    "rules": {
+      "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: tona_minus_ioer_bps ≥ STRESS persistent AND (clf_loans_daily > 0 two sessions OR gc_minus_ioer_bps ≥ STRESS); quantity anchors are dead-man switches — kept in the enum for cross-currency comparability (CodeWord/Perplexity)",
+      "FLOOR_FRICTION": "reserves ample AND friction_confirmed (TONA at/above IOER 3 sessions, or high ≥ IOER+5 3 sessions)",
+      "LIQUIDITY_DRAIN": "weighted score <= −0.5",
+      "LIQUIDITY_INJECTION": "weighted score >= +0.5",
+      "NEUTRAL": "otherwise"
+    },
+    "orthogonal_flags": {
+      "TRANSMISSION_FAILURE": "banking RED while central_bank GREEN",
+      "JGB_COLLATERAL_SQUEEZE": "gc_minus_ioer_bps ≥ 3 persistent AND slf_daily ≥ p95",
+      "CLF_USED": "clf_loans_daily > 0",
+      "FX_INTERVENTION_SUSPECT": "daily: fiscal_flow_daily negative outlier |z| ≥ 3 with no auction settlement/tax date; monthly confirmation: FEFSA receipts ≥ 3x prior year (MoF Excel) or MASDM26 outlier",
+      "BOJ_CREDIT_DEPENDENCE_ELEVATED": "boj_credit_dependence ≥ p80 → _STRESS if tona_minus_ioer_bps ≥ WATCH else _HEALTHY",
+      "SUPER_LONG_STRESS": "curve_30y_10y_bps >= p97",
+      "DATA_DEGRADED": "quality < 70 or reconciliation cab_dod vs cab_net_change_daily fails",
+      "JGB_PURCHASES_VS_PLAN": "jgb_purchases_vs_plan_pct > +20% (NIMBLE) or < −20% (FASTER_QT) — policy-driven, replaces QT_ACCELERATION",
+      "FLOOR_LEAK": "tona_minus_ioer_bps ≤ −15 for 5 sessions",
+      "FOREIGN_BANK_YEN_SHORT": "banking.foreign_banks_excess_share ≤ WATCH with price confirmation"
+    },
+    "calibration": {
+      "status": "uncalibrated",
+      "min_live_weeks": 26,
+      "note": "percentile windows anchored at 2024-08-01 (= second hike + start of the JGB-purchase reduction plan; NOT the first hike — that was 2024-03-19, end of NIRP/YCC); daily factor series (fiscal, SLF, CLF, banknotes) only exist as XLSX since 2025-10-06 (~330 sessions) — their real window is shorter than 750d; min_n guard: daily 120, ten_day 30, monthly 12"
+    },
+    "overlays": {
+      "QT_STRESS": {
+        "min": 2,
+        "conditions": [
+          "rates.curve_20y_10y_bps level >= WATCH",
+          "rates.curve_30y_10y_bps level >= WATCH",
+          "central_bank.slf_daily level >= STRESS",
+          "rates.gc_minus_ioer_bps level >= WATCH",
+          "fiscal.bid_to_cover_superlong level >= WATCH"
+        ],
+        "note": "overlay on top of the regime (not in the enum): JPY stress lives in collateral and the super-long curve, not in reserve quantity (all reviewers); SLF 'STRESS' here = p95+ because slf percentile watch is p95",
+        "values": [
+          "QT_STRESS_LOW",
+          "QT_STRESS_HIGH"
+        ]
+      }
+    }
+  },
+  "status_rules": {
+    "fresh_multiplier": 1.5,
+    "stale_multiplier": 3.0,
+    "nominal_period_days": {
+      "daily": 4,
+      "ten_day": 13,
+      "monthly": 45,
+      "event": 400
+    },
+    "monthly_lag_allowance_days": 75,
+    "note": "ten_day = 10-day data + 2-3 business-day publication lag; daily=4 covers weekends and Japanese holidays; thin term-call series allowed stale 10 sessions"
+  },
+  "quality": {
+    "origin": "CAD quality module",
+    "dedup": "last value wins per date",
+    "outliers": {
+      "method": "modified_zscore_MAD",
+      "rolling_window": 20,
+      "min_points": 5,
+      "z_threshold": {
+        "default": 3.5,
+        "tona": 4.0,
+        "policy_rate": 5.0,
+        "treasury_funds_daily": 6.0,
+        "tona_high": 5.0
+      }
+    },
+    "freshness_hours": {
+      "daily_series": 72,
+      "ten_day_series": 336,
+      "monthly_series": 1800,
+      "policy_rate": 1440
+    },
+    "reconciliation": [
+      {
+        "rule": "abs(diff(cab_daily,1) - cab_net_change_daily) <= 200 (100m yen)",
+        "on_fail": "data_degraded"
+      },
+      {
+        "rule": "banknotes_factor_daily + treasury_funds_daily ≈ surplus/shortage row",
+        "on_fail": "data_degraded"
+      },
+      {
+        "rule": "cab_daily on accounts date ≈ current_deposits (±2%)",
+        "on_fail": "warn"
+      }
+    ],
+    "null_policy": "null is NEVER neutral: series -> unavailable; empty facility cells in the daily file = 0 with last-use memo (AUD rule)",
+    "pending_by_design_excluded_from_average": true
+  },
+  "revisions": {
+    "keep_last": 50,
+    "series": [
+      "cab_daily",
+      "excess_reserves_daily",
+      "treasury_funds_daily",
+      "jgb_holdings",
+      "total_assets"
+    ],
+    "note": "provisional (jx) → final (jd) revision tracked per date"
+  },
+  "alerts": {
+    "origin": "CAD/GBP/AUD alert state machine",
+    "lifecycle": [
+      "active",
+      "resolved"
+    ],
+    "keep_last": 100,
+    "rules": [
+      {
+        "id": "cab_drop",
+        "metric": "central_bank.cab_20d_change",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "reserves"
+      },
+      {
+        "id": "clf_used",
+        "metric": "central_bank.clf_loans_daily",
+        "when": "> 0",
+        "severity": "CRITICAL",
+        "category": "emergency"
+      },
+      {
+        "id": "tona_at_floor",
+        "metric": "rates.tona_minus_ioer_bps",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "funding"
+      },
+      {
+        "id": "tona_stress",
+        "metric": "rates.tona_minus_ioer_bps",
+        "when": "level >= STRESS",
+        "severity": "CRITICAL",
+        "category": "funding"
+      },
+      {
+        "id": "tona_high_squeeze",
+        "metric": "rates.tona_high_minus_ioer_bps",
+        "when": "level >= STRESS",
+        "severity": "WARNING",
+        "category": "funding"
+      },
+      {
+        "id": "gc_above_floor",
+        "metric": "rates.gc_minus_ioer_bps",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "collateral"
+      },
+      {
+        "id": "collateral_squeeze",
+        "metric": "rates.gc_minus_ioer_bps",
+        "when": "level >= STRESS",
+        "severity": "CRITICAL",
+        "category": "collateral"
+      },
+      {
+        "id": "curve_20y_stress",
+        "metric": "rates.curve_20y_10y_bps",
+        "when": "level >= STRESS",
+        "severity": "WARNING",
+        "category": "curve"
+      },
+      {
+        "id": "super_long_stress",
+        "metric": "rates.curve_30y_10y_bps",
+        "when": "level >= STRESS",
+        "severity": "WARNING",
+        "category": "curve"
+      },
+      {
+        "id": "jgb_10y_spike",
+        "metric": "rates.jgb_10y_5d_change_bps",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "curve"
+      },
+      {
+        "id": "fiscal_big_day",
+        "metric": "fiscal.fiscal_flow_zscore",
+        "when": "abs >= 2",
+        "severity": "INFO",
+        "category": "fiscal"
+      },
+      {
+        "id": "fiscal_drain",
+        "metric": "fiscal.fiscal_flow_20d_cum",
+        "when": "<= drain",
+        "severity": "WARNING",
+        "category": "fiscal"
+      },
+      {
+        "id": "fx_intervention_suspect",
+        "metric": "fiscal.fx_intervention_suspect",
+        "when": "> 0",
+        "severity": "WARNING",
+        "category": "fx"
+      },
+      {
+        "id": "jgb_purchases_vs_plan",
+        "metric": "central_bank.jgb_purchases_vs_plan_pct",
+        "when": "level >= WATCH",
+        "severity": "INFO",
+        "category": "balance_sheet"
+      },
+      {
+        "id": "foreign_bank_yen_short",
+        "metric": "banking.foreign_banks_excess_share",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "banking"
+      },
+      {
+        "id": "data_degraded",
+        "metric": "quality.critical_count",
+        "when": "> 0",
+        "severity": "WARNING",
+        "category": "data"
+      }
+    ],
+    "note": "rule grammar (engine): 'level >= X' | '> n' | 'abs >= n' | '<= drain' | '<= risk_off' | quality.<field>; fx_intervention_suspect boolean → value True > 0"
+  },
+  "scenarios": {
+    "origin": "liquidity-only set",
+    "items": [
+      {
+        "id": "L1",
+        "name": "Floor Friction under QT",
+        "bias": "DEFENSIVE",
+        "min": 2,
+        "conditions": [
+          "rates.tona_minus_policy_bps level >= WATCH",
+          "central_bank.cab_20d_change level >= WATCH",
+          "central_bank.boj_credit_dependence >= p80"
+        ]
+      },
+      {
+        "id": "L2",
+        "name": "JGB Collateral Squeeze",
+        "bias": "DEFENSIVE",
+        "min": 2,
+        "conditions": [
+          "rates.gc_minus_ioer_bps level >= WATCH",
+          "central_bank.slf_daily >= p95",
+          "rates.curve_20y_10y_bps level >= WATCH"
+        ]
+      },
+      {
+        "id": "L3",
+        "name": "Fiscal Drain (tax / issuance settlement)",
+        "bias": "RISK-OFF",
+        "min": 2,
+        "conditions": [
+          "fiscal.fiscal_flow_20d_cum <= drain",
+          "fiscal.fiscal_flow_zscore <= -1.5",
+          "central_bank.cab_dod level >= WATCH"
+        ]
+      },
+      {
+        "id": "L4",
+        "name": "Funding Stress",
+        "bias": "EMERGENCY",
+        "min": 2,
+        "conditions": [
+          "rates.tona_minus_policy_bps level >= STRESS",
+          "central_bank.clf_loans_daily > 0",
+          "rates.tona_high_minus_ioer_bps level >= STRESS"
+        ]
+      },
+      {
+        "id": "L5",
+        "name": "Yield Spike / Nimble BoJ",
+        "bias": "RISK-OFF",
+        "min": 2,
+        "conditions": [
+          "rates.jgb_10y_5d_change_bps level >= WATCH",
+          "central_bank.balance_sheet_phase == NIMBLE_SUPPORT",
+          "rates.curve_30y_10y_bps level >= WATCH"
+        ]
+      },
+      {
+        "id": "L6",
+        "name": "Fiscal Injection + Ample",
+        "bias": "RISK-ON",
+        "min": 2,
+        "conditions": [
+          "fiscal.fiscal_flow_20d_cum >= injection",
+          "central_bank.cab_20d_change > 0",
+          "rates.tona_minus_policy_bps level == SAFE"
+        ]
+      },
+      {
+        "id": "L7",
+        "name": "FX Intervention Footprint",
+        "bias": "NEUTRAL",
+        "min": 2,
+        "conditions": [
+          "fiscal.fx_intervention_suspect == true",
+          "fiscal.fiscal_flow_zscore <= -3",
+          "central_bank.cab_dod level >= WATCH"
+        ]
+      }
+    ]
+  },
+  "calendar": {
+    "boj_mpm_2026": [
+      "2026-09-18",
+      "2026-10-30",
+      "2026-12-18"
+    ],
+    "boj_mpm_2026_note": "two-day meetings: Sep 17-18, Oct 29-30 (Outlook Report), Dec 17-18; statement ~12:00 JST on day 2",
+    "boj_mpm_2027": [
+      "2027-01-22",
+      "2027-03-18",
+      "2027-04-28",
+      "2027-06-11",
+      "2027-07-22",
+      "2027-09-22",
+      "2027-10-29",
+      "2027-12-17"
+    ],
+    "reserve_maintenance_period": "16th to 15th of the following month; required reserves revised on the 7th",
+    "daily_cab_release": "final for T-1 ~10:00 JST; provisional for T ~18:00 JST; projection for T+1 ~18:00 JST",
+    "tona_release": "final for T-1 ~10:00 JST; provisional ~17:15 JST",
+    "boj_accounts_release": "10th/20th/month-end data, published 2-3 business days later",
+    "mof_yields_release": "jgbcme.csv updated end of day JST",
+    "money_stock_release": "~2nd week of the following month (MD02)",
+    "loans_deposits_release": "~8th of the following month (MD13)",
+    "jgb_purchase_plan": {
+      "2026Q3": 25000,
+      "2026Q4": 23000,
+      "2027Q1": 21000,
+      "from_2027Q2": 20000,
+      "unit": "100m yen per month",
+      "source": "MPM 2026-06-16 Plan for the Outright Purchases of JGBs"
+    },
+    "jp_holidays_2026": "pending verification against the BoJ business-day list — not used until verified (daily file presence defines business days)",
+    "fiscal_seasonality": "pending — learned from the backfilled daily treasury-funds history before any date is fixed",
+    "decision_time": "12:00 Asia/Tokyo (MPM statement)",
+    "tokyo_repo_rate_release": "~12:30 JST same day (JSDA)",
+    "mof_receipts_payments_release": "monthly Excel, ~first week of following month (preliminary 'a' file mid-month)",
+    "mof_its_release": "weekly CSV, Thursday of the following week",
+    "next_mpm_note": "2026-09-17/18: market chatter of a hike to 1.25% (Kimi) — NOT a config fact; policy_rate/ioer/basic_loan_rate are read from cdab0101.csv and the statement after each MPM"
+  },
+  "refresh_lanes": {
+    "daily": {
+      "cron_utc": "30 2 * * 1-5",
+      "note": "11:30 JST: jd final (T-1) + TONA final (T-1) + fcall snapshot + MoF yields (T-1) + JSDA Tokyo Repo Rate (T-1, file has T at 12:30 → T-1 is complete); retry every 30 min until 06:00 UTC if jd missing",
+      "blocks": [
+        "central_bank",
+        "fiscal",
+        "rates"
+      ],
+      "run_agent": false
+    },
+    "daily_provisional": {
+      "cron_utc": "30 9 * * 1-5",
+      "note": "18:30 JST: jx provisional (T) + jp projection (T+1) + TONA provisional — optional second run, marks values provisional",
+      "blocks": [
+        "central_bank",
+        "fiscal"
+      ],
+      "run_agent": false
+    },
+    "ten_day": {
+      "cron_utc": "0 3 3,13,23 * *",
+      "note": "BoJ Accounts + JGB holdings after the 10th/20th/month-end releases",
+      "blocks": [
+        "central_bank",
+        "banking"
+      ],
+      "run_agent": true
+    },
+    "monthly": {
+      "cron_utc": "0 3 15 * *",
+      "note": "MD13 loans (~8th), MD02 money stock (~2nd week), MD06/MD08 monthly attribution, MoF Receipts & Payments Excel, MoF auction results XLS refresh",
+      "blocks": [
+        "banking",
+        "fiscal",
+        "central_bank"
+      ],
+      "run_agent": true
+    },
+    "weekly": {
+      "cron_utc": "0 4 * * 5",
+      "note": "Friday: MoF ITS week.csv + auction results XLS (event) + auction calendar for next month",
+      "blocks": [
+        "fiscal"
+      ],
+      "run_agent": false
+    }
+  },
+  "desk_exports": {
+    "usdjpy": {
+      "id": "pending FM08 code",
+      "table": "boj_api",
+      "db": "FM08",
+      "label": "USD/JPY spot 17:00 JST",
+      "status": "pending code discovery (Phase 2)"
+    }
+  },
+  "agent": {
+    "name": "JPY Currency Agent",
+    "reads": [
+      "data/jpy/central_bank.json",
+      "data/jpy/fiscal.json",
+      "data/jpy/banking.json",
+      "data/jpy/rates.json",
+      "data/jpy/calendar.json"
+    ],
+    "writes": "agents/jpy.json",
+    "vocabulary": "MMT/Mosler; BoJ floor system with excess reserves; QT plan; TONA vs IOER; MoF treasury funds daily; JGB collateral",
+    "alert_types": [
+      "LIQUIDITY_GAIN",
+      "LIQUIDITY_LOSS",
+      "LIQUIDITY_SCARCITY",
+      "TRANSMISSION_BREAK",
+      "DATA_DEGRADED"
+    ],
+    "never": [
+      "trade execution",
+      "position sizing",
+      "technical analysis"
+    ]
+  },
+  "pending_before_phase2": [
+    "Parsers: daily XLSX by label with EN/JP aliases + count assertion + structure hash (jd/jx/jp); BoJ Accounts HTML with magnitude guard; BoJ API JSON (one-off history + 2-month window, backoff); MoF jgbcme.csv; fcall.xlsx snapshot; JSDA trr.xls/trrts.xls (xlrd); MoF auction results XLS per tenor; MoF receipts/payments XLS by label; MoF ITS Shift-JIS CSV; MoF auction calendar HTML",
+    "FM08 USD/JPY code; MD07 required reserves code; MD06 monthly codes pull test",
+    "Backfill: jd 2025-10 → today XLSX; TONA via API since 2024-08; MoF jgbcme_all.csv; JSDA trrts.xls; MoF receipts/payments 24 months",
+    "Japanese holidays 2026-2027 verified; fiscal seasonality learned from data",
+    "Pending sources: BoJ USD funds-supplying operation results, JPX TONA futures, TIBOR PDF, xccy basis (vendor)",
+    "Sander's OK on v0.2 → Fase 2 JPY"
+  ]
+}

@@ -1,0 +1,206 @@
+{
+ "currency": "JPY",
+ "generated_at": "2026-09-08T11:19:46+00:00",
+ "as_of": "2026-09-07",
+ "config_version": "0.2.1",
+ "regime": "NEUTRAL",
+ "traffic_light": "YELLOW",
+ "weighted_score": 0.485,
+ "block_scores": {
+  "central_bank": 0.5,
+  "rates": 0.75,
+  "fiscal": 0.24,
+  "banking": 0.0
+ },
+ "weights": {
+  "central_bank": 0.35,
+  "rates": 0.35,
+  "fiscal": 0.2,
+  "banking": 0.1
+ },
+ "blocks_used": 4,
+ "flags": [
+  "PHASE_QT",
+  "FX_INTERVENTION_SUSPECT"
+ ],
+ "overlays": {
+  "QT_STRESS": null,
+  "QT_STRESS_conditions_met": 0
+ },
+ "inputs": {
+  "reserves_level": "SAFE",
+  "reserves_in_range": false,
+  "reserves_above_range": true,
+  "spread_level": "SAFE",
+  "spread_bps": -2.3,
+  "friction_confirmed": false
+ },
+ "rules": {
+  "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: tona_minus_ioer_bps ≥ STRESS persistent AND (clf_loans_daily > 0 two sessions OR gc_minus_ioer_bps ≥ STRESS); quantity anchors are dead-man switches — kept in the enum for cross-currency comparability (CodeWord/Perplexity)",
+  "FLOOR_FRICTION": "reserves ample AND friction_confirmed (TONA at/above IOER 3 sessions, or high ≥ IOER+5 3 sessions)",
+  "LIQUIDITY_DRAIN": "weighted score <= −0.5",
+  "LIQUIDITY_INJECTION": "weighted score >= +0.5",
+  "NEUTRAL": "otherwise"
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "name": "Floor Friction under QT",
+   "bias": "DEFENSIVE",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.tona_minus_policy_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.cab_20d_change level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.boj_credit_dependence >= p80",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L2",
+   "name": "JGB Collateral Squeeze",
+   "bias": "DEFENSIVE",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.gc_minus_ioer_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.slf_daily >= p95",
+     "met": false
+    },
+    {
+     "condition": "rates.curve_20y_10y_bps level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "name": "Fiscal Drain (tax / issuance settlement)",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_flow_20d_cum <= drain",
+     "met": false
+    },
+    {
+     "condition": "fiscal.fiscal_flow_zscore <= -1.5",
+     "met": false
+    },
+    {
+     "condition": "central_bank.cab_dod level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "name": "Funding Stress",
+   "bias": "EMERGENCY",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.tona_minus_policy_bps level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "central_bank.clf_loans_daily > 0",
+     "met": false
+    },
+    {
+     "condition": "rates.tona_high_minus_ioer_bps level >= STRESS",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "name": "Yield Spike / Nimble BoJ",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.jgb_10y_5d_change_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.balance_sheet_phase == NIMBLE_SUPPORT",
+     "met": null
+    },
+    {
+     "condition": "rates.curve_30y_10y_bps level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L6",
+   "name": "Fiscal Injection + Ample",
+   "bias": "RISK-ON",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_flow_20d_cum >= injection",
+     "met": false
+    },
+    {
+     "condition": "central_bank.cab_20d_change > 0",
+     "met": false
+    },
+    {
+     "condition": "rates.tona_minus_policy_bps level == SAFE",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L7",
+   "name": "FX Intervention Footprint",
+   "bias": "NEUTRAL",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fx_intervention_suspect == true",
+     "met": null
+    },
+    {
+     "condition": "fiscal.fiscal_flow_zscore <= -3",
+     "met": false
+    },
+    {
+     "condition": "central_bank.cab_dod level >= WATCH",
+     "met": false
+    }
+   ]
+  }
+ ],
+ "heartbeat": {
+  "lane": "all",
+  "backfill": true,
+  "errors": []
+ }
+}
