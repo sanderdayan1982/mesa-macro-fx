@@ -85,3 +85,5 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Lanes: `.github/workflows/refresh-jpy.yml` — daily 02:30 UTC (+ retry 03:30), daily_provisional 09:30 UTC, ten_day 3rd/13th/23rd, weekly Fri 04:00, monthly 15th, backfill 1st.
 - Offline test: `python -m ingest.run --ccy jpy --lane all --backfill --fixtures fixtures/jpy --no-rss && python -m ingest.validate --ccy jpy`
 - Netlify: same site, dashboard at `/jpy/`. Units: files in 100 million yen, dashboard in tn (10^12).
+
+**2026-09-08 (v0.2.2)** — BoJ daily XLSX label fix (indented rows carry empty cells in column B); projection (`jp`) fetched on the daily lane; MoF auction **calendar + per-auction result pages** parsed live (bid-to-cover, yield at lowest accepted, average yield, **tail in bp**) — the historical XLS lags ~2 months and has no average yield. New: `auction_tail_superlong_bp` (p85/p95 of 36 auctions, absolute 3/6/12 bp provisional), `auction_calendar` (days to next coupon auction, `SUPER_LONG_SUPPLY_AHEAD` ≤ 3 days), `SUPER_LONG_TAIL` flag, 'Last JGB auctions' table.
