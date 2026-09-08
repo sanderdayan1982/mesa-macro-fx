@@ -1,14 +1,14 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-08T09:09:33+00:00",
+ "generated_at": "2026-09-08T09:20:29+00:00",
  "as_of": "2026-09-07",
- "config_version": "0.2.1",
+ "config_version": "0.2.2",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.422,
+ "weighted_score": 0.233,
  "block_scores": {
-  "central_bank": -0.5,
-  "rates": -0.5,
+  "central_bank": 0.67,
+  "rates": 0.25,
   "fiscal": -0.39,
   "banking": 0.0
  },
@@ -21,7 +21,6 @@
  "blocks_used": 4,
  "flags": [
   "PHASE_STEADY",
-  "STANDING_FACILITY_USED",
   "REPO_DEPENDENCE_HEALTHY"
  ],
  "inputs": {
@@ -110,8 +109,8 @@
    "id": "L4",
    "name": "Funding Stress",
    "bias": "EMERGENCY",
-   "active": true,
-   "conditions_met": 2,
+   "active": false,
+   "conditions_met": 0,
    "total": 3,
    "details": [
     {
@@ -120,11 +119,11 @@
     },
     {
      "condition": "rates.bbsw_minus_target_bps level >= STRESS",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.sf_repos_margin > 0",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -175,9 +174,7 @@
  ],
  "heartbeat": {
   "lane": "all",
-  "backfill": true,
-  "errors": [
-   "rba[f11]: rba f11-data (monthly) / f11.1-data (daily, pending): HTTP 404"
-  ]
+  "backfill": false,
+  "errors": []
  }
 }

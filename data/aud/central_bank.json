@@ -2,19 +2,17 @@
  "currency": "AUD",
  "block": "central_bank",
  "schema_version": "0.3.0",
- "config_version": "0.2.1",
- "generated_at": "2026-09-08T09:09:33+00:00",
+ "config_version": "0.2.2",
+ "generated_at": "2026-09-08T09:20:29+00:00",
  "as_of": "2026-09-07",
  "equivalence_quality": "high",
  "equivalence_note": "Weekly A1 balance sheet + DAILY ES balances (A3): the AUD has a daily reserves series, closer to the Fed's H.4.1/daily data than CAD or GBP.",
  "source_health": {
-  "status": "stale",
+  "status": "fresh",
   "series_loaded": 15,
   "series_expected": 15,
   "last_fetch_ok": true,
-  "errors": [
-   "rba[f11]: rba f11-data (monthly) / f11.1-data (daily, pending): HTTP 404"
-  ],
+  "errors": [],
   "series_pending": 4
  },
  "series": {
@@ -197,13 +195,13 @@
    "usd_analog": null,
    "unit": "AUD millions",
    "frequency": "daily",
-   "status": "stale",
-   "value": 4170.0,
-   "date": "2026-05-29",
+   "status": "fresh",
+   "value": 0.0,
+   "date": "2026-09-07",
    "prev_value": 4170.0,
-   "prev_date": "2026-05-28",
-   "change_abs": 0.0,
-   "change_pct": 0.0,
+   "prev_date": "2026-05-29",
+   "change_abs": null,
+   "change_pct": null,
    "zscore": 0.9675,
    "percentile": null,
    "window": null,
@@ -268,8 +266,8 @@
     "low": 3856.0,
     "low_date": "2026-04-01"
    },
-   "age_days": 102,
-   "confidence": 70,
+   "age_days": 0,
+   "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "operational; usage < $5bn (Aug 2026); facility ceases early 2027 → parser must tolerate the column disappearing"
   },
@@ -279,17 +277,17 @@
    "usd_analog": "Primary credit",
    "unit": "AUD millions",
    "frequency": "daily",
-   "status": "stale",
-   "value": 397.0,
-   "date": "2026-04-22",
-   "prev_value": 1.0,
-   "prev_date": "2026-04-21",
-   "change_abs": 396.0,
-   "change_pct": 39600.0,
+   "status": "fresh",
+   "value": 0.0,
+   "date": "2026-09-07",
+   "prev_value": 397.0,
+   "prev_date": "2026-04-22",
+   "change_abs": null,
+   "change_pct": null,
    "zscore": 1.6478,
    "percentile": null,
    "window": null,
-   "level": "WATCH",
+   "level": "SAFE",
    "sparkline": [
     45.0,
     1.0,
@@ -317,8 +315,8 @@
     "low": 1.0,
     "low_date": "2025-05-19"
    },
-   "age_days": 139,
-   "confidence": 70,
+   "age_days": 0,
+   "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "absolute",
@@ -517,7 +515,7 @@
     "low": null,
     "low_date": null
    },
-   "age_days": null,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "column empty in A3 = no usage (0)"
@@ -2171,14 +2169,13 @@
   }
  },
  "signals": {
-  "traffic_light": "YELLOW",
-  "score": -0.5,
-  "label": "DRAIN",
+  "traffic_light": "GREEN",
+  "score": 0.67,
+  "label": "INJECTION",
   "flags": [
-   "STANDING_FACILITY_USED",
    "REPO_DEPENDENCE_ELEVATED"
   ],
-  "detail": "ES SAFE (above demand range) · ΔES d/d 1938.0 · BS liq NEUTRAL · OMO/ES 0.2571 · SF+25 397.0",
+  "detail": "ES SAFE (above demand range) · ΔES d/d 1938.0 · BS liq NEUTRAL · OMO/ES 0.2571 · SF+25 0.0",
   "alerts": [
    {
     "metric": "es_balances_daily",
@@ -2195,14 +2192,14 @@
    },
    {
     "metric": "sf_repos_margin",
-    "level": "WATCH",
-    "value": 397.0,
+    "level": "SAFE",
+    "value": 0.0,
     "threshold": {
      "WATCH": 0,
      "STRESS": 500,
      "CRISIS": 2000
     },
-    "status": "stale",
+    "status": "fresh",
     "action_hint": "standing facility at +25 bp > 0 = a bank paid the ceiling"
    },
    {
@@ -3166,9 +3163,9 @@
   "signal_log": [
    {
     "date": "2026-09-07",
-    "label": "DRAIN",
-    "score": -0.5,
-    "note": "ES SAFE (above demand range) · ΔES d/d 1938.0 · BS liq NEUTRAL · OMO/ES 0.2571 · SF+25 397.0"
+    "label": "INJECTION",
+    "score": 0.67,
+    "note": "ES SAFE (above demand range) · ΔES d/d 1938.0 · BS liq NEUTRAL · OMO/ES 0.2571 · SF+25 0.0"
    }
   ]
  }

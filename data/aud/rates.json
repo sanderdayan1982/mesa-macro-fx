@@ -2,8 +2,8 @@
  "currency": "AUD",
  "block": "rates",
  "schema_version": "0.3.0",
- "config_version": "0.2.1",
- "generated_at": "2026-09-08T09:09:32+00:00",
+ "config_version": "0.2.2",
+ "generated_at": "2026-09-08T09:20:29+00:00",
  "as_of": "2026-09-07",
  "equivalence_quality": "high",
  "equivalence_note": "F1 daily: target, actual interbank overnight cash rate (with high/low and volume), BBSW 1/3/6M, OIS 1/3/6M, T-notes; F2 daily AGS 2/3/5/10Y. Corridor known from A2.",
@@ -12,9 +12,7 @@
   "series_loaded": 13,
   "series_expected": 13,
   "last_fetch_ok": true,
-  "errors": [
-   "rba[f11]: rba f11-data (monthly) / f11.1-data (daily, pending): HTTP 404"
-  ],
+  "errors": [],
   "series_pending": 3
  },
  "series": {
@@ -1410,7 +1408,7 @@
    "zscore": 3.0637,
    "percentile": 98.93,
    "window": "750d",
-   "level": "CRISIS",
+   "level": "WATCH",
    "sparkline": [
     10.0,
     9.0,
@@ -1484,7 +1482,8 @@
     "window": "750d",
     "n": 750
    },
-   "secondary_level": "SAFE"
+   "secondary_level": "SAFE",
+   "percentile_level": "CRISIS"
   },
   "bbsw_ois_3m_bps": {
    "label": "BBSW 3M − OIS 3M",
@@ -1751,11 +1750,11 @@
   }
  },
  "signals": {
-  "traffic_light": "YELLOW",
-  "score": -0.5,
+  "traffic_light": "GREEN",
+  "score": 0.25,
   "label": "CORRIDOR CALM",
   "flags": [],
-  "detail": "AONIA−target 0.0 bps (SAFE) · band 0.286 · BBSW−target 27.0 (CRISIS) · 10Y−2Y STEEPENING",
+  "detail": "AONIA−target 0.0 bps (SAFE) · band 0.286 · BBSW−target 27.0 (WATCH) · 10Y−2Y STEEPENING",
   "alerts": [
    {
     "metric": "overnight_minus_target_bps",
@@ -1779,7 +1778,7 @@
    },
    {
     "metric": "bbsw_minus_target_bps",
-    "level": "CRISIS",
+    "level": "WATCH",
     "value": 27.0,
     "threshold": {
      "WATCH": 12.0,
@@ -3283,6 +3282,11 @@
     "date": "2026-09-07",
     "label": "CORRIDOR CALM",
     "score": -0.5
+   },
+   {
+    "date": "2026-09-07",
+    "label": "CORRIDOR CALM",
+    "score": 0.25
    }
   ]
  }
