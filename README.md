@@ -86,4 +86,6 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Offline test: `python -m ingest.run --ccy jpy --lane all --backfill --fixtures fixtures/jpy --no-rss && python -m ingest.validate --ccy jpy`
 - Netlify: same site, dashboard at `/jpy/`. Units: files in 100 million yen, dashboard in tn (10^12).
 
+**2026-09-08 (v0.2.3)** — TONA/high/low spliced from the BoJ call-market summary (fcall, T-1) while the Time-Series API lags 2 business days (verified: API last value 09-04 at 22:22 JST 09-08); unit labels fixed in JSON (TONA volume, call outstanding, JGB purchases/issued/redeemed = 100m yen, not %).
+
 **2026-09-08 (v0.2.2)** — BoJ daily XLSX label fix (indented rows carry empty cells in column B); projection (`jp`) fetched on the daily lane; MoF auction **calendar + per-auction result pages** parsed live (bid-to-cover, yield at lowest accepted, average yield, **tail in bp**) — the historical XLS lags ~2 months and has no average yield. New: `auction_tail_superlong_bp` (p85/p95 of 36 auctions, absolute 3/6/12 bp provisional), `auction_calendar` (days to next coupon auction, `SUPER_LONG_SUPPLY_AHEAD` ≤ 3 days), `SUPER_LONG_TAIL` flag, 'Last JGB auctions' table.
