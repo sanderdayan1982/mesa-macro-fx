@@ -1,0 +1,184 @@
+{
+ "currency": "NZD",
+ "generated_at": "2026-09-08T21:52:38+00:00",
+ "as_of": "2026-09-07",
+ "config_version": "0.2.1",
+ "regime": "NEUTRAL",
+ "traffic_light": "YELLOW",
+ "weighted_score": 0.3,
+ "block_scores": {
+  "central_bank": 0.0,
+  "rates": 0.25,
+  "fiscal": 0.5,
+  "banking": 1.0
+ },
+ "weights": {
+  "central_bank": 0.4,
+  "rates": 0.3,
+  "fiscal": 0.15,
+  "banking": 0.15
+ },
+ "blocks_used": 4,
+ "flags": [
+  "PHASE_LSAP_UNWIND"
+ ],
+ "overlays": {
+  "OMO_DEPENDENCE_pending_persistence": true,
+  "OMO_DEPENDENCE": "OMO_DEPENDENCE_LOW",
+  "OMO_DEPENDENCE_conditions_met": 2
+ },
+ "inputs": {
+  "reserves_level": "SAFE",
+  "reserves_in_range": false,
+  "reserves_above_range": true,
+  "spread_level": "WATCH",
+  "spread_bps": 20.0,
+  "friction_confirmed": false
+ },
+ "rules": {
+  "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: bank_bill_30d_minus_ocr_bps ≥ STRESS persistent AND friction_confirmed (overnight ≥ OCR + 10 or ORRF used) AND NOT (bill_curve_slope_bps > 0 and hike_pricing_bps ≥ p80); settlement cash anchors are dead-man switches, never triggers (N1/N3)",
+  "FLOOR_FRICTION": "reserves ample AND friction_confirmed",
+  "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
+  "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
+  "NEUTRAL": "otherwise"
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "name": "OMO-supplied ample (LSAP unwind absorbed)",
+   "bias": "NEUTRAL",
+   "active": true,
+   "conditions_met": 2,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.omo_reliance_share level >= WATCH",
+     "met": true
+    },
+    {
+     "condition": "rates.bank_bill_30d_minus_ocr_bps level == SAFE",
+     "met": false
+    },
+    {
+     "condition": "central_bank.settlement_cash_daily level == SAFE",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L2",
+   "name": "Reserve scarcity building",
+   "bias": "NZD-DEFENSIVE",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.settlement_cash_daily level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.bank_bill_30d_minus_ocr_bps level >= WATCH",
+     "met": true
+    },
+    {
+     "condition": "central_bank.omo_takeup_wow level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "name": "Funding stress",
+   "bias": "EMERGENCY",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.bank_bill_30d_minus_ocr_bps level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "central_bank.orrf_usage_daily > 0",
+     "met": false
+    },
+    {
+     "condition": "rates.friction_confirmed == true",
+     "met": null
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "name": "Crown drain / supply indigestion",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_regime == DRAIN",
+     "met": null
+    },
+    {
+     "condition": "fiscal.bond_bid_to_cover level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.bond_swap_spread_10y_bps level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "name": "Fiscal injection",
+   "bias": "NZD-SUPPORTIVE",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_regime == INJECTION",
+     "met": null
+    },
+    {
+     "condition": "central_bank.settlement_cash_wow level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.residual_flow_5d_cum >= p80",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L6",
+   "name": "Curve repricing (hiking cycle)",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.nzgb_10y_5d_change_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.hike_pricing_bps >= p90",
+     "met": false
+    },
+    {
+     "condition": "rates.curve_10y_2y_bps level >= WATCH",
+     "met": false
+    }
+   ]
+  }
+ ],
+ "heartbeat": {
+  "lane": "all",
+  "backfill": true,
+  "errors": []
+ }
+}
