@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/config.schema.json",
-  "config_version": "0.2.1",
+  "config_version": "0.2.2",
   "currency": "AUD",
   "name": "AUD Command Center",
   "jurisdiction": "Australia",
@@ -94,8 +94,8 @@
           "freq": "monthly (lending & credit aggregates, levels)"
         },
         "f11": {
-          "file": "f11-data.csv (monthly) / f11.1-data.csv (daily, pending)",
-          "freq": "monthly end-of-month; daily in F11.1",
+          "file": "f11-data.csv",
+          "freq": "monthly end-of-month (daily FX in f11.1-data.csv, Phase 3)",
           "status": "F11 verified (FXRUSD 0.7166 on 2026-08-31)"
         },
         "a3_omo_repo": {
@@ -820,9 +820,10 @@
           "secondary_absolute": {
             "watch": 30,
             "stress": 45,
-            "crisis": 70,
-            "origin": "v2.1 3M−cash 25/50 widened: BBSW−target carries expectations; validate on history"
-          }
+            "crisis": 70
+          },
+          "rule": "absolute is binding for STRESS/CRISIS; percentile alone caps at WATCH (BBSW−target embeds rate expectations: a hiking cycle is p99 but not funding stress)",
+          "origin": "v0.2.2 after first live run (p98.9 at 27 bp)"
         }
       },
       "note_f2": "F2 values are daily but the file is updated WEEKLY with ~2-business-day lag (Kimi, verified: last row 2026-09-02 on 2026-09-08); F1 is daily. Curve cards carry 'weekly' cadence; semis yields removed from F2 in 2023 → unavailable"
