@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/config.schema.json",
-  "config_version": "0.2.2",
+  "config_version": "0.2.3",
   "currency": "JPY",
   "name": "JPY Command Center",
   "jurisdiction": "Japan",
@@ -262,7 +262,8 @@
           "col": "final",
           "freq": "daily",
           "status": "verified",
-          "zero_if_empty": true
+          "zero_if_empty": true,
+          "unit": "JPY 100m (display: tn = 10^12)"
         },
         "pooled_collateral_ops_daily": {
           "id": "label:Funds-supplying operations against pooled collateral (at All offices)",
@@ -599,14 +600,16 @@
           "table": "boj_api",
           "db": "MD06",
           "freq": "monthly",
-          "status": "verified (metadata)"
+          "status": "verified (metadata)",
+          "unit": "JPY 100m (display: tn = 10^12)"
         },
         "jgb_redeemed_monthly": {
           "id": "MASDM255",
           "table": "boj_api",
           "db": "MD06",
           "freq": "monthly",
-          "status": "verified (metadata)"
+          "status": "verified (metadata)",
+          "unit": "JPY 100m (display: tn = 10^12)"
         },
         "tbills_net_monthly": {
           "id": "MASDM273",
@@ -680,7 +683,8 @@
           "table": "mof_treasury_receipts_payments",
           "freq": "monthly",
           "status": "verified",
-          "verified": "2026-08 values read 2026-09-08"
+          "verified": "2026-08 values read 2026-09-08",
+          "unit": "JPY 100m (display: tn = 10^12)"
         },
         "tbills_net_monthly_mof": {
           "id": "label:Treasury Discount Bills balance",
@@ -950,7 +954,8 @@
           "freq": "daily",
           "usd_analog": "EFFR/SOFR",
           "status": "verified",
-          "verified": "2026-09-04 = 0.977"
+          "verified": "2026-09-04 = 0.977",
+          "note": "BoJ Time-Series API publishes call rates with a 2-business-day lag (verified 2026-09-08 22:22 JST: last value 09-04); the desk splices the BoJ call-market summary (fcall, T-1) for the latest sessions until the API catches up"
         },
         "tona_high": {
           "id": "STRDCLUCONH",
@@ -974,7 +979,8 @@
           "label": "Uncollateralized O/N call volume (100m yen)",
           "freq": "daily",
           "status": "verified",
-          "usd_analog": "EFFR volume"
+          "usd_analog": "EFFR volume",
+          "unit": "JPY 100m (display: tn = 10^12)"
         },
         "collateralized_on": {
           "id": "fcall:Overnight/Collateralized/Same-day-start/Avg",
@@ -1015,7 +1021,8 @@
           "freq": "daily",
           "status": "verified",
           "verified": "2026-09-07 = 129231",
-          "display_only": true
+          "display_only": true,
+          "unit": "JPY 100m (display: tn = 10^12)"
         },
         "policy_rate": {
           "id": "central_bank.policy_rate",
