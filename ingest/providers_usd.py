@@ -35,7 +35,8 @@ def _get(url: str, timeout: int = 40, retries: int = 3, headers: Optional[dict] 
     last = None
     for i in range(retries):
         try:
-            req = urllib.request.Request(url, headers=dict({"User-Agent": UA, "Accept": "text/csv,application/json;q=0.9,*/*;q=0.8"}, **(headers or {})))
+            ua = UA["User-Agent"] if isinstance(UA, dict) else str(UA)
+            req = urllib.request.Request(url, headers=dict({"User-Agent": ua, "Accept": "text/csv,application/json;q=0.9,*/*;q=0.8"}, **(headers or {})))
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return r.read().decode("utf-8", "replace")
         except Exception as e:  # noqa: BLE001
