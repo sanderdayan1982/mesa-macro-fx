@@ -46,6 +46,8 @@ def entry(name: str, ser: Series, label: str, freq: str, unit: str, cfg: dict, s
         e["thresholds"] = c.get("thresholds", {})
         if "in_range" in c:
             e["in_range"] = c["in_range"]
+        if "above_range" in c:
+            e["above_range"] = c["above_range"]
         if c.get("secondary"):
             e["secondary_level"] = c["secondary"].get("level")
     return e

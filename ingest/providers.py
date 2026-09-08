@@ -162,3 +162,150 @@ def fetch_rss(feeds: List[dict], limit: int = 20) -> List[dict]:
                 items.append({"title": (t.group(1) or t.group(2) or "").strip(), "link": l.group(1).strip(),
                               "pubDate": p.group(1).strip() if p else "", "feed": feed["name"], "blocks": feed.get("blocks", [])})
     return items[:limit]
+
+
+# ───────────────────────── Bank of England IADB (Interactive Database) ─────────────────────────
+_MONTHS = {m: i for i, m in enumerate(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], 1)}
+
+
+def iadb_date(s: str) -> Optional[str]:
+    """'03 Sep 2026' -> '2026-09-03' (locale-independent)."""
+    try:
+        d, m, y = s.strip().split()
+        return "%s-%02d-%02d" % (y, _MONTHS[m[:3].title()], int(d))
+    except Exception:
+        return None
+
+
+class IadbProvider:
+    """BoE IADB CSV export (fromshowcolumns.asp). Rules (Desk Standard, GBP v0.2): ONE request per batch with all codes,
+    identifiable User-Agent, >= 2 s between requests, never parallel. An invalid code makes the endpoint answer HTML for
+    the whole batch -> ProviderError (caller marks the batch degraded and keeps the last good JSON)."""
+    name = "boe_iadb"
+    MIN_GAP_S = 2.5
+
+    def __init__(self, base_url: str = "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp", fixtures_dir: Optional[str] = None,
+                 raw_dir: Optional[str] = None):
+        self.base, self.fixtures_dir, self.raw_dir = base_url, fixtures_dir, raw_dir
+        self._last = 0.0
+
+    @staticmethod
+    def _fmt(d: str) -> str:  # 2026-09-08 -> 08/Sep/2026
+        y, m, dd = d.split("-")
+        return "%s/%s/%s" % (dd, list(_MONTHS)[int(m) - 1], y)
+
+    def fetch(self, codes: List[str], date_from: str, date_to: str, titles: bool = False) -> Dict[str, Series]:
+        if self.fixtures_dir:
+            return self._from_fixtures(codes)
+        if requests is None:
+            raise ProviderError("requests not installed")
+        gap = time.time() - self._last
+        if gap < self.MIN_GAP_S:
+            time.sleep(self.MIN_GAP_S - gap)
+        url = ("%s?csv.x=yes&Datefrom=%s&Dateto=%s&SeriesCodes=%s&CSVF=%s&UsingCodes=Y&VPD=Y&VFD=N"
+               % (self.base, self._fmt(date_from), self._fmt(date_to), ",".join(codes), "TT" if titles else "TN"))
+        last_err: Optional[Exception] = None
+        for i in range(3):
+            try:
+                r = requests.get(url, headers=UA, timeout=60)
+                self._last = time.time()
+                ct = r.headers.get("content-type", "")
+                if r.status_code != 200:
+                    raise ProviderError("HTTP %s" % r.status_code)
+                if "csv" not in ct.lower():
+                    raise ProviderError("non-CSV answer (%s): invalid code or WAF block" % ct)
+                if self.raw_dir:
+                    os.makedirs(self.raw_dir, exist_ok=True)
+                    with open(os.path.join(self.raw_dir, "iadb_%s_%s.csv" % (codes[0], date_to)), "w", encoding="utf-8") as f:
+                        f.write(r.text)
+                return self.parse(r.text, codes)
+            except Exception as e:  # noqa
+                last_err = e
+                if "invalid code" in str(e):
+                    break  # deterministic: do not hammer the WAF
+                time.sleep(3 * (i + 1) + (0.5 * i))
+        raise ProviderError("iadb %s: %s" % (codes[0], last_err))
+
+    @staticmethod
+    def parse(text: str, codes: List[str]) -> Dict[str, Series]:
+        out: Dict[str, List] = {c: [] for c in codes}
+        rd = csv.reader(io.StringIO(text))
+        header: List[str] = []
+        for row in rd:
+            if not row:
+                continue
+            if row[0] == "DATE":
+                header = row
+                continue
+            if not header or row[0] == "SERIES":
+                continue
+            d = iadb_date(row[0])
+            if not d:
+                continue
+            for c, v in zip(header[1:], row[1:]):
+                if c in out and v not in ("", None):
+                    try:
+                        out[c].append((d, float(v)))
+                    except ValueError:
+                        pass
+        return {k: clean(v) for k, v in out.items()}
+
+    def _from_fixtures(self, codes: List[str]) -> Dict[str, Series]:
+        out: Dict[str, Series] = {c: [] for c in codes}
+        for fn in sorted(os.listdir(self.fixtures_dir)):
+            if fn.startswith("iadb_") and fn.endswith(".csv"):
+                got = self.parse(open(os.path.join(self.fixtures_dir, fn), encoding="utf-8").read(), codes)
+                for c in codes:
+                    if got.get(c):
+                        out[c] = clean(out[c] + got[c])
+        return out
+
+
+# ───────────────────────── ONS Public Sector Finances (JSON API) ─────────────────────────
+class OnsProvider:
+    """ONS time-series API: /economy/.../timeseries/<code>/pusf/data -> {months:[{date:'2026 JUL', value:'2723'}]}.
+    Dates normalised to month-end ISO. One request per code (5 codes), 1.5 s apart."""
+    name = "ons_api"
+
+    def __init__(self, base_url: str, fixtures_dir: Optional[str] = None):
+        self.base, self.fixtures_dir = base_url, fixtures_dir
+
+    def fetch(self, codes: List[str]) -> Dict[str, Series]:
+        if self.fixtures_dir:
+            return self._from_fixtures(codes)
+        out: Dict[str, Series] = {}
+        for c in codes:
+            try:
+                j = _get(self.base.replace("{code}", c.lower()), timeout=40)
+                out[c] = self.parse(j)
+            except ProviderError as e:
+                out[c] = []
+                raise ProviderError("ons %s: %s" % (c, e))
+            time.sleep(1.5)
+        return out
+
+    @staticmethod
+    def parse(j: dict) -> Series:
+        import calendar as _cal
+        out = []
+        for m in j.get("months", []):
+            try:
+                y, mon = m["date"].split()
+                mi = _MONTHS[mon[:3].title()]
+                d = "%s-%02d-%02d" % (y, mi, _cal.monthrange(int(y), mi)[1])
+                out.append((d, float(m["value"])))
+            except Exception:
+                continue
+        return clean(out)
+
+    def _from_fixtures(self, codes: List[str]) -> Dict[str, Series]:
+        out: Dict[str, Series] = {c: [] for c in codes}
+        p = os.path.join(self.fixtures_dir, "ons_psf.csv")
+        if os.path.exists(p):
+            with open(p, encoding="utf-8") as f:
+                for row in csv.DictReader(f):
+                    for c in codes:
+                        v = row.get(c, "")
+                        if v not in ("", None):
+                            out[c].append((row["date"], float(v)))
+        return {k: clean(v) for k, v in out.items()}

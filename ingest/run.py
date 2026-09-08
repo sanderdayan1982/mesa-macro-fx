@@ -12,7 +12,8 @@ import sys
 from typing import Dict, List, Optional
 from . import blocks as B
 from . import engine as E
-from .providers import ValetProvider, ReceiverGeneralProvider, ProviderError, fetch_rss
+from .providers import ValetProvider, ReceiverGeneralProvider, IadbProvider, OnsProvider, ProviderError, fetch_rss
+from . import blocks_gbp as BG
 from .quality import evaluate_series, system_summary
 from .series import Series, clean
 
@@ -59,23 +60,18 @@ def series_ids(cfg: dict, block: str) -> List[str]:
     return [s["id"] for s in cfg["blocks"][block]["series"].values() if s.get("id")]
 
 
-def main(argv: Optional[List[str]] = None) -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--ccy", default="cad")
-    ap.add_argument("--lane", default="all", choices=["weekly", "daily", "monthly", "all"])
-    ap.add_argument("--backfill", action="store_true", help="fetch full history (first run / monthly revalidation)")
-    ap.add_argument("--fixtures", default=None, help="offline mode: read CSV fixtures from this dir instead of HTTP")
-    ap.add_argument("--no-rss", action="store_true")
-    a = ap.parse_args(argv)
+def _merge_hist(hist_dir: str, got: Dict[str, Series], ids: List[str]) -> Dict[str, Series]:
+    """incremental runs: merge with history CSVs so rolling windows keep their length"""
+    for i in ids:
+        p = os.path.join(hist_dir, "%s.csv" % i)
+        if os.path.exists(p):
+            old = [(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"]
+            got[i] = clean(old + got.get(i, []))
+    return got
 
-    ccy = a.ccy.lower()
-    cfg = json.load(open(os.path.join(ROOT, "config", "%s.json" % ccy), encoding="utf-8"))
-    data_dir = os.path.join(ROOT, "data", ccy)
-    hist_dir = os.path.join(ROOT, "history", ccy)
-    log_dir = os.path.join(ROOT, "logs", ccy)
-    oplog = os.path.join(log_dir, "oplog.json")
-    errors: List[str] = []
 
+def fetch_cad(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
     valet = ValetProvider(cfg["sources"]["valet"]["base_url"], fixtures_dir=a.fixtures)
     rg_cfg = cfg["sources"]["receiver_general"]
     rgp = ReceiverGeneralProvider(rg_cfg["csv_current"], rg_cfg["csv_archive"], fixtures_dir=a.fixtures)
@@ -83,10 +79,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     lanes = ["weekly", "daily", "monthly"] if a.lane == "all" else [a.lane]
     start = cfg["sources"]["valet"]["params"]["backfill"].split("=")[1] if a.backfill else None
     recent = None if a.backfill else int(cfg["sources"]["valet"]["params"]["incremental"].split("=")[1])
-
-    # previous JSON (for hysteresis, revisions, signal logs)
-    prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
-    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
 
     def fetch_valet(ids: List[str]) -> Dict[str, Series]:
         try:
@@ -143,6 +135,88 @@ def main(argv: Optional[List[str]] = None) -> int:
         for i in ids:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, bk_raw.get(i, []))
 
+    return blocks
+
+
+def fetch_gbp(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    """GBP lanes: weekly (Weekly Report + rates), daily (rates), monthly (ONS fiscal + Money & Credit).
+    IADB rule: one batched request per lane, verified batch first, >= 2.5 s apart, never parallel."""
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+    src = cfg["sources"]
+    raw_dir = os.path.join(ROOT, "logs", "gbp", "raw") if not a.fixtures else None
+    iadb = IadbProvider(src["boe_iadb"]["base_url"], fixtures_dir=a.fixtures, raw_dir=raw_dir)
+    ons = OnsProvider(src["ons_api"]["base_url"], fixtures_dir=a.fixtures)
+    lanes = ["weekly", "daily", "monthly"] if a.lane == "all" else [a.lane]
+    today = E.now_iso()[:10]
+    from datetime import date, timedelta
+    def _from(days: int) -> str:
+        return (date.today() - timedelta(days=days)).isoformat()
+
+    def _iadb(ids: List[str], backfill_days: int, incremental_days: int, tag: str) -> Dict[str, Series]:
+        try:
+            got = iadb.fetch(ids, _from(backfill_days if a.backfill else incremental_days), today)
+        except ProviderError as e:
+            errors.append("boe_iadb[%s]: %s" % (tag, e))
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "boe_iadb", "batch": tag, "error": str(e)})
+            got = {i: [] for i in ids}
+        if not a.fixtures:
+            got = _merge_hist(hist_dir, got, ids)  # always merge: a failed batch keeps the last good history (stale, never synthetic)
+        return got
+
+    if "weekly" in lanes or "daily" in lanes:
+        ids = series_ids(cfg, "rates") + [cfg["desk_exports"]["gbpusd"]["id"], cfg["desk_exports"]["eurgbp_inv"]["id"]]
+        r_raw = _iadb(ids, 3 * 365 + 30, 30, "daily")
+        blocks["rates"] = BG.build_rates(cfg, r_raw, prev.get("rates"))
+        for i in ids:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, r_raw.get(i, []))
+    if "weekly" in lanes:
+        ids = series_ids(cfg, "central_bank")
+        cb_raw = _iadb(ids, 6 * 365 + 30, 60, "weekly")
+        blocks["central_bank"] = BG.build_central_bank(cfg, cb_raw, prev.get("central_bank"))
+        for i in ids:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, cb_raw.get(i, []))
+    if "monthly" in lanes or (a.backfill and "weekly" in lanes):
+        ids = series_ids(cfg, "fiscal")
+        try:
+            f_raw = ons.fetch(ids)
+        except ProviderError as e:
+            errors.append("ons: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "ons_api", "error": str(e)})
+            f_raw = {i: [] for i in ids}
+        if not a.fixtures:
+            f_raw = _merge_hist(hist_dir, f_raw, ids)
+        blocks["fiscal"] = BG.build_fiscal(cfg, f_raw, prev.get("fiscal"))
+        for i in ids:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, f_raw.get(i, []))
+        ids = series_ids(cfg, "banking")
+        bk_raw = _iadb(ids, 10 * 365, 120, "monthly")
+        blocks["banking"] = BG.build_banking(cfg, bk_raw, blocks.get("rates"), prev.get("banking"))
+        for i in ids:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, bk_raw.get(i, []))
+    return blocks
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--ccy", default="cad")
+    ap.add_argument("--lane", default="all", choices=["weekly", "daily", "monthly", "all"])
+    ap.add_argument("--backfill", action="store_true", help="fetch full history (first run / monthly revalidation)")
+    ap.add_argument("--fixtures", default=None, help="offline mode: read CSV fixtures from this dir instead of HTTP")
+    ap.add_argument("--no-rss", action="store_true")
+    a = ap.parse_args(argv)
+
+    ccy = a.ccy.lower()
+    cfg = json.load(open(os.path.join(ROOT, "config", "%s.json" % ccy), encoding="utf-8"))
+    data_dir = os.path.join(ROOT, "data", ccy)
+    hist_dir = os.path.join(ROOT, "history", ccy)
+    log_dir = os.path.join(ROOT, "logs", ccy)
+    oplog = os.path.join(log_dir, "oplog.json")
+    errors: List[str] = []
+
+    prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
+    fetch = {"cad": fetch_cad, "gbp": fetch_gbp}[ccy]
+    blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
+
     # ── quality (system-wide) ──
     per: Dict[str, dict] = {}
     for bname, blk in blocks.items():
@@ -153,7 +227,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     quality = {"currency": cfg["currency"], "generated_at": E.now_iso(), "series": per, "system": system_summary({k: {"confidence": v["confidence"]} for k, v in per.items()}), "errors": errors}
     # heartbeat / degraded flags at block level
     for bname, blk in blocks.items():
-        if errors and any(bname in x or "valet" in x for x in errors) and blk["source_health"]["series_loaded"] == 0:
+        if errors and blk["source_health"]["series_loaded"] == 0:
             blk["source_health"]["status"] = "unavailable"
         blk["source_health"]["errors"] = [x for x in errors]
 
@@ -191,7 +265,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     news = []
     if not a.no_rss and not a.fixtures:
         try:
-            news = fetch_rss(cfg["sources"].get("boc_rss", {}).get("feeds", []))
+            news = fetch_rss((cfg["sources"].get("boc_rss") or cfg["sources"].get("boe_rss") or {}).get("feeds", []))
         except Exception:
             news = []
 

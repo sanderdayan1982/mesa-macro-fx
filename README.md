@@ -61,3 +61,11 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Phase 1 Desk Standard + CAD source map: sealed (v0.3, triangulated 2026-09-08).
 - Phase 2 CAD flagship: **this repo**. Pending: StatCan credit tables, auction net issuance, RG archive backfill on first live run.
 - Phase 3 GBP → CHF → AUD → NZD → JPY → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
+
+## GBP Command Center (config/gbp.json v0.2.1)
+
+- Sources: Bank of England IADB CSV (Weekly Report B1.1.2, Money & Credit, daily rates/FX) and ONS Public Sector Finances JSON. No manual ingest, no FRED, no Blobs.
+- Layers: 1 Bank of England (reserves vs PMRR £365–515bn, Policy Balance Sheet, STR/ILTR, APF QT pace, CTRF) → 2 HM Treasury / ONS (net spending = expenditure − receipts, CGNCR Z) → 3 Money & Credit flows (M4Lex, PNFC, individuals, household M4, approvals) → 4 SONIA − Bank Rate (floor, persistence rule), OSF ceiling, 5/10/20Y gilt curve.
+- Lanes: `.github/workflows/refresh-gbp.yml` — weekly Thu 15:30 UTC, daily 10:30 UTC, monthly 22nd + 2nd, backfill on the 1st. One batched IADB request per lane, ≥ 2.5 s apart, never parallel; a non-CSV answer marks the batch degraded and keeps the last good JSON.
+- Offline test: `python -m ingest.run --ccy gbp --lane all --backfill --fixtures fixtures/gbp --no-rss && python -m ingest.validate --ccy gbp`
+- Netlify: second site from the same repo (publish ".", e.g. `gbp-command-center`), dashboard at `/gbp/`.

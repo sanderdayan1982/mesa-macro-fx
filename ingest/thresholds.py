@@ -125,6 +125,8 @@ def classify(value: Optional[float], series: Series, spec: dict, freq: str, prev
             out["secondary_percentile_level"] = sp["level"]
         out["level"] = level
         out["in_range"] = pa.get("in_range")
+        if "above_range" in pa:
+            out["above_range"] = pa["above_range"]
     elif method == "absolute":
         pa = absolute_level(value, spec)
         out["primary"] = pa

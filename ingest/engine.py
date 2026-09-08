@@ -34,14 +34,17 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
     tot_w = sum(w[n] for n in scores) or 1.0
     weighted = round(sum(w[n] * s for n, s in scores.items()) / tot_w, 3)
     res = _get(blocks, "central_bank.reserves")
-    spr = _get(blocks, "rates.overnight_minus_deposit_bps")
+    spr = _get(blocks, rc.get("stress_spread_metric", "rates.overnight_minus_deposit_bps"))
     r_lvl, s_lvl = res.get("level", "NO DATA"), spr.get("level", "NO DATA")
     in_range = res.get("in_range")
+    ample = bool(in_range or res.get("above_range"))
+    # friction needs price confirmation; blocks may supply a persistence-based flag (GBP), else level >= WATCH (CAD)
+    friction = spr.get("friction_confirmed") if "friction_confirmed" in spr else LEVEL_RANK[s_lvl] >= LEVEL_RANK["WATCH"]
     if used < rc.get("min_blocks_for_signal", 2):
         regime = "NO SIGNAL"
-    elif in_range is False and r_lvl in ("WATCH", "STRESS", "CRISIS") and LEVEL_RANK[s_lvl] >= LEVEL_RANK["STRESS"]:
+    elif in_range is False and not res.get("above_range") and r_lvl in ("WATCH", "STRESS", "CRISIS") and LEVEL_RANK[s_lvl] >= LEVEL_RANK["STRESS"]:
         regime = "LIQUIDITY_SCARCITY"
-    elif in_range and LEVEL_RANK[s_lvl] >= LEVEL_RANK["WATCH"]:
+    elif ample and friction:
         regime = "FLOOR_FRICTION" if weighted > -0.5 else "LIQUIDITY_DRAIN"
     elif weighted <= -0.5:
         regime = "LIQUIDITY_DRAIN"
@@ -53,14 +56,28 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
     tsig = _get(blocks, "banking.transmission_signal").get("signal")
     if tsig == "RED" and (in_range or res.get("above_range")):
         flags.append("TRANSMISSION_FAILURE")
-    if in_range and LEVEL_RANK[s_lvl] >= LEVEL_RANK["WATCH"] and regime != "FLOOR_FRICTION":
+    if ample and friction and regime != "FLOOR_FRICTION":
         flags.append("FLOOR_FRICTION")
     phase = _get(blocks, "central_bank.balance_sheet_phase").get("phase")
     if phase:
         flags.append("PHASE_" + phase)
+    # block-supplied orthogonal flags (GBP: CTRF_ACTIVE, REPO_DEPENDENCE_*, FISCAL_BIG_MONTH, QT_ACCELERATION)
+    price_stress = LEVEL_RANK[s_lvl] >= LEVEL_RANK["STRESS"] or bool(spr.get("friction_confirmed"))
+    for bname, blk in blocks.items():
+        for f in (blk.get("signals") or {}).get("flags", []) or []:
+            if f == "REPO_DEPENDENCE_ELEVATED":
+                flags.append("REPO_DEPENDENCE_STRESS" if price_stress else "REPO_DEPENDENCE_HEALTHY")
+            elif f not in flags:
+                flags.append(f)
+    pace = rc.get("qt_announced_pace_per_week")
+    qt = _get(blocks, "central_bank.qt_pace")
+    if pace and qt.get("sparkline"):
+        recent = [v for v in qt["sparkline"][-13:] if v is not None]
+        if recent and sum(recent) / len(recent) < pace * 1.25:
+            flags.append("QT_ACCELERATION")
     tl = {"LIQUIDITY_INJECTION": "GREEN", "NEUTRAL": "YELLOW", "FLOOR_FRICTION": "YELLOW", "LIQUIDITY_DRAIN": "RED", "LIQUIDITY_SCARCITY": "RED", "NO SIGNAL": "NONE"}[regime]
     return {"regime": regime, "traffic_light": tl, "weighted_score": weighted, "block_scores": scores, "weights": w, "blocks_used": used,
-            "flags": flags, "inputs": {"reserves_level": r_lvl, "reserves_in_range": in_range, "spread_level": s_lvl, "spread_bps": spr.get("value")},
+            "flags": flags, "inputs": {"reserves_level": r_lvl, "reserves_in_range": in_range, "reserves_above_range": res.get("above_range"), "spread_level": s_lvl, "spread_bps": spr.get("value"), "friction_confirmed": friction},
             "rules": rc.get("rules", {})}
 
 
@@ -200,6 +217,8 @@ def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
     cal = cfg.get("calendar", {})
     now = datetime.now(timezone.utc)
     items = []
+    if cfg.get("currency") == "GBP":
+        return _calendar_gbp(cfg, cal, now)
     for d in cal.get("boc_decision_dates_2026", []):
         items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
     # next weekly B2 (Friday) and next daily/RG
@@ -235,3 +254,28 @@ def log_event(path: str, etype: str, category: str, details: dict, keep: int = 5
     log["entries"].insert(0, {"timestamp": now_iso(), "type": etype, "category": category, "details": details})
     log["entries"] = log["entries"][:keep]
     json.dump(log, open(path, "w"), indent=1)
+
+
+def _calendar_gbp(cfg: dict, cal: dict, now: datetime) -> dict:
+    items = []
+    for d in cal.get("mpc_decision_dates_2026", []) + cal.get("mpc_decision_dates_2027_provisional", []):
+        items.append({"date": d, "title": "MPC decision" + (" + Monetary Policy Report" if d in cal.get("mpc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "12:00 London")})
+    d = now.date()
+    while d.weekday() != 3:
+        d += timedelta(days=1)
+    items.append({"date": d.isoformat(), "title": "BoE Weekly Report B1.1.2 (data as of Wednesday)", "type": "central_bank", "impact": "HIGH", "time_local": "15:00 London"})
+    items.append({"date": (now.date() + timedelta(days=1)).isoformat(), "title": "SONIA + gilt par yields (daily, IADB)", "type": "rates", "impact": "MEDIUM", "time_local": "09:00 / 16:00 London"})
+    y, m = now.year, now.month
+    ons = datetime(y, m, 22).date() if now.day <= 22 else datetime(y + (m == 12), m % 12 + 1, 22).date()
+    items.append({"date": ons.isoformat(), "title": "ONS Public Sector Finances (monthly, ~3-week lag)", "type": "fiscal", "impact": "MEDIUM", "time_local": "07:00 London"})
+    mc = datetime(y + (m == 12), m % 12 + 1, 1).date()
+    items.append({"date": mc.isoformat(), "title": "BoE Money & Credit (monthly)", "type": "banking", "impact": "LOW", "time_local": "09:30 London"})
+    for h in cal.get("uk_bank_holidays_2026", []):
+        items.append({"date": h, "title": "UK bank holiday", "type": "holiday", "impact": "LOW", "time_local": ""})
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= now.date().isoformat()], key=lambda x: x["date"] or "9999")
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "London = WAT in winter (GMT), WAT−1h in summer (BST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
