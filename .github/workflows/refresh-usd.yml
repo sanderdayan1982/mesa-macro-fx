@@ -1,0 +1,74 @@
+# Mesa Macro FX — USD refresh lanes (config/usd.json v0.1.x, Desk Standard v0.3) — migration of the three USD dashboards
+# DTS publishes ~16:00 ET (T-1): daily lane 16:20 ET = 20:20 UTC (EDT) / 21:20 UTC (EST) → two crons so one of them is always ~16:20 ET; retry 18:00 ET.
+# H.4.1 Thursday 16:30 ET → 16:40 ET; H.8 Friday 16:15 ET → 16:25 ET. Monthly 2nd: BUSLOANS + full backfill revalidation.
+# FRED via the keyless CSV endpoint (fredgraph.csv); optional API fallback with the FRED_API_KEY secret. Fiscal Data API needs no key.
+name: refresh-usd
+on:
+  schedule:
+    - cron: "20 20 * * 1-5"    # daily lane (16:20 EDT)
+    - cron: "20 21 * * 1-5"    # daily lane (16:20 EST / 17:20 EDT — harmless second pass)
+    - cron: "0 23 * * 1-5"     # daily retry (18:00 EST / 19:00 EDT)
+    - cron: "40 20 * * 4"      # weekly_thu — H.4.1 (16:40 EDT)
+    - cron: "40 21 * * 4"      # weekly_thu — H.4.1 (16:40 EST)
+    - cron: "25 20 * * 5"      # weekly — H.8 (16:25 EDT)
+    - cron: "25 21 * * 5"      # weekly — H.8 (16:25 EST)
+    - cron: "0 22 2 * *"       # monthly lane + backfill
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "daily | daily_retry | weekly_thu | weekly | monthly | all"
+        default: "all"
+      backfill:
+        description: "full history refetch (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: refresh-usd
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resolve lane
+        id: lane
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "lane=${{ github.event.inputs.lane }}" >> $GITHUB_OUTPUT
+            echo "backfill=${{ github.event.inputs.backfill }}" >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.schedule }}" in
+              "20 20 * * 1-5"|"20 21 * * 1-5") echo "lane=daily"      >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 23 * * 1-5")                  echo "lane=daily"      >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "40 20 * * 4"|"40 21 * * 4")     echo "lane=weekly_thu" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "25 20 * * 5"|"25 21 * * 5")     echo "lane=weekly"     >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              *)                               echo "lane=all"        >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      - name: Diagnose source reachability (FRED / Fiscal Data from this runner)
+        run: |
+          for u in "https://fred.stlouisfed.org/graph/fredgraph.csv?id=WRESBAL&cosd=2026-08-01" "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance?sort=-record_date&page%5Bsize%5D=1"; do
+            echo "== $u"; curl -sS -o /dev/null -D - -m 30 -A "MesaMacroFX/0.3 (+github.com/sanderdayan1982)" "$u" | head -12 || true
+          done
+      - name: Run ingestion (USD)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
+          python -m ingest.run --ccy usd --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/usd/oplog.json) — last good JSON kept as stale"
+      - name: Validate JSON against schema
+        run: python -m ingest.validate --ccy usd
+      - name: Commit data
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/usd history/usd logs/usd
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "data(usd): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push
