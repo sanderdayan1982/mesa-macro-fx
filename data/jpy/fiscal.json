@@ -3,17 +3,17 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.1",
- "generated_at": "2026-09-08T12:28:30+00:00",
- "as_of": "2026-09-07",
+ "generated_at": "2026-09-08T12:44:24+00:00",
+ "as_of": "2026-09-09",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
  "source_health": {
   "status": "fresh",
-  "series_loaded": 15,
-  "series_expected": 15,
+  "series_loaded": 16,
+  "series_expected": 16,
   "last_fetch_ok": true,
   "errors": [],
-  "series_pending": 3
+  "series_pending": 2
  },
  "series": {
   "treasury_funds_daily": {
@@ -98,34 +98,36 @@
    "latest_outlier": false
   },
   "treasury_funds_projection": {
-   "source_id": null,
+   "source_id": "label:Treasury funds and others (Minus: net receipt of funds)",
    "label": "BoJ projection for the next business day",
    "usd_analog": null,
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
-   "prev_value": null,
-   "prev_date": null,
-   "change_abs": null,
-   "change_pct": null,
+   "status": "fresh",
+   "value": -33600.0,
+   "date": "2026-09-09",
+   "prev_value": -5600.0,
+   "prev_date": "2026-09-08",
+   "change_abs": -28000.0,
+   "change_pct": -500.0,
    "zscore": null,
    "percentile": null,
    "window": null,
-   "level": "NO DATA",
-   "sparkline": [],
+   "level": "SAFE",
+   "sparkline": [
+    -5600.0,
+    -33600.0
+   ],
    "high_low": {
-    "high": null,
-    "high_date": null,
-    "low": null,
-    "low_date": null
+    "high": -5600.0,
+    "high_date": "2026-09-08",
+    "low": -33600.0,
+    "low_date": "2026-09-09"
    },
-   "age_days": null,
-   "confidence": 0,
+   "age_days": -1,
+   "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "verified",
-   "pending_by_design": true
+   "equivalence_note": "tomorrow's fiscal impulse — unique to JPY"
   },
   "government_account": {
    "source_id": "Deposits of the government",
@@ -2519,6 +2521,11 @@
    }
   },
   "signal_log": [
+   {
+    "date": "2026-09-07",
+    "label": "NEUTRAL",
+    "score": 0.24
+   },
    {
     "date": "2026-09-07",
     "label": "NEUTRAL",
