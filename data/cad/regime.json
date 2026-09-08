@@ -1,6 +1,6 @@
 {
  "currency": "CAD",
- "generated_at": "2026-09-08T04:01:01+00:00",
+ "generated_at": "2026-09-08T23:35:26+00:00",
  "as_of": "2026-09-02",
  "config_version": "0.3.0",
  "regime": "FLOOR_FRICTION",
@@ -22,11 +22,14 @@
  "flags": [
   "PHASE_NORMALIZATION"
  ],
+ "overlays": {},
  "inputs": {
   "reserves_level": "SAFE",
   "reserves_in_range": true,
+  "reserves_above_range": null,
   "spread_level": "STRESS",
-  "spread_bps": 10.0
+  "spread_bps": 9.0,
+  "friction_confirmed": true
  },
  "rules": {
   "LIQUIDITY_SCARCITY": "reserves BELOW boc_target_range (absolute) AND overnight_minus_deposit_bps >= STRESS",
@@ -107,12 +110,12 @@
    "name": "Funding Stress",
    "bias": "EMERGENCY",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "details": [
     {
      "condition": "rates.overnight_minus_policy_bps level >= STRESS",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.reserves level >= STRESS",
@@ -170,8 +173,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
-  "backfill": true,
+  "lane": "daily",
+  "backfill": false,
   "errors": []
  }
 }
