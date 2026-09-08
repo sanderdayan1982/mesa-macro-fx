@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/config.schema.json",
-  "config_version": "0.2.1",
+  "config_version": "0.2.2",
   "currency": "JPY",
   "name": "JPY Command Center",
   "jurisdiction": "Japan",
@@ -132,7 +132,8 @@
       "url": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/{YY}{MM}e.htm",
       "format": "HTML table: Auction Date | Issue | Announcement | Result | Non-price-competitive II; second table = special-account borrowings",
       "verified": "2026-09-08 (2609e.htm: 10Y Sep 1, 30Y Sep 3, TDB 3m Sep 4, 5Y Sep 8, TDB 6m Sep 9, 20Y Sep 15, TDB 1y Sep 16, 40Y Sep 29, 2Y Sep 30)",
-      "results_parser": "Phase 3 (Detail pages: bid-to-cover, tail)"
+      "results_parser": "live (2026-09-08): result pages calendar/eresul/eresulYYYYMMDD.htm — Security | Issue | Auction Date | Issue Date | Maturity | Coupon | Competitive Bids (bn) | Bids Accepted (bn) | Lowest Accepted Price | Yield at Lowest | Allotment | Avg Price | Yield at Average | [Non-competitive, 10Y only] | Non-price I | Non-price II; verified 10Y 2026-09-01 (6,538.5/1,989.6 → 3.286x, 3.011%/2.995% → tail 1.6 bp) and 30Y 2026-09-03 (1,728.1/456.2 → 3.788x, 4.100%/4.079% → tail 2.1 bp)",
+      "tenor_filter": "2/5/10/20/30/40-year coupon JGBs only (Inflation-Indexed, Climate Transition, Liquidity Enhancement and T-Bills excluded from bid-to-cover/tail)"
     },
     "mof_treasury_receipts_payments": {
       "url": "https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e{YYYYMM}.xls (preliminary of current month: e{YYYYMM}a.xls)",
@@ -627,14 +628,15 @@
           "table": "mof_auction_calendar",
           "label": "JGB / T-Bill auction dates and tenors (monthly HTML)",
           "freq": "event",
-          "status": "verified (Sep 2026 table)"
+          "status": "verified — parser live (Phase 2.1, 2026-09-08): calendar table + result links",
+          "derived": "next coupon auction (days), next super-long auction; SUPER_LONG_SUPPLY_AHEAD when ≤ 3 days"
         },
         "auction_results": {
           "id": "sheet per tenor",
           "table": "mof_auction_results",
           "label": "JGB auction results: bid-to-cover, highest accepted yield per tenor",
           "freq": "event",
-          "status": "verified (Phase 2, promoted from Phase 3)"
+          "status": "verified — XLS history (2-month lag) + HTML result pages (current); bid-to-cover, yields, TAIL"
         },
         "receipts_payments_monthly": {
           "id": "sheet rows by label",
@@ -735,6 +737,15 @@
         "bid_to_cover_superlong": {
           "formula": "mean bid_to_cover of latest 20Y/30Y/40Y auctions",
           "note": "weak demand gauge for the QT_STRESS overlay"
+        },
+        "auction_tail_superlong_bp": {
+          "formula": "mean over the latest 20Y/30Y/40Y auctions of (yield at lowest accepted price − yield at average price) × 100, bp",
+          "source": "mof_auction_calendar result pages (eresul/eresulYYYYMMDD.htm); the historical XLS has no average yield",
+          "note": "dealer concession gauge; wide tail + low bid-to-cover = super-long stress (May-2025 20Y auction as reference event)"
+        },
+        "auction_tail_10y_bp": {
+          "formula": "10Y auction tail, bp (display)",
+          "source": "mof_auction_calendar result pages"
         }
       },
       "thresholds": {
@@ -758,6 +769,20 @@
           "window": "36 auctions",
           "watch_below": "p15",
           "stress_below": "p5"
+        },
+        "auction_tail_superlong_bp": {
+          "method": "percentile",
+          "window": "36 auctions",
+          "direction": "high_is_risk",
+          "watch_above": "p85",
+          "stress_above": "p95",
+          "secondary_absolute": {
+            "watch": 3,
+            "stress": 6,
+            "crisis": 12
+          },
+          "rule": "percentile alone caps at WATCH; STRESS/CRISIS require the absolute anchor",
+          "calibration": "provisional absolute anchors (3/6/12 bp) — recalibrate after 26 weeks of result pages"
         }
       }
     },
@@ -1328,7 +1353,9 @@
       "DATA_DEGRADED": "quality < 70 or reconciliation cab_dod vs cab_net_change_daily fails",
       "JGB_PURCHASES_VS_PLAN": "jgb_purchases_vs_plan_pct > +20% (NIMBLE) or < −20% (FASTER_QT) — policy-driven, replaces QT_ACCELERATION",
       "FLOOR_LEAK": "tona_minus_ioer_bps ≤ −15 for 5 sessions",
-      "FOREIGN_BANK_YEN_SHORT": "banking.foreign_banks_excess_share ≤ WATCH with price confirmation"
+      "FOREIGN_BANK_YEN_SHORT": "banking.foreign_banks_excess_share ≤ WATCH with price confirmation",
+      "SUPER_LONG_TAIL": "fiscal.auction_tail_superlong_bp level >= WATCH (tail ≥ 3 bp or ≥ p85 of 36 auctions)",
+      "SUPER_LONG_SUPPLY_AHEAD": "20Y/30Y/40Y auction within 3 days of as-of (supply event)"
     },
     "calibration": {
       "status": "uncalibrated",
