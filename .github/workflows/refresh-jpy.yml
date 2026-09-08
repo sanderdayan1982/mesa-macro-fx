@@ -1,0 +1,70 @@
+# Mesa Macro FX — JPY refresh lanes (config/jpy.json v0.2.x, Desk Standard v0.3)
+# Lanes (UTC, JST = UTC+9 all year): daily Mon–Fri 02:30 (11:30 JST: jd final T-1 + TONA + fcall + MoF yields + JSDA TRR + Accounts if due)
+#   · daily_provisional Mon–Fri 09:30 (18:30 JST: jx provisional + jp projection) · ten_day 3rd/13th/23rd 03:00 (BoJ Accounts)
+#   · weekly Fri 04:00 (MoF auction results XLS + ITS snapshot) · monthly 15th 03:00 (MD13/MD02/MD01/MD06/MD08 + MoF receipts) · backfill on the 1st.
+# Courtesy rule: one request per source per lane, identifiable User-Agent, >= 1 s apart, backoff on 429/403; daily XLSX parsed by label with
+# structure hash → DATA_DEGRADED, never a silent remap. Missing jd at 02:30 UTC (late release) → the 03:30 retry lane picks it up.
+name: refresh-jpy
+on:
+  schedule:
+    - cron: "30 2 * * 1-5"    # daily lane
+    - cron: "30 3 * * 1-5"    # daily retry (late jd / holiday)
+    - cron: "30 9 * * 1-5"    # daily_provisional lane (jx + jp)
+    - cron: "0 3 3,13,23 * *" # ten_day lane — BoJ Accounts
+    - cron: "0 4 * * 5"       # weekly lane — auction results + ITS
+    - cron: "0 3 15 * *"      # monthly lane — API monthly + MoF receipts
+    - cron: "0 5 1 * *"       # keepalive + full revalidation (backfill) on the 1st
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "daily | daily_provisional | ten_day | weekly | monthly | all"
+        default: "all"
+      backfill:
+        description: "full history refetch (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: refresh-jpy
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resolve lane
+        id: lane
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "lane=${{ github.event.inputs.lane }}" >> $GITHUB_OUTPUT
+            echo "backfill=${{ github.event.inputs.backfill }}" >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.schedule }}" in
+              "30 2 * * 1-5")    echo "lane=daily"             >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "30 3 * * 1-5")    echo "lane=daily"             >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "30 9 * * 1-5")    echo "lane=daily_provisional" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 3 3,13,23 * *") echo "lane=ten_day"           >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 4 * * 5")       echo "lane=weekly"            >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 3 15 * *")      echo "lane=monthly"           >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              *)                 echo "lane=all"               >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      - name: Run ingestion (JPY)
+        run: |
+          if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
+          python -m ingest.run --ccy jpy --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/jpy/oplog.json) — last good JSON kept as stale"
+      - name: Validate JSON against schema
+        run: python -m ingest.validate --ccy jpy
+      - name: Commit data
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/jpy history/jpy logs/jpy
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "data(jpy): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push
