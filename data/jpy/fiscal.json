@@ -2,8 +2,8 @@
  "currency": "JPY",
  "block": "fiscal",
  "schema_version": "0.3.0",
- "config_version": "0.2.2",
- "generated_at": "2026-09-08T13:14:47+00:00",
+ "config_version": "0.2.3",
+ "generated_at": "2026-09-08T13:30:12+00:00",
  "as_of": "2026-09-09",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
@@ -296,7 +296,7 @@
    "source_id": "MASDM254",
    "label": "jgb_issued_monthly",
    "usd_analog": null,
-   "unit": "%",
+   "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "monthly",
    "status": "fresh",
    "value": -117046.0,
@@ -377,7 +377,7 @@
    "source_id": "MASDM255",
    "label": "jgb_redeemed_monthly",
    "usd_analog": null,
-   "unit": "%",
+   "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "monthly",
    "status": "fresh",
    "value": 11393.0,
@@ -1059,7 +1059,7 @@
    "source_id": "label:Government Bonds (over one year) receipts",
    "label": "jgb_issued_monthly_mof",
    "usd_analog": null,
-   "unit": "%",
+   "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "monthly",
    "status": "fresh",
    "value": 117046.27,
@@ -2775,16 +2775,13 @@
     "date": "2026-07-30",
     "tenor": "2y",
     "btc": 3.626,
-    "hy": 1.487,
-    "avg_yield": 1.483,
-    "tail_bp": 0.4
+    "hy": 1.483
    },
    {
     "date": "2026-08-04",
     "tenor": "10y",
     "btc": 2.558,
     "hy": 2.9,
-    "avg_yield": 2.84,
     "tail_bp": 6.0
    },
    {
@@ -2792,7 +2789,6 @@
     "tenor": "30y",
     "btc": 3.864,
     "hy": 3.952,
-    "avg_yield": 3.937,
     "tail_bp": 1.5
    },
    {
@@ -2808,23 +2804,19 @@
     "tenor": "20y",
     "btc": 3.982,
     "hy": 3.713,
-    "avg_yield": 3.698,
     "tail_bp": 1.5
    },
    {
     "date": "2026-08-28",
     "tenor": "2y",
     "btc": 2.966,
-    "hy": 1.725,
-    "avg_yield": 1.708,
-    "tail_bp": 1.7
+    "hy": 1.725
    },
    {
     "date": "2026-09-01",
     "tenor": "10y",
     "btc": 3.286,
     "hy": 3.011,
-    "avg_yield": 2.995,
     "tail_bp": 1.6
    },
    {
@@ -2832,7 +2824,6 @@
     "tenor": "30y",
     "btc": 3.788,
     "hy": 4.1,
-    "avg_yield": 4.079,
     "tail_bp": 2.1
    },
    {
@@ -2845,6 +2836,11 @@
    }
   ],
   "signal_log": [
+   {
+    "date": "2026-09-07",
+    "label": "NEUTRAL",
+    "score": 0.24
+   },
    {
     "date": "2026-09-07",
     "label": "NEUTRAL",
