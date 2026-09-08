@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AUD COMMAND CENTER — Liquidity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#090d13;--bg2:#0e1319;--panel:#111820;--panel2:#151d28;--border:#1a2536;--border2:#243447;
+--text:#c5d0dc;--text2:#8899aa;--text3:#556677;--white:#e8edf2;--blue:#33b1ff;--green:#42be65;--red:#fa4d56;--amber:#f1c21b;
+--cyan:#08bdba;--purple:#be95ff;--gold:#f1c21b;--font:'JetBrains Mono',monospace;--sans:'IBM Plex Sans Condensed',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.4;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+/* header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:8px;flex-wrap:wrap}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.hdr-logo{font-family:var(--font);font-weight:800;font-size:11px;letter-spacing:.15em;color:var(--gold);background:#1a1608;border:1px solid #3d3010;padding:5px 10px}
+.hdr-title{font-family:var(--font);font-weight:700;font-size:14px;color:var(--white);letter-spacing:.04em}
+.hdr-sub{font-size:11px;color:var(--text2);margin-left:8px}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{font-family:var(--font);font-size:10px;font-weight:700;padding:4px 10px;border:1px solid var(--border);color:var(--text2);letter-spacing:.04em}
+.pill.ok{border-color:#1a3a2a;color:var(--green)}.pill.warn{border-color:#3a2a0a;color:var(--amber)}.pill.err{border-color:#3a1a1a;color:var(--red)}
+.regime{font-family:var(--font);font-size:11px;font-weight:800;padding:5px 14px;letter-spacing:.1em;text-transform:uppercase;border:1px solid}
+.regime.GREEN{background:#0a2a1a;color:var(--green);border-color:#1a4a2a}.regime.YELLOW{background:#1a1a0a;color:var(--amber);border-color:#3a3a1a}
+.regime.RED{background:#2a0a0a;color:var(--red);border-color:#4a1a1a}.regime.NONE{background:#1a1a1a;color:#777;border-color:#2a2a2a}
+.btn{font-family:var(--font);font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);letter-spacing:.04em}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+/* tabs */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);overflow-x:auto;padding:0 16px}
+.tab{font-family:var(--font);font-size:11px;font-weight:600;padding:10px 14px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;letter-spacing:.03em;white-space:nowrap}
+.tab:hover{color:var(--white)}.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+/* wire + msg */
+.wire{background:#0a0d11;border-bottom:1px solid var(--border);padding:6px 16px;overflow:hidden;white-space:nowrap;font-family:var(--font);font-size:10px;color:var(--text2);text-overflow:ellipsis}
+.wire b{color:var(--amber);margin-right:8px}.wire a{color:var(--text2);text-decoration:none;margin-right:28px}.wire a:hover{color:var(--blue)}
+.msg{padding:7px 16px;font-family:var(--font);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)}
+.msg.ok{background:#071a0e;color:var(--green)}.msg.alert{background:#1a0808;color:var(--red)}.msg.info{background:#08121a;color:var(--blue)}.msg.warn{background:#1a1508;color:var(--amber)}
+/* layout */
+.main{padding:12px}
+.section{display:none}.section.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+.g2{grid-column:span 2}.g3{grid-column:span 3}.g4{grid-column:span 4}.g6{grid-column:span 6}.g8{grid-column:span 8}.g12{grid-column:span 12}
+.layer{margin:18px 0 8px;display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--border2);padding-bottom:6px}
+.layer h2{font-family:var(--font);font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--white);text-transform:uppercase}
+.layer .num{font-family:var(--font);font-size:20px;font-weight:800;color:var(--gold)}
+.layer .sub{font-size:11px;color:var(--text2)}
+.layer .lsig{margin-left:auto}
+.card{background:var(--panel);border:1px solid var(--border);padding:12px;min-height:80px}
+.card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:6px}
+.card-title{font-family:var(--font);font-size:11px;font-weight:700;color:var(--white);letter-spacing:.04em;text-transform:uppercase}
+.card-sub{font-size:10px;color:var(--text2);margin-top:2px}
+.card-src{font-size:9px;color:var(--text3);margin-top:6px;font-family:var(--font)}
+.kpi{font-family:var(--font);font-size:24px;font-weight:800;color:var(--white);line-height:1;margin:4px 0}.kpi.sm{font-size:19px}
+.delta{font-family:var(--font);font-size:11px;font-weight:700}.delta.up{color:var(--green)}.delta.down{color:var(--red)}.delta.flat{color:var(--text2)}
+.badge{font-family:var(--font);font-size:9px;font-weight:800;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;display:inline-block;border:1px solid;white-space:nowrap}
+.badge.fresh{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.stale{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
+.badge.proxy{background:#0a1a2a;color:var(--blue);border-color:#1a2a3a}.badge.degraded{background:#2a1a0a;color:#f97316;border-color:#3a2a1a}
+.badge.unavailable{background:#1a1a1a;color:#777;border-color:#2a2a2a}
+.badge.SAFE{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.WATCH{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
+.badge.STRESS{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.CRISIS{background:#3a0a0a;color:#fff;border-color:var(--red)}
+.badge.NODATA{background:#1a1a1a;color:#777;border-color:#2a2a2a}.badge.blue{background:#0a1a2a;color:var(--blue);border-color:#1a2a3a}
+.badge.RISK_ON{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.RISK_OFF{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.NEUTRAL{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
+.chart{margin-top:6px}.chart svg{display:block;width:100%}
+table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font)}
+th{text-align:left;padding:6px 8px;color:var(--text2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)}
+.hm td{text-align:center;min-width:18px;padding:3px 4px;font-size:9px}.hm-GREEN{background:#0d2818;color:var(--green)}.hm-YELLOW{background:#1a1a08;color:var(--amber)}.hm-RED{background:#1a0808;color:var(--red)}.hm-NONE{color:#555}
+.alert-item{padding:8px 12px;border-left:3px solid var(--border);margin-bottom:4px;background:var(--bg2);font-size:11px;display:flex;gap:12px;align-items:flex-start;font-family:var(--font)}
+.alert-item.CRITICAL{border-left-color:var(--red)}.alert-item.WARNING{border-left-color:var(--amber)}.alert-item.INFO{border-left-color:var(--blue)}
+.alert-ts{font-size:10px;color:var(--text2);min-width:150px}.alert-sev{font-size:9px;font-weight:800;min-width:70px}
+.scn{display:flex;gap:8px;flex-wrap:wrap}.scn-chip{font-family:var(--font);font-size:10px;padding:6px 12px;border:1px solid var(--border)}
+.scn-chip.on{border-color:var(--amber);color:var(--amber);background:#1a1508}.scn-chip.off{color:var(--text3)}
+.note{background:rgba(6,182,212,.04);border:1px solid rgba(6,182,212,.15);padding:10px;font-size:11px;line-height:1.6;color:var(--text2);font-family:var(--font)}
+.note b{color:var(--cyan)}
+.cal-item{padding:8px 12px;border:1px solid var(--border);background:var(--bg2);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px}
+.cal-date{font-family:var(--font);font-weight:700;color:var(--white);min-width:100px}.cal-imp{font-family:var(--font);font-size:10px;font-weight:800}.cal-imp.HIGH{color:var(--red)}.cal-imp.MEDIUM{color:var(--amber)}.cal-imp.LOW{color:var(--text3)}
+.take{font-family:var(--font);font-size:12px;line-height:1.7;color:var(--white)}
+.mono{font-family:var(--font)}
+.ops{font-family:var(--font);font-size:10px;padding:4px 10px;border-bottom:1px solid var(--border);display:flex;gap:12px;color:var(--text2)}
+@media(max-width:1100px){.g2,.g3,.g4,.g6,.g8{grid-column:span 12}.kpi{font-size:20px}}
+@media(max-width:700px){.g2,.g3{grid-column:span 6}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left"><div class="hdr-logo">AUD</div><div><span class="hdr-title">AUD COMMAND CENTER</span><span class="hdr-sub">RBA ample reserves (daily ES) · Government deposits / AOFM · Financial aggregates · AONIA corridor — MMT/Mosler desk</span></div></div>
+  <div class="hdr-right">
+    <div id="regimePill" class="regime NONE">LOADING</div>
+    <div id="asOf" class="pill">as of —</div>
+    <div id="genAt" class="pill">gen —</div>
+    <div id="confPill" class="pill">CONF —</div>
+    <div id="wat" class="pill">WAT --:--</div>
+    <button class="btn" onclick="exportJSON()">JSON</button>
+    <button class="btn" onclick="loadAll()">RELOAD</button>
+  </div>
+</div>
+<div class="tabs" id="tabBar">
+  <div class="tab active" data-tab="command">COMMAND</div>
+  <div class="tab" data-tab="regime">REGIME</div>
+  <div class="tab" data-tab="alerts">ALERTS</div>
+  <div class="tab" data-tab="agent">AGENT</div>
+  <div class="tab" data-tab="calendar">CALENDAR</div>
+  <div class="tab" data-tab="history">HISTORY</div>
+  <div class="tab" data-tab="system">SYSTEM</div>
+</div>
+<div class="wire"><b>WIRE</b><span id="wire">—</span></div>
+<div id="msg" class="msg info">Loading data/aud/*.json…</div>
+<div class="main">
+  <section class="section active" id="sec-command">
+    <div class="grid" id="execHeader"></div>
+    <div id="layers"></div>
+  </section>
+  <section class="section" id="sec-regime"><div class="grid" id="regimeGrid"></div></section>
+  <section class="section" id="sec-alerts"><div class="grid" id="alertsGrid"></div></section>
+  <section class="section" id="sec-agent"><div class="grid" id="agentGrid"></div></section>
+  <section class="section" id="sec-calendar"><div class="grid" id="calGrid"></div></section>
+  <section class="section" id="sec-history"><div class="grid" id="histGrid"></div></section>
+  <section class="section" id="sec-system"><div class="grid" id="sysGrid"></div></section>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// AUD COMMAND CENTER — frontend engine (reads static JSON only; no source fetches)
+// Layer order is fixed by the desk rule: 1 central bank → 2 treasury/equivalent → 3 banking transmission → 4 rates
+// ═══════════════════════════════════════════════════════════════════════
+const CCY='aud', BASE='../data/'+CCY+'/';
+const FILES=['central_bank','fiscal','banking','rates','regime','calendar','quality','alerts','revisions','regime_history','news','oplog','agent'];
+const $=id=>document.getElementById(id);
+let D={};
+
+document.querySelectorAll('#tabBar .tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('#tabBar .tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');$('sec-'+t.dataset.tab).classList.add('active');
+}));
+
+// ── formatters ──
+const fB=v=>v==null?'—':'A$'+(v/1000).toFixed(1)+'bn';
+const fM=v=>v==null?'—':(v>=0?'+':'')+'A$'+(v/1000).toFixed(1)+'bn';
+const fBB=v=>v==null?'—':'A$'+Number(v).toFixed(0)+'bn';
+const fK=v=>v==null?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:0});
+const fP=v=>v==null?'—':(v>0?'+':'')+Number(v).toFixed(2)+'%';
+const fBps=v=>v==null?'—':(v>0?'+':'')+Number(v).toFixed(1)+' bps';
+const fR=v=>v==null?'—':Number(v).toFixed(2)+'%';
+const fZ=v=>v==null?'—':(v>0?'+':'')+Number(v).toFixed(2)+'σ';
+const fN=v=>v==null?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
+const fX=v=>v==null?'—':Number(v).toFixed(2);
+const pct=v=>v==null?'—':'p'+Math.round(v);
+const badge=(t,cls)=>`<span class="badge ${cls||t}">${t}</span>`;
+const lvlBadge=l=>badge(l||'NO DATA',(l||'NODATA').replace(' ',''));
+function delta(e,inv,fmt){ if(!e||e.prev_value==null||e.value==null) return '<span class="delta flat">—</span>'; const flow=!!fmt; const v=flow?e.change_abs:e.change_pct; if(v==null) return '<span class="delta flat">—</span>'; const up=inv?v<0:v>0, dn=inv?v>0:v<0; return `<span class="delta ${up?'up':dn?'down':'flat'}">${flow?(fmt(v)+' abs'):fP(v)} vs prev (${e.prev_date||''})</span>`; }
+function e(block,key){ const b=D[block]; if(!b) return null; return (b.series&&b.series[key])||(b.derived&&b.derived[key])||null; }
+
+// ── SVG sparkline with threshold lines ──
+function spark(vals,opts={}){
+  const data=(vals||[]).map(Number).filter(Number.isFinite); if(data.length<2) return '<div style="color:var(--text3);font-size:10px;padding:6px 0">insufficient data</div>';
+  const W=opts.w||600,H=opts.h||90,PX=4,PY=10; const th=(opts.thresholds||[]).filter(t=>Number.isFinite(t.value));
+  let mn=Math.min(...data,...th.map(t=>t.value)),mx=Math.max(...data,...th.map(t=>t.value)); if(mn===mx){mn-=1;mx+=1}
+  const r=mx-mn,lo=mn-r*.08,hi=mx+r*.08,fr=hi-lo;
+  const x=i=>PX+i/(data.length-1)*(W-2*PX), y=v=>H-PY-((v-lo)/fr)*(H-2*PY);
+  let s='';
+  for(let i=0;i<3;i++){const gy=PY+i/2*(H-2*PY);s+=`<line x1="${PX}" y1="${gy}" x2="${W-PX}" y2="${gy}" stroke="rgba(255,255,255,.05)"/>`;}
+  if(opts.zero&&lo<0&&hi>0) s+=`<line x1="${PX}" y1="${y(0)}" x2="${W-PX}" y2="${y(0)}" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 3"/>`;
+  th.forEach(t=>{s+=`<line x1="${PX}" y1="${y(t.value)}" x2="${W-PX}" y2="${y(t.value)}" stroke="${t.color}" stroke-dasharray="4 4"/><text x="${W-PX-2}" y="${y(t.value)-3}" text-anchor="end" fill="${t.color}" font-size="8" font-family="JetBrains Mono" font-weight="700">${t.label}</text>`;});
+  if(opts.band){const [a,b]=opts.band;s+=`<rect x="${PX}" y="${y(b)}" width="${W-2*PX}" height="${Math.max(0,y(a)-y(b))}" fill="rgba(66,190,101,.08)"/>`;}
+  const pts=data.map((v,i)=>`${x(i)},${y(v)}`).join(' '); const col=opts.color||'var(--blue)';
+  s+=`<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linejoin="round"/><circle cx="${x(data.length-1)}" cy="${y(data[data.length-1])}" r="3" fill="${col}"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" height="${H}">${s}</svg>`;
+}
+const lvlColor=l=>l==='SAFE'?'var(--green)':l==='WATCH'?'var(--amber)':(l==='STRESS'||l==='CRISIS')?'var(--red)':'var(--blue)';
+function thLines(ent){ const t=(ent&&ent.thresholds&&ent.thresholds.levels)||{}; const out=[]; const c={WATCH:'rgba(241,194,27,.7)',STRESS:'rgba(250,77,86,.7)',CRISIS:'rgba(250,77,86,.9)',range_low:'rgba(66,190,101,.7)',range_high:'rgba(66,190,101,.7)'};
+  for(const k of Object.keys(t)) if(Number.isFinite(t[k])) out.push({value:t[k],label:k.replace('range_','')+' '+fN(t[k]),color:c[k]||'#888'}); return out; }
+
+// ── metric card ──
+function card(block,key,title,fmt,opts={}){
+  const ent=e(block,key); const span=opts.span||'g3';
+  if(!ent) return `<div class="card ${span}"><div class="card-hdr"><div class="card-title">${title}</div>${badge('unavailable')}</div><div class="kpi sm">—</div><div class="card-src">${opts.note||''}</div></div>`;
+  const lvl=ent.level||'NO DATA'; const sig=ent.signal?badge(ent.signal):'';
+  const thr=thLines(ent); const rng=ent.thresholds&&ent.thresholds.levels&&ent.thresholds.levels.range_low!=null?[ent.thresholds.levels.range_low,ent.thresholds.levels.range_high]:null;
+  const ch=opts.nochart?'':`<div class="chart">${spark(ent.sparkline,{h:opts.h||80,color:lvlColor(lvl),thresholds:opts.nothr?[]:thr,band:rng,zero:opts.zero})}</div>`;
+  const extra=[ent.percentile!=null?`pct ${pct(ent.percentile)}`:'',ent.zscore!=null?`Z ${fZ(ent.zscore)}`:'',ent.usd_analog?`≈ ${ent.usd_analog}`:'',ent.source_id?ent.source_id:''].filter(Boolean).join(' · ');
+  return `<div class="card ${span}"><div class="card-hdr"><div><div class="card-title">${title}</div><div class="card-sub">${opts.sub||ent.label||''}</div></div><div style="text-align:right">${badge(ent.status)} ${lvl!=='SAFE'||opts.showlvl?lvlBadge(lvl):''} ${sig}</div></div>
+    <div class="kpi ${opts.big?'':'sm'}">${fmt(ent.value)}</div>${delta(ent,opts.inv,opts.zero?fmt:null)}${ch}<div class="card-src">${ent.date||''} · ${extra}${ent.equivalence_note?' · '+ent.equivalence_note:''}</div></div>`;
+}
+function textCard(title,html,span='g6',tag=''){return `<div class="card ${span}"><div class="card-hdr"><div class="card-title">${title}</div>${tag}</div>${html}</div>`;}
+function layerHdr(n,title,sub,sig){ const s=sig?`<span class="regime ${sig.traffic_light}">${sig.label}</span>`:''; return `<div class="layer"><span class="num">${n}</span><h2>${title}</h2><span class="sub">${sub}</span><span class="lsig">${s}</span></div>`; }
+function alertsTable(list){ if(!list||!list.length) return '<div style="color:var(--text3);font-size:11px">—</div>'; return `<table><thead><tr><th>Metric</th><th class="num">Value</th><th>Level</th><th>Thresholds</th><th>Hint</th></tr></thead><tbody>${list.map(a=>`<tr><td>${a.metric}</td><td class="num">${fN(a.value)}</td><td>${lvlBadge(a.level)}</td><td class="mono" style="font-size:9px;color:var(--text2)">${a.threshold?Object.entries(a.threshold).filter(([k,v])=>v!=null).map(([k,v])=>k+' '+fN(v)).join(' · '):'—'}</td><td style="color:var(--text2)">${a.action_hint||''}</td></tr>`).join('')}</tbody></table>`; }
+
+// ═══════════════════ RENDER ═══════════════════
+function render(){
+  const R=D.regime||{}, cb=D.central_bank, fi=D.fiscal, bk=D.banking, rt=D.rates, Q=D.quality||{};
+  // header
+  $('regimePill').className='regime '+(R.traffic_light||'NONE'); $('regimePill').textContent=(R.regime||'NO DATA').replace(/_/g,' ');
+  $('asOf').textContent='as of '+(R.as_of||'—'); $('genAt').textContent='gen '+(R.generated_at||'').replace('T',' ').slice(0,16)+'Z';
+  const conf=(Q.system||{}).average; $('confPill').textContent='CONF '+(conf==null?'—':conf); $('confPill').className='pill '+(conf>=90?'ok':conf>=70?'warn':'err');
+  const errs=(R.heartbeat||{}).errors||[]; const ageH=R.generated_at?(Date.now()-new Date(R.generated_at))/36e5:null;
+  const stale=ageH!=null&&ageH>48;
+  $('msg').className='msg '+(errs.length?'alert':stale?'warn':'ok');
+  $('msg').textContent=errs.length?'⚠ source errors: '+errs.join(' | '):stale?`⚠ data generated ${ageH.toFixed(0)}h ago — check the refresh workflow`:`All blocks loaded · regime ${R.regime} · flags ${(R.flags||[]).join(', ')||'none'} · weighted score ${R.weighted_score}`;
+  // wire
+  const news=(D.news&&D.news.items)||[]; $('wire').innerHTML=news.length?news.slice(0,6).map(n=>`<a href="${n.link}" target="_blank" rel="noopener">${n.title}</a>`).join(''):'no headlines (RSS disabled or offline)';
+
+  // ── EXECUTIVE HEADER ──
+  const es=e('central_bank','es_balances_daily'), spr=e('rates','overnight_minus_target_bps'), nl=e('central_bank','net_liquidity_wow_pct'), ff=e('fiscal','fiscal_flow_weekly'), sfm=e('central_bank','sf_repos_margin');
+  const flags=(R.flags||[]).map(f=>badge(f.replace('PHASE_','phase: '),'blue')).join(' ');
+  const esPos=es?(es.above_range?'ABOVE RBA demand range (70–100bn)':es.in_range?'inside 70–100bn (approaching ample)':'BELOW 70bn — scarcity zone'):'—';
+  $('execHeader').innerHTML=`
+    <div class="card g3"><div class="card-title">Liquidity regime</div><div class="kpi" style="font-size:18px;margin-top:8px"><span class="regime ${R.traffic_light||'NONE'}">${(R.regime||'—').replace(/_/g,' ')}</span></div><div class="card-src">weighted ${fX(R.weighted_score)} · blocks ${R.blocks_used||0}/4 · ${flags}</div></div>
+    <div class="card g2"><div class="card-title">ES balances (daily)</div><div class="kpi sm">${fB(es&&es.value)}</div>${delta(es)}<div class="card-src">${esPos} ${es?lvlBadge(es.level):''}</div></div>
+    <div class="card g2"><div class="card-title">AONIA − target</div><div class="kpi sm">${fBps(spr&&spr.value)}</div><div class="card-src">${spr?lvlBadge(spr.level):''} ${spr&&spr.friction_confirmed?badge('FRICTION','STRESS'):''} band ${fX(e('rates','band_position')&&e('rates','band_position').value)} · SF+25 ${fB(sfm&&sfm.value)}</div></div>
+    <div class="card g2"><div class="card-title">Balance-sheet liq Δ w/w</div><div class="kpi sm">${fP(nl&&nl.value)}</div><div class="card-src">${nl?badge(nl.signal):''} ${nl?pct(nl.percentile):''} · assets − gov deposits</div></div>
+    <div class="card g3"><div class="card-title">Fiscal flow (−Δ gov deposits, weekly)</div><div class="kpi sm">${fM(ff&&ff.value)}</div><div class="card-src">${fi?badge(fi.signals.label,fi.signals.traffic_light==='GREEN'?'SAFE':fi.signals.traffic_light==='RED'?'STRESS':'WATCH'):''} Z ${fZ(e('fiscal','fiscal_flow_zscore')&&e('fiscal','fiscal_flow_zscore').value)} · 4w ${fM(e('fiscal','fiscal_flow_4w_cum')&&e('fiscal','fiscal_flow_4w_cum').value)} ${e('fiscal','fiscal_big_week')&&e('fiscal','fiscal_big_week').value?badge('BIG WEEK '+e('fiscal','fiscal_big_week').direction,'WATCH'):''}</div></div>`;
+
+  // ── LAYERS ──
+  let L='';
+  // 1 · CENTRAL BANK
+  L+=layerHdr(1,'Central bank liquidity — Reserve Bank of Australia','A3 ES balances DAILY (T+1) + A1 weekly balance sheet · ample reserves, demand-driven: weekly full-allotment OMO at target + 10 bp · RBA demand estimate $70–100bn (Jacobs, Aug 2026)',cb&&cb.signals);
+  L+=`<div class="grid">${card('central_bank','es_balances_daily','ES balances — total (daily)',fB,{big:true,span:'g3',showlvl:true})}${card('central_bank','es_surplus_daily','ES surplus (slack)',fB)}${card('central_bank','es_balances_dod','ES Δ day/day (reserve impulse)',fM,{zero:true,showlvl:true})}${card('central_bank','es_vs_demand_ceiling','ES − demand ceiling (100bn)',fM,{zero:true,nothr:true})}
+    ${card('central_bank','omo_outstanding','OMO reverse repos outstanding',fB,{nothr:true})}${card('central_bank','omo_share_of_es','OMO share of ES',fX,{showlvl:true})}${card('central_bank','omo_takeup_weekly','OMO weekly take-up',fB,{note:'Phase 2b parser · OMO_TAKEUP_SURGE'})}${card('central_bank','sf_repos_margin','Standing facility at +25 bp (stress monitor)',fB,{showlvl:true,nothr:true,zero:true})}
+    ${card('central_bank','reserves','ES balances — weekly (A1)',fB,{showlvl:true})}${card('central_bank','government_account','Australian Government deposits (≈TGA)',fB,{inv:true})}${card('central_bank','net_liquidity','Balance-sheet liquidity (assets − gov)',fB)}${card('central_bank','net_liquidity_wow_pct','Balance-sheet liquidity Δ% w/w',fP,{zero:true,nothr:true})}
+    ${card('central_bank','total_assets','Total RBA assets',fB)}${card('central_bank','aud_investments','AUD investments (AGS/semis)',fB)}${card('central_bank','aud_investments_13w_change','AUD investments Δ 13w (run-off)',fM,{zero:true,nothr:true})}${card('central_bank','currency_drain','Currency drain (−Δ notes)',fM,{zero:true,nothr:true})}
+    ${card('central_bank','sf_repos_surplus_rate','Open repo at ES rate (operational, ends 2027)',fB,{nothr:true})}${card('central_bank','gold_fx','Gold & FX (display only)',fB,{nothr:true})}${card('central_bank','reserves_wow_pct','ES Δ% w/w',fP,{zero:true})}
+    ${textCard('Balance-sheet phase',`<div class="kpi sm">${e('central_bank','balance_sheet_phase')?e('central_bank','balance_sheet_phase').phase:'—'}</div><div class="card-src">${e('central_bank','balance_sheet_phase')?e('central_bank','balance_sheet_phase').note:''}</div>`,'g3',badge('info','blue'))}
+    ${textCard('Layer 1 alerts',alertsTable(cb&&cb.signals.alerts),'g12')}</div>`;
+  // 2 · TREASURY
+  L+=layerHdr(2,'Treasury / fiscal — Australian Government deposits at the RBA · AOFM','Weekly (A1, Wednesday data) · fiscal flow = −Δ government deposits (Mosler sign: positive = net injection) · tax days 21st / 28th, EOFY 30-Jun · AOFM tenders pending',fi&&fi.signals);
+  L+=`<div class="grid">${card('fiscal','fiscal_flow_weekly','Fiscal flow (−Δ gov deposits)',fM,{zero:true,big:true,nothr:true})}${card('fiscal','fiscal_flow_zscore','Z-score (52 weeks)',fZ,{zero:true,showlvl:true})}${card('fiscal','fiscal_flow_4w_cum','4-week cumulative',fM,{zero:true,nothr:true})}${card('fiscal','government_account','Government deposits at the RBA',fB,{inv:true})}
+    ${card('fiscal','aofm_bond_tenders','AOFM bond tenders (cover / yield)',fN,{note:'Phase 3: AOFM XLSX link discovery'})}${card('fiscal','aofm_note_tenders','AOFM Treasury Note tenders',fN,{note:'Phase 3'})}${card('fiscal','headline_cash_balance','Headline cash balance (monthly)',fB,{note:'Phase 3'})}
+    ${textCard('Fiscal regime',`<div class="kpi sm">${e('fiscal','fiscal_regime')?e('fiscal','fiscal_regime').regime:'—'} <span class="mono" style="font-size:12px;color:var(--text2)">score ${fX(e('fiscal','fiscal_regime_score')&&e('fiscal','fiscal_regime_score').value)}</span></div><div class="card-src">FISCAL_BIG_WEEK ${e('fiscal','fiscal_big_week')&&e('fiscal','fiscal_big_week').value?'YES ('+e('fiscal','fiscal_big_week').direction+')':'no'} · equivalence ${fi?fi.equivalence_quality:''}</div>`,'g3',fi?badge(fi.signals.label,fi.signals.traffic_light==='GREEN'?'SAFE':fi.signals.traffic_light==='RED'?'STRESS':'WATCH'):'')}
+    ${textCard('MMT note',`<div class="note">${e('fiscal','mmt_note')?e('fiscal','mmt_note').text:''}<br><b>Equivalence:</b> ${fi?fi.equivalence_note:''}</div>`,'g12')}</div>`;
+  // 3 · BANKING
+  L+=layerHdr(3,'Banking transmission — RBA financial aggregates (D1 / D3)','Monthly (~1st business day, 1-month lag) · growth rates → z-scores · confirmation layer · APRA D2A transition risk',bk&&bk.signals);
+  L+=`<div class="grid">${card('banking','credit_total_mom_z','Credit total ex-financial — m/m %',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','credit_business_mom_z','Business credit (non-financial) — m/m %',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','credit_housing_mom_z','Housing credit — m/m %',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','credit_personal_mom_z','Personal credit — m/m %',fP,{zero:true,showlvl:true,nothr:true})}
+    ${card('banking','m3_mom_z','M3 — m/m %',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','broad_money_yoy_z','Broad money — y/y %',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','m3_yoy_pct','M3 y/y % (D3 levels)',fP,{zero:true,nothr:true})}${card('banking','m3_level','M3 level (A$ bn)',fBB,{nothr:true})}
+    ${textCard('Transmission signal',`<div class="kpi sm">${e('banking','transmission_signal')?e('banking','transmission_signal').signal:'—'}</div><div class="card-src">${e('banking','transmission_signal')?e('banking','transmission_signal').rule:''}<br>valid series ${e('banking','transmission_signal')?e('banking','transmission_signal').valid_series:'—'} · ${bk?bk.signals.detail:''}</div>`,'g6',bk?badge(bk.signals.traffic_light,bk.signals.traffic_light==='GREEN'?'SAFE':bk.signals.traffic_light==='RED'?'STRESS':bk.signals.traffic_light==='NONE'?'NODATA':'WATCH'):'')}
+    ${textCard('Layer 3 alerts',alertsTable(bk&&bk.signals.alerts),'g6')}</div>`;
+  // 4 · RATES
+  L+=layerHdr(4,'Rates & money market — AONIA corridor, BBSW, AGS curve','Daily F1 · corridor: ES rate = target − 10 (floor) · OMO at target + 10 · standing facility target + 25 (ceiling) · AONIA anchored at target · F2 curve weekly',rt&&rt.signals);
+  L+=`<div class="grid">${card('rates','overnight_minus_target_bps','AONIA − cash rate target',fBps,{big:true,showlvl:true,zero:true})}${card('rates','band_position','Position in the corridor (0 floor · 1 ceiling)',fX,{showlvl:true,nothr:true})}${card('rates','overnight_minus_es_rate_bps','AONIA − ES rate (distance from floor)',fBps,{zero:true,nothr:true})}${card('rates','bbsw_minus_target_bps','BBSW 3M − target (funding + expectations)',fBps,{zero:true,showlvl:true})}
+    ${card('rates','policy_rate','Cash rate target',fR,{nothr:true})}${card('rates','overnight_rate','AONIA (interbank overnight)',fR,{nothr:true})}${card('rates','es_rate','ES rate (floor)',fR,{nothr:true})}${card('rates','overnight_repo_rate','Standing facility rate (ceiling)',fR,{nothr:true})}
+    ${card('rates','cash_market_dispersion_bps','Cash market dispersion (high − low)',fBps,{showlvl:true})}${card('rates','cash_market_volume','Cash market volume (A$m)',fN,{nothr:true})}${card('rates','bbsw_3m','BBSW 3M',fR,{nothr:true})}${card('rates','bbsw_1m','BBSW 1M',fR,{nothr:true})}
+    ${card('rates','curve_10y_2y_bps','AGS 10Y − 2Y (weekly file)',fBps,{zero:true,showlvl:true,nothr:true})}${card('rates','target_minus_2y_bps','Target − 2Y',fBps,{zero:true,showlvl:true,nothr:true})}${card('rates','bond_2y','AGS 2Y',fR,{nothr:true})}${card('rates','bond_10y','AGS 10Y',fR,{nothr:true})}
+    ${textCard('Layer 4 alerts',alertsTable(rt&&rt.signals.alerts),'g12')}</div>`;
+  $('layers').innerHTML=L;
+
+  // ── REGIME TAB ──
+  const sc=R.scenarios||[]; const RH=D.regime_history||{weeks:[],changelog:[]};
+  let hm='<div style="overflow-x:auto"><table class="hm"><thead><tr><th>Week</th>'+RH.weeks.map(w=>`<th>${w.week_of.slice(5)}</th>`).join('')+'</tr></thead><tbody>';
+  for(const b of ['central_bank','fiscal','banking','rates']) hm+=`<tr><td style="text-align:left;min-width:110px">${b.replace('_',' ')}</td>`+RH.weeks.map(w=>{const c=(w.cells||{})[b];return `<td class="hm-${c?c.traffic_light:'NONE'}">${c?c.score:'·'}</td>`;}).join('')+'</tr>';
+  hm+='<tr><td style="text-align:left;font-weight:800;color:var(--white)">REGIME</td>'+RH.weeks.map(w=>`<td class="hm-${w.regime==='LIQUIDITY_INJECTION'?'GREEN':w.regime==='NEUTRAL'||w.regime==='FLOOR_FRICTION'?'YELLOW':'RED'}" style="font-weight:800">${(w.regime||'').split('_').map(x=>x[0]).join('')}</td>`).join('')+'</tr></tbody></table></div>';
+  $('regimeGrid').innerHTML=`
+    ${textCard('Current regime',`<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span class="regime ${R.traffic_light||'NONE'}" style="font-size:14px;padding:8px 18px">${(R.regime||'—').replace(/_/g,' ')}</span><div class="mono" style="font-size:11px;color:var(--text2)">weighted ${fX(R.weighted_score)} · inputs: ES ${R.inputs&&R.inputs.reserves_level} (${R.inputs&&R.inputs.reserves_above_range?'above RBA demand range':R.inputs&&R.inputs.reserves_in_range?'inside 70–100bn':'below 70bn'}) · AONIA−target ${R.inputs&&R.inputs.spread_level} ${fBps(R.inputs&&R.inputs.spread_bps)} · friction confirmed ${R.inputs&&R.inputs.friction_confirmed?'YES':'no'}</div></div>
+      <table style="margin-top:10px"><thead><tr><th>Block</th><th class="num">Score</th><th class="num">Weight</th><th class="num">Contribution</th></tr></thead><tbody>${Object.entries(R.block_scores||{}).map(([k,v])=>`<tr><td>${k}</td><td class="num ${v>0?'pos':v<0?'neg':''}">${fX(v)}</td><td class="num">${R.weights[k]}</td><td class="num">${fX(v*R.weights[k])}</td></tr>`).join('')}</tbody></table>
+      <div class="note" style="margin-top:10px">${Object.entries(R.rules||{}).map(([k,v])=>`<b>${k}</b>: ${v}`).join('<br>')}</div>`,'g7')}
+    ${textCard('Scenarios (liquidity-only)',`<div class="scn">${sc.map(s=>`<div class="scn-chip ${s.active?'on':'off'}" title="${s.details.map(d=>d.condition+' → '+d.met).join('\n')}">${s.active?'▲':'·'} ${s.id} ${s.name} (${s.conditions_met}/${s.total})${s.active?' — '+s.bias:''}</div>`).join('')}</div><div class="card-src" style="margin-top:8px">hover a chip to see its conditions · price-based scenarios live in the Desk cross-market tab</div>`,'g5')}
+    ${textCard('52-week heatmap (block scores → regime)',hm,'g12')}
+    ${textCard('Regime changelog',(RH.changelog||[]).length?RH.changelog.map(c=>`<div class="alert-item INFO"><span class="alert-ts">${c.timestamp}</span><span>${c.old} → ${c.new}</span><span style="color:var(--text2)">${c.cause} · score ${c.score}</span></div>`).join(''):'<div style="color:var(--text3);font-size:11px">no regime changes recorded yet</div>','g12')}`;
+
+  // ── ALERTS TAB ──
+  const AL=(D.alerts&&D.alerts.alerts)||[]; const act=AL.filter(a=>a.status==='active'), resd=AL.filter(a=>a.status!=='active').slice(-20).reverse();
+  $('alertsGrid').innerHTML=textCard(`Active alerts (${act.length})`,act.length?act.map(a=>`<div class="alert-item ${a.severity}"><span class="alert-ts">${a.timestamp}</span><span class="alert-sev" style="color:${a.severity==='CRITICAL'?'var(--red)':a.severity==='WARNING'?'var(--amber)':'var(--blue)'}">${a.severity}</span><span>${a.message}</span><span style="color:var(--text2)">${fN(a.value)} ${a.level||''}</span></div>`).join(''):'<div style="color:var(--text3)">none</div>','g12')
+    +textCard('Resolved (last 20)',resd.length?resd.map(a=>`<div class="alert-item INFO" style="opacity:.55"><span class="alert-ts">${a.resolved_at||a.timestamp}</span><span class="alert-sev">RESOLVED</span><span>${a.message}</span></div>`).join(''):'<div style="color:var(--text3)">—</div>','g12')
+    +textCard('Threshold framework (from config, resolved to numbers)',`<table><thead><tr><th>Metric</th><th>Method</th><th>Window</th><th>Levels (resolved)</th><th>Now</th></tr></thead><tbody>${['central_bank.es_balances_daily','central_bank.es_balances_dod','central_bank.reserves_wow_pct','central_bank.omo_share_of_es','central_bank.sf_repos_margin','central_bank.net_liquidity_wow_pct','rates.overnight_minus_target_bps','rates.bbsw_minus_target_bps','rates.band_position','rates.curve_10y_2y_bps','fiscal.fiscal_flow_zscore'].map(p=>{const [b,k]=p.split('.');const x=e(b,k);if(!x)return '';const t=x.thresholds||{};return `<tr><td>${p}</td><td>${t.method||'—'}</td><td>${t.window||'—'}${t.n?' (n='+t.n+')':''}</td><td class="mono" style="font-size:9px;color:var(--text2)">${t.levels?Object.entries(t.levels).filter(([k,v])=>v!=null).map(([k,v])=>k+' '+fN(v)).join(' · '):'—'}</td><td>${fN(x.value)} ${lvlBadge(x.level)} ${x.percentile!=null?pct(x.percentile):''}</td></tr>`;}).join('')}</tbody></table>`,'g12');
+
+  // ── AGENT TAB ──
+  const A=D.agent; const take=A&&A.operator_takeaway;
+  $('agentGrid').innerHTML=A?textCard('Currency Agent narrative — '+(A.generated_at||''),`<div class="take">${(A.narrative||'').replace(/\n/g,'<br>')}</div>`,'g8',badge(A.regime||'','blue'))
+    +textCard('Operator takeaway',`<div class="take">${Array.isArray(take)?take.map(t=>'▸ '+t).join('<br>'):(take||'—')}</div><div class="card-src">${(A.alerts||[]).map(x=>x.type+': '+x.text).join('<br>')}</div>`,'g4')
+    :textCard('Currency Agent narrative',`<div class="note">No <b>agent.json</b> yet. Phase 4 wires the AUD Currency Agent: it reads the same JSON files this page reads and writes <b>data/aud/agent.json</b> with regime narrative, alerts (LIQUIDITY_GAIN / LOSS / SCARCITY / TRANSMISSION_BREAK / DATA_DEGRADED) and a three-line operator takeaway in MMT/Mosler vocabulary.<br><br>Engine reading right now: <b>${(R.regime||'—').replace(/_/g,' ')}</b> · flags ${(R.flags||[]).join(', ')||'none'} · ${cb?cb.signals.detail:''} · ${rt?rt.signals.detail:''} · ${fi?fi.signals.detail:''}</div>`,'g12');
+
+  // ── CALENDAR ──
+  const C=D.calendar||{upcoming:[]};
+  $('calGrid').innerHTML=textCard('Upcoming releases & events (operator tz '+(C.timezone_operator||'')+' · '+(C.wat_offset_note||'')+')',C.upcoming.map(i=>`<div class="cal-item"><span class="cal-date">${i.date||'rolling'}</span><span style="flex:1">${i.title}</span><span class="mono" style="font-size:10px;color:var(--text2)">${i.time_local||''}</span><span class="cal-imp ${i.impact}">${i.impact}</span><span class="mono" style="font-size:10px;color:${i.days_until!=null&&i.days_until<=2?'var(--red)':'var(--text2)'}">${i.days_until!=null?(i.days_until===0?'today':i.days_until+'d'):''}</span></div>`).join(''),'g12');
+
+  // ── HISTORY ──
+  function histTable(block,cols,fmts,n){ const b=D[block]; if(!b||!b.history||!b.history.dates) return '—'; const h=b.history; const idx=h.dates.map((d,i)=>i).slice(-n).reverse(); return `<div style="overflow:auto;max-height:420px"><table><thead><tr><th>Date</th>${cols.map(c=>`<th class="num">${c}</th>`).join('')}</tr></thead><tbody>${idx.map(i=>`<tr><td>${h.dates[i]}</td>${cols.map((c,j)=>{const v=(h.rows[c]||[])[i];return `<td class="num ${c.includes('pct')||c.includes('flow')||c.includes('impact')?(v>0?'pos':v<0?'neg':''):''}">${fmts[j](v)}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`; }
+  const CBW=(D.central_bank&&D.central_bank.history&&D.central_bank.history.weekly)||null;
+  function histTableRaw(h,cols,fmts,n){ if(!h||!h.dates) return '—'; const idx=h.dates.map((d,i)=>i).slice(-n).reverse(); return `<div style="overflow:auto;max-height:420px"><table><thead><tr><th>Date</th>${cols.map(c=>`<th class="num">${c}</th>`).join('')}</tr></thead><tbody>${idx.map(i=>`<tr><td>${h.dates[i]}</td>${cols.map((c,j)=>{const v=(h.rows[c]||[])[i];return `<td class="num ${c.includes('pct')||c.includes('dod')||c.includes('flow')?(v>0?'pos':v<0?'neg':''):''}">${fmts[j](v)}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`; }
+  $('histGrid').innerHTML=textCard('Central bank — daily ES (90d)',histTable('central_bank',['es_balances_daily','es_surplus_daily','omo_outstanding','es_balances_dod','omo_share_of_es'],[fB,fB,fB,fM,fX],90),'g6')
+    +textCard('Central bank — weekly A1 (52w)',histTableRaw(CBW,['reserves','government_account','total_assets','net_liquidity','net_liquidity_wow_pct','aud_investments'],[fB,fB,fB,fB,fP,fB],52),'g6')
+    +textCard('Rates — daily (60d)',histTable('rates',['overnight_minus_target_bps','band_position','bbsw_minus_target_bps','cash_market_dispersion_bps','curve_10y_2y_bps'],[fBps,fX,fBps,fBps,fBps],60),'g6')
+    +textCard('Fiscal — weekly (52w)',histTable('fiscal',['government_account','fiscal_flow_weekly','fiscal_flow_4w_cum','fiscal_flow_zscore'],[fB,fM,fM,fZ],52),'g6')
+    +textCard('Banking — monthly (24m)',histTable('banking',['credit_total_mom','credit_business_mom','credit_housing_mom','m3_mom','broad_money_yoy','m3_level'],[fP,fP,fP,fP,fP,fBB],24),'g12')
+    +textCard('Signal log (central bank)',`<div style="max-height:300px;overflow:auto">${((cb&&cb.history.signal_log)||[]).slice().reverse().map(s=>`<div class="ops"><span>${s.date}</span><span style="color:var(--white)">${s.label}</span><span>${s.score}</span><span>${s.note||''}</span></div>`).join('')}</div>`,'g12');
+
+  // ── SYSTEM ──
+  const qs=Q.series||{}; const RV=(D.revisions&&D.revisions.revisions)||[]; const OP=(D.oplog&&D.oplog.entries)||[];
+  $('sysGrid').innerHTML=textCard(`Data quality — system confidence ${conf==null?'—':conf}/100`,`<div class="card-src" style="margin-bottom:6px">above 90: ${(Q.system||{}).abv90} · below 70: ${(Q.system||{}).blw70} · lowest: ${(Q.system||{}).lowest?(Q.system.lowest.series+' ('+Q.system.lowest.score+')'):'—'} · errors: ${(Q.errors||[]).join(', ')||'none'}</div><div style="max-height:380px;overflow:auto"><table><thead><tr><th>Series</th><th>Freshness</th><th>Last date</th><th class="num">Age (d)</th><th class="num">Confidence</th><th>Outlier</th></tr></thead><tbody>${Object.entries(qs).map(([k,v])=>`<tr><td>${k}</td><td>${badge(v.freshness)}</td><td>${v.last_valid_date||'—'}</td><td class="num">${v.age_days==null?'—':v.age_days}</td><td class="num">${v.confidence.score} <span class="badge ${v.confidence.tier==='HIGH'?'SAFE':v.confidence.tier==='MEDIUM'?'WATCH':'STRESS'}">${v.confidence.tier}</span></td><td>${v.latest_outlier?'⚠ MAD':''}</td></tr>`).join('')}</tbody></table></div>`,'g7')
+    +textCard('Source health per block',`<table><thead><tr><th>Block</th><th>Status</th><th class="num">Loaded</th><th>Equivalence</th><th>as of</th><th>generated</th></tr></thead><tbody>${['central_bank','fiscal','banking','rates'].map(b=>{const x=D[b];if(!x)return `<tr><td>${b}</td><td>${badge('unavailable')}</td><td colspan=4>file missing</td></tr>`;return `<tr><td>${b}</td><td>${badge(x.source_health.status)}</td><td class="num">${x.source_health.series_loaded}/${x.source_health.series_expected}</td><td>${x.equivalence_quality||'—'}</td><td>${x.as_of||'—'}</td><td class="mono" style="font-size:9px">${(x.generated_at||'').slice(0,16)}</td></tr>`;}).join('')}</tbody></table>
+      <div class="note" style="margin-top:10px"><b>Status taxonomy</b> fresh ≤1.5× period · stale ≤3× · proxy = documented equivalent · degraded = gaps/erratic · unavailable = shown as —, never hidden.<br><b>Config</b> ${R.config_version||''} · schema ${cb?cb.schema_version:''} · lane ${(R.heartbeat||{}).lane||''}${(R.heartbeat||{}).backfill?' (backfill)':''}</div>`,'g5')
+    +textCard('Revisions detected (source restated a published value)',RV.length?`<table><thead><tr><th>Detected</th><th>Series</th><th>Date</th><th class="num">Old</th><th class="num">New</th><th class="num">Δ</th><th class="num">Δ%</th></tr></thead><tbody>${RV.map(r=>`<tr><td>${(r.detected_at||'').slice(0,10)}</td><td>${r.series}</td><td>${r.date}</td><td class="num">${fN(r.old_value)}</td><td class="num">${fN(r.new_value)}</td><td class="num">${fN(r.delta)}</td><td class="num">${fN(r.delta_pct)}%</td></tr>`).join('')}</tbody></table>`:'<div style="color:var(--text3);font-size:11px">no revisions detected</div>','g6')
+    +textCard('Operator log',`<div style="max-height:320px;overflow:auto">${OP.slice(0,60).map(o=>`<div class="ops"><span>${(o.timestamp||'').replace('T',' ').slice(0,16)}</span><span style="color:var(--gold)">${o.type}</span><span style="color:var(--white)">${o.category}</span><span>${JSON.stringify(o.details||{}).slice(0,140)}</span></div>`).join('')||'<div style="color:var(--text3);font-size:11px">—</div>'}</div>`,'g6')
+    +textCard('Methodology',`<div class="note"><b>Reserves</b> = ES balances, DAILY from A3 (AESAT total, AESALRRCRT surplus) and weekly from A1 (ARBALESBW). Primary anchor = the RBA's own estimate of banks' demand for reserves, $70–100bn (Jacobs, "The Road to Ample", 25 Aug 2026): above = ample, inside = approaching, below = scarcity zone — always confirmed by price. No rolling percentile on the level (run-off); percentiles on ΔES d/d and Δ% w/w.<br><b>Balance-sheet liquidity</b> = Total assets (ARBAATAW) − Australian Government deposits (ARBALDOGIAGW) = WALCL − TGA; no RRP analogue. Notes on issue are outside money: autonomous drain, not subtracted.<br><b>Corridor</b> (A2): ES rate = target − 10 (floor), weekly full-allotment OMO at target + 10 (7d/28d, Wednesdays, since 9 Apr 2025), standing facility at target + 25 (ceiling). Stress spread = AONIA (FIRMMCRID) − target: ≥ +3 early flag, ≥ +5 for 3 sessions = STRESS, ≥ +15 = CRISIS; band position 0.29 = at target. Standing facility at +25 > 0 = STANDING_FACILITY_USED. Open repo at the ES rate is operational (ends early 2027).<br><b>Funding</b> = BBSW 3M − target (OIS discontinued in F1): percentile primary, 30/45/70 absolute secondary. Dispersion = highest − lowest AONIA trade.<br><b>Fiscal</b> = −Δ government deposits at the RBA (weekly): Z over 52 weeks, 4-week cumulative; FISCAL_BIG_WEEK ≥ 15bn or |Z| ≥ 2, annotated by the tax calendar (21st, 28th after quarter-end, super guarantee, EOFY 30-Jun). Spending creates NFA, taxes destroy NFA, AGS issuance drains ES without changing NFA.<br><b>Banking</b> = D1 growth rates (credit ex-financial DGFACNFM, business DGFACBNFM, housing, personal, M3, broad money) as 24-month z-scores; D3 levels; confirmation layer.<br><b>Regime</b> weights CB 0.40 · rates 0.25 · fiscal 0.25 · banking 0.10 (v0.2, to be recalibrated); LIQUIDITY_SCARCITY = ES below 70bn AND AONIA ≥ STRESS; FLOOR_FRICTION = ES ample AND AONIA ≥ +5 for 3 sessions. Flags: REPO_DEPENDENCE_HEALTHY/STRESS, STANDING_FACILITY_USED, FISCAL_BIG_WEEK, PHASE_RUN_OFF, OMO_TAKEUP_SURGE (pending parser).<br><b>Ingestion</b> RBA CSV tables parsed by 'Series ID' header (never by position), one GET per table ≥ 2 s apart, raw snapshots; GitHub Actions → JSON in git → Netlify static.</div>`,'g12');
+  // WAT clock
+  const wat=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Malabo',hour:'2-digit',minute:'2-digit'}); const syd=new Date().toLocaleTimeString('en-GB',{timeZone:'Australia/Sydney',hour:'2-digit',minute:'2-digit'});
+  $('wat').textContent='WAT '+wat+' · SYD '+syd;
+}
+
+function exportJSON(){ const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='AUD_CC_audit_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); }
+
+async function loadAll(){
+  $('msg').className='msg info'; $('msg').textContent='Loading…';
+  const results=await Promise.allSettled(FILES.map(f=>fetch(BASE+f+'.json',{cache:'no-store'}).then(r=>r.ok?r.json():null)));
+  D={}; results.forEach((r,i)=>{ D[FILES[i]]=r.status==='fulfilled'?r.value:null; });
+  if(!D.regime&&!D.central_bank){ $('msg').className='msg alert'; $('msg').textContent='No data files found under '+BASE+' — run the ingestion workflow first.'; return; }
+  try{ render(); }catch(err){ $('msg').className='msg alert'; $('msg').textContent='Render error: '+err.message; console.error(err); }
+}
+loadAll(); setInterval(loadAll,15*60*1000);
+</script>
+</body>
+</html>

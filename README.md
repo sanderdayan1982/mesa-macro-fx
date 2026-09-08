@@ -69,3 +69,10 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Lanes: `.github/workflows/refresh-gbp.yml` — weekly Thu 15:30 UTC, daily 10:30 UTC, monthly 22nd + 2nd, backfill on the 1st. One batched IADB request per lane, ≥ 2.5 s apart, never parallel; a non-CSV answer marks the batch degraded and keeps the last good JSON.
 - Offline test: `python -m ingest.run --ccy gbp --lane all --backfill --fixtures fixtures/gbp --no-rss && python -m ingest.validate --ccy gbp`
 - Netlify: second site from the same repo (publish ".", e.g. `gbp-command-center`), dashboard at `/gbp/`.
+
+## AUD Command Center (config/aud.json v0.2.1)
+
+- Sources: RBA statistical tables CSV — A3 ES balances (DAILY: total, surplus, standing facility at +25, OMO repos), A1 weekly balance sheet (ES, Australian Government deposits = TGA analogue, assets, AUD investments), A2 corridor, F1 daily (AONIA, BBSW), F2 weekly-updated AGS curve, D1/D3 monthly aggregates. AOFM tenders and OMO take-up parser pending (Phase 3).
+- Anchor: RBA demand estimate for reserves $70–100bn (Jacobs, "The Road to Ample", 25 Aug 2026); OMO full allotment at target + 10 bp since 9 Apr 2025; open repo ends early 2027.
+- Lanes: `.github/workflows/refresh-aud.yml` — daily 02:30 UTC, weekly Fri 08:00 UTC, monthly 2nd, backfill 1st.
+- Offline test: `python -m ingest.run --ccy aud --lane all --backfill --fixtures fixtures/aud --no-rss && python -m ingest.validate --ccy aud`

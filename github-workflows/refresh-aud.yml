@@ -1,0 +1,61 @@
+# Mesa Macro FX — AUD refresh lanes (config/aud.json v0.2.x, Desk Standard v0.3)
+# Lanes (UTC): daily Mon–Fri 02:30 (12:30 Sydney: A3 ES T+1 + F1) · weekly Fri 08:00 (A1 + F2 + A2) · monthly 2nd 03:00 (D1/D3) · backfill on the 1st.
+# RBA courtesy rule: one GET per table per lane, identifiable User-Agent, >= 2 s between tables; parse by 'Series ID', fail loudly on missing ids.
+name: refresh-aud
+on:
+  schedule:
+    - cron: "30 2 * * 1-5"    # daily lane  — A3 ES balances (T+1) + F1 AONIA/BBSW
+    - cron: "0 8 * * 5"       # weekly lane — A1 balance sheet + F2 yields + A2 corridor
+    - cron: "0 3 2 * *"       # monthly lane — D1/D3 financial aggregates
+    - cron: "0 5 1 * *"       # keepalive + full revalidation (backfill) on the 1st
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "weekly | daily | monthly | all"
+        default: "all"
+      backfill:
+        description: "full history refetch (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: refresh-aud
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resolve lane
+        id: lane
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "lane=${{ github.event.inputs.lane }}" >> $GITHUB_OUTPUT
+            echo "backfill=${{ github.event.inputs.backfill }}" >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.schedule }}" in
+              "30 2 * * 1-5")  echo "lane=daily"   >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 8 * * 5")     echo "lane=weekly"  >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 3 2 * *")     echo "lane=monthly" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              *)               echo "lane=all"     >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      - name: Run ingestion (AUD)
+        run: |
+          if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
+          python -m ingest.run --ccy aud --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/aud/oplog.json) — last good JSON kept as stale"
+      - name: Validate JSON against schema
+        run: python -m ingest.validate --ccy aud
+      - name: Commit data
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/aud history/aud logs/aud
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "data(aud): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push

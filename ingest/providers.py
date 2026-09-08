@@ -309,3 +309,94 @@ class OnsProvider:
                         if v not in ("", None):
                             out[c].append((row["date"], float(v)))
         return {k: clean(v) for k, v in out.items()}
+
+
+# ───────────────────────── Reserve Bank of Australia — statistical tables (CSV) ─────────────────────────
+class RbaProvider:
+    """RBA statistical tables: https://www.rba.gov.au/statistics/tables/csv/<table>.csv
+    Layout: header block (Title / Description / Frequency / Type / Units / Source / Publication date / Series ID)
+    then data rows dated 'DD-Mon-YYYY' (weekly/daily) or 'DD/MM/YYYY' (monthly). Values in $ million ($ billion in D3).
+    Rule (AUD v0.2): parse by 'Series ID' header (never by position); one GET per table per lane, >= 2 s apart;
+    an expected id missing from the header → ProviderError (fail loudly). Fixtures: fixtures/aud/rba_<table>.csv."""
+    name = "rba_tables"
+    MIN_GAP_S = 2.0
+    _MON = {m: i for i, m in enumerate(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], 1)}
+
+    def __init__(self, base_url: str = "https://www.rba.gov.au/statistics/tables/csv/", fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
+        self.base, self.fixtures_dir, self.raw_dir = base_url.rstrip("/") + "/", fixtures_dir, raw_dir
+        self._last = 0.0
+
+    @classmethod
+    def _date(cls, s: str) -> Optional[str]:
+        s = s.strip()
+        try:
+            if "/" in s:  # DD/MM/YYYY
+                d, m, y = s.split("/")
+                return "%s-%02d-%02d" % (y, int(m), int(d))
+            d, m, y = s.split("-")
+            return "%s-%02d-%02d" % (y, cls._MON[m[:3].title()], int(d))
+        except Exception:
+            return None
+
+    def fetch(self, table_file: str, ids: List[str], since: Optional[str] = None, fixture_name: Optional[str] = None) -> Dict[str, Series]:
+        if self.fixtures_dir:
+            p = os.path.join(self.fixtures_dir, fixture_name or ("rba_%s.csv" % table_file.split("-")[0]))
+            text = open(p, encoding="utf-8").read() if os.path.exists(p) else ""
+            return self.parse(text, ids, since, strict=False)
+        if requests is None:
+            raise ProviderError("requests not installed")
+        gap = time.time() - self._last
+        if gap < self.MIN_GAP_S:
+            time.sleep(self.MIN_GAP_S - gap)
+        url = self.base + table_file + ".csv"
+        last_err: Optional[Exception] = None
+        for i in range(3):
+            try:
+                r = requests.get(url, headers=UA, timeout=90)
+                self._last = time.time()
+                if r.status_code != 200:
+                    raise ProviderError("HTTP %s" % r.status_code)
+                text = r.content.decode("utf-8-sig", errors="replace")
+                if "Series ID" not in text[:20000] and not text.startswith("DATE"):
+                    raise ProviderError("unexpected payload (no 'Series ID' header)")
+                if self.raw_dir:
+                    os.makedirs(self.raw_dir, exist_ok=True)
+                    with open(os.path.join(self.raw_dir, "rba_%s.csv" % table_file), "w", encoding="utf-8") as f:
+                        f.write(text[-400000:] if len(text) > 400000 else text)
+                return self.parse(text, ids, since, strict=True)
+            except ProviderError as e:
+                last_err = e
+                if "Series ID" in str(e) or "missing" in str(e):
+                    break
+                time.sleep(3 * (i + 1))
+            except Exception as e:  # noqa
+                last_err = e
+                time.sleep(3 * (i + 1))
+        raise ProviderError("rba %s: %s" % (table_file, last_err))
+
+    @classmethod
+    def parse(cls, text: str, ids: List[str], since: Optional[str] = None, strict: bool = True) -> Dict[str, Series]:
+        out: Dict[str, List] = {i: [] for i in ids}
+        rd = csv.reader(io.StringIO(text))
+        header: List[str] = []
+        for row in rd:
+            if not row:
+                continue
+            if row[0] in ("Series ID", "DATE"):
+                header = [h.strip() for h in row]
+                missing = [i for i in ids if i not in header]
+                if missing and strict:
+                    raise ProviderError("missing series ids in header: %s" % ",".join(missing))
+                continue
+            if not header:
+                continue
+            d = cls._date(row[0])
+            if not d or (since and d < since):
+                continue
+            for c, v in zip(header[1:], row[1:]):
+                if c in out and v not in ("", None):
+                    try:
+                        out[c].append((d, float(v)))
+                    except ValueError:
+                        pass
+        return {k: clean(v) for k, v in out.items()}

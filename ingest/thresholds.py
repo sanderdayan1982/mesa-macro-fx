@@ -37,8 +37,10 @@ def _exit_map(spec: dict, entries: List[Tuple[str, float]]) -> Dict[str, float]:
 def percentile_level(value: float, series: Series, spec: dict, freq: str, prev_level: Optional[str]) -> dict:
     window = parse_window(spec.get("window", "156w"), freq)
     sample = window_sample(series, window)
-    if len(sample) < 20:
-        return {"level": "SAFE", "percentile": None, "resolved": {}, "insufficient_history": True, "n": len(sample)}
+    min_n = spec.get("min_n", {"daily": 120, "weekly": 26, "monthly": 12}.get(freq, 20))
+    if len(sample) < min_n:
+        # thin history: never escalate on percentiles (a 70-day window makes any max a 'CRISIS'); absolute anchors still apply
+        return {"level": "SAFE", "percentile": percentile_rank(value, sample) if len(sample) >= 5 else None, "resolved": {}, "insufficient_history": True, "n": len(sample)}
     r = percentile_rank(value, sample)
     low_is_risk = spec.get("direction") in ("low_is_risk", "low_is_qt")
     # entries: level -> percentile threshold (for low_is_risk we mirror: below pX)

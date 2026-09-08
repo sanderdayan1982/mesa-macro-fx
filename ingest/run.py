@@ -12,8 +12,9 @@ import sys
 from typing import Dict, List, Optional
 from . import blocks as B
 from . import engine as E
-from .providers import ValetProvider, ReceiverGeneralProvider, IadbProvider, OnsProvider, ProviderError, fetch_rss
+from .providers import ValetProvider, ReceiverGeneralProvider, IadbProvider, OnsProvider, RbaProvider, ProviderError, fetch_rss
 from . import blocks_gbp as BG
+from . import blocks_aud as BA
 from .quality import evaluate_series, system_summary
 from .series import Series, clean
 
@@ -196,6 +197,62 @@ def fetch_gbp(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     return blocks
 
 
+def fetch_aud(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    """AUD lanes: daily (A3 ES + F1), weekly (A1 + F2 + A2), monthly (D1 + D3). One GET per table, >= 2 s apart."""
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+    src = cfg["sources"]["rba_tables"]
+    raw_dir = os.path.join(ROOT, "logs", "aud", "raw") if not a.fixtures else None
+    rba = RbaProvider(src["base_url"], fixtures_dir=a.fixtures, raw_dir=raw_dir)
+    lanes = ["weekly", "daily", "monthly"] if a.lane == "all" else [a.lane]
+    from datetime import date, timedelta
+    def _since(days: int) -> Optional[str]:
+        return (date.today() - timedelta(days=days)).isoformat()
+    T = src["tables"]
+    FIX = {"a3_es": "rba_a3_es.csv"}
+
+    def _ids(block: str, table_key: str) -> List[str]:
+        return [s["id"] for s in cfg["blocks"][block]["series"].values() if s.get("id") and s.get("table") == table_key]
+
+    def _tab(table_key: str, ids: List[str], back_days: int, inc_days: int) -> Dict[str, Series]:
+        if not ids:
+            return {}
+        try:
+            got = rba.fetch(T[table_key]["file"].replace(".csv", ""), ids, since=_since(back_days if a.backfill else inc_days), fixture_name=FIX.get(table_key))
+        except ProviderError as e:
+            errors.append("rba[%s]: %s" % (table_key, e))
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "rba_tables", "table": table_key, "error": str(e)})
+            got = {i: [] for i in ids}
+        if not a.fixtures:
+            got = _merge_hist(hist_dir, got, ids)
+        return got
+
+    data: Dict[str, Series] = {}
+    if "daily" in lanes or "weekly" in lanes:
+        data.update(_tab("a3_es", _ids("central_bank", "a3_es"), 3 * 365, 45))
+        data.update(_tab("f1", _ids("rates", "f1"), 3 * 365 + 30, 45))
+        data.update(_tab("a2", _ids("rates", "a2") + _ids("central_bank", "a2"), 6 * 365, 6 * 365))
+    if "weekly" in lanes:
+        data.update(_tab("a1", _ids("central_bank", "a1") + _ids("fiscal", "a1"), 6 * 365, 90))
+        data.update(_tab("f2", _ids("rates", "f2"), 3 * 365 + 30, 45))
+        data.update(_tab("f11", [cfg["desk_exports"]["audusd"]["id"]], 3 * 365, 90))
+    if "monthly" in lanes or (a.backfill and "weekly" in lanes):
+        data.update(_tab("d1", _ids("banking", "d1"), 8 * 365, 400))
+        data.update(_tab("d3", _ids("banking", "d3"), 8 * 365, 400))
+    for i, ser in data.items():
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
+    # builders (daily lane rebuilds rates + central bank; weekly adds fiscal; monthly adds banking)
+    if "daily" in lanes or "weekly" in lanes:
+        blocks["rates"] = BA.build_rates(cfg, data, prev.get("rates"))
+        if "weekly" not in lanes and not a.fixtures:  # daily lane: weekly A1 series from history so the block stays complete
+            data = _merge_hist(hist_dir, data, _ids("central_bank", "a1") + _ids("fiscal", "a1") + _ids("rates", "f2"))
+        blocks["central_bank"] = BA.build_central_bank(cfg, data, prev.get("central_bank"))
+    if "weekly" in lanes:
+        blocks["fiscal"] = BA.build_fiscal(cfg, data, prev.get("fiscal"))
+    if "monthly" in lanes or (a.backfill and "weekly" in lanes):
+        blocks["banking"] = BA.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    return blocks
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ccy", default="cad")
@@ -214,7 +271,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     errors: List[str] = []
 
     prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
-    fetch = {"cad": fetch_cad, "gbp": fetch_gbp}[ccy]
+    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud}[ccy]
     blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
 
     # ── quality (system-wide) ──

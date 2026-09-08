@@ -33,7 +33,7 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
             used += 1
     tot_w = sum(w[n] for n in scores) or 1.0
     weighted = round(sum(w[n] * s for n, s in scores.items()) / tot_w, 3)
-    res = _get(blocks, "central_bank.reserves")
+    res = _get(blocks, rc.get("reserves_metric", "central_bank.reserves"))
     spr = _get(blocks, rc.get("stress_spread_metric", "rates.overnight_minus_deposit_bps"))
     r_lvl, s_lvl = res.get("level", "NO DATA"), spr.get("level", "NO DATA")
     in_range = res.get("in_range")
@@ -219,6 +219,8 @@ def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
     items = []
     if cfg.get("currency") == "GBP":
         return _calendar_gbp(cfg, cal, now)
+    if cfg.get("currency") == "AUD":
+        return _calendar_aud(cfg, cal, now)
     for d in cal.get("boc_decision_dates_2026", []):
         items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
     # next weekly B2 (Friday) and next daily/RG
@@ -278,4 +280,37 @@ def _calendar_gbp(cfg: dict, cal: dict, now: datetime) -> dict:
             i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
     return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
             "wat_offset_note": "London = WAT in winter (GMT), WAT−1h in summer (BST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
+
+
+def _calendar_aud(cfg: dict, cal: dict, now: datetime) -> dict:
+    items = []
+    for d in cal.get("rba_board_dates_2026", []):
+        items.append({"date": d, "title": "RBA Monetary Policy Board decision", "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "14:30 Sydney")})
+    d = now.date()
+    while d.weekday() != 2:
+        d += timedelta(days=1)
+    items.append({"date": d.isoformat(), "title": "RBA weekly OMO (7d + 28d, full allotment at target + 10 bp)", "type": "central_bank", "impact": "MEDIUM", "time_local": "09:20 Sydney"})
+    f = now.date()
+    while f.weekday() != 4:
+        f += timedelta(days=1)
+    items.append({"date": f.isoformat(), "title": "RBA A1 balance sheet (Wednesday data) + F2 weekly yields", "type": "central_bank", "impact": "HIGH", "time_local": "16:30 Sydney"})
+    items.append({"date": (now.date() + timedelta(days=1)).isoformat(), "title": "A3 ES balances (T+1) + F1 AONIA/BBSW (daily)", "type": "rates", "impact": "MEDIUM", "time_local": "~11:30 Sydney"})
+    y, m = now.year, now.month
+    nm = datetime(y + (m == 12), m % 12 + 1, 1).date()
+    items.append({"date": nm.isoformat(), "title": "RBA financial aggregates D1/D2/D3 (monthly)", "type": "banking", "impact": "LOW", "time_local": "11:30 Sydney"})
+    fs = cal.get("fiscal_seasonality", {})
+    if isinstance(fs, dict):
+        items.append({"date": datetime(y, m, 21).date().isoformat() if now.day <= 21 else datetime(y + (m == 12), m % 12 + 1, 21).date().isoformat(), "title": "Tax day 21st (PAYG/GST monthly) — expect government-deposit build (drain)", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+        for sg in fs.get("super_guarantee", []):
+            items.append({"date": "%d-%s" % (y, sg), "title": "Super guarantee / quarterly BAS window (28th)", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+        items.append({"date": "%d-06-30" % y, "title": "EOFY — cash rebuild Jul–Oct", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+    for h in cal.get("au_holidays_2026", []):
+        items.append({"date": h, "title": "Australia (NSW) public holiday", "type": "holiday", "impact": "LOW", "time_local": ""})
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= now.date().isoformat()], key=lambda x: x["date"] or "9999")
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "Sydney = WAT + 9h (AEST) / + 10h (AEDT)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
             "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
