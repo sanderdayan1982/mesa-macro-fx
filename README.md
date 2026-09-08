@@ -60,7 +60,7 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 ## Phase status
 - Phase 1 Desk Standard + CAD source map: sealed (v0.3, triangulated 2026-09-08).
 - Phase 2 CAD flagship: **this repo**. Pending: StatCan credit tables, auction net issuance, RG archive backfill on first live run.
-- Phase 3 GBP → AUD → JPY → CHF → NZD (live) → USD migration → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
+- Phase 3 GBP → AUD → JPY → CHF → NZD → USD (all live) → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
 
 ## GBP Command Center (config/gbp.json v0.2.1)
 
@@ -94,6 +94,17 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Lanes: `.github/workflows/refresh-chf.yml` — daily 10:00 UTC Mon–Fri, weekly Mon 09:45 UTC, weekly_thu Thu 10:00 UTC (EFV), monthly 13th + 23rd, quarterly 2nd of Jan/Apr/Jul/Oct, backfill 1st. Every lane rebuilds all four blocks from `history/chf/*.csv`.
 - Offline test: `python -m ingest.run --ccy chf --lane all --backfill --fixtures fixtures/chf --no-rss && python -m ingest.validate --ccy chf`
 - Netlify: same site, dashboard at `/chf/`. Units: files in CHF millions, dashboard in bn (10^9). Pending (Phase 3): SIX SARON compound CSV, EFV issuance-calendar PDFs, `ausstehende-anleihen.xlsx`, Quarterly Bulletin tier distribution, publication day of `snbbipo` (confirm on the first live run).
+
+## USD Command Center (config/usd.json v0.1.0) — migration of the three USD dashboards
+
+- Rule: EXACT metric set and thresholds of Sander's three dashboards (H.4.1 Liquidity Command Center v2.0, DTS Tracker v3.0, H.8/H.15 Monitor v2.1) — no AI triangulation. Desk percentiles appear only as secondary context.
+- Sources (verified 2026-09-08): FRED keyless CSV endpoint `fredgraph.csv?id=<ID>&cosd=` (20 ids; API fallback with `FRED_API_KEY` secret, optional); Fiscal Data API (DTS `operating_cash_balance`, `deposits_withdrawals_operating_cash`, `debt_subject_to_limit`; no key; T-1 ~16:00 ET).
+- Layers: 1 Fed H.4.1 (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL weekly + RRPONTTLD daily; Net Liquidity = WALCL − TGA − RRP; Δ% w/w ±2%; WRESBAL 3.0T/2.5T; TGA 750/900B; RRP 200B; primary credit +20%) → 2 DTS (TGA close, totals, debt, 6 deposit + 12 withdrawal line items with Daily/MTD/FYTD, Net Treasury Flow with 30-day Z, −ΔTGA, seasonal flags) → 3 H.8 (bank credit, loans & leases, C&I weekly TOTCI, deposits, borrowings H8B3094NCBA; statuses + traffic-light vote + 26-week Z heatmap + base-100 index) → 4 SOFR − IORB (5/15/30 bp) + H.15 (DFF, DTB3, DGS2, DGS10, 10Y−2Y, FF−3M on common dates, stance, H.15 signal, forex signal matrix).
+- Corrections from the primary sources (documented in `config/usd.json` → `lineage.corrections_from_primary_sources`): FRED WRESBAL/WTREGEN are $ millions (the legacy H.4.1 multiplied them by 1000); H.8 borrowings id is `H8B3094NCBA` (legacy `TLBACBW027SBOG` = total liabilities); weekly C&I is `TOTCI` (legacy `BUSLOANS` is monthly, kept as display).
+- Regime: weights CB 0.40 · rates 0.25 · fiscal 0.25 · banking 0.10 (desk proposal); reserves_metric WRESBAL (3.0–4.0T ample band, 2.5T crisis); stress spread SOFR − IORB, friction confirmed on 2 of 3 sessions > 15 bp.
+- Lanes: `.github/workflows/refresh-usd.yml` — daily 16:20 ET (two crons cover EDT/EST) + retry 18:00 ET, weekly_thu 16:40 ET (H.4.1), weekly Fri 16:25 ET (H.8), monthly 2nd + backfill.
+- Offline test: `python -m ingest.run --ccy usd --lane all --backfill --fixtures fixtures/usd --no-rss && python -m ingest.validate --ccy usd`
+- Netlify: same site, dashboard at `/usd/`. Units: files in USD millions, dashboard in $B / $T.
 
 ## JPY Command Center (config/jpy.json v0.2.1)
 
