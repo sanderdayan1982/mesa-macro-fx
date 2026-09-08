@@ -698,6 +698,140 @@ class MofAuctionProvider:
         return self.parse(_xls_sheets(blob), since)
 
 
+# ───────────────────────── MoF auction calendar + per-auction result pages (HTML, current months) ─────────────────────────
+class MofAuctionHtmlProvider:
+    """Monthly calendar  calendar/{YY}{MM}e.htm  → rows (date, issue, result link). Result pages  calendar/eresul/eresulYYYYMMDD.htm
+    carry competitive bids / accepted / yield at lowest accepted price / yield at average price → bid-to-cover AND tail (bp),
+    which the historical XLS does not have. Covers the gap between the XLS (updated with ~2 months lag) and today. billion yen."""
+    name = "mof_auction_html"
+    MIN_GAP_S = 0.7
+    TENOR_RE = re.compile(r"^\s*(2|5|10|20|30|40)-year\s*(\(|$)", re.I)  # excludes '10-year Inflation-Indexed', '10-year Japan Climate Transition'
+    MONTHS = {m: i for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), 1)}
+
+    def __init__(self, base_url: str = "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/", fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
+        self.base, self.fixtures_dir, self.raw_dir = base_url.rstrip("/") + "/", fixtures_dir, raw_dir
+        self._last = 0.0
+
+    @staticmethod
+    def _cells(html: str) -> List[List[Tuple[str, Optional[str]]]]:
+        """First <table> → rows of (text, href-of-first-link)."""
+        m = re.search(r"<table.*?</table>", html, re.S | re.I)
+        if not m:
+            return []
+        rows = []
+        for tr in re.findall(r"<tr.*?</tr>", m.group(0), re.S | re.I):
+            cells = []
+            for td in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", tr, re.S | re.I):
+                href = re.search(r'href="([^"]+)"', td)
+                txt = re.sub(r"<[^>]+>", " ", td)
+                txt = re.sub(r"&nbsp;|&#160;", " ", txt)
+                txt = re.sub(r"\s+", " ", txt).strip()
+                cells.append((txt, href.group(1) if href else None))
+            if cells:
+                rows.append(cells)
+        return rows
+
+    @classmethod
+    def _date(cls, txt: str) -> Optional[str]:
+        m = re.match(r"^([A-Za-z]{3})\.?\s+(\d{1,2}),\s*(\d{4})", txt.strip())
+        if not m or m.group(1).lower() not in cls.MONTHS:
+            return None
+        return "%s-%02d-%02d" % (m.group(3), cls.MONTHS[m.group(1).lower()], int(m.group(2)))
+
+    @classmethod
+    def parse_calendar(cls, html: str) -> List[Dict[str, Optional[str]]]:
+        out = []
+        for row in cls._cells(html):
+            if len(row) < 4:
+                continue
+            d = cls._date(row[0][0])
+            if not d:
+                continue
+            issue = row[1][0]
+            m = cls.TENOR_RE.match(issue)
+            out.append({"date": d, "issue": issue, "tenor": (m.group(1) + "y") if m else None, "result_href": row[3][1]})
+        return out
+
+    @staticmethod
+    def _num(s: str) -> Optional[float]:
+        s = s.replace(",", "").replace("%", "").strip()
+        try:
+            return float(s)
+        except ValueError:
+            return None
+
+    @classmethod
+    def parse_result(cls, html: str) -> Dict[str, Optional[float]]:
+        """Header row + one value row, matched by header text (10Y carries an extra non-competitive column)."""
+        rows = cls._cells(html)
+        if len(rows) < 2:
+            return {}
+        hdr = [c[0].lower() for c in rows[0]]
+        val = [c[0] for c in rows[1]]
+        def pick(pat: str) -> Optional[float]:
+            for i, h in enumerate(hdr):
+                if re.search(pat, h) and i < len(val):
+                    return cls._num(val[i])
+            return None
+        bids = pick(r"amounts of competitive bids")
+        acc = pick(r"amounts of bids accepted \(billion")
+        hy = pick(r"yield at the\s*lowest accepted")
+        avg = pick(r"yield at the average")
+        out: Dict[str, Optional[float]] = {"bids": bids, "accepted": acc, "hy": hy, "avg_yield": avg,
+                                           "btc": round(bids / acc, 3) if (bids and acc) else None,
+                                           "tail_bp": round((hy - avg) * 100, 1) if (hy is not None and avg is not None) else None,
+                                           "nonprice1": pick(r"non-price -?competitive auction ⅰ|auction i for")}
+        return out
+
+    def fetch(self, months: List[str], since: Optional[str] = None, today: Optional[str] = None) -> Tuple[Dict[str, Series], List[dict], List[str]]:
+        """months: ['2608','2609'] → ({btc_<t>, hy_<t>, avgy_<t>, tail_<t>}, calendar rows (all tenors, incl. T-Bills), errors)."""
+        if self.fixtures_dir:
+            got = read_fixture(os.path.join(self.fixtures_dir, "mof_auctions_html.csv")) if os.path.exists(os.path.join(self.fixtures_dir, "mof_auctions_html.csv")) else {}
+            return got, [], []
+        out: Dict[str, List] = {}
+        cal: List[dict] = []
+        errs: List[str] = []
+        for ym in months:
+            self._last = _sleep_gap(self._last, self.MIN_GAP_S)
+            url = "%s%se.htm" % (self.base, ym)
+            try:
+                html = _http(url)
+            except FileNotFoundError:
+                continue  # month not published yet
+            except ProviderError as e:
+                errs.append("calendar %s: %s" % (ym, e))
+                continue
+            _snapshot(self.raw_dir, "auction_calendar_%s.htm" % ym, html.encode("utf-8"))
+            rows = self.parse_calendar(html)
+            cal.extend(rows)
+            for r in rows:
+                if not r["tenor"] or not r["result_href"] or (since and r["date"] < since) or (today and r["date"] > today):
+                    continue
+                href = r["result_href"]
+                rurl = href if href.startswith("http") else self.base + href.lstrip("./")
+                self._last = _sleep_gap(self._last, self.MIN_GAP_S)
+                try:
+                    rh = _http(rurl)
+                except FileNotFoundError:
+                    continue  # result not out yet (auction day, before 12:35 JST)
+                except ProviderError as e:
+                    errs.append("result %s %s: %s" % (r["date"], r["tenor"], e))
+                    continue
+                res = self.parse_result(rh)
+                if res.get("btc") is None:
+                    errs.append("result %s %s: STRUCTURE CHANGE — bids/accepted not found" % (r["date"], r["tenor"]))
+                    continue
+                t = r["tenor"]
+                out.setdefault("btc_%s" % t, []).append((r["date"], res["btc"]))
+                if res.get("hy") is not None:
+                    out.setdefault("hy_%s" % t, []).append((r["date"], res["hy"]))
+                if res.get("avg_yield") is not None:
+                    out.setdefault("avgy_%s" % t, []).append((r["date"], res["avg_yield"]))
+                if res.get("tail_bp") is not None:
+                    out.setdefault("tail_%s" % t, []).append((r["date"], res["tail_bp"]))
+        return {k: clean(v) for k, v in out.items()}, cal, errs
+
+
 # ───────────────────────── MoF ITS weekly (Shift-JIS CSV) — parser Phase 3, snapshot only ─────────────────────────
 class MofItsProvider:
     name = "mof_its_weekly"

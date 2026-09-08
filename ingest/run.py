@@ -349,6 +349,27 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
             data.update(_merge_hist(hist_dir, au, list(au)) if not fx else au)
         except Exception as e:  # noqa
             _err("mof_auction_results", e)
+        # HTML calendar + per-auction result pages: covers the ~2-month lag of the XLS and adds the TAIL (yield at lowest accepted − average)
+        try:
+            xls_last = max([s[-1][0] for k, s in data.items() if k.startswith("btc_") and s] or ["2026-01-01"])
+            since = xls_last if a.backfill else max(xls_last, (today - timedelta(days=45)).isoformat())
+            months, d = [], date(int(since[:4]), int(since[5:7]), 1)
+            while d <= today.replace(day=1):
+                months.append("%02d%02d" % (d.year % 100, d.month))
+                d = (d.replace(day=28) + timedelta(days=4)).replace(day=1)
+            nxt = (today.replace(day=28) + timedelta(days=4)).replace(day=1)
+            months.append("%02d%02d" % (nxt.year % 100, nxt.month))  # next month's calendar (404 until published)
+            html_p = PJ.MofAuctionHtmlProvider(src["mof_auction_calendar"]["url"].split("{YY}")[0], fixtures_dir=fx, raw_dir=raw_dir)
+            got, cal, errs = html_p.fetch(months, since=since, today=today.isoformat())
+            for x in errs:
+                _err("mof_auction_html", Exception(x))
+            if not fx:
+                got = _merge_hist(hist_dir, got, list(got))
+            data.update(got)
+            if cal:
+                data["_auction_calendar"] = cal  # type: ignore  (list of dicts; not a Series — excluded from history CSVs)
+        except Exception as e:  # noqa
+            _err("mof_auction_html", e)
         try:
             PJ.MofItsProvider(src["mof_its_weekly"]["url"], fixtures_dir=fx, raw_dir=raw_dir).snapshot()
         except Exception as e:  # noqa
@@ -378,12 +399,12 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
             _err("mof_treasury_receipts_payments", e)
     # history CSVs
     for i, ser in data.items():
-        if ser:
+        if ser and not i.startswith("_"):
             append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
     # daily lane on a live run: pull monthly/ten-day/weekly series from history so all blocks stay complete
     if not fx:
         need = ["ac_" + k for k, _ in PJ.BojAccountsProvider.ITEMS] + ["FAAP@01", "FAAPOBAL1", "FAAPOBAL1@", "FAAPOBRDCD5", "MAM1NAM2M2MO", "MAM1NAM3M3MO", "MAM1NAM3M1MO", "MAM1NAM3DMMO", "MABS1AN11",
-                                                                     "MASDM@01", "MASDM254", "MASDM255", "MASDM273", "MASDM26", "MASDM@03", "MACAB1043", "MACAB1183", "btc_20y", "btc_30y", "btc_40y",
+                                                                     "MASDM@01", "MASDM254", "MASDM255", "MASDM273", "MASDM26", "MASDM@03", "MACAB1043", "MACAB1183", "btc_20y", "btc_30y", "btc_40y", "btc_10y", "tail_10y", "tail_20y", "tail_30y", "tail_40y",
                                                                      "taxes_receipts", "pension_payments", "fefsa_receipts", "fefsa_receipts_py", "fefsa_payments", "gov_bonds_over_1y_receipts", "tbills_balance",
                                                                      "on_col_same_avg", "1w_unc_fwd_avg", "1m_unc_fwd_avg", "3m_unc_same_avg", "call_outstanding_total", "treasury_proj"]
         for k in need:

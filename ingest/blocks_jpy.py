@@ -321,6 +321,41 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
                                         spec=dict(th.get("bid_to_cover_superlong", {}), direction="low_is_risk", window="36w", min_n=12), prev_level=pl.get("bid_to_cover_superlong"), z_window=12)
     if bsl:
         D["bid_to_cover_superlong"]["status"] = "fresh"
+    # ── auction tail (yield at lowest accepted − yield at average, bp) from the MoF per-auction result pages ──
+    tails: Dict[str, List[float]] = {}
+    for k in ("tail_20y", "tail_30y", "tail_40y"):
+        for d, v in S.clean(data.get(k, [])):
+            tails.setdefault(d, []).append(v)
+    tsl = S.clean([(d, round(sum(v) / len(v), 2)) for d, v in tails.items()])
+    tail_spec = dict(th.get("auction_tail_superlong_bp", {"method": "percentile", "window": "36w", "watch_above": "p85", "stress_above": "p95",
+                                                          "secondary_absolute": {"watch": 3, "stress": 6, "crisis": 12}}), direction="high_is_risk", window="36w", min_n=12)
+    D["auction_tail_superlong_bp"] = entry("auction_tail_superlong_bp", tsl, "Auction tail — 20Y/30Y/40Y (yield at lowest accepted − average, bp)", "event", "bps", cfg,
+                                           status="fresh" if tsl else "unavailable", spec=tail_spec, prev_level=pl.get("auction_tail_superlong_bp"), z_window=12,
+                                           equivalence_note="MoF result pages only (since the XLS lacks the average yield); the May-2025 20Y auction is the reference stress event")
+    if tail_spec.get("secondary_absolute") and tsl:
+        _cap_watch(D["auction_tail_superlong_bp"], tail_spec["secondary_absolute"])
+    t10 = S.clean(data.get("tail_10y", []))
+    D["auction_tail_10y_bp"] = entry("auction_tail_10y_bp", t10, "Auction tail — 10Y (bp)", "event", "bps", cfg, status="fresh" if t10 else "unavailable", z_window=12)
+    # ── auction calendar (MoF monthly HTML): next JGB auctions, super-long supply ahead ──
+    cal = [c for c in (data.get("_auction_calendar") or []) if isinstance(c, dict)]  # type: ignore
+    asof = D["fiscal_flow_daily"]["date"] or (tf[-1][0] if tf else None)
+    upcoming = sorted([c for c in cal if c.get("tenor") and asof and c["date"] > asof], key=lambda c: c["date"])[:8]
+    nxt = upcoming[0] if upcoming else None
+    nxt_sl = next((c for c in upcoming if c["tenor"] in ("20y", "30y", "40y")), None)
+    def _days(a: Optional[str], b_: Optional[str]) -> Optional[int]:
+        if not a or not b_:
+            return None
+        from datetime import date as _dt
+        return (_dt.fromisoformat(b_) - _dt.fromisoformat(a)).days
+    E["auction_calendar"] = {"source_id": "mof_auction_calendar", "label": "JGB auction calendar — next coupon auctions (MoF monthly HTML)", "unit": "days", "frequency": "event",
+                             "status": "fresh" if upcoming else "unavailable", "value": _days(asof, nxt["date"]) if nxt else None, "date": asof if upcoming else None,
+                             "next": nxt, "next_superlong": nxt_sl, "days_to_superlong": _days(asof, nxt_sl["date"]) if nxt_sl else None,
+                             "upcoming": [{"date": c["date"], "tenor": c["tenor"], "issue": c["issue"]} for c in upcoming],
+                             "level": "WATCH" if (nxt_sl and _days(asof, nxt_sl["date"]) is not None and _days(asof, nxt_sl["date"]) <= 3) else ("SAFE" if upcoming else "NO DATA"),
+                             "note": "supply event: super-long auction within 3 days = WATCH (position for the tail / QT_STRESS read)"}
+    if E["auction_calendar"]["status"] == "fresh":
+        E["auction_calendar"].pop("pending_by_design", None)
+    supply_ahead = E["auction_calendar"]["level"] == "WATCH"
     reg = "NO DATA" if not c20 else "INJECTION" if sb["signal"] == "RISK_ON" else "DRAIN" if sb["signal"] == "RISK_OFF" else "NEUTRAL"
     score = 0.0 if reg == "NO DATA" else round(max(-1.5, min(1.5, (zv or 0.0) * 0.75)), 2)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": reg, "status": "fresh" if c20 else "unavailable", "date": D["fiscal_flow_daily"]["date"]}
@@ -330,8 +365,12 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     alerts = [_alert("fiscal_flow_zscore", D["fiscal_flow_zscore"], "|Z| ≥ 2 = extraordinary daily flow (tax day, JGB settlement, pension, FX intervention)"),
               {"metric": "fiscal_flow_20d_cum", "level": "WATCH" if reg == "DRAIN" else "SAFE" if reg != "NO DATA" else "NO DATA", "value": D["fiscal_flow_20d_cum"]["value"], "threshold": None,
                "status": D["fiscal_flow_20d_cum"]["status"], "action_hint": "20-session cumulative below p20 = fiscal drain"},
-              _alert("bid_to_cover_superlong", D["bid_to_cover_superlong"], "weak super-long demand feeds the QT_STRESS overlay")]
-    flags = (["FISCAL_BIG_DAY"] if big else []) + (["FX_INTERVENTION_SUSPECT"] if D["fx_intervention_suspect"]["value"] else [])
+              _alert("bid_to_cover_superlong", D["bid_to_cover_superlong"], "weak super-long demand feeds the QT_STRESS overlay"),
+              _alert("auction_tail_superlong_bp", D["auction_tail_superlong_bp"], "wide tail = dealers demanded concession; ≥ 6 bp STRESS, ≥ 12 bp CRISIS (May-2025 20Y type event)"),
+              {"metric": "auction_calendar", "level": E["auction_calendar"]["level"], "value": E["auction_calendar"]["value"], "threshold": None, "status": E["auction_calendar"]["status"],
+               "action_hint": ("next super-long: %s %s" % (nxt_sl["date"], nxt_sl["tenor"])) if nxt_sl else "no super-long auction in the published calendar"}]
+    flags = (["FISCAL_BIG_DAY"] if big else []) + (["FX_INTERVENTION_SUSPECT"] if D["fx_intervention_suspect"]["value"] else []) \
+        + (["SUPER_LONG_TAIL"] if D["auction_tail_superlong_bp"].get("level") in ("WATCH", "STRESS", "CRISIS") else []) + (["SUPER_LONG_SUPPLY_AHEAD"] if supply_ahead else [])
     tl = "NONE" if reg == "NO DATA" else "GREEN" if reg == "INJECTION" else "RED" if reg == "DRAIN" else "YELLOW"
     signals = {"traffic_light": tl, "score": score, "label": reg, "flags": flags,
                "detail": "flow %s (Z %s) · 5d %s · 20d %s (%s) · FEFSA/py %s · BTC super-long %s" % (fv, zv, D["fiscal_flow_5d_cum"]["value"], D["fiscal_flow_20d_cum"]["value"], sb["signal"],
@@ -340,8 +379,19 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     history = {"dates": hd, "rows": {k: [dict(v).get(d) for d in hd] for k, v in (("treasury_funds_daily", tf), ("fiscal_flow_5d_cum", c5), ("fiscal_flow_20d_cum", c20), ("fiscal_flow_zscore", z))},
                "monthly": {"dates": [d for d, _ in S.tail(raw["taxes_monthly"], 24)],
                            "rows": {k: [dict(raw[k]).get(d) for d, _ in S.tail(raw["taxes_monthly"], 24)] for k in ("taxes_monthly", "pension_payments_monthly", "fefsa_receipts_monthly", "jgb_issued_monthly_mof", "tbills_net_monthly_mof", "net_fiscal_payments_monthly", "fx_factor_monthly")}},
+               "auctions": _auction_table(data, 30),
                "signal_log": ((prev or {}).get("history", {}).get("signal_log", []) + ([{"date": hd[-1], "label": reg, "score": score}] if hd else []))[-120:]}
     return _base(cfg["currency"], "fiscal", cfg, b, E, D, signals, history)
+
+
+def _auction_table(data: dict, n: int) -> List[dict]:
+    """Last n JGB coupon auctions (all tenors) with bid-to-cover, yield at lowest accepted, average yield and tail."""
+    rows: Dict[Tuple[str, str], dict] = {}
+    for t in ("2y", "5y", "10y", "20y", "30y", "40y"):
+        for pref, key in (("btc_", "btc"), ("hy_", "hy"), ("avgy_", "avg_yield"), ("tail_", "tail_bp")):
+            for d, v in S.clean(data.get(pref + t, [])):
+                rows.setdefault((d, t), {"date": d, "tenor": t})[key] = v
+    return sorted(rows.values(), key=lambda r: (r["date"], r["tenor"]))[-n:]
 
 
 # ═══════════════════════ 3 · BANKING TRANSMISSION (MD13, MD02, Accounts, MD08) ═══════════════════════
