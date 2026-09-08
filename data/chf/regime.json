@@ -1,0 +1,184 @@
+{
+ "currency": "CHF",
+ "generated_at": "2026-09-08T19:23:16+00:00",
+ "as_of": "2026-09-04",
+ "config_version": "0.2",
+ "regime": "NEUTRAL",
+ "traffic_light": "YELLOW",
+ "weighted_score": 0.425,
+ "block_scores": {
+  "central_bank": 0.0,
+  "rates": 0.75,
+  "fiscal": 0.5,
+  "banking": 1.0
+ },
+ "weights": {
+  "central_bank": 0.45,
+  "rates": 0.3,
+  "fiscal": 0.1,
+  "banking": 0.15
+ },
+ "blocks_used": 4,
+ "flags": [
+  "PHASE_STEADY",
+  "CONFED_CASH_BIG_MOVE"
+ ],
+ "overlays": {
+  "STERILISATION_STRESS": null,
+  "STERILISATION_STRESS_conditions_met": 0
+ },
+ "inputs": {
+  "reserves_level": "SAFE",
+  "reserves_in_range": true,
+  "reserves_above_range": true,
+  "spread_level": "SAFE",
+  "spread_bps": 1.0,
+  "friction_confirmed": false
+ },
+ "rules": {
+  "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: saron_minus_absorption_rate_bps ≥ STRESS persistent AND (supplying_repos > 0 OR mm_operations_supplied_month > 0 OR secured_loans rising); quantity anchor (excess_to_required_ratio ≤ STRESS) is a dead-man switch",
+  "FLOOR_FRICTION": "reserves ample AND friction_confirmed (SARON at/above policy 3 sessions)",
+  "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
+  "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
+  "NEUTRAL": "otherwise"
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "name": "FX Intervention / Reserve Creation",
+   "bias": "CHF-NEGATIVE",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.sight_deposits_wow level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.fx_investments_change_pct >= p80",
+     "met": null
+    },
+    {
+     "condition": "central_bank.balance_sheet_phase == FX_EXPANSION",
+     "met": null
+    }
+   ]
+  },
+  {
+   "id": "L2",
+   "name": "Sterilisation Squeeze",
+   "bias": "DEFENSIVE",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.absorption_share level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.saron_minus_absorption_rate_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "fiscal.mmdrc_bid_to_cover level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "name": "Tier Leak (rates to −0.25)",
+   "bias": "CHF-NEGATIVE",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.floor_leak == true",
+     "met": null
+    },
+    {
+     "condition": "central_bank.absorption_share level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.sar3m_minus_saron_bps level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "name": "Funding Stress",
+   "bias": "EMERGENCY",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.saron_minus_absorption_rate_bps level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "central_bank.supplying_repos > 0",
+     "met": false
+    },
+    {
+     "condition": "rates.band_position level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "name": "Confederation Drain",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.confed_cash_mom >= p80",
+     "met": false
+    },
+    {
+     "condition": "central_bank.sight_deposits_4w_change <= p20",
+     "met": null
+    },
+    {
+     "condition": "fiscal.fiscal_regime == DRAIN",
+     "met": null
+    }
+   ]
+  },
+  {
+   "id": "L6",
+   "name": "Curve Repricing",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.confed_10y_5d_change_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.curve_10y_2y_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.confed_2y_minus_policy_bps >= p90",
+     "met": null
+    }
+   ]
+  }
+ ],
+ "heartbeat": {
+  "lane": "all",
+  "backfill": true,
+  "errors": []
+ }
+}
