@@ -60,7 +60,7 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 ## Phase status
 - Phase 1 Desk Standard + CAD source map: sealed (v0.3, triangulated 2026-09-08).
 - Phase 2 CAD flagship: **this repo**. Pending: StatCan credit tables, auction net issuance, RG archive backfill on first live run.
-- Phase 3 GBP → AUD → JPY → CHF (live) → NZD → USD migration → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
+- Phase 3 GBP → AUD → JPY → CHF → NZD (live) → USD migration → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
 
 ## GBP Command Center (config/gbp.json v0.2.1)
 
@@ -76,6 +76,15 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Anchor: RBA demand estimate for reserves $70–100bn (Jacobs, "The Road to Ample", 25 Aug 2026); OMO full allotment at target + 10 bp since 9 Apr 2025; open repo ends early 2027.
 - Lanes: `.github/workflows/refresh-aud.yml` — daily 02:30 UTC, weekly Fri 08:00 UTC, monthly 2nd, backfill 1st.
 - Offline test: `python -m ingest.run --ccy aud --lane all --backfill --fixtures fixtures/aud --no-rss && python -m ingest.validate --ccy aud`
+
+## NZD Command Center (config/nzd.json v0.2.1)
+
+- Sources (all verified 2026-09-08): RBNZ statistics workbooks at stable URLs (`/-/media/project/sites/rbnz/files/statistics/series/...`), parsed BY SERIES ID: B2 daily wholesale rates (`INM.DP1.N` OCR, `INM.DD1.N` ODR, `INM.DD2.N` ORRF, `INM.DN.NZK` overnight interbank — sparse, bank bills `INM.DB01/02/03`, NZGB `INM.DG101/102/105/110`, swaps `INM.DS01/02/10`, `INM.DS61`), D12 standing facilities (daily settlement cash, ORRF use, FX swaps, bond lending), D3 open market operations (weekly reverse-repo OMO since 2026-04-02: 7d + 28d full allotment at OCR + 10 bp; LSAP sales to NZDM NZ$415m/month; early repurchases; BMLS), D10 influences on settlement cash (monthly, header-label parser), R1 balance sheet, R3 analytical accounts (Crown settlement accounts, settlement institutions' balances, monetary base), D30 holdings by sector (57% non-resident), D9 weekly turnover, C5 sector lending, C50 money & credit, L2 core funding ratio. NZDM: tender result HTML pages (`/tender/treasury-bill-tender-<n>`, `/tender/nominal-bond-tender-<n>`, 14:35 NZT; T-bills Tuesday T+1 with 3 series, bonds Thursday T+3 with 2–3 lines), listing pages (dates + upcoming tenders), dated XLSX histories and the bonds-on-issue file (coupon / maturity calendar) linked from `/investor-resources/data`.
+- Layers: 1 RBNZ (settlement cash daily = WRESBAL analog with desk dead-man anchors 20/15/10/7 bn — never a regime trigger; OMO stock, reliance share, take-up; ORRF ≥ 100 m WATCH / ≥ 500 m STRESS; residual flow = ΔSC − ΔOMO − ΔFX swaps − ΔORRF as a coincident, noisy Crown proxy with a ± band vs D10 and tagged coupon / maturity / LSAP / settlement / tax days) → 2 Crown / NZDM (R3 CSA, D10 government cash influence, tender coverage volume-weighted, tail, allocation ratio, upcoming settlements = SUPPLY_AHEAD, non-resident share, long-end turnover share) → 3 banks (housing / business+agri / broad money y/y, CFR headroom as gate only) → 4 rates (bank bill 30d − OCR raw with 25/40/60 bp anchors and persistence, hike pricing = swap 1y − OCR shown beside it and gating SCARCITY, overnight − OCR on published days, bill curve slope, 2y − OCR, 10y − 2y, bond-swap 10y, 10y Δ5d).
+- Regime: weights CB 0.40 · rates 0.30 · fiscal 0.15 · banking 0.15; LIQUIDITY_SCARCITY price-gated (bills ≥ STRESS persistent AND friction confirmed AND not hike pricing); OMO_DEPENDENCE overlay (2 of 4, persistence 2 runs); flags STANDING_FACILITY_USED, FX_SWAP_ACTIVE, OMO_TAKEUP_SURGE, OMO_RELIANCE_RISING, FLOOR_LEAK, FISCAL_BIG_DAY, SUPPLY_AHEAD, TENDER_WEAK, TENDER_TAIL, TBILL_UNDERALLOCATED, COUPON_PAYMENT_DAY, BOND_MATURITY_DAY, LSAP_SALE_DAY, TAX_DAY, FOREIGN_DEMAND_FADE, PHASE_*.
+- Lanes: `.github/workflows/refresh-nzd.yml` — daily 04:00 UTC (+ retry 06:00), weekly_tue 03:00 UTC (T-bills), weekly_thu 03:00 UTC (OMO + bonds), weekly_mon 04:00 UTC (D9), monthly 3rd/15th/19th, backfill 1st. Every lane rebuilds all four blocks from `history/nzd/*.csv` + `history/nzd/_side.json` (tender rows, upcoming, bonds on issue, D3 rows).
+- Offline test: `python -m ingest.run --ccy nzd --lane all --backfill --fixtures fixtures/nzd --no-rss && python -m ingest.validate --ccy nzd`
+- Netlify: same site, dashboard at `/nzd/`. Units: files in NZ$ millions, dashboard in bn. Pending (Phase 3): L1 mismatch, S40 deposits, B20/B21 mortgage rates, D35 Kauri, NZDM ECP, Treasury monthly statements, BKBM public feed, IRD GST/PAYE dates, holiday-aware freshness (nominal daily = 4 days covers a long weekend).
 
 ## CHF Command Center (config/chf.json v0.2)
 
