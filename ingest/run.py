@@ -406,7 +406,7 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         need = ["ac_" + k for k, _ in PJ.BojAccountsProvider.ITEMS] + ["FAAP@01", "FAAPOBAL1", "FAAPOBAL1@", "FAAPOBRDCD5", "MAM1NAM2M2MO", "MAM1NAM3M3MO", "MAM1NAM3M1MO", "MAM1NAM3DMMO", "MABS1AN11",
                                                                      "MASDM@01", "MASDM254", "MASDM255", "MASDM273", "MASDM26", "MASDM@03", "MACAB1043", "MACAB1183", "btc_20y", "btc_30y", "btc_40y", "btc_10y", "tail_10y", "tail_20y", "tail_30y", "tail_40y",
                                                                      "taxes_receipts", "pension_payments", "fefsa_receipts", "fefsa_receipts_py", "fefsa_payments", "gov_bonds_over_1y_receipts", "tbills_balance",
-                                                                     "on_col_same_avg", "1w_unc_fwd_avg", "1m_unc_fwd_avg", "3m_unc_same_avg", "call_outstanding_total", "treasury_proj"]
+                                                                     "on_col_same_avg", "on_unc_same_avg", "on_unc_same_max", "on_unc_same_min", "1w_unc_fwd_avg", "1m_unc_fwd_avg", "3m_unc_same_avg", "call_outstanding_total", "treasury_proj"]
         for k in need:
             if k not in data:
                 p = os.path.join(hist_dir, "%s.csv" % k)

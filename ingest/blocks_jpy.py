@@ -10,6 +10,7 @@ pooled_all, pooled_ho, loans, slf, lsp, net_change, mbase, cab_nonres, [treasury
 MoF yields '1Y'..'40Y'; JSDA 'trr_<tenor>'; fcall keys; MoF receipts '<item>_<field>'; auctions 'btc_<tenor>'; corridor
 'basic_loan_rate' / 'policy_rate' / 'ioer'."""
 from __future__ import annotations
+import re
 from typing import Dict, List, Optional, Tuple
 from . import series as S
 from .series import Series
@@ -96,7 +97,8 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], MAP: Dict[str, Opti
         ser = S.clean(data.get(dk, [])) if dk else []
         raw[key] = ser
         fq = _freq(sc)
-        u = sc.get("unit") or ("%" if fq != "ten_day" and ("rate" in key or key.startswith(("tona", "jgb", "trr", "call_", "ioer", "collateralized"))) else unit)
+        u = sc.get("unit") or ("%" if fq != "ten_day" and ("rate" in key or key.startswith(("tona", "jgb", "trr", "call_", "ioer", "collateralized")))
+                               and not re.search(r"volume|outstanding|purchases|issued|redeemed|holdings", key) else unit)
         if "pct" in key or key.endswith("_yoy"):
             u = "%"
         e = entry(key, ser, sc["label"] if "label" in sc else key, fq, u, cfg, sc.get("id"), sc.get("usd_analog"), status=None if dk else "unavailable",
@@ -467,6 +469,18 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     for k in ("call_1w", "call_1m", "call_3m", "collateralized_on", "call_market_outstanding"):
         if raw[k] and E[k]["status"] == "stale":
             E[k]["status"] = "proxy"  # fcall snapshot history builds up run by run
+    tona, th_, tl_ = raw["tona"], raw["tona_high"], raw["tona_low"]
+    # BoJ API lags 2 business days; the fcall summary (T-1) carries the same uncollateralized O/N average/max/min → splice the newest sessions
+    spliced = 0
+    for key_, fk in (("tona", "on_unc_same_avg"), ("tona_high", "on_unc_same_max"), ("tona_low", "on_unc_same_min")):
+        base_, extra = raw[key_], S.clean(data.get(fk, []))
+        last = base_[-1][0] if base_ else "0000-00-00"
+        add = [(d, v) for d, v in extra if d > last]
+        if add:
+            raw[key_] = S.clean(base_ + add)
+            spliced = max(spliced, len(add))
+            E[key_] = entry(key_, raw[key_], E[key_]["label"], "daily", "%", cfg, E[key_].get("source_id"), E[key_].get("usd_analog"), z_window=30)
+            E[key_]["equivalence_note"] = "latest %d session(s) from the BoJ call-market summary (fcall, T-1); API value (T+2) replaces them when published" % len(add)
     tona, th_, tl_ = raw["tona"], raw["tona_high"], raw["tona_low"]
     ioer = _ffill(raw["ioer"], tona)
     blr = _ffill(raw["basic_loan_rate"], tona)
