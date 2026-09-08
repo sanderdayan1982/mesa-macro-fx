@@ -15,6 +15,8 @@ from . import engine as E
 from .providers import ValetProvider, ReceiverGeneralProvider, IadbProvider, OnsProvider, RbaProvider, ProviderError, fetch_rss
 from . import blocks_gbp as BG
 from . import blocks_aud as BA
+from . import blocks_jpy as BJ
+from . import providers_jpy as PJ
 from .quality import evaluate_series, system_summary
 from .series import Series, clean
 
@@ -253,10 +255,151 @@ def fetch_aud(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     return blocks
 
 
+def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    """JPY lanes: daily (jd XLSX T-1 + TONA API + fcall snapshot + MoF yields + JSDA TRR), daily_provisional (jx/jp), ten_day (BoJ Accounts),
+    weekly (auction results XLS + ITS snapshot), monthly (MD13/MD02/MD01/MD06/MD08 + MoF receipts). One request per source, >= 1 s apart."""
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+    src = cfg["sources"]
+    fx = a.fixtures
+    raw_dir = os.path.join(ROOT, "logs", "jpy", "raw") if not fx else None
+    lanes = ["daily", "ten_day", "weekly", "monthly"] if a.lane == "all" else [a.lane]
+    from datetime import date, timedelta
+    today = date.today()
+
+    def _err(tag: str, e: Exception) -> None:
+        errors.append("%s: %s" % (tag, e))
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": tag, "error": str(e)})
+
+    def _ym(days_back: int) -> str:
+        d = today - timedelta(days=days_back)
+        return "%04d%02d" % (d.year, d.month)
+
+    data: Dict[str, Series] = {}
+    # ── corridor (event) ──
+    try:
+        data.update(PJ.BojPolicyRateProvider(src["boj_policy_rates_csv"]["url"], fixtures_dir=fx, raw_dir=raw_dir).fetch())
+    except Exception as e:  # noqa
+        _err("boj_policy_rates_csv", e)
+    # ── daily XLSX (final) ──
+    if "daily" in lanes or "daily_provisional" in lanes:
+        back = 400 if a.backfill else 12
+        dates = [(today - timedelta(days=i)).isoformat() for i in range(back, 0, -1) if (today - timedelta(days=i)).weekday() < 5]
+        prov = PJ.BojDailyCabProvider(src["boj_daily_cab"]["url_final"].split("jd/")[0], fixtures_dir=fx, raw_dir=raw_dir)
+        got, errs, hashes = prov.fetch(dates, "jd")
+        for x in errs:
+            _err("boj_daily_cab", Exception(x))
+        if not fx:
+            got = _merge_hist(hist_dir, got, sorted(set(list(got) + [k for k, _ in PJ.BojDailyCabProvider.ITEMS])))
+        data.update(got)
+        if hashes:
+            E.log_event(oplog, "STRUCTURE_HASH", "system", {"jd_latest": max(hashes), "hash": hashes[max(hashes)]})
+        if "daily_provisional" in lanes and not fx:
+            try:
+                gp, ep, _ = prov.fetch([today.isoformat(), (today + timedelta(days=1)).isoformat()], "jp")
+                if gp.get("treasury"):
+                    data["treasury_proj"] = clean(_merge_hist(hist_dir, {"treasury_proj": gp["treasury"]}, ["treasury_proj"])["treasury_proj"])
+                for x in ep:
+                    _err("boj_daily_cab[jp]", Exception(x))
+            except Exception as e:  # noqa
+                _err("boj_daily_cab[jp]", e)
+        elif fx:
+            data.update({"treasury_proj": []})
+    if "daily" in lanes:
+        api = PJ.BojApiProvider(src["boj_api"]["base"], fixtures_dir=fx, raw_dir=raw_dir)
+        try:
+            got = api.fetch("FM01", ["STRDCLUCON", "STRDCLUCONH", "STRDCLUCONL", "STRDCLUCV"], _ym(800 if a.backfill else 70), _ym(0))
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("boj_api[FM01]", e)
+        try:
+            got, errs = PJ.BojCallMarketProvider(fixtures_dir=fx, raw_dir=raw_dir).fetch_fcall()
+            for x in errs:
+                _err("boj_call_market", Exception(x))
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("boj_call_market", e)
+        try:
+            y = PJ.MofYieldsProvider(src["mof_jgb_yields"]["url_current_month"], src["mof_jgb_yields"]["url_history"], fixtures_dir=fx, raw_dir=raw_dir).fetch(history=a.backfill, since="2023-01-01")
+            data.update(_merge_hist(hist_dir, y, list(y)) if not fx else y)
+        except Exception as e:  # noqa
+            _err("mof_jgb_yields", e)
+        try:
+            t = PJ.JsdaRepoProvider(src["jsda_tokyo_repo_rate"]["url_daily"], src["jsda_tokyo_repo_rate"]["url_history"], fixtures_dir=fx, raw_dir=raw_dir).fetch(history=a.backfill, since="2023-01-01")
+            t = {"trr_%s" % k: v for k, v in t.items()}
+            data.update(_merge_hist(hist_dir, t, list(t)) if not fx else t)
+        except Exception as e:  # noqa
+            _err("jsda_tokyo_repo_rate", e)
+    # ── ten-day: BoJ Accounts ──
+    if "ten_day" in lanes or "daily" in lanes:
+        try:
+            since = (today - timedelta(days=700 if a.backfill else 45)).isoformat()
+            got, errs = PJ.BojAccountsProvider(src["boj_accounts"]["url"].split("{YYYY}")[0], fixtures_dir=fx, raw_dir=raw_dir).fetch(PJ.BojAccountsProvider.candidate_dates(since, today.isoformat()))
+            for x in errs:
+                _err("boj_accounts", Exception(x))
+            got = {"ac_%s" % k: v for k, v in got.items()}
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("boj_accounts", e)
+    # ── weekly: auctions + ITS snapshot ──
+    if "weekly" in lanes or "daily" in lanes:
+        try:
+            au = PJ.MofAuctionProvider(src["mof_auction_results"]["url_jgb"], fixtures_dir=fx, raw_dir=raw_dir).fetch(since="2022-01-01")
+            data.update(_merge_hist(hist_dir, au, list(au)) if not fx else au)
+        except Exception as e:  # noqa
+            _err("mof_auction_results", e)
+        try:
+            PJ.MofItsProvider(src["mof_its_weekly"]["url"], fixtures_dir=fx, raw_dir=raw_dir).snapshot()
+        except Exception as e:  # noqa
+            _err("mof_its_weekly", e)
+    # ── monthly: API + MoF receipts ──
+    if "monthly" in lanes or (a.backfill and "daily" in lanes):
+        api = PJ.BojApiProvider(src["boj_api"]["base"], fixtures_dir=fx, raw_dir=raw_dir)
+        for db, codes in (("MD13", ["FAAP@01", "FAAPOBAL1", "FAAPOBAL1@", "FAAPOBRDCD5"]), ("MD02", ["MAM1NAM2M2MO", "MAM1NAM3M3MO", "MAM1NAM3M1MO", "MAM1NAM3DMMO"]),
+                          ("MD01", ["MABS1AN11", "MABS1AN113", "MABS1AN114"]), ("MD06", ["MASDM@01", "MASDM253", "MASDM254", "MASDM255", "MASDM273", "MASDM26", "MASDM58", "MASDM5F", "MASDM51", "MASDM@03", "MASDM@07", "MABCLE16"]),
+                          ("MD08", ["MACAB1013", "MACAB1023", "MACAB1043", "MACAB1053", "MACAB1183", "MACAB1201"])):
+            try:
+                got = api.fetch(db, codes, _ym(3700 if a.backfill else 400), _ym(0))
+                data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+            except Exception as e:  # noqa
+                _err("boj_api[%s]" % db, e)
+        try:
+            months = []
+            d = today
+            for i in range(30 if a.backfill else 4):
+                months.append("%04d-%02d" % (d.year, d.month))
+                d = (d.replace(day=1) - timedelta(days=1))
+            got, errs = PJ.MofReceiptsProvider(src["mof_treasury_receipts_payments"]["url"].split("e{YYYYMM}")[0], fixtures_dir=fx, raw_dir=raw_dir).fetch(sorted(months))
+            for x in errs:
+                _err("mof_treasury_receipts_payments", Exception(x))
+            data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("mof_treasury_receipts_payments", e)
+    # history CSVs
+    for i, ser in data.items():
+        if ser:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
+    # daily lane on a live run: pull monthly/ten-day/weekly series from history so all blocks stay complete
+    if not fx:
+        need = ["ac_" + k for k, _ in PJ.BojAccountsProvider.ITEMS] + ["FAAP@01", "FAAPOBAL1", "FAAPOBAL1@", "FAAPOBRDCD5", "MAM1NAM2M2MO", "MAM1NAM3M3MO", "MAM1NAM3M1MO", "MAM1NAM3DMMO", "MABS1AN11",
+                                                                     "MASDM@01", "MASDM254", "MASDM255", "MASDM273", "MASDM26", "MASDM@03", "MACAB1043", "MACAB1183", "btc_20y", "btc_30y", "btc_40y",
+                                                                     "taxes_receipts", "pension_payments", "fefsa_receipts", "fefsa_receipts_py", "fefsa_payments", "gov_bonds_over_1y_receipts", "tbills_balance",
+                                                                     "on_col_same_avg", "1w_unc_fwd_avg", "1m_unc_fwd_avg", "3m_unc_same_avg", "call_outstanding_total", "treasury_proj"]
+        for k in need:
+            if k not in data:
+                p = os.path.join(hist_dir, "%s.csv" % k)
+                if os.path.exists(p):
+                    data[k] = clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"])
+    blocks["rates"] = BJ.build_rates(cfg, data, prev.get("rates"))
+    blocks["central_bank"] = BJ.build_central_bank(cfg, data, prev.get("central_bank"))
+    blocks["fiscal"] = BJ.build_fiscal(cfg, data, prev.get("fiscal"))
+    blocks["banking"] = BJ.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    return blocks
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ccy", default="cad")
-    ap.add_argument("--lane", default="all", choices=["weekly", "daily", "monthly", "all"])
+    ap.add_argument("--lane", default="all", choices=["weekly", "daily", "daily_provisional", "ten_day", "monthly", "all"])
     ap.add_argument("--backfill", action="store_true", help="fetch full history (first run / monthly revalidation)")
     ap.add_argument("--fixtures", default=None, help="offline mode: read CSV fixtures from this dir instead of HTTP")
     ap.add_argument("--no-rss", action="store_true")
@@ -271,7 +414,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     errors: List[str] = []
 
     prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
-    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud}[ccy]
+    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy}[ccy]
     blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
 
     # ── quality (system-wide) ──

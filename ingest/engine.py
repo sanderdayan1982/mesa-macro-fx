@@ -75,10 +75,32 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
         recent = [v for v in qt["sparkline"][-13:] if v is not None]
         if recent and sum(recent) / len(recent) < pace * 1.25:
             flags.append("QT_ACCELERATION")
+    overlays = _overlays(cfg, blocks)
+    for ov, st in overlays.items():
+        if st and st.endswith("_HIGH") and ov not in flags:
+            flags.append(ov)
     tl = {"LIQUIDITY_INJECTION": "GREEN", "NEUTRAL": "YELLOW", "FLOOR_FRICTION": "YELLOW", "LIQUIDITY_DRAIN": "RED", "LIQUIDITY_SCARCITY": "RED", "NO SIGNAL": "NONE"}[regime]
     return {"regime": regime, "traffic_light": tl, "weighted_score": weighted, "block_scores": scores, "weights": w, "blocks_used": used,
-            "flags": flags, "inputs": {"reserves_level": r_lvl, "reserves_in_range": in_range, "reserves_above_range": res.get("above_range"), "spread_level": s_lvl, "spread_bps": spr.get("value"), "friction_confirmed": friction},
+            "flags": flags, "overlays": overlays, "inputs": {"reserves_level": r_lvl, "reserves_in_range": in_range, "reserves_above_range": res.get("above_range"), "spread_level": s_lvl, "spread_bps": spr.get("value"), "friction_confirmed": friction},
             "rules": rc.get("rules", {})}
+
+
+def _overlays(cfg: dict, blocks: Dict[str, dict]) -> Dict[str, Optional[str]]:
+    """Regime overlays (JPY v0.2 QT_STRESS): counted conditions in the scenario mini-language; result <NAME>_LOW/_HIGH or None."""
+    out: Dict[str, Optional[str]] = {}
+    for name, ov in (cfg.get("regime", {}).get("overlays") or {}).items():
+        conds = ov.get("conditions") or []
+        n = 0
+        for c in conds:
+            try:
+                if _resolve_condition(c, blocks):
+                    n += 1
+            except Exception:
+                pass
+        need = ov.get("min", 2)
+        out[name] = None if not conds else ("%s_HIGH" % name if n >= need else "%s_LOW" % name if n > 0 else None)
+        out[name + "_conditions_met"] = n  # type: ignore
+    return out
 
 
 # ───────────────────────────── scenarios ─────────────────────────────
@@ -221,6 +243,8 @@ def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
         return _calendar_gbp(cfg, cal, now)
     if cfg.get("currency") == "AUD":
         return _calendar_aud(cfg, cal, now)
+    if cfg.get("currency") == "JPY":
+        return _calendar_jpy(cfg, cal, now)
     for d in cal.get("boc_decision_dates_2026", []):
         items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
     # next weekly B2 (Friday) and next daily/RG
@@ -313,4 +337,34 @@ def _calendar_aud(cfg: dict, cal: dict, now: datetime) -> dict:
             i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
     return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
             "wat_offset_note": "Sydney = WAT + 9h (AEST) / + 10h (AEDT)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
+
+
+def _calendar_jpy(cfg: dict, cal: dict, now: datetime) -> dict:
+    items = []
+    for d in cal.get("boj_mpm_2026", []) + cal.get("boj_mpm_2027", []):
+        items.append({"date": d, "title": "BoJ Monetary Policy Meeting decision (day 2)", "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "12:00 Tokyo")})
+    nb = now.date() + timedelta(days=1)
+    while nb.weekday() >= 5:
+        nb += timedelta(days=1)
+    items.append({"date": nb.isoformat(), "title": "BoJ daily CAB / market operations (final T-1 ~10:00 JST) + TONA final + Tokyo Repo Rate", "type": "rates", "impact": "MEDIUM", "time_local": "10:00 / 12:30 Tokyo"})
+    y, m = now.year, now.month
+    import calendar as _c
+    for dd in (10, 20, _c.monthrange(y, m)[1]):
+        d = datetime(y, m, dd).date()
+        if d >= now.date():
+            items.append({"date": d.isoformat(), "title": "BoJ Accounts data date (published 2–3 business days later)", "type": "central_bank", "impact": "MEDIUM", "time_local": ""})
+    nm = datetime(y + (m == 12), m % 12 + 1, 1).date()
+    items.append({"date": (nm + timedelta(days=7)).isoformat(), "title": "BoJ loans & deposits (MD13) ~8th", "type": "banking", "impact": "LOW", "time_local": "08:50 Tokyo"})
+    items.append({"date": (nm + timedelta(days=9)).isoformat(), "title": "BoJ money stock (MD02) ~2nd week", "type": "banking", "impact": "LOW", "time_local": "08:50 Tokyo"})
+    items.append({"date": (nm + timedelta(days=4)).isoformat(), "title": "MoF Receipts & Payments of Treasury Funds (monthly Excel)", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+    d16 = datetime(y, m, 16).date() if now.day < 16 else datetime(y + (m == 12), m % 12 + 1, 16).date()
+    items.append({"date": d16.isoformat(), "title": "Reserve maintenance period starts (16th–15th) — TONA highs common around period end", "type": "rates", "impact": "LOW", "time_local": ""})
+    items.append({"date": None, "title": "MoF JGB auctions per monthly calendar (10Y/30Y/5Y/20Y/40Y/2Y + weekly T-Bills) — settlement drains reserves", "type": "fiscal", "impact": "MEDIUM", "time_local": "12:35 Tokyo"})
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= now.date().isoformat()], key=lambda x: x["date"] or "9999")
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "Tokyo = WAT + 8h all year (JST has no DST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
             "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
