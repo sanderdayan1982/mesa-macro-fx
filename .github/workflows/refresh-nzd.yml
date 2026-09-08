@@ -1,0 +1,69 @@
+# Mesa Macro FX — NZD refresh lanes (config/nzd.json v0.2.x, Desk Standard v0.3)
+# RBNZ releases its daily tables after 15:00 NZT (03:00 UTC NZST / 02:00 UTC NZDT): daily lane 04:00 UTC + retry 06:00 UTC.
+# NZDM: T-bill tender Tuesday 14:30 NZT (results 14:35) → 03:00 UTC Tuesday; bond tender Thursday 14:30 NZT + RBNZ OMO 11:30 → 03:00 UTC Thursday.
+# Monthly: 3rd (L2), 15th (R1/R3 ~14th), 19th (D30 ~18th); the 1st backfill also pulls D10/C5/C50 of the previous month (last day).
+# Courtesy rule: one request per file per lane, identifiable User-Agent, >= 1 s apart, raw snapshots in logs/nzd/raw; XLSX parsed by Series Id.
+name: refresh-nzd
+on:
+  schedule:
+    - cron: "0 4 * * 1-5"      # daily lane
+    - cron: "0 6 * * 1-5"      # daily retry (late release / holiday)
+    - cron: "0 3 * * 2"        # weekly_tue — NZDM T-bill results
+    - cron: "0 3 * * 4"        # weekly_thu — RBNZ OMO + NZDM bond results
+    - cron: "0 4 * * 1"        # weekly_mon — D9 turnover
+    - cron: "0 4 3,15,19 * *"  # monthly lane
+    - cron: "0 5 1 * *"        # keepalive + full revalidation (backfill) on the 1st
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "daily | daily_retry | weekly_tue | weekly_thu | weekly_mon | monthly | all"
+        default: "all"
+      backfill:
+        description: "full history refetch (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: refresh-nzd
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resolve lane
+        id: lane
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "lane=${{ github.event.inputs.lane }}" >> $GITHUB_OUTPUT
+            echo "backfill=${{ github.event.inputs.backfill }}" >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.schedule }}" in
+              "0 4 * * 1-5")     echo "lane=daily"      >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 6 * * 1-5")     echo "lane=daily"      >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 3 * * 2")       echo "lane=weekly_tue" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 3 * * 4")       echo "lane=weekly_thu" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 4 * * 1")       echo "lane=weekly_mon" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 4 3,15,19 * *") echo "lane=monthly"    >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              *)                 echo "lane=all"        >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      - name: Run ingestion (NZD)
+        run: |
+          if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
+          python -m ingest.run --ccy nzd --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/nzd/oplog.json) — last good JSON kept as stale"
+      - name: Validate JSON against schema
+        run: python -m ingest.validate --ccy nzd
+      - name: Commit data
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/nzd history/nzd logs/nzd
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "data(nzd): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push
