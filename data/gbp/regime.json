@@ -1,0 +1,180 @@
+{
+ "currency": "GBP",
+ "generated_at": "2026-09-08T06:45:03+00:00",
+ "as_of": "2026-09-02",
+ "config_version": "0.2.2",
+ "regime": "NEUTRAL",
+ "traffic_light": "YELLOW",
+ "weighted_score": 0.4,
+ "block_scores": {
+  "central_bank": 0.5,
+  "rates": 0.5,
+  "fiscal": 0.0,
+  "banking": 0.0
+ },
+ "weights": {
+  "central_bank": 0.45,
+  "rates": 0.35,
+  "fiscal": 0.1,
+  "banking": 0.1
+ },
+ "blocks_used": 4,
+ "flags": [
+  "PHASE_QT",
+  "REPO_DEPENDENCE_HEALTHY"
+ ],
+ "inputs": {
+  "reserves_level": "SAFE",
+  "reserves_in_range": false,
+  "reserves_above_range": true,
+  "spread_level": "SAFE",
+  "spread_bps": -1.99,
+  "friction_confirmed": false
+ },
+ "rules": {
+  "LIQUIDITY_SCARCITY": "reserves BELOW PMRR floor (365bn) AND overnight_minus_policy_bps >= 0 persistent (3 sessions or weekly mean)",
+  "FLOOR_FRICTION": "reserves within/above PMRR AND overnight_minus_policy_bps >= 0 persistent (SONIA pinned at/above Bank Rate while reserves ample); −1bp single print = early flag only, not a regime",
+  "LIQUIDITY_DRAIN": "weighted score <= -0.5",
+  "LIQUIDITY_INJECTION": "weighted score >= +0.5",
+  "NEUTRAL": "otherwise"
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "name": "GBP Reserve Scarcity Approach",
+   "bias": "DEFENSIVE",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.reserves level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "rates.overnight_minus_policy_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.reserves_wow_pct <= p20",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L2",
+   "name": "Repo-led Absorption",
+   "bias": "NEUTRAL",
+   "active": true,
+   "conditions_met": 3,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.repo_offset >= p80",
+     "met": true
+    },
+    {
+     "condition": "rates.overnight_minus_policy_bps level == SAFE",
+     "met": true
+    },
+    {
+     "condition": "central_bank.reserves level == SAFE",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "name": "QT Drag Intensifying",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.qt_pace level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.net_liquidity_wow_pct <= risk_off",
+     "met": false
+    },
+    {
+     "condition": "central_bank.currency_drain <= p20",
+     "met": null
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "name": "Funding Stress",
+   "bias": "EMERGENCY",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.overnight_minus_policy_bps level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "central_bank.reserves level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "central_bank.ltr_lending >= p97",
+     "met": null
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "name": "Fiscal Injection",
+   "bias": "CONSTRUCTIVE",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.net_spending_yoy >= injection",
+     "met": false
+    },
+    {
+     "condition": "fiscal.cgncr_zscore >= 1",
+     "met": false
+    },
+    {
+     "condition": "central_bank.reserves_wow_pct >= p80",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L6",
+   "name": "Transmission Break",
+   "bias": "CAUTION",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "banking.transmission_signal == RED",
+     "met": false
+    },
+    {
+     "condition": "banking.pnfc_lending mom_pct zscore <= -1",
+     "met": false
+    },
+    {
+     "condition": "banking.household_deposits mom_pct zscore <= -1",
+     "met": true
+    }
+   ]
+  }
+ ],
+ "heartbeat": {
+  "lane": "all",
+  "backfill": true,
+  "errors": []
+ }
+}
