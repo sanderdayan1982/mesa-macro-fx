@@ -26,7 +26,70 @@ from html.parser import HTMLParser
 from typing import Dict, List, Optional, Tuple
 
 from .providers import ProviderError, UA
-from .providers_chf import _http, xlsx_sheets, _rows_of
+from .providers_chf import xlsx_sheets, _rows_of
+try:
+    import requests  # type: ignore
+except Exception:  # noqa
+    requests = None
+
+BROWSER_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-NZ,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+}
+_SESSIONS: Dict[str, object] = {}
+_LAST_403: Dict[str, str] = {}
+
+
+def _session(origin: str):
+    """one requests.Session per origin, primed with a GET on the site root so Sitecore/Drupal cookies exist before the file request.
+    RBNZ and NZDM answered HTTP 403 to the desk User-Agent from the GitHub runner on the first live run (2026-09-08) → browser headers + cookies."""
+    if requests is None:
+        raise ProviderError("requests not installed")
+    if origin not in _SESSIONS:
+        sess = requests.Session()
+        sess.headers.update(BROWSER_HEADERS)
+        try:
+            sess.get(origin + "/", timeout=30)
+        except Exception:  # noqa
+            pass
+        _SESSIONS[origin] = sess
+    return _SESSIONS[origin]
+
+
+def _http(url: str, timeout: int = 60, retries: int = 3, binary: bool = False):
+    """browser-like fetch with a primed session; on 403 retries once with the desk UA, then records the server headers for the oplog"""
+    from urllib.parse import urlsplit
+    sp = urlsplit(url)
+    origin = "%s://%s" % (sp.scheme, sp.netloc)
+    sess = _session(origin)
+    last: Optional[Exception] = None
+    for i in range(retries):
+        try:
+            hdr = {"Referer": origin + "/", "Accept": ("application/octet-stream,*/*;q=0.8" if binary else BROWSER_HEADERS["Accept"])}
+            r = sess.get(url, headers=hdr, timeout=timeout, allow_redirects=True)
+            if r.status_code == 403 and i == 0:
+                r = sess.get(url, headers=dict(hdr, **UA), timeout=timeout, allow_redirects=True)
+            if r.status_code == 404:
+                raise FileNotFoundError(url)
+            if r.status_code in (403, 429):
+                srv = {k: v for k, v in r.headers.items() if k.lower() in ("server", "x-cache", "cf-ray", "x-akamai-request-id", "akamai-grn", "x-sucuri-id", "via", "x-robots-tag", "set-cookie")}
+                _LAST_403[url] = "HTTP %s headers=%s body=%s" % (r.status_code, srv, (r.text or "")[:160].replace("\n", " "))
+                raise ProviderError("HTTP %s (blocked/throttled) for %s — %s" % (r.status_code, url, _LAST_403[url]))
+            if r.status_code != 200:
+                raise ProviderError("HTTP %s for %s" % (r.status_code, url))
+            if binary and r.content[:2] != b"PK":
+                raise ProviderError("not an XLSX (got %s bytes starting %r) for %s" % (len(r.content), r.content[:12], url))
+            return r.content if binary else r.text
+        except FileNotFoundError:
+            raise
+        except Exception as e:  # noqa
+            last = e
+            time.sleep(3 * (i + 1))
+    raise ProviderError("failed after %d tries: %s" % (retries, last))
 from .providers_jpy import read_fixture, _sleep_gap, _snapshot
 from .series import Series, clean
 
