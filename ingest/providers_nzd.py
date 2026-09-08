@@ -60,8 +60,43 @@ def _session(origin: str):
     return _SESSIONS[origin]
 
 
+def _impersonated_get(url: str, hdr: Dict[str, str], timeout: int, origin: str):
+    """Akamai / Cloudflare bot managers fingerprint the TLS handshake (JA3): python-requests is rejected with 403 whatever the headers.
+    curl_cffi impersonates Chrome's TLS + HTTP/2 fingerprint; falls back to the system curl binary, then to requests."""
+    try:
+        from curl_cffi import requests as creq  # type: ignore
+        key = "cffi:" + origin
+        if key not in _SESSIONS:
+            s = creq.Session(impersonate="chrome")
+            try:
+                s.get(origin + "/", timeout=30)
+            except Exception:  # noqa
+                pass
+            _SESSIONS[key] = s
+        return _SESSIONS[key].get(url, headers=hdr, timeout=timeout, allow_redirects=True)
+    except ImportError:
+        pass
+    import shutil
+    import subprocess
+    import tempfile
+    if shutil.which("curl"):
+        fd, path = tempfile.mkstemp()
+        os.close(fd)
+        args = ["curl", "-sSL", "--compressed", "-m", str(timeout), "-o", path, "-w", "%{http_code}", "-A", BROWSER_HEADERS["User-Agent"], "-H", "Accept-Language: en-NZ,en;q=0.9", "-H", "Referer: " + origin + "/", url]
+        p = subprocess.run(args, capture_output=True, text=True)
+        code = int((p.stdout or "0").strip()[-3:] or 0)
+        body = open(path, "rb").read()
+        os.unlink(path)
+
+        class R:  # minimal response shim
+            status_code, content, headers = code, body, {"via": "system-curl"}
+            text = body.decode("utf-8", "replace")
+        return R()
+    return None
+
+
 def _http(url: str, timeout: int = 60, retries: int = 3, binary: bool = False):
-    """browser-like fetch with a primed session; on 403 retries once with the desk UA, then records the server headers for the oplog"""
+    """fetch ladder: curl_cffi (Chrome TLS fingerprint) → system curl → requests with browser headers; 403/429 recorded with server headers for the oplog"""
     from urllib.parse import urlsplit
     sp = urlsplit(url)
     origin = "%s://%s" % (sp.scheme, sp.netloc)
@@ -70,7 +105,9 @@ def _http(url: str, timeout: int = 60, retries: int = 3, binary: bool = False):
     for i in range(retries):
         try:
             hdr = {"Referer": origin + "/", "Accept": ("application/octet-stream,*/*;q=0.8" if binary else BROWSER_HEADERS["Accept"])}
-            r = sess.get(url, headers=hdr, timeout=timeout, allow_redirects=True)
+            r = _impersonated_get(url, hdr, timeout, origin) if i == 0 else None
+            if r is None or r.status_code in (403, 429):
+                r = sess.get(url, headers=hdr, timeout=timeout, allow_redirects=True)
             if r.status_code == 403 and i == 0:
                 r = sess.get(url, headers=dict(hdr, **UA), timeout=timeout, allow_redirects=True)
             if r.status_code == 404:
