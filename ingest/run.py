@@ -21,6 +21,8 @@ from . import blocks_chf as BC
 from . import providers_chf as PC
 from . import blocks_nzd as BN
 from . import providers_nzd as PN
+from . import blocks_usd as BU
+from . import providers_usd as PU
 from .quality import evaluate_series, system_summary
 from .series import Series, clean
 
@@ -669,6 +671,106 @@ def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     return blocks
 
 
+def fetch_usd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    """USD lanes (FRED keyless CSV + Fiscal Data API; one request per series >= 0.6 s apart):
+      daily / daily_retry  DTS (cash, transactions, debt; T-1) + SOFR/IORB/RRP + H.15 (DFF, DTB3, DGS2, DGS10)
+      weekly_thu           H.4.1 (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL) — Thursday 16:30 ET
+      weekly               H.8 (TOTBKCR, TOTLL, TOTCI, DPSACBW027SBOG, H8B3094NCBA) — Friday 16:15 ET
+      monthly              BUSLOANS (monthly C&I, legacy id) + everything (revalidation)
+    Every lane rebuilds all four blocks from history CSVs (weekly series merged from history on daily lanes)."""
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+    fx = a.fixtures
+    raw_dir = os.path.join(ROOT, "logs", "usd", "raw") if not fx else None
+    lanes = ["daily", "weekly_thu", "weekly", "monthly"] if a.lane == "all" else [{"daily_retry": "daily"}.get(a.lane, a.lane)]
+    from datetime import date, timedelta
+    today = date.today()
+
+    def _err(tag: str, e: Exception) -> None:
+        errors.append("%s: %s" % (tag, e))
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": tag, "error": str(e)})
+
+    def _since(days_backfill: int, days_incr: int) -> str:
+        return (today - timedelta(days=days_backfill if a.backfill else days_incr)).isoformat()
+
+    def _ids(block: str, freq_prefix: Optional[str] = None, only: Optional[List[str]] = None) -> List[str]:
+        out = []
+        for s in cfg["blocks"][block]["series"].values():
+            if not s.get("id"):
+                continue
+            if freq_prefix and not s.get("freq", "").startswith(freq_prefix):
+                continue
+            if only is not None and s["id"] not in only:
+                continue
+            out.append(s["id"])
+        return out
+
+    fred = PU.FredProvider(fixtures_dir=fx, raw_dir=raw_dir)
+    data: Dict[str, Series] = {}
+
+    def _fred(tag: str, ids: List[str], since: str) -> None:
+        if not ids:
+            return
+        try:
+            got = fred.fetch(ids, since)
+            data.update(_merge_hist(hist_dir, got, ids) if not fx else got)
+        except Exception as e:  # noqa
+            _err(tag, e)
+
+    H41 = ["WALCL", "TREAST", "WSHOMCB", "WLCFLPCL", "WTREGEN", "WRESBAL"]
+    H8 = ["TOTBKCR", "TOTLL", "TOTCI", "DPSACBW027SBOG", "H8B3094NCBA"]
+    if "daily" in lanes:
+        _fred("fred_daily", ["RRPONTTLD"] + _ids("rates"), _since(4 * 365, 60))
+    if "weekly_thu" in lanes:
+        _fred("fred_h41", H41, _since(4 * 365, 120))
+    if "weekly" in lanes:
+        _fred("fred_h8", H8, _since(4 * 365, 120))
+    if "monthly" in lanes:
+        _fred("fred_monthly", ["BUSLOANS"], _since(6 * 365, 400))
+    # DTS
+    fd = PU.FiscalDataProvider(fixtures_dir=fx, raw_dir=raw_dir)
+    if "daily" in lanes:
+        since = _since(460, 120)
+        fb = cfg["blocks"]["fiscal"]
+        try:
+            data.update(fd.cash_series(fd.cash(since)))
+            data.update(fd.tx_series(fd.tx(since), fb["dts_items"]["deposits"], fb["dts_items"]["withdrawals"]))
+            data.update(fd.debt_series(fd.debt(since)))
+            if fd.truncated:
+                _err("fiscaldata_truncated", ProviderError("; ".join(fd.truncated)))
+        except Exception as e:  # noqa
+            _err("fiscaldata", e)
+        if not fx:
+            dts_ids = [k for k in data if k.startswith("DTS:")]
+            data = _merge_hist_named(hist_dir, data, dts_ids)
+    for i, ser in data.items():
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % i.replace("/", "_").replace("|", "_").replace(" ", "_")), i, ser)
+    # every lane rebuilds all four blocks: reload what this lane did not fetch from history
+    if not fx:
+        need = [i for i in _ids("central_bank") + _ids("rates") + _ids("banking") + _ids("fiscal") if i not in data]
+        need += [i + "|" + s for i in _ids("fiscal") if i.startswith("DTS:D|") or i.startswith("DTS:W|") or i in ("DTS:debt_issues", "DTS:debt_redemptions") for s in ("mtd", "fytd")]
+        need += ["DTS:tot_dep_tx", "DTS:tot_wd_tx"] + ["DTS:tot_dep_tx|" + s for s in ("mtd", "fytd")] + ["DTS:tot_wd_tx|" + s for s in ("mtd", "fytd")]
+        data = _merge_hist_named(hist_dir, data, sorted(set(n for n in need if n not in data)))
+    blocks["central_bank"] = BU.build_central_bank(cfg, data, prev.get("central_bank"))
+    blocks["fiscal"] = BU.build_fiscal(cfg, data, prev.get("fiscal"))
+    blocks["banking"] = BU.build_banking(cfg, data, prev.get("banking"))
+    blocks["rates"] = BU.build_rates(cfg, data, prev.get("rates"), blocks["central_bank"])
+    return blocks
+
+
+def _merge_hist_named(hist_dir: str, got: Dict[str, Series], names: List[str]) -> Dict[str, Series]:
+    """history CSV lookup for series whose ids carry '|' or spaces (DTS line items): file name = sanitised id."""
+    out = dict(got)
+    for n in names:
+        p = os.path.join(hist_dir, "%s.csv" % n.replace("/", "_").replace("|", "_").replace(" ", "_"))
+        if os.path.exists(p):
+            with open(p, encoding="utf-8") as f:
+                rows = list(csv.reader(f))
+            ser = [(r[0], float(r[1])) for r in rows[1:] if len(r) >= 2 and r[1] not in ("", "None")]
+            if ser or got.get(n):
+                out[n] = clean(ser + list(got.get(n, [])))
+    return out
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ccy", default="cad")
@@ -687,7 +789,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     errors: List[str] = []
 
     prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
-    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf, "nzd": fetch_nzd}[ccy]
+    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf, "nzd": fetch_nzd, "usd": fetch_usd}[ccy]
     blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
 
     # ── quality (system-wide) ──

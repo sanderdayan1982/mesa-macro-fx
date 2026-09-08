@@ -258,6 +258,8 @@ def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
         return _calendar_chf(cfg, cal, now)
     if cfg.get("currency") == "NZD":
         return _calendar_nzd(cfg, cal, now)
+    if cfg.get("currency") == "USD":
+        return _calendar_usd(cfg, cal, now)
     for d in cal.get("boc_decision_dates_2026", []):
         items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
     # next weekly B2 (Friday) and next daily/RG
@@ -462,4 +464,46 @@ def _calendar_nzd(cfg: dict, cal: dict, now: datetime) -> dict:
             i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
     return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
             "wat_offset_note": "Auckland = WAT + 11h (NZST) / + 12h (NZDT, last Sunday of September to first Sunday of April)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
+
+
+def _calendar_usd(cfg: dict, cal: dict, now: datetime) -> dict:
+    """USD: FOMC (verified federalreserve.gov), H.4.1 Thu 16:30 ET, H.8 Fri 16:15 ET, DTS daily ~16:00 ET (T-1), SOFR 08:00 ET, H.15 T+1,
+    DTS seasonal windows (quarter-end, tax days, mid-month settlement, payments window), NYSE holidays."""
+    items = []
+    sep = set(cal.get("fomc_sep_dates", []))
+    for d in cal.get("fomc_dates_2026", []) + cal.get("fomc_dates_2027", []):
+        items.append({"date": d, "title": "FOMC decision" + (" + Summary of Economic Projections" if d in sep else ""), "type": "central_bank", "impact": "HIGH", "time_local": "14:00 ET (20:00 WAT)"})
+    d = now.date()
+    def nxt(wd, allow_today=False):
+        x = d if allow_today else d + timedelta(days=1)
+        while x.weekday() != wd:
+            x += timedelta(days=1)
+        return x
+    nb = d + timedelta(days=1)
+    while nb.weekday() >= 5:
+        nb += timedelta(days=1)
+    items.append({"date": nb.isoformat(), "title": "Daily Treasury Statement (~16:00 ET, record T-1) · SOFR 08:00 ET · H.15 daily closes · ON RRP 13:15 ET", "type": "fiscal", "impact": "MEDIUM", "time_local": "16:00 ET (22:00 WAT)"})
+    items.append({"date": nxt(3).isoformat(), "title": "Fed H.4.1 balance sheet (Wednesday levels): WALCL, TREAST, MBS, primary credit, TGA, reserves — operative window 22:30 → 02:30 WAT", "type": "central_bank", "impact": "HIGH", "time_local": "16:30 ET (22:30 WAT)"})
+    items.append({"date": nxt(4).isoformat(), "title": "Fed H.8 commercial banks (Wednesday levels): bank credit, loans, C&I, deposits, borrowings", "type": "banking", "impact": "MEDIUM", "time_local": "16:15 ET (22:15 WAT)"})
+    y, m = now.year, now.month
+    import calendar as _c
+    seas = []
+    for yy in (y, y + 1):
+        for mm in range(1, 13):
+            seas.append(("%d-%02d-15" % (yy, mm), "DTS mid-month settlement window (14–16)" + (" — estimated tax day" if mm in (1, 6, 9) else " — Tax Day" if mm == 4 else "")))
+            seas.append(("%d-%02d-25" % (yy, mm), "DTS payments window (≥ 25: SNAP, SSI, month-end payrolls)"))
+            if mm in (3, 6, 9, 12):
+                seas.append(("%d-%02d-%02d" % (yy, mm, _c.monthrange(yy, mm)[1]), "Quarter-end (DTS seasonal flag; corporate tax / settlement flows)"))
+    for dd, t in seas:
+        if dd >= d.isoformat():
+            items.append({"date": dd, "title": t, "type": "fiscal", "impact": "MEDIUM" if "Quarter" in t or "Tax" in t else "LOW", "time_local": ""})
+    for h in cal.get("us_market_holidays_2026", []) + cal.get("us_market_holidays_2027", []):
+        items.append({"date": h, "title": "US market holiday (no DTS / H.15)", "type": "holiday", "impact": "LOW", "time_local": ""})
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= d.isoformat()], key=lambda x: x["date"] or "9999")
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - d).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "New York = WAT − 5h (EDT) / − 6h (EST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
             "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}

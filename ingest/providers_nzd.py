@@ -422,8 +422,16 @@ class _Tables(HTMLParser):
             self._in_cell, self._cell = True, ""
         elif tag == "a" and a.get("href"):
             self._a, self._atext = a["href"], ""
+        if tag in ("br", "p", "div", "li", "span") and self._in_cell:
+            # multi-line cells (e.g. three volumes '225<br>175<br>50') must not collapse into one number
+            self._cell += " "
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
 
     def handle_endtag(self, tag):
+        if tag in ("p", "div", "li", "span") and self._in_cell:
+            self._cell += " "
         if tag in ("td", "th") and self._in_cell:
             self._row.append(re.sub(r"\s+", " ", self._cell).strip())
             self._in_cell = False
