@@ -1,0 +1,63 @@
+# Mesa Macro FX — GBP refresh lanes (config/gbp.json v0.2.x, Desk Standard v0.3)
+# Lanes (UTC): weekly Thu 15:30 (Weekly Report out 14:00 UTC in BST) · daily Mon–Fri 10:30 · monthly 22nd 09:00 (ONS PSF) + 2nd 11:00 (Money & Credit) · backfill on the 1st.
+# IADB courtesy rule: one batched request per lane, identifiable User-Agent, >= 2.5 s between requests, never parallel.
+name: refresh-gbp
+on:
+  schedule:
+    - cron: "30 15 * * 4"     # weekly lane — Weekly Report B1.1.2 + rates
+    - cron: "30 10 * * 1-5"   # daily lane  — SONIA, Bank Rate, gilt par yields, FX
+    - cron: "0 9 22 * *"      # monthly lane — ONS Public Sector Finances + Money & Credit
+    - cron: "0 11 2 * *"      # monthly lane — Money & Credit (published ~1st)
+    - cron: "0 5 1 * *"       # keepalive + full revalidation (backfill) on the 1st
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "weekly | daily | monthly | all"
+        default: "all"
+      backfill:
+        description: "full history refetch (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: refresh-gbp
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resolve lane
+        id: lane
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "lane=${{ github.event.inputs.lane }}" >> $GITHUB_OUTPUT
+            echo "backfill=${{ github.event.inputs.backfill }}" >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.schedule }}" in
+              "30 15 * * 4")   echo "lane=weekly"  >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "30 10 * * 1-5") echo "lane=daily"   >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 9 22 * *")    echo "lane=monthly" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 11 2 * *")    echo "lane=monthly" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              *)               echo "lane=all"     >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      - name: Run ingestion (GBP)
+        run: |
+          if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
+          python -m ingest.run --ccy gbp --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/gbp/oplog.json) — last good JSON kept as stale"
+      - name: Validate JSON against schema
+        run: python -m ingest.validate --ccy gbp
+      - name: Commit data
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/gbp history/gbp logs/gbp
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "data(gbp): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push
