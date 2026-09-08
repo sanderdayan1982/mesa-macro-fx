@@ -222,6 +222,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     for bname, blk in blocks.items():
         for k, e in blk.get("series", {}).items():
             if isinstance(e, dict) and "confidence" in e:
+                if e.get("source_id") is None and e.get("status") == "unavailable":
+                    continue  # pending-by-design (no source wired yet): shown as — in the UI, excluded from system confidence
                 per[bname + "." + k] = {"freshness": e["status"], "confidence": {"score": e["confidence"], "tier": "HIGH" if e["confidence"] >= 90 else "MEDIUM" if e["confidence"] >= 70 else "LOW" if e["confidence"] >= 50 else "CRITICAL"},
                                         "last_valid_date": e.get("date"), "age_days": e.get("age_days"), "latest_outlier": e.get("latest_outlier", False)}
     quality = {"currency": cfg["currency"], "generated_at": E.now_iso(), "series": per, "system": system_summary({k: {"confidence": v["confidence"]} for k, v in per.items()}), "errors": errors}
