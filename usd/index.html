@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>USD COMMAND CENTER — Liquidity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#090d13;--bg2:#0e1319;--panel:#111820;--panel2:#151d28;--border:#1a2536;--border2:#243447;
+--text:#c5d0dc;--text2:#8899aa;--text3:#556677;--white:#e8edf2;--blue:#33b1ff;--green:#42be65;--red:#fa4d56;--amber:#f1c21b;
+--cyan:#08bdba;--purple:#be95ff;--gold:#f1c21b;--font:'JetBrains Mono',monospace;--sans:'IBM Plex Sans Condensed',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.4;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+/* header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;gap:8px;flex-wrap:wrap}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.hdr-logo{font-family:var(--font);font-weight:800;font-size:11px;letter-spacing:.15em;color:var(--gold);background:#1a1608;border:1px solid #3d3010;padding:5px 10px}
+.hdr-title{font-family:var(--font);font-weight:700;font-size:14px;color:var(--white);letter-spacing:.04em}
+.hdr-sub{font-size:11px;color:var(--text2);margin-left:8px}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{font-family:var(--font);font-size:10px;font-weight:700;padding:4px 10px;border:1px solid var(--border);color:var(--text2);letter-spacing:.04em}
+.pill.ok{border-color:#1a3a2a;color:var(--green)}.pill.warn{border-color:#3a2a0a;color:var(--amber)}.pill.err{border-color:#3a1a1a;color:var(--red)}
+.regime{font-family:var(--font);font-size:11px;font-weight:800;padding:5px 14px;letter-spacing:.1em;text-transform:uppercase;border:1px solid}
+.regime.GREEN{background:#0a2a1a;color:var(--green);border-color:#1a4a2a}.regime.YELLOW{background:#1a1a0a;color:var(--amber);border-color:#3a3a1a}
+.regime.RED{background:#2a0a0a;color:var(--red);border-color:#4a1a1a}.regime.NONE{background:#1a1a1a;color:#777;border-color:#2a2a2a}
+.btn{font-family:var(--font);font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);letter-spacing:.04em}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+/* tabs */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);overflow-x:auto;padding:0 16px}
+.tab{font-family:var(--font);font-size:11px;font-weight:600;padding:10px 14px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;letter-spacing:.03em;white-space:nowrap}
+.tab:hover{color:var(--white)}.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+/* wire + msg */
+.wire{background:#0a0d11;border-bottom:1px solid var(--border);padding:6px 16px;overflow:hidden;white-space:nowrap;font-family:var(--font);font-size:10px;color:var(--text2);text-overflow:ellipsis}
+.wire b{color:var(--amber);margin-right:8px}.wire a{color:var(--text2);text-decoration:none;margin-right:28px}.wire a:hover{color:var(--blue)}
+.msg{padding:7px 16px;font-family:var(--font);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)}
+.msg.ok{background:#071a0e;color:var(--green)}.msg.alert{background:#1a0808;color:var(--red)}.msg.info{background:#08121a;color:var(--blue)}.msg.warn{background:#1a1508;color:var(--amber)}
+/* layout */
+.main{padding:12px}
+.section{display:none}.section.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+.g2{grid-column:span 2}.g3{grid-column:span 3}.g4{grid-column:span 4}.g5{grid-column:span 5}.g7{grid-column:span 7}.g6{grid-column:span 6}.g8{grid-column:span 8}.g12{grid-column:span 12}
+.layer{margin:18px 0 8px;display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--border2);padding-bottom:6px}
+.layer h2{font-family:var(--font);font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--white);text-transform:uppercase}
+.layer .num{font-family:var(--font);font-size:20px;font-weight:800;color:var(--gold)}
+.layer .sub{font-size:11px;color:var(--text2)}
+.layer .lsig{margin-left:auto}
+.card{background:var(--panel);border:1px solid var(--border);padding:12px;min-height:80px}
+.card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:6px}
+.card-title{font-family:var(--font);font-size:11px;font-weight:700;color:var(--white);letter-spacing:.04em;text-transform:uppercase}
+.card-sub{font-size:10px;color:var(--text2);margin-top:2px}
+.card-src{font-size:9px;color:var(--text3);margin-top:6px;font-family:var(--font)}
+.kpi{font-family:var(--font);font-size:24px;font-weight:800;color:var(--white);line-height:1;margin:4px 0}.kpi.sm{font-size:19px}
+.delta{font-family:var(--font);font-size:11px;font-weight:700}.delta.up{color:var(--green)}.delta.down{color:var(--red)}.delta.flat{color:var(--text2)}
+.badge{font-family:var(--font);font-size:9px;font-weight:800;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;display:inline-block;border:1px solid;white-space:nowrap}
+.badge.fresh{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.stale{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
+.badge.proxy{background:#0a1a2a;color:var(--blue);border-color:#1a2a3a}.badge.degraded{background:#2a1a0a;color:#f97316;border-color:#3a2a1a}
+.badge.unavailable{background:#1a1a1a;color:#777;border-color:#2a2a2a}
+.badge.SAFE{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.WATCH{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
+.badge.STRESS{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.CRISIS{background:#3a0a0a;color:#fff;border-color:var(--red)}
+.badge.NODATA{background:#1a1a1a;color:#777;border-color:#2a2a2a}.badge.blue{background:#0a1a2a;color:var(--blue);border-color:#1a2a3a}
+.badge.RISK_ON{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.RISK_OFF{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.NEUTRAL{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
+.chart{margin-top:6px}.chart svg{display:block;width:100%}
+table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font)}
+th{text-align:left;padding:6px 8px;color:var(--text2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)}
+.hm td{text-align:center;min-width:18px;padding:3px 4px;font-size:9px}.hm-GREEN{background:#0d2818;color:var(--green)}.hm-YELLOW{background:#1a1a08;color:var(--amber)}.hm-RED{background:#1a0808;color:var(--red)}.hm-NONE{color:#555}
+.alert-item{padding:8px 12px;border-left:3px solid var(--border);margin-bottom:4px;background:var(--bg2);font-size:11px;display:flex;gap:12px;align-items:flex-start;font-family:var(--font)}
+.alert-item.CRITICAL{border-left-color:var(--red)}.alert-item.WARNING{border-left-color:var(--amber)}.alert-item.INFO{border-left-color:var(--blue)}
+.alert-ts{font-size:10px;color:var(--text2);min-width:150px}.alert-sev{font-size:9px;font-weight:800;min-width:70px}
+.scn{display:flex;gap:8px;flex-wrap:wrap}.scn-chip{font-family:var(--font);font-size:10px;padding:6px 12px;border:1px solid var(--border)}
+.scn-chip.on{border-color:var(--amber);color:var(--amber);background:#1a1508}.scn-chip.off{color:var(--text3)}
+.note{background:rgba(6,182,212,.04);border:1px solid rgba(6,182,212,.15);padding:10px;font-size:11px;line-height:1.6;color:var(--text2);font-family:var(--font)}
+.note b{color:var(--cyan)}
+.cal-item{padding:8px 12px;border:1px solid var(--border);background:var(--bg2);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px}
+.cal-date{font-family:var(--font);font-weight:700;color:var(--white);min-width:100px}.cal-imp{font-family:var(--font);font-size:10px;font-weight:800}.cal-imp.HIGH{color:var(--red)}.cal-imp.MEDIUM{color:var(--amber)}.cal-imp.LOW{color:var(--text3)}
+.take{font-family:var(--font);font-size:12px;line-height:1.7;color:var(--white)}
+.mono{font-family:var(--font)}
+.ops{font-family:var(--font);font-size:10px;padding:4px 10px;border-bottom:1px solid var(--border);display:flex;gap:12px;color:var(--text2)}
+@media(max-width:1100px){.g2,.g3,.g4,.g5,.g6,.g7,.g8{grid-column:span 12}.kpi{font-size:20px}}
+@media(max-width:700px){.g2,.g3{grid-column:span 6}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left"><div class="hdr-logo">USD</div><div><span class="hdr-title">USD COMMAND CENTER</span><span class="hdr-sub">Fed H.4.1 balance sheet, reserves & drains · Daily Treasury Statement (TGA, Net Treasury Flow) · H.8 bank credit · SOFR − IORB stress spread & H.15 curve — MMT/Mosler desk (migration of the three USD dashboards, exact metrics)</span></div></div>
+  <div class="hdr-right">
+    <div id="regimePill" class="regime NONE">LOADING</div>
+    <div id="asOf" class="pill">as of —</div>
+    <div id="genAt" class="pill">gen —</div>
+    <div id="confPill" class="pill">CONF —</div>
+    <div id="wat" class="pill">WAT --:--</div>
+    <button class="btn" onclick="exportJSON()">JSON</button>
+    <button class="btn" onclick="loadAll()">RELOAD</button>
+  </div>
+</div>
+<div class="tabs" id="tabBar">
+  <div class="tab active" data-tab="command">COMMAND</div>
+  <div class="tab" data-tab="regime">REGIME</div>
+  <div class="tab" data-tab="alerts">ALERTS</div>
+  <div class="tab" data-tab="agent">AGENT</div>
+  <div class="tab" data-tab="calendar">CALENDAR</div>
+  <div class="tab" data-tab="history">HISTORY</div>
+  <div class="tab" data-tab="system">SYSTEM</div>
+</div>
+<div class="wire"><b>WIRE</b><span id="wire">—</span></div>
+<div id="msg" class="msg info">Loading data/usd/*.json…</div>
+<div class="main">
+  <section class="section active" id="sec-command">
+    <div class="grid" id="execHeader"></div>
+    <div id="layers"></div>
+  </section>
+  <section class="section" id="sec-regime"><div class="grid" id="regimeGrid"></div></section>
+  <section class="section" id="sec-alerts"><div class="grid" id="alertsGrid"></div></section>
+  <section class="section" id="sec-agent"><div class="grid" id="agentGrid"></div></section>
+  <section class="section" id="sec-calendar"><div class="grid" id="calGrid"></div></section>
+  <section class="section" id="sec-history"><div class="grid" id="histGrid"></div></section>
+  <section class="section" id="sec-system"><div class="grid" id="sysGrid"></div></section>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// USD COMMAND CENTER — frontend engine (reads static JSON only; no source fetches)
+// Layer order is fixed by the desk rule: 1 central bank → 2 treasury/equivalent → 3 banking transmission → 4 rates
+// ═══════════════════════════════════════════════════════════════════════
+const CCY='usd', BASE='../data/'+CCY+'/';
+const FILES=['central_bank','fiscal','banking','rates','regime','calendar','quality','alerts','revisions','regime_history','news','oplog','agent'];
+const $=id=>document.getElementById(id);
+let D={};
+
+document.querySelectorAll('#tabBar .tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('#tabBar .tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');$('sec-'+t.dataset.tab).classList.add('active');
+}));
+
+// ── formatters ──
+const fB=v=>v==null?'—':Math.abs(v)>=1e6?'$'+(v/1e6).toFixed(2)+'T':Math.abs(v)>=1000?'$'+(v/1000).toFixed(1)+'B':'$'+Number(v).toLocaleString(undefined,{maximumFractionDigits:0})+'M';
+const fM=v=>v==null?'—':(v>=0?'+':'')+fB(v).replace('$-','−$');
+const fBB=v=>v==null?'—':'$'+(v/1000).toFixed(1)+'B';
+const fPc=v=>v==null?'—':(100*v).toFixed(1)+'%';
+const fR3=v=>v==null?'—':Number(v).toFixed(3)+'%';
+const fXX=v=>v==null?'—':Number(v).toFixed(3);
+const fK=v=>v==null?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:0});
+const fP=v=>v==null?'—':(v>0?'+':'')+Number(v).toFixed(2)+'%';
+const fBps=v=>v==null?'—':(v>0?'+':'')+Number(v).toFixed(1)+' bps';
+const fR=v=>v==null?'—':Number(v).toFixed(2)+'%';
+const fZ=v=>v==null?'—':(v>0?'+':'')+Number(v).toFixed(2)+'σ';
+const fN=v=>v==null?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
+const fX=v=>v==null?'—':Number(v).toFixed(2);
+const pct=v=>v==null?'—':'p'+Math.round(v);
+const badge=(t,cls)=>`<span class="badge ${cls||t}">${t}</span>`;
+const lvlBadge=l=>badge(l||'NO DATA',(l||'NODATA').replace(' ',''));
+function delta(e,inv,fmt){ if(!e||e.prev_value==null||e.value==null) return '<span class="delta flat">—</span>'; const flow=!!fmt; const v=flow?e.change_abs:e.change_pct; if(v==null) return '<span class="delta flat">—</span>'; const up=inv?v<0:v>0, dn=inv?v>0:v<0; return `<span class="delta ${up?'up':dn?'down':'flat'}">${flow?(fmt(v)+' abs'):fP(v)} vs prev (${e.prev_date||''})</span>`; }
+function e(block,key){ const b=D[block]; if(!b) return null; return (b.series&&b.series[key])||(b.derived&&b.derived[key])||null; }
+
+// ── SVG sparkline with threshold lines ──
+function spark(vals,opts={}){
+  const data=(vals||[]).map(Number).filter(Number.isFinite); if(data.length<2) return '<div style="color:var(--text3);font-size:10px;padding:6px 0">insufficient data</div>';
+  const W=opts.w||600,H=opts.h||90,PX=4,PY=10; const th=(opts.thresholds||[]).filter(t=>Number.isFinite(t.value));
+  let mn=Math.min(...data,...th.map(t=>t.value)),mx=Math.max(...data,...th.map(t=>t.value)); if(mn===mx){mn-=1;mx+=1}
+  const r=mx-mn,lo=mn-r*.08,hi=mx+r*.08,fr=hi-lo;
+  const x=i=>PX+i/(data.length-1)*(W-2*PX), y=v=>H-PY-((v-lo)/fr)*(H-2*PY);
+  let s='';
+  for(let i=0;i<3;i++){const gy=PY+i/2*(H-2*PY);s+=`<line x1="${PX}" y1="${gy}" x2="${W-PX}" y2="${gy}" stroke="rgba(255,255,255,.05)"/>`;}
+  if(opts.zero&&lo<0&&hi>0) s+=`<line x1="${PX}" y1="${y(0)}" x2="${W-PX}" y2="${y(0)}" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 3"/>`;
+  th.forEach(t=>{s+=`<line x1="${PX}" y1="${y(t.value)}" x2="${W-PX}" y2="${y(t.value)}" stroke="${t.color}" stroke-dasharray="4 4"/><text x="${W-PX-2}" y="${y(t.value)-3}" text-anchor="end" fill="${t.color}" font-size="8" font-family="JetBrains Mono" font-weight="700">${t.label}</text>`;});
+  if(opts.band){const [a,b]=opts.band;s+=`<rect x="${PX}" y="${y(b)}" width="${W-2*PX}" height="${Math.max(0,y(a)-y(b))}" fill="rgba(66,190,101,.08)"/>`;}
+  const pts=data.map((v,i)=>`${x(i)},${y(v)}`).join(' '); const col=opts.color||'var(--blue)';
+  s+=`<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linejoin="round"/><circle cx="${x(data.length-1)}" cy="${y(data[data.length-1])}" r="3" fill="${col}"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" height="${H}">${s}</svg>`;
+}
+const lvlColor=l=>l==='SAFE'?'var(--green)':l==='WATCH'?'var(--amber)':(l==='STRESS'||l==='CRISIS')?'var(--red)':'var(--blue)';
+function thLines(ent){ const t=(ent&&ent.thresholds&&ent.thresholds.levels)||{}; const out=[]; const c={WATCH:'rgba(241,194,27,.7)',STRESS:'rgba(250,77,86,.7)',CRISIS:'rgba(250,77,86,.9)',range_low:'rgba(66,190,101,.7)',range_high:'rgba(66,190,101,.7)'};
+  for(const k of Object.keys(t)) if(Number.isFinite(t[k])) out.push({value:t[k],label:k.replace('range_','')+' '+fN(t[k]),color:c[k]||'#888'}); return out; }
+
+// ── metric card ──
+function card(block,key,title,fmt,opts={}){
+  const ent=e(block,key); const span=opts.span||'g3';
+  if(!ent) return `<div class="card ${span}"><div class="card-hdr"><div class="card-title">${title}</div>${badge('unavailable')}</div><div class="kpi sm">—</div><div class="card-src">${opts.note||''}</div></div>`;
+  const lvl=ent.level||'NO DATA'; const sig=ent.signal?badge(ent.signal):'';
+  const thr=thLines(ent); const rng=ent.thresholds&&ent.thresholds.levels&&ent.thresholds.levels.range_low!=null?[ent.thresholds.levels.range_low,ent.thresholds.levels.range_high]:null;
+  const ch=opts.nochart?'':`<div class="chart">${spark(ent.sparkline,{h:opts.h||80,color:lvlColor(lvl),thresholds:opts.nothr?[]:thr,band:rng,zero:opts.zero})}</div>`;
+  const extra=[ent.percentile!=null?`pct ${pct(ent.percentile)}`:'',ent.zscore!=null?`Z ${fZ(ent.zscore)}`:'',ent.usd_analog?`≈ ${ent.usd_analog}`:'',ent.source_id?ent.source_id:''].filter(Boolean).join(' · ');
+  return `<div class="card ${span}"><div class="card-hdr"><div><div class="card-title">${title}</div><div class="card-sub">${opts.sub||ent.label||''}</div></div><div style="text-align:right">${badge(ent.status)} ${lvl!=='SAFE'||opts.showlvl?lvlBadge(lvl):''} ${sig}</div></div>
+    <div class="kpi ${opts.big?'':'sm'}">${fmt(ent.value)}</div>${delta(ent,opts.inv,opts.zero?fmt:null)}${ch}<div class="card-src">${ent.date||''} · ${extra}${ent.equivalence_note?' · '+ent.equivalence_note:''}</div></div>`;
+}
+function dtsItemsCard(group,title,sub){ const it=((D.fiscal&&D.fiscal.history&&D.fiscal.history.items)||[]).filter(i=>i.group===group); if(!it.length) return textCard(title,'<div style="color:var(--text3)">DTS items not loaded</div>','g6'); const rows=it.map(i=>`<tr><td>${i.label}</td><td class="num">${fB(i.today)}</td><td class="num ${i.dod>0?'pos':i.dod<0?'neg':''}">${fM(i.dod)}</td><td class="num">${fB(i.mtd)}</td><td class="num">${fB(i.fytd)}</td></tr>`).join(''); return `<div class="card g6"><div class="card-hdr"><div><div class="card-title">${title}</div><div class="card-sub">${sub}</div></div><div>${badge('fresh')}</div></div><div style="overflow:auto;max-height:330px"><table><thead><tr><th>Line item (DTS Table II)</th><th class="num">Today</th><th class="num">Δ d/d</th><th class="num">MTD</th><th class="num">FYTD</th></tr></thead><tbody>${rows}</tbody></table></div><div class="card-src">${it[0].date} · $M · views Daily / Month-to-Date / Fiscal-Year-to-Date as in the DTS Tracker</div></div>`; }
+function h8HeatmapCard(){ const h=D.banking&&D.banking.history&&D.banking.history.heatmap; if(!h||!h.length) return textCard('H.8 weekly change heatmap','<div style="color:var(--text3)">—</div>','g6'); const dates=h[0].cells.map(c=>c.date.slice(5)); const zc=z=>z==null?'rgba(136,153,170,.08)':Math.abs(z)>2?(z>0?'rgba(66,190,101,.45)':'rgba(250,77,86,.45)'):Math.abs(z)>1?(z>0?'rgba(66,190,101,.22)':'rgba(250,77,86,.22)'):'rgba(136,153,170,.08)'; const rows=h.map(r=>`<tr><td>${r.key.replace(/_/g,' ')}</td>${r.cells.map(c=>`<td class="num ${c.pct>0?'pos':c.pct<0?'neg':''}" style="background:${zc(c.z)}" title="Z ${fZ(c.z)}">${fP(c.pct)}</td>`).join('')}</tr>`).join(''); return `<div class="card g6"><div class="card-hdr"><div><div class="card-title">H.8 weekly change heatmap (Δ% w/w, colour = 26-week Z)</div><div class="card-sub">|Z| > 2 extraordinary · > 1 notable · no lookahead</div></div></div><div style="overflow:auto"><table><thead><tr><th>Series</th>${dates.map(d=>`<th class="num">${d}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div><div class="card-src">exactly the H.8 monitor v2.1 heatmap</div></div>`; }
+function h8IndexCard(){ const h=D.banking&&D.banking.history; if(!h||!h.rows||!h.rows.loans_leases_idx) return textCard('Loans / deposits / borrowings — base 100','<div style="color:var(--text3)">—</div>','g6'); const W=600,H=140,PX=4,PY=10; const ser={loans_leases_idx:'var(--green)',deposits_idx:'var(--amber)',borrowings_idx:'var(--red)'}; const all=[].concat(...Object.keys(ser).map(k=>h.rows[k].filter(v=>v!=null))); let mn=Math.min(...all),mx=Math.max(...all); if(mn===mx){mn-=1;mx+=1;} const lo=mn-(mx-mn)*.08,hi=mx+(mx-mn)*.08; const n=h.dates.length; const x=i=>PX+i/(n-1)*(W-2*PX), y=v=>H-PY-((v-lo)/(hi-lo))*(H-2*PY); let g=`<line x1="${PX}" y1="${y(100)}" x2="${W-PX}" y2="${y(100)}" stroke="rgba(255,255,255,.25)" stroke-dasharray="4 4"/>`; for(const k in ser){ const pts=h.rows[k].map((v,i)=>v==null?null:`${x(i)},${y(v)}`).filter(Boolean).join(' '); g+=`<polyline points="${pts}" fill="none" stroke="${ser[k]}" stroke-width="1.5"/>`; } const last=k=>{const a=h.rows[k].filter(v=>v!=null);return a.length?a[a.length-1]:null;}; return `<div class="card g6"><div class="card-hdr"><div><div class="card-title">Combined: Loans / Deposits / Borrowings (base 100 = ${h.dates[0]})</div><div class="card-sub">loans ${fX(last('loans_leases_idx'))} · deposits ${fX(last('deposits_idx'))} · borrowings ${fX(last('borrowings_idx'))}</div></div></div><div class="chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" height="${H}">${g}</svg></div><div class="card-src"><span style="color:var(--green)">■</span> loans & leases <span style="color:var(--amber)">■</span> deposits <span style="color:var(--red)">■</span> borrowings · 52 weeks</div></div>`; }
+function spreadTableCard(){ const h=D.rates&&D.rates.history; if(!h||!h.dates) return textCard('SOFR − IORB spread table','—','g3'); const idx=h.dates.map((d,i)=>i).slice(-10).reverse(); const st=v=>v==null?'—':v>30?'CRITICAL':v>15?'STRESS':'NORMAL'; const cc=v=>v==null?'':v>30?'neg':v>15?'warn':'pos'; return `<div class="card g3"><div class="card-hdr"><div><div class="card-title">SOFR − IORB — last 10 sessions</div><div class="card-sub">H.4.1 spread history table</div></div></div><div style="overflow:auto;max-height:260px"><table><thead><tr><th>Date</th><th class="num">SOFR</th><th class="num">IORB</th><th class="num">Spread</th><th>Status</th></tr></thead><tbody>${idx.map(i=>`<tr><td>${h.dates[i]}</td><td class="num">${fR(h.rows.sofr[i])}</td><td class="num">${fR(h.rows.iorb[i])}</td><td class="num ${cc(h.rows.sofr_minus_iorb_bps[i])}">${fBps(h.rows.sofr_minus_iorb_bps[i])}</td><td class="${cc(h.rows.sofr_minus_iorb_bps[i])}">${st(h.rows.sofr_minus_iorb_bps[i])}</td></tr>`).join('')}</tbody></table></div></div>`; }
+function speedoCard(){ const sp=e('rates','sofr_minus_iorb_bps'); const v=sp&&sp.value!=null?sp.value:0; const ang=Math.min(Math.max(v/40,0),1)*180-90; const cx=100,cy=100; const ex=cx+65*Math.cos(ang*Math.PI/180), ey=cy+65*Math.sin(ang*Math.PI/180); return `<div class="card g3"><div class="card-hdr"><div><div class="card-title">SOFR − IORB speedometer</div><div class="card-sub">0 → 40 bp · ${sp?sp.badge:'—'} · FX ${sp?sp.fx_signal:'—'}</div></div><div>${sp?lvlBadge(sp.level):''}</div></div><div style="text-align:center"><svg viewBox="0 0 200 120" width="200"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#42be65"/><stop offset="37%" stop-color="#f1c21b"/><stop offset="75%" stop-color="#f97316"/><stop offset="100%" stop-color="#fa4d56"/></linearGradient></defs><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#sg)" stroke-width="14" stroke-linecap="round"/><line x1="100" y1="100" x2="${ex}" y2="${ey}" stroke="#e8edf2" stroke-width="3" stroke-linecap="round"/><circle cx="100" cy="100" r="5" fill="#e8edf2"/><text x="100" y="88" text-anchor="middle" fill="#e8edf2" font-size="16" font-weight="bold" font-family="JetBrains Mono">${v.toFixed(0)} bps</text><text x="20" y="115" fill="#556677" font-size="8" font-family="JetBrains Mono">0</text><text x="85" y="18" fill="#556677" font-size="8" font-family="JetBrains Mono">20</text><text x="170" y="115" fill="#556677" font-size="8" font-family="JetBrains Mono">40</text></svg></div><div class="card-src">${sp?sp.date:''} · friction confirmed ${sp&&sp.friction_confirmed?'YES':'no'} (> 15 bp on 2 of 3 sessions)</div></div>`; }
+function fxMatrixCard(){ const m=e('rates','forex_signal_matrix'); const c=(m&&m.cells)||{}; const col=v=>/RISK-ON|NEUTRAL|AMPLE|SAFE/.test(v||'')?'var(--green)':/WATCH|NERVOUS/.test(v||'')?'var(--amber)':/RISK-OFF|BULLISH|DRAIN/.test(v||'')?'var(--red)':'var(--text3)'; const cell=(k,v)=>`<div style="border:1px solid ${col(v)};color:${col(v)};background:${col(v)}22;padding:8px;text-align:center;font-family:var(--font);font-size:11px;font-weight:700">${k}<br>${v||'—'}</div>`; return `<div class="card g3"><div class="card-hdr"><div><div class="card-title">🎯 Forex Signal Matrix (H.4.1)</div><div class="card-sub">NL Δ% · SOFR−IORB · WRESBAL · TGA</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${cell('NL Δ%',c.nl_wow)}${cell('SOFR−IORB',c.sofr_iorb)}${cell('WRESBAL',c.wresbal)}${cell('TGA',c.tga)}</div><div class="card-src">RISK-OFF → buy USD · RISK-ON → sell USD · SOFR−IORB > 30 USD bullish</div></div>`; }
+function alertLimitsCard(){ const rows=[["Reserve Balances (WRESBAL)","< $3.0T","Tensiones repo/Fed Funds",e('central_bank','reserves_status')],["Reserve Balances (WRESBAL)","< $2.5T","CRISIS — Fed pausa QT",e('central_bank','reserves_status')],["Primary Credit (WLCFLPCL)","+20% semanal","Banco en dificultades",e('central_bank','primary_credit_wow_pct')],["TGA (WTREGEN)","> $800B subiendo","Drenaje activo Bearish",e('central_bank','tga_status')],["ON RRP (RRPONTTLD)","Rebote > $200B","Liquidez se retrae",e('central_bank','rrp_status')],["SOFR−IORB Spread","> 15 bps","Estrés interbancario",e('rates','sofr_minus_iorb_bps')],["SOFR−IORB Spread","> 30 bps","CRISIS liquidez",e('rates','sofr_minus_iorb_bps')],["Net Liquidity Δ%","< −2% semanal","Risk-OFF — comprar USD",e('central_bank','net_liquidity_wow_pct')],["Net Liquidity Δ%","> +2% semanal","Risk-ON — vender USD",e('central_bank','net_liquidity_wow_pct')]]; const b=x=>x?badge(x.badge||x.signal||x.level||'—',(x.badge||x.signal||'').match(/AMPLE|LOW|NORMAL|SAFE|RISK_ON/)?'SAFE':(x.badge||x.signal||'').match(/NERVOUS|WATCH|STRESS|NEUTRAL/)?'WATCH':'STRESS'):'—'; return `<div class="card g6"><div class="card-hdr"><div><div class="card-title">Tabla de límites y niveles de alerta críticos (H.4.1)</div><div class="card-sub">exactly the legacy table, with the live status</div></div></div><div style="overflow:auto;max-height:300px"><table><thead><tr><th>Indicator (FRED)</th><th>Alert level</th><th>Signal & action</th><th>Now</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td class="mono">${r[1]}</td><td style="color:var(--text2)">${r[2]}</td><td>${b(r[3])} <span class="mono" style="font-size:10px;color:var(--text2)">${r[3]&&r[3].value!=null?(r[0].includes('Δ%')||r[0].includes('Credit')?fP(r[3].value):r[0].includes('SOFR')?fBps(r[3].value):fB(r[3].value)):''}</span></td></tr>`).join('')}</tbody></table></div></div>`; }
+function textCard(title,html,span='g6',tag=''){return `<div class="card ${span}"><div class="card-hdr"><div class="card-title">${title}</div>${tag}</div>${html}</div>`;}
+function layerHdr(n,title,sub,sig){ const s=sig?`<span class="regime ${sig.traffic_light}">${sig.label}</span>`:''; return `<div class="layer"><span class="num">${n}</span><h2>${title}</h2><span class="sub">${sub}</span><span class="lsig">${s}</span></div>`; }
+function alertsTable(list){ if(!list||!list.length) return '<div style="color:var(--text3);font-size:11px">—</div>'; return `<table><thead><tr><th>Metric</th><th class="num">Value</th><th>Level</th><th>Thresholds</th><th>Hint</th></tr></thead><tbody>${list.map(a=>`<tr><td>${a.metric}</td><td class="num">${fN(a.value)}</td><td>${lvlBadge(a.level)}</td><td class="mono" style="font-size:9px;color:var(--text2)">${a.threshold?Object.entries(a.threshold).filter(([k,v])=>v!=null).map(([k,v])=>k+' '+fN(v)).join(' · '):'—'}</td><td style="color:var(--text2)">${a.action_hint||''}</td></tr>`).join('')}</tbody></table>`; }
+
+// ═══════════════════ RENDER ═══════════════════
+function render(){
+  const R=D.regime||{}, cb=D.central_bank, fi=D.fiscal, bk=D.banking, rt=D.rates, Q=D.quality||{};
+  // header
+  $('regimePill').className='regime '+(R.traffic_light||'NONE'); $('regimePill').textContent=(R.regime||'NO DATA').replace(/_/g,' ');
+  $('asOf').textContent='as of '+(R.as_of||'—'); $('genAt').textContent='gen '+(R.generated_at||'').replace('T',' ').slice(0,16)+'Z';
+  const conf=(Q.system||{}).average; $('confPill').textContent='CONF '+(conf==null?'—':conf); $('confPill').className='pill '+(conf>=90?'ok':conf>=70?'warn':'err');
+  const errs=(R.heartbeat||{}).errors||[]; const ageH=R.generated_at?(Date.now()-new Date(R.generated_at))/36e5:null;
+  const stale=ageH!=null&&ageH>48;
+  $('msg').className='msg '+(errs.length?'alert':stale?'warn':'ok');
+  $('msg').textContent=errs.length?'⚠ source errors: '+errs.join(' | '):stale?`⚠ data generated ${ageH.toFixed(0)}h ago — check the refresh workflow`:`All blocks loaded · regime ${R.regime} · flags ${(R.flags||[]).join(', ')||'none'} · weighted score ${R.weighted_score}`;
+  // wire
+  const news=(D.news&&D.news.items)||[]; $('wire').innerHTML=news.length?news.slice(0,6).map(n=>`<a href="${n.link}" target="_blank" rel="noopener">${n.title}</a>`).join(''):'no headlines (RSS disabled or offline)';
+
+
+  // ── EXECUTIVE HEADER ──
+  const nl=e('central_bank','net_liquidity'), nlw=e('central_bank','net_liquidity_wow_pct'), rsv=e('central_bank','reserves'), rss=e('central_bank','reserves_status'), spr=e('rates','sofr_minus_iorb_bps'), tga=e('central_bank','tga'), tgs=e('central_bank','tga_status'), tgc=e('fiscal','tga_closing'), ntf=e('fiscal','net_treasury_flow'), n7=e('fiscal','net_treasury_flow_7d'), rrp=e('central_bank','rrp_status');
+  const flags=(R.flags||[]).map(f=>badge(f.replace('PHASE_','phase: '),'blue')).join(' ');
+  const rPos=rsv?(rsv.above_range?'above 4.0T (abundant)':rsv.in_range?'3.0–4.0T ample band':'below 3.0T'):'—';
+  $('execHeader').innerHTML=`
+    <div class="card g3"><div class="card-title">Liquidity regime</div><div class="kpi" style="font-size:18px;margin-top:8px"><span class="regime ${R.traffic_light||'NONE'}">${(R.regime||'—').replace(/_/g,' ')}</span></div><div class="card-src">weighted ${fX(R.weighted_score)} · blocks ${R.blocks_used||0}/4 · ${flags}</div></div>
+    <div class="card g2"><div class="card-title">Fed Net Liquidity (WALCL − TGA − RRP)</div><div class="kpi sm">${fB(nl&&nl.value)}</div>${delta(nl)}<div class="card-src">Δ% w/w ${fP(nlw&&nlw.value)} ${nlw?badge(nlw.signal||'—',nlw.signal==='RISK_ON'?'SAFE':nlw.signal==='RISK_OFF'?'STRESS':'WATCH'):''}</div></div>
+    <div class="card g2"><div class="card-title">Reserve Balances (WRESBAL)</div><div class="kpi sm">${fB(rsv&&rsv.value)}</div>${delta(rsv)}<div class="card-src">${rss?badge(rss.badge,rss.badge==='AMPLE'?'SAFE':rss.badge==='NERVOUS'?'WATCH':'STRESS'):''} · ${rPos} · danger < 3.0T · crisis < 2.5T</div></div>
+    <div class="card g2"><div class="card-title">SOFR − IORB stress spread</div><div class="kpi sm">${fBps(spr&&spr.value)}</div><div class="card-src">${spr?lvlBadge(spr.level):''} ${spr?badge(spr.badge,spr.badge==='NORMAL'?'SAFE':spr.badge==='STRESS'?'WATCH':'STRESS'):''} ${spr&&spr.friction_confirmed?badge('FRICTION','STRESS'):''} · 0–5 safe · > 15 stress · > 30 crisis</div></div>
+    <div class="card g3"><div class="card-title">TGA (H.4.1 weekly avg · DTS close)</div><div class="kpi sm">${fB(tga&&tga.value)} <span class="mono" style="font-size:11px;color:var(--text2)">/ ${fB(tgc&&tgc.value)} (${tgc?tgc.date:''})</span></div><div class="card-src">${tgs?badge(tgs.badge,tgs.badge==='SAFE'?'SAFE':tgs.badge==='DRAIN WATCH'?'WATCH':'STRESS'):''} · RRP ${fB(rrp&&rrp.value)} ${rrp?badge(rrp.badge,rrp.badge==='LOW'?'SAFE':'WATCH'):''} · NTF ${fM(ntf&&ntf.value)} (${ntf?ntf.badge:''}) · 7d ${fM(n7&&n7.value)}</div></div>`;
+
+  // ── LAYERS ──
+  let L='';
+  const bsp=e('central_bank','balance_sheet_phase');
+  // 1 · FEDERAL RESERVE
+  L+=layerHdr(1,'Central bank liquidity — Federal Reserve (H.4.1)','Weekly Wednesday levels, published Thursday 16:30 ET (22:30 WAT; operative window 22:30 → 02:30 WAT) · ON RRP daily · Net Liquidity = WALCL − WTREGEN − RRPONTTLD · reserves 3.0T / 2.5T · TGA 750B / 900B · RRP 200B · primary credit +20% w/w',cb&&cb.signals);
+  L+=`<div class="grid">${card('central_bank','net_liquidity','Fed Net Liquidity (WALCL − TGA − RRP) — weekly',fB,{big:true,span:'g4',nothr:true})}${card('central_bank','net_liquidity_wow_pct','Weekly Net Liquidity Δ% (≥ +2% Risk-On · ≤ −2% Risk-Off)',fP,{zero:true,showlvl:true,nothr:true})}${card('central_bank','reserves','Reserve Balances (WRESBAL) — danger < 3.0T · crisis < 2.5T',fB,{showlvl:true,span:'g5'})}
+    ${card('central_bank','total_assets','WALCL — Total Fed assets (QE ↑ / QT ↓)',fB,{nothr:true})}${card('central_bank','treasury_securities','U.S. Treasury securities (TREAST) — QT pace in sovereign debt',fB,{nothr:true})}${card('central_bank','mbs','Mortgage-Backed Securities (WSHOMCB) — housing support',fB,{nothr:true})}${card('central_bank','primary_credit','Loans — Primary Credit (WLCFLPCL) 🔺 stress monitor',fB,{nothr:true})}
+    ${card('central_bank','primary_credit_wow_pct','Primary Credit Δ% w/w (+20% = PANIC)',fP,{zero:true,showlvl:true})}${card('central_bank','total_assets_wow','Weekly WALCL Δ ($M)',fM,{zero:true,showlvl:true})}${card('central_bank','total_assets_13w_change','WALCL Δ 13 weeks (phase)',fM,{zero:true,nothr:true})}${textCard('Balance-sheet phase',`<div class="kpi sm">${bsp?bsp.phase:'—'}</div><div class="card-src">${bsp?bsp.note:''} · IORB ${fR(e('rates','iorb')&&e('rates','iorb').value)} · EFFR ${fR(e('rates','fed_funds')&&e('rates','fed_funds').value)} · SOFR ${fR(e('rates','sofr')&&e('rates','sofr').value)}</div>`,'g3',badge('event','blue'))}
+    ${card('central_bank','tga','TGA — Treasury General Account (WTREGEN, weekly avg) · alto = drena · bajo = inyecta',fB,{showlvl:true})}${card('central_bank','on_rrp','ON RRP (RRPONTTLD) — $200B rebound = SIGNAL',fB,{showlvl:true})}${card('central_bank','drains_total','Stacked active drains: TGA + ON RRP',fB,{nothr:true})}${card('central_bank','reserves_status','Reserve status badge (AMPLE / NERVOUS / CRITICAL)',fB,{nochart:true,showlvl:true,nothr:true})}
+    ${alertLimitsCard()}${textCard('Layer 1 alerts',alertsTable(cb&&cb.signals.alerts),'g6')}</div>`;
+  // 2 · TREASURY (DTS)
+  const sf=e('fiscal','seasonal_flag'), fr=e('fiscal','fiscal_regime'), tri=e('fiscal','tga_reserve_impact');
+  L+=layerHdr(2,'Treasury — Daily Treasury Statement (Bureau of the Fiscal Service)','Daily, ~16:00 ET (22:00 WAT), record date = T-1 · TGA close, total deposits/withdrawals, public debt · Net Treasury Flow = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues), Mosler sign: + = net fiscal injection (NFA creation) · Z-score 30 business days · reserves ≠ NFA: −ΔTGA',fi&&fi.signals);
+  L+=`<div class="grid">${textCard('NET TREASURY FLOW',`<div class="kpi" style="color:${ntf&&ntf.value>=0?'var(--green)':'var(--red)'}">${fM(ntf&&ntf.value)}</div><div class="card-src">${ntf?ntf.direction:''} · last record ${ntf?ntf.date:'—'} · basis daily ${sf&&sf.flag?badge('📅 '+sf.flag,'WATCH'):''}</div>
+      <table style="margin-top:8px"><tbody><tr><td>Z-score (30d)</td><td class="num"><span class="badge ${ntf&&ntf.zscore!=null?(Math.abs(ntf.zscore)>=2?'STRESS':Math.abs(ntf.zscore)>=1?'WATCH':'SAFE'):'NODATA'}">${fZ(ntf&&ntf.zscore)} · ${ntf?ntf.badge:''}</span></td></tr><tr><td>30-day mean</td><td class="num">${fM(e('fiscal','ntf_mean_30d')&&e('fiscal','ntf_mean_30d').value)}</td></tr><tr><td>30-day std dev</td><td class="num">${fB(e('fiscal','ntf_sd_30d')&&e('fiscal','ntf_sd_30d').value)}</td></tr><tr><td>7-day cumulative</td><td class="num">${fM(n7&&n7.value)}</td></tr><tr><td>ΔTGA reserve impact</td><td class="num" style="color:${tri&&tri.value>=0?'var(--green)':'var(--red)'}">${fM(tri&&tri.value)} ${tri?'('+tri.badge+')':''}</td></tr><tr><td>MTD / FYTD</td><td class="num">${fM(e('fiscal','net_treasury_flow_mtd')&&e('fiscal','net_treasury_flow_mtd').value)} / ${fM(e('fiscal','net_treasury_flow_fytd')&&e('fiscal','net_treasury_flow_fytd').value)}</td></tr></tbody></table>
+      <div class="chart" style="margin-top:8px">${spark(ntf&&ntf.sparkline,{h:90,color:'var(--gold)',zero:true})}</div><div class="card-src">Formula: NTF = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues) · 🟢 positive = government creates NFA for the non-government · 🔴 negative = NFA destruction · a bond-financed deficit creates NFA while reserves stay ~flat</div>`,'g6',fi?badge(fi.signals.label,fi.signals.traffic_light==='GREEN'?'SAFE':fi.signals.traffic_light==='RED'?'STRESS':'WATCH'):'')}
+    ${card('fiscal','tga_closing','TGA closing balance (DTS Table I)',fB,{big:true,showlvl:true})}${card('fiscal','tga_dod','Δ TGA d/d',fM,{zero:true,showlvl:true})}
+    ${card('fiscal','debt_total','Total public debt outstanding (public + intragovernmental)',fB,{nothr:true})}${card('fiscal','debt_public','Debt held by the public',fB,{nothr:true})}${card('fiscal','debt_total_dod','Δ total debt d/d',fM,{zero:true,nothr:true})}${card('fiscal','debt_limit','Statutory debt limit',fB,{nothr:true,nochart:true})}
+    ${card('fiscal','total_deposits','Total TGA deposits (daily)',fB,{nothr:true})}${card('fiscal','total_withdrawals','Total TGA withdrawals (daily)',fB,{nothr:true})}${card('fiscal','debt_issues','Public debt cash issues (Table IIIB)',fB,{nothr:true})}${card('fiscal','debt_redemptions','Public debt cash redemptions (Table IIIB)',fB,{nothr:true})}
+    ${card('fiscal','net_spending','Net Spending = Withdrawals − Debt Redemptions',fB,{nothr:true})}${card('fiscal','net_deposits','Net Deposits = Deposits − Debt Issues',fB,{nothr:true})}${card('fiscal','net_treasury_flow_7d','NTF 7-day cumulative',fM,{zero:true,nothr:true})}${card('fiscal','net_treasury_flow_mtd','NTF month-to-date (cumulative)',fM,{zero:true,nothr:true})}
+    ${dtsItemsCard('deposits','Deposits (revenue) — tracked line items','Taxes withheld / non-withheld / corporate · customs · Medicare premiums')}${dtsItemsCard('withdrawals','Withdrawals (spending) — tracked line items','Medicare A/B/D · Medicaid · DoD · HHS · SNAP · unemployment · refunds · interest · SSA · SSI')}
+    ${textCard('Fiscal regime',`<div class="kpi sm">${fr?fr.regime:'—'}</div><div class="card-src">NTF 7-day sum ${fM(fr&&fr.inputs&&fr.inputs.ntf_7d)} · Z ${fZ(fr&&fr.inputs&&fr.inputs.z)} · ${fi?fi.equivalence_note:''}</div>`,'g6',fi?badge(fi.signals.label,fi.signals.traffic_light==='GREEN'?'SAFE':fi.signals.traffic_light==='RED'?'STRESS':'WATCH'):'')}
+    ${textCard('Layer 2 alerts',alertsTable(fi&&fi.signals.alerts),'g6')}</div>`;
+  // 3 · BANKING (H.8)
+  const ts=e('banking','transmission_signal');
+  L+=layerHdr(3,'Banking transmission — H.8 commercial banks','Weekly Wednesday levels, published Friday 16:15 ET (22:15 WAT) · bank credit, loans & leases, C&I, deposits, borrowings · 🟢 credit ↑ loans ↑ deposits ↑ borrowings ↓ · 🔴 loans ↓ deposits ↓ borrowings ↑ C&I weak',bk&&bk.signals);
+  const wb=k=>{const x=e('banking',k+'_wow_pct');return x?badge(x.badge||'—',/EXPANDING|STABLE|FALLING/.test(x.badge)?'SAFE':/CONTRACTING|WEAK|WEAKENING|RISING FAST/.test(x.badge)?'STRESS':x.badge==='NO DATA'?'NODATA':'WATCH'):'';};
+  L+=`<div class="grid">${textCard('H.8 banking signal',`<div class="kpi sm">${ts?ts.detail.split(' · ')[0]:'—'}</div><div class="card-src">${ts?ts.detail:''}<br>bank credit ${wb('bank_credit')} loans & leases ${wb('loans_leases')} C&I ${wb('ci_loans')} deposits ${wb('deposits')} borrowings ${wb('borrowings')}</div>`,'g4',ts?badge(ts.signal,ts.signal==='GREEN'?'SAFE':ts.signal==='RED'?'STRESS':'WATCH'):'')}
+    ${card('banking','bank_credit','Bank Credit (TOTBKCR)',fB,{nothr:true})}${card('banking','loans_leases','Loans & Leases (TOTLL)',fB,{nothr:true})}${card('banking','ci_loans','C&I Loans, weekly (TOTCI)',fB,{nothr:true,span:'g2'})}
+    ${card('banking','deposits','Deposits (DPSACBW027SBOG)',fB,{nothr:true})}${card('banking','borrowings','Borrowings (H8B3094NCBA)',fB,{nothr:true})}${card('banking','bank_credit_wow_pct','Bank credit Δ% w/w',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','loans_leases_wow_pct','Loans & leases Δ% w/w',fP,{zero:true,showlvl:true,nothr:true})}
+    ${card('banking','ci_loans_wow_pct','C&I loans Δ% w/w',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','deposits_wow_pct','Deposits Δ% w/w',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','borrowings_wow_pct','Borrowings Δ% w/w (> +0.5% RISING FAST)',fP,{zero:true,showlvl:true,nothr:true})}${card('banking','ci_loans_monthly','C&I loans, monthly (BUSLOANS, legacy id)',fB,{nothr:true})}
+    ${h8HeatmapCard()}${h8IndexCard()}
+    ${textCard('Layer 3 alerts',alertsTable(bk&&bk.signals.alerts),'g12')}</div>`;
+  // 4 · RATES (SOFR−IORB + H.15)
+  const rs=e('rates','rates_signal'), c102=e('rates','curve_10y_2y_bps'), f3=e('rates','ff_minus_3m_bps'), stn=e('rates','fed_funds_stance');
+  L+=layerHdr(4,'Rates & money market — SOFR − IORB stress spread + H.15 curve','SOFR 08:00 ET T+1 · IORB · H.15 daily closes T+1: EFFR, 3M bill, 2Y, 10Y · spreads on common dates (DFF is a 7-day series) · 10Y−2Y negative = inverted · FF > 3M = market prices cuts',rt&&rt.signals);
+  L+=`<div class="grid">${card('rates','sofr_minus_iorb_bps','SOFR − IORB stress spread (0–5 safe · 15–30 stress · > 30 crisis)',fBps,{big:true,span:'g4',zero:true,showlvl:true})}${speedoCard()}${spreadTableCard()}${fxMatrixCard()}
+    ${card('rates','fed_funds','Effective Fed Funds (DFF)',fR,{nothr:true})}${card('rates','tbill_3m','3-Month T-Bill (DTB3)',fR,{nothr:true})}${card('rates','ust_2y','2-Year Treasury (DGS2)',fR,{nothr:true})}${card('rates','ust_10y','10-Year Treasury (DGS10)',fR,{nothr:true})}
+    ${card('rates','curve_10y_2y_bps','10Y − 2Y spread (bps) — negative = inverted',fBps,{zero:true,showlvl:true})}${card('rates','ff_minus_3m_bps','Fed Funds − 3M (bps) — FF > 3M = cuts priced',fBps,{zero:true,showlvl:true})}${card('rates','sofr','SOFR',fR,{nothr:true})}${card('rates','iorb','IORB',fR,{nothr:true})}
+    ${textCard('H.15 rates signal',`<div class="kpi sm">${rs?rs.detail.split(' — ')[0]:'—'}</div><div class="card-src">${rs?rs.detail:''}<br>10Y−2Y ${c102?badge(c102.overlay,/STEEP/.test(c102.overlay)?'SAFE':/FLAT/.test(c102.overlay)?'WATCH':'STRESS'):''} · FF−3M ${f3?badge(f3.badge,f3.badge==='NORMAL'?'SAFE':f3.badge==='ELEVATED'?'WATCH':'STRESS'):''} · Fed funds ${stn?badge(stn.badge,stn.badge==='ACCOMMODATIVE'?'SAFE':stn.badge==='ELEVATED'?'WATCH':'STRESS'):''} ${fR(stn&&stn.value)}</div>`,'g4',rs?badge(rs.signal,rs.signal==='GREEN'?'SAFE':rs.signal==='RED'?'STRESS':'WATCH'):'')}
+    ${card('rates','ust_10y_5d_change_bps','10Y Δ 5 sessions (bps)',fBps,{zero:true,showlvl:true,nothr:true,span:'g2'})}
+    ${textCard('Layer 4 alerts',alertsTable(rt&&rt.signals.alerts),'g6')}</div>`;
+  $('layers').innerHTML=L;
+
+  // ── REGIME TAB ──
+  const sc=R.scenarios||[]; const RH=D.regime_history||{weeks:[],changelog:[]};
+  let hm='<div style="overflow-x:auto"><table class="hm"><thead><tr><th>Week</th>'+RH.weeks.map(w=>`<th>${w.week_of.slice(5)}</th>`).join('')+'</tr></thead><tbody>';
+  for(const b of ['central_bank','fiscal','banking','rates']) hm+=`<tr><td style="text-align:left;min-width:110px">${b.replace('_',' ')}</td>`+RH.weeks.map(w=>{const c=(w.cells||{})[b];return `<td class="hm-${c?c.traffic_light:'NONE'}">${c?c.score:'·'}</td>`;}).join('')+'</tr>';
+  hm+='<tr><td style="text-align:left;font-weight:800;color:var(--white)">REGIME</td>'+RH.weeks.map(w=>`<td class="hm-${w.regime==='LIQUIDITY_INJECTION'?'GREEN':w.regime==='NEUTRAL'||w.regime==='FLOOR_FRICTION'?'YELLOW':'RED'}" style="font-weight:800">${(w.regime||'').split('_').map(x=>x[0]).join('')}</td>`).join('')+'</tr></tbody></table></div>';
+  $('regimeGrid').innerHTML=`
+    ${textCard('Current regime',`<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span class="regime ${R.traffic_light||'NONE'}" style="font-size:14px;padding:8px 18px">${(R.regime||'—').replace(/_/g,' ')}</span><div class="mono" style="font-size:11px;color:var(--text2)">weighted ${fX(R.weighted_score)} · inputs: WRESBAL ${R.inputs&&R.inputs.reserves_level} (${R.inputs&&R.inputs.reserves_above_range?'above 4.0T':R.inputs&&R.inputs.reserves_in_range?'3.0–4.0T ample band':'below 3.0T — NERVOUS'}) · SOFR − IORB ${R.inputs&&R.inputs.spread_level} ${fBps(R.inputs&&R.inputs.spread_bps)} · friction confirmed ${R.inputs&&R.inputs.friction_confirmed?'YES':'no'}</div></div>
+      <table style="margin-top:10px"><thead><tr><th>Block</th><th class="num">Score</th><th class="num">Weight</th><th class="num">Contribution</th></tr></thead><tbody>${Object.entries(R.block_scores||{}).map(([k,v])=>`<tr><td>${k}</td><td class="num ${v>0?'pos':v<0?'neg':''}">${fX(v)}</td><td class="num">${R.weights[k]}</td><td class="num">${fX(v*R.weights[k])}</td></tr>`).join('')}</tbody></table>
+      <div class="note" style="margin-top:10px">${Object.entries(R.rules||{}).map(([k,v])=>`<b>${k}</b>: ${v}`).join('<br>')}</div>`,'g7')}
+    ${textCard('Scenarios (liquidity-only)',`<div class="scn">${sc.map(s=>`<div class="scn-chip ${s.active?'on':'off'}" title="${s.details.map(d=>d.condition+' → '+d.met).join('\n')}">${s.active?'▲':'·'} ${s.id} ${s.name} (${s.conditions_met}/${s.total})${s.active?' — '+s.bias:''}</div>`).join('')}</div><div class="card-src" style="margin-top:8px">hover a chip to see its conditions · price-based scenarios live in the Desk cross-market tab</div>`,'g5')}
+    ${textCard('52-week heatmap (block scores → regime)',hm,'g12')}
+    ${textCard('Regime changelog',(RH.changelog||[]).length?RH.changelog.map(c=>`<div class="alert-item INFO"><span class="alert-ts">${c.timestamp}</span><span>${c.old} → ${c.new}</span><span style="color:var(--text2)">${c.cause} · score ${c.score}</span></div>`).join(''):'<div style="color:var(--text3);font-size:11px">no regime changes recorded yet</div>','g12')}`;
+
+  // ── ALERTS TAB ──
+  const AL=(D.alerts&&D.alerts.alerts)||[]; const act=AL.filter(a=>a.status==='active'), resd=AL.filter(a=>a.status!=='active').slice(-20).reverse();
+  $('alertsGrid').innerHTML=textCard(`Active alerts (${act.length})`,act.length?act.map(a=>`<div class="alert-item ${a.severity}"><span class="alert-ts">${a.timestamp}</span><span class="alert-sev" style="color:${a.severity==='CRITICAL'?'var(--red)':a.severity==='WARNING'?'var(--amber)':'var(--blue)'}">${a.severity}</span><span>${a.message}</span><span style="color:var(--text2)">${fN(a.value)} ${a.level||''}</span></div>`).join(''):'<div style="color:var(--text3)">none</div>','g12')
+    +textCard('Resolved (last 20)',resd.length?resd.map(a=>`<div class="alert-item INFO" style="opacity:.55"><span class="alert-ts">${a.resolved_at||a.timestamp}</span><span class="alert-sev">RESOLVED</span><span>${a.message}</span></div>`).join(''):'<div style="color:var(--text3)">—</div>','g12')
+    +textCard('Threshold framework (from config, resolved to numbers)',`<table><thead><tr><th>Metric</th><th>Method</th><th>Window</th><th>Levels (resolved)</th><th>Now</th></tr></thead><tbody>${['central_bank.reserves','central_bank.tga','central_bank.on_rrp','central_bank.primary_credit_wow_pct','central_bank.net_liquidity_wow_pct','central_bank.total_assets_wow','fiscal.net_treasury_flow','fiscal.tga_closing','fiscal.tga_dod','rates.sofr_minus_iorb_bps','rates.curve_10y_2y_bps','rates.ff_minus_3m_bps','rates.ust_10y_5d_change_bps','banking.loans_leases_wow_pct','banking.deposits_wow_pct','banking.borrowings_wow_pct'].map(p=>{const [b,k]=p.split('.');const x=e(b,k);if(!x)return '';const t=x.thresholds||{};return `<tr><td>${p}</td><td>${t.method||'—'}</td><td>${t.window||'—'}${t.n?' (n='+t.n+')':''}</td><td class="mono" style="font-size:9px;color:var(--text2)">${t.levels?Object.entries(t.levels).filter(([k,v])=>v!=null).map(([k,v])=>k+' '+fN(v)).join(' · '):'—'}</td><td>${fN(x.value)} ${lvlBadge(x.level)} ${x.percentile!=null?pct(x.percentile):''}</td></tr>`;}).join('')}</tbody></table>`,'g12');
+
+  // ── AGENT TAB ──
+  const A=D.agent; const take=A&&A.operator_takeaway;
+  $('agentGrid').innerHTML=A?textCard('Currency Agent narrative — '+(A.generated_at||''),`<div class="take">${(A.narrative||'').replace(/\n/g,'<br>')}</div>`,'g8',badge(A.regime||'','blue'))
+    +textCard('Operator takeaway',`<div class="take">${Array.isArray(take)?take.map(t=>'▸ '+t).join('<br>'):(take||'—')}</div><div class="card-src">${(A.alerts||[]).map(x=>x.type+': '+x.text).join('<br>')}</div>`,'g4')
+    :textCard('Currency Agent narrative',`<div class="note">No <b>agent.json</b> yet. Phase 4 wires the USD Currency Agent: it reads the same JSON files this page reads and writes <b>data/usd/agent.json</b> with regime narrative, alerts (LIQUIDITY_GAIN / LOSS / SCARCITY / TRANSMISSION_BREAK / DATA_DEGRADED) and a three-line operator takeaway in MMT/Mosler vocabulary.<br><br>Engine reading right now: <b>${(R.regime||'—').replace(/_/g,' ')}</b> · flags ${(R.flags||[]).join(', ')||'none'} · ${cb?cb.signals.detail:''} · ${rt?rt.signals.detail:''} · ${fi?fi.signals.detail:''}</div>`,'g12');
+
+  // ── CALENDAR ──
+  const C=D.calendar||{upcoming:[]};
+  $('calGrid').innerHTML=textCard('Upcoming releases & events (operator tz '+(C.timezone_operator||'')+' · '+(C.wat_offset_note||'')+')',C.upcoming.map(i=>`<div class="cal-item"><span class="cal-date">${i.date||'rolling'}</span><span style="flex:1">${i.title}</span><span class="mono" style="font-size:10px;color:var(--text2)">${i.time_local||''}</span><span class="cal-imp ${i.impact}">${i.impact}</span><span class="mono" style="font-size:10px;color:${i.days_until!=null&&i.days_until<=2?'var(--red)':'var(--text2)'}">${i.days_until!=null?(i.days_until===0?'today':i.days_until+'d'):''}</span></div>`).join(''),'g12');
+
+
+  // ── HISTORY ──
+  function histTable(block,cols,fmts,n){ const b=D[block]; if(!b||!b.history||!b.history.dates) return '—'; const h=b.history; const idx=h.dates.map((d,i)=>i).slice(-n).reverse(); return `<div style="overflow:auto;max-height:420px"><table><thead><tr><th>Date</th>${cols.map(c=>`<th class="num">${c}</th>`).join('')}</tr></thead><tbody>${idx.map(i=>`<tr><td>${h.dates[i]}</td>${cols.map((c,j)=>{const v=(h.rows[c]||[])[i];return `<td class="num ${c.includes('pct')||c.includes('dod')||c.includes('flow')||c.includes('minus')||c.includes('mom')?(v>0?'pos':v<0?'neg':''):''}">${fmts[j](v)}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`; }
+  function histTableRaw(h,cols,fmts,n){ if(!h||!h.dates) return '—'; const idx=h.dates.map((d,i)=>i).slice(-n).reverse(); return `<div style="overflow:auto;max-height:420px"><table><thead><tr><th>Date</th>${cols.map(c=>`<th class="num">${c}</th>`).join('')}</tr></thead><tbody>${idx.map(i=>`<tr><td>${h.dates[i]}</td>${cols.map((c,j)=>{const v=(h.rows[c]||[])[i];return `<td class="num">${fmts[j](v)}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div>`; }
+  $('histGrid').innerHTML=textCard('H.4.1 weekly record — since the window start (52 weeks)',histTable('central_bank',['total_assets','treasury_securities','mbs','primary_credit','tga','on_rrp','reserves','net_liquidity','net_liquidity_wow_pct','total_assets_wow'],[fB,fB,fB,fB,fB,fB,fB,fB,fP,fM],52),'g12')
+    +textCard('DTS daily record (60 business days)',histTable('fiscal',['tga_closing','total_deposits','total_withdrawals','debt_issues','debt_redemptions','net_spending','net_deposits','net_treasury_flow','ntf_z','debt_total'],[fB,fB,fB,fB,fB,fB,fB,fM,fZ,fB],60),'g12')
+    +textCard('H.15 daily record (60 sessions)',histTable('rates',['sofr','iorb','sofr_minus_iorb_bps','fed_funds','tbill_3m','ust_2y','ust_10y','curve_10y_2y_bps','ff_minus_3m_bps'],[fR,fR,fBps,fR,fR,fR,fR,fBps,fBps],60),'g6')
+    +textCard('H.8 weekly record (52 weeks)',histTable('banking',['bank_credit','loans_leases','ci_loans','deposits','borrowings','bank_credit_wow_pct','loans_leases_wow_pct','ci_loans_wow_pct','deposits_wow_pct','borrowings_wow_pct'],[fB,fB,fB,fB,fB,fP,fP,fP,fP,fP],52),'g6')
+    +textCard('📡 Weekly signal log (Net Liquidity Δ%)',`<div style="max-height:300px;overflow:auto">${((cb&&cb.history.signal_log)||[]).map(s=>`<div class="ops"><span>${s.date}</span><span style="color:${s.label==='RISK-ON'?'var(--green)':s.label==='RISK-OFF'?'var(--red)':'var(--text2)'}">${s.label==='RISK-ON'?'🟢':s.label==='RISK-OFF'?'🔴':'⚪'} ${s.label}</span><span>${fP(s.score)}</span><span>${s.note||''}</span></div>`).join('')}</div>`,'g6')
+    +textCard('Daily NTF log',`<div style="max-height:300px;overflow:auto">${((fi&&fi.history.signal_log)||[]).map(s=>`<div class="ops"><span>${s.date}</span><span style="color:${s.label==='inject'?'var(--green)':'var(--red)'}">${s.label}</span><span>${fM(s.score)}</span><span>${(fi.history.seasonal||{})[s.date]||''}</span></div>`).join('')}</div>`,'g6');
+  // ── SYSTEM ──
+  const qs=Q.series||{}; const RV=(D.revisions&&D.revisions.revisions)||[]; const OP=(D.oplog&&D.oplog.entries)||[];
+  $('sysGrid').innerHTML=textCard(`Data quality — system confidence ${conf==null?'—':conf}/100`,`<div class="card-src" style="margin-bottom:6px">above 90: ${(Q.system||{}).abv90} · below 70: ${(Q.system||{}).blw70} · lowest: ${(Q.system||{}).lowest?(Q.system.lowest.series+' ('+Q.system.lowest.score+')'):'—'} · errors: ${(Q.errors||[]).join(', ')||'none'}</div><div style="max-height:380px;overflow:auto"><table><thead><tr><th>Series</th><th>Freshness</th><th>Last date</th><th class="num">Age (d)</th><th class="num">Confidence</th><th>Outlier</th></tr></thead><tbody>${Object.entries(qs).map(([k,v])=>`<tr><td>${k}</td><td>${badge(v.freshness)}</td><td>${v.last_valid_date||'—'}</td><td class="num">${v.age_days==null?'—':v.age_days}</td><td class="num">${v.confidence.score} <span class="badge ${v.confidence.tier==='HIGH'?'SAFE':v.confidence.tier==='MEDIUM'?'WATCH':'STRESS'}">${v.confidence.tier}</span></td><td>${v.latest_outlier?'⚠ MAD':''}</td></tr>`).join('')}</tbody></table></div>`,'g7')
+    +textCard('Source health per block',`<table><thead><tr><th>Block</th><th>Status</th><th class="num">Loaded</th><th>Equivalence</th><th>as of</th><th>generated</th></tr></thead><tbody>${['central_bank','fiscal','banking','rates'].map(b=>{const x=D[b];if(!x)return `<tr><td>${b}</td><td>${badge('unavailable')}</td><td colspan=4>file missing</td></tr>`;return `<tr><td>${b}</td><td>${badge(x.source_health.status)}</td><td class="num">${x.source_health.series_loaded}/${x.source_health.series_expected}</td><td>${x.equivalence_quality||'—'}</td><td>${x.as_of||'—'}</td><td class="mono" style="font-size:9px">${(x.generated_at||'').slice(0,16)}</td></tr>`;}).join('')}</tbody></table>
+      <div class="note" style="margin-top:10px"><b>Status taxonomy</b> fresh ≤1.5× period · stale ≤3× · proxy = documented equivalent · degraded = gaps/erratic · unavailable = shown as —, never hidden.<br><b>Config</b> ${R.config_version||''} · schema ${cb?cb.schema_version:''} · lane ${(R.heartbeat||{}).lane||''}${(R.heartbeat||{}).backfill?' (backfill)':''}</div>`,'g5')
+    +textCard('Revisions detected (source restated a published value)',RV.length?`<table><thead><tr><th>Detected</th><th>Series</th><th>Date</th><th class="num">Old</th><th class="num">New</th><th class="num">Δ</th><th class="num">Δ%</th></tr></thead><tbody>${RV.map(r=>`<tr><td>${(r.detected_at||'').slice(0,10)}</td><td>${r.series}</td><td>${r.date}</td><td class="num">${fN(r.old_value)}</td><td class="num">${fN(r.new_value)}</td><td class="num">${fN(r.delta)}</td><td class="num">${fN(r.delta_pct)}%</td></tr>`).join('')}</tbody></table>`:'<div style="color:var(--text3);font-size:11px">no revisions detected</div>','g6')
+    +textCard('Operator log',`<div style="max-height:320px;overflow:auto">${OP.slice(0,60).map(o=>`<div class="ops"><span>${(o.timestamp||'').replace('T',' ').slice(0,16)}</span><span style="color:var(--gold)">${o.type}</span><span style="color:var(--white)">${o.category}</span><span>${JSON.stringify(o.details||{}).slice(0,140)}</span></div>`).join('')||'<div style="color:var(--text3);font-size:11px">—</div>'}</div>`,'g6')
+    +textCard('Methodology — migration of the three USD dashboards (exact metrics, no triangulation)',`<div class="note"><b>H.4.1 (layer 1)</b> WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL weekly (Wednesday levels, Thursday 16:30 ET) + RRPONTTLD daily via the keyless FRED CSV endpoint. Net Liquidity = WALCL − WTREGEN − RRPONTTLD; weeks without TGA/RRP coverage are skipped, never zero-filled. Badges exactly as the legacy panel: WRESBAL &lt; 3.0T NERVOUS / &lt; 2.5T CRITICAL; TGA ≥ 750B DRAIN WATCH / ≥ 900B HEAVY DRAIN; ON RRP ≥ 200B WATCH; Primary Credit +20% w/w PANIC; Net Liquidity Δ% ±2% RISK-ON/OFF. <b>Units fixed from the primary source:</b> FRED publishes WRESBAL and WTREGEN in $ millions (the legacy v2.0 multiplied them by 1000 → reserves always AMPLE); only RRPONTTLD is $ billions.<br>
+<b>DTS (layer 2)</b> Fiscal Data API, three endpoints of the DTS Tracker v3.0 (operating_cash_balance, deposits_withdrawals_operating_cash, debt_subject_to_limit), record date T-1, ~16:00 ET. Net Treasury Flow = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues), Mosler sign; Z / mean / σ on a 30-business-day window including the day (as the hero card); 6 deposit + 12 withdrawal line items with Daily / MTD / FYTD; reserve impact = −ΔTGA; seasonal flags (quarter-end, tax day, estimated tax, mid-month, payments window). Total rows carry no category label in the API (catg = 'null') and are cross-checked against Table II totals.<br>
+<b>H.8 (layer 3)</b> TOTBKCR, TOTLL, TOTCI (weekly C&I — the legacy BUSLOANS is monthly, kept as display), DPSACBW027SBOG, H8B3094NCBA (borrowings SA — the legacy TLBACBW027SBOG is Total Liabilities). Statuses and the traffic-light vote exactly as v2.1 (≥ 3 green GREEN, ≥ 3 red RED, &lt; 3 valid NO SIGNAL); heatmap Z on the previous 26 weeks without lookahead; base-100 combined index.<br>
+<b>SOFR − IORB + H.15 (layer 4)</b> stress spread 0–5 safe · 5–15 watch · &gt; 15 stress · &gt; 30 crisis (badges NORMAL / STRESS / CRITICAL, FX signal USD WATCH / USD BULLISH); DFF, DTB3, DGS2, DGS10 with spreads on common dates only; 10Y−2Y &lt; −50 DEEP INVERSION / &lt; 0 INVERTED / &lt; 50 FLAT / STEEPENING; FF−3M &gt; 30 TIGHT / &gt; 10 ELEVATED; stance &gt; 5 RESTRICTIVE / &gt; 3 ELEVATED; H.15 signal RED if 10Y−2Y &lt; −20 and FF−3M &gt; 20, GREEN if 10Y−2Y &gt; 0 and FF−3M &lt; 10.<br>
+<b>Desk regime</b> weights CB 0.40 / rates 0.25 / fiscal 0.25 / banking 0.10 (desk proposal, recalibrate live); reserves_metric = WRESBAL with the 3.0T floor as the ample band; stress_spread_metric = SOFR − IORB with friction confirmed on 2 of 3 sessions &gt; 15 bp; SCARCITY = WRESBAL below 3.0T AND SOFR − IORB &gt; 15. Desk percentiles appear only as secondary context (pct / Z on the cards) and never change a level.<br>
+<b>Refresh</b> daily 16:20 ET (DTS + SOFR/IORB/RRP + H.15) with an 18:00 ET retry · Thursday 16:40 ET (H.4.1) · Friday 16:25 ET (H.8) · 2nd of month (BUSLOANS + backfill). Every lane rebuilds the four blocks from history.</div>`,'g12');
+  // WAT clock
+  const wat=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Malabo',hour:'2-digit',minute:'2-digit'}); const akl=new Date().toLocaleTimeString('en-GB',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit'});
+  $('wat').textContent='WAT '+wat+' · NY '+akl;
+}
+
+function exportJSON(){ const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='USD_CC_audit_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); }
+
+async function loadAll(){
+  $('msg').className='msg info'; $('msg').textContent='Loading…';
+  const results=await Promise.allSettled(FILES.map(f=>fetch(BASE+f+'.json',{cache:'no-store'}).then(r=>r.ok?r.json():null)));
+  D={}; results.forEach((r,i)=>{ D[FILES[i]]=r.status==='fulfilled'?r.value:null; });
+  if(!D.regime&&!D.central_bank){ $('msg').className='msg alert'; $('msg').textContent='No data files found under '+BASE+' — run the ingestion workflow first.'; return; }
+  try{ render(); }catch(err){ $('msg').className='msg alert'; $('msg').textContent='Render error: '+err.message; console.error(err); }
+}
+loadAll(); setInterval(loadAll,15*60*1000);
+</script>
+</body>
+</html>
