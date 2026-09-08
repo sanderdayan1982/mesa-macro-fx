@@ -262,7 +262,7 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     src = cfg["sources"]
     fx = a.fixtures
     raw_dir = os.path.join(ROOT, "logs", "jpy", "raw") if not fx else None
-    lanes = ["daily", "ten_day", "weekly", "monthly"] if a.lane == "all" else [a.lane]
+    lanes = ["daily", "daily_provisional", "ten_day", "weekly", "monthly"] if a.lane == "all" else [a.lane]
     from datetime import date, timedelta
     today = date.today()
 
@@ -293,7 +293,9 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         data.update(got)
         if hashes:
             E.log_event(oplog, "STRUCTURE_HASH", "system", {"jd_latest": max(hashes), "hash": hashes[max(hashes)]})
-        if "daily_provisional" in lanes and not fx:
+        # projection (jp) is cheap (2 requests) — fetch it on the daily lane too, not only on the 09:30 UTC provisional lane,
+        # otherwise the projection card sits 'unavailable' after any manual/backfill run
+        if not fx:
             try:
                 gp, ep, _ = prov.fetch([today.isoformat(), (today + timedelta(days=1)).isoformat()], "jp")
                 if gp.get("treasury"):
