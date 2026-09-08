@@ -52,6 +52,11 @@ jobs:
               *)                 echo "lane=all"        >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
             esac
           fi
+      - name: Diagnose source reachability (RBNZ / NZDM from this runner)
+        run: |
+          for u in "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/l-s/l2/hl2.xlsx" "https://debtmanagement.treasury.govt.nz/investor-resources/data"; do
+            echo "== $u"; curl -sS -o /dev/null -D - -m 30 -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" "$u" | head -20 || true
+          done
       - name: Run ingestion (NZD)
         run: |
           if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
