@@ -1,0 +1,1537 @@
+{
+ "$schema": "../schema/block.schema.json",
+ "config_version": "0.2",
+ "currency": "CHF",
+ "name": "CHF Command Center — Swiss National Bank / Confederation liquidity desk",
+ "jurisdiction": "Switzerland",
+ "central_bank": "Swiss National Bank (SNB)",
+ "treasury": "Federal Finance Administration (AFF/EFV) — Confederation's sight deposits at the SNB; no daily cash statement",
+ "monetary_sovereignty": "full (CHF issuer; SNB balance sheet dominated by foreign-currency investments)",
+ "framework": "MMT/Mosler: SNB creates CHF reserves mainly by buying foreign currency; sterilises with SNB Bills and liquidity-absorbing repos; tiered remuneration (0% up to threshold, −0.25% above) with the market rate anchored at policy − 5 bp by the absorption operations",
+ "timezone_source": "Europe/Zurich",
+ "timezone_operator": "Africa/Malabo",
+ "units": {
+  "balance_sheet": "CHF millions (display: bn = 10^9)",
+  "rates": "percent",
+  "spreads": "bps",
+  "note": "SNB portal delivers CHF millions; display in bn (10^9) — never mix with 100m-yen JPY units"
+ },
+ "lineage": {
+  "origin": "SNB Liquidity Command Center v1.1 (index.html fallbackData + snb_build_data.py ad hoc scores + Netlify CORS proxy; only sight deposits live)",
+  "rescued": [
+   "portal cube ids snbbipo / snbgwdzid / snbbillshreg / snbgwdmigirow (verified 2026-09-08)",
+   "sterilisation (Bills + absorbing repos) as an explicit layer",
+   "weekly sight deposits as FX-intervention proxy"
+  ],
+  "discarded": [
+   "Netlify CORS proxy (ingestion runs in GitHub Actions)",
+   "ad hoc scores (drainage/funding/AI)",
+   "double-counting 'Net Liquidity Pulse' formula",
+   "FRED NBCHBIS CHF index tab",
+   "Chart.js UI"
+  ]
+ },
+ "sources": {
+  "snb_portal_api": {
+   "base": "https://data.snb.ch/api/cube/{cubeId}/data/{json|csv}/en?dimSel=D0(...)&fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD",
+   "dimensions": "https://data.snb.ch/api/cube/{cubeId}/dimensions/en",
+   "lists": "https://data.snb.ch/api/list/{listId}/data/json/en",
+   "warehouse": "https://data.snb.ch/api/warehouse/cube/{prefix}.{path}/data/json/en (public id uses '.' where the portal shows '@': SNB1A.SNB.NSS.KZS.EID)",
+   "format": "JSON: timeseries[].metadata.key 'EPB@SNB.<cube>{<dims>}', frequency P1D_L/P1M/P3M, unit; values[].date/value; CSV: header CubeId/PublishingDate then Date;D0;Value (';' separated)",
+   "rate_limit": "one request per cube per lane, ≥ 1 s apart; no auth",
+   "verified": "2026-09-08 (snbgwdzid, snbgwdchfsgw, snbgwdmigirow, bamire, snbbipo, snbmoba, snbmonagg, bakredinausbm, babilpobm, zirepo, zimoma, snbfxtr, snbbillshreg, warehouse SNB1A.SNB.NSS.KZS.EID)",
+   "auth": "none"
+  },
+  "snb_policy_rates": {
+   "cube": "snbgwdzid",
+   "items": {
+    "LZ": "SNB policy rate",
+    "SARON": "SARON fixing at close",
+    "ENG": "Special rate (liquidity-shortage financing facility)",
+    "ZIGBL": "rate on sight deposits up to threshold",
+    "ZIG": "rate on sight deposits above threshold",
+    "ZIABP": "discount in bp",
+    "FREI": "threshold factor"
+   },
+   "freq": "daily (T-1, published 10:00 CET)",
+   "verified": "2026-09-04: LZ 0, SARON −0.04, ENG 0.25, ZIGBL 0, ZIG −0.25, ZIABP 25, FREI 13.5 (since 2026-08-03)"
+  },
+  "snb_sight_deposits_weekly": {
+   "cube": "snbgwdchfsgw",
+   "items": {
+    "GI": "sight deposits of domestic banks",
+    "UEB": "other sight deposits in CHF (Confederation, foreign banks, others)",
+    "TG": "total sight deposits in CHF"
+   },
+   "freq": "weekly (Friday data, published Monday 10:00 CET)",
+   "unit": "CHF millions",
+   "verified": "2026-09-04: GI 424977, UEB 27616, TG 452593"
+  },
+  "snb_min_reserve_sight": {
+   "cube": "snbgwdmigirow",
+   "items": {
+    "GU": "sight deposits for minimum-reserve purposes (period 20th–19th)"
+   },
+   "freq": "weekly + period end",
+   "verified": "2026-09-04: 429212"
+  },
+  "snb_min_reserves": {
+   "cube": "bamire",
+   "dimSel": "D0(TB),D1(GA,T,GN,NM,EP,EGP,ZNP,AI)",
+   "freq": "monthly",
+   "verified": "2026-06: requirement GA 49028.7, eligible T 446438, sight GN 442293, compliance EP 910.6%, institutions 200"
+  },
+  "snb_balance_sheet_monthly": {
+   "cube": "snbbipo",
+   "items": {
+    "D": "foreign currency investments",
+    "GFG": "gold",
+    "FRGSF": "claims from CHF repos (supplying)",
+    "GD": "secured loans",
+    "T0": "total assets",
+    "N": "banknotes",
+    "GB": "sight deposits of domestic banks",
+    "VB": "amounts due to the Confederation",
+    "GBI": "sight deposits of foreign banks and institutions",
+    "US": "other sight liabilities",
+    "VRGSF": "liabilities from CHF repos (absorbing)",
+    "ES": "SNB debt certificates (SNB Bills)",
+    "UT": "other time liabilities",
+    "T1": "total liabilities"
+   },
+   "freq": "monthly (publication day: PENDING — set on first live run)",
+   "verified": "2026-07: D 802478, T0 929994, N 70358, GB 420859, VB 21033, GBI 8030, US 13210, VRGSF 73050, ES 81901, UT 0"
+  },
+  "snb_monetary_base": {
+   "cube": "snbmoba",
+   "dimSel": "D0(N0,GB,N1,RF,G)",
+   "freq": "monthly",
+   "verified": "2026-07: N0 511424, GB 440891, N1 70533; RF 878897 (06)"
+  },
+  "snb_bills_register": {
+   "list": "snbbillshreg",
+   "url": "https://data.snb.ch/api/list/snbbillshreg/data/json/en",
+   "fields": "HR_A ISIN, HR_B description, HR_G payment, HR_H repayment, HR_K outstanding volume (CHF)",
+   "freq": "monthly (last bank working day of previous month; published 2026-08-31 09:00)",
+   "verified": "2026-08-31: 28-day bills 34.7–40.6 bn per week (Jul), 1-year bills ~5 bn per month; sum ≈ ES"
+  },
+  "snb_money_market_operations": {
+   "url": "https://www.snb.ch/dam/jcr:dd367aa2-9c2f-41c1-be62-9c50d61c52c1/gmges.en.xlsx",
+   "portal_doc": "https://data.snb.ch/en/topics/snb/doc/snbgmges",
+   "format": "single sheet 'Tabelle'; header row 17: Transaction date | SNB (CP=cash provider, CT=cash taker) | Contract/term | from | to | Type (Repo, SNB Bills, Swaps) | Procedure | Yield % | Premium/discount to policy rate bp | Bids | Allocation; CHF millions",
+   "freq": "monthly (last working day of month 09:00, previous month)",
+   "verified": "2026-07-23 SNB Bills 28T bids 17795 / alloc 15645 yield −0.06; 2026-07-29 Repo CT VAR fixed-rate tender policy −5 bp alloc 17420"
+  },
+  "snb_fx_transactions": {
+   "cube": "snbfxtr",
+   "freq": "quarterly (P3M)",
+   "unit": "CHF millions, + = purchases of foreign currency",
+   "verified": "2025-Q2 5058, 2025-Q3 75, 2025-Q4 −6, 2026-Q1 3940"
+  },
+  "snb_mpa": {
+   "dates_2026": [
+    "2026-09-24",
+    "2026-12-10"
+   ],
+   "dates_2027": [
+    "2027-03-18",
+    "2027-06-24",
+    "2027-09-23",
+    "2027-12-16"
+   ],
+   "time": "09:30 CET press release",
+   "verified": "SNB event schedule 2026-09-08; MPA 2026-06-18: policy 0%, discount 0.25 pp unchanged, 'increased willingness to intervene in the FX market'"
+  },
+  "snb_repo_reference_rates": {
+   "cube": "zirepo",
+   "items": {
+    "H0": "SARON close",
+    "H1": "SARTN",
+    "H2": "SAR1W",
+    "H3": "SAR2W",
+    "H4": "SAR1M",
+    "H5": "SAR3M",
+    "H6": "SARON 1M compound",
+    "H7": "SARON 3M compound",
+    "H8": "SARON 6M compound"
+   },
+   "freq": "daily but published with ~3-week lag (last 2026-08-14 on 2026-09-08)",
+   "verified": "2026-08-14: H0 −0.053, H6 −0.048, H7 −0.043, H8 −0.046, H5 −0.045"
+  },
+  "snb_confed_curve_daily": {
+   "warehouse_cube": "SNB1A.SNB.NSS.KZS.EID",
+   "dimSel": "LAUFZEIT(J01M0,J02M0,J03M0,J05M0,J07M0,J10M0,J20M0,J30M0),ZEITPUNKT(A1100),frequency(P1D_L),AGGREGATIONSMETHODE(ZZ)",
+   "freq": "daily 11:00, T-1",
+   "verified": "2026-09-07: 1y 0.055, 2y 0.136, 3y 0.202, 4y 0.260; 10y 0.488 (key figure)"
+  },
+  "snb_confed_curve_monthly": {
+   "cube": "rendeiduebd",
+   "dimSel": "D0(CHF),D1(1J,2J,5J,10J,20J,30J)",
+   "freq": "daily values released monthly (publishing set A, 1st of month)",
+   "verified": "last 2026-08-31 on 2026-09-08 — backup only"
+  },
+  "snb_money_market_monthly": {
+   "cube": "zimoma",
+   "dimSel": "D0(SARON,1TGT,EG3M)",
+   "freq": "monthly averages",
+   "verified": "2026-08: SARON −0.060, TOMN −0.27, EG3M (3m MMDRC) −0.083"
+  },
+  "snb_banks_credit": {
+   "cube": "bakredinausbm",
+   "dimSel": "D0(AV1),D1(I),D2(T1,H,T2),D3(F)",
+   "freq": "monthly (~20th)",
+   "verified": "2026-06: total 1457651, mortgages 1242288, other 215363"
+  },
+  "snb_banks_balance_sheet": {
+   "cube": "babilpobm",
+   "dimSel": "BANKENGRUPPE(A40),INLANDAUSLAND(T),WAEHRUNG(T),AKT(FMI,FKU,HYP,TOT),PAS(VBA,VKE,APF)",
+   "freq": "monthly",
+   "verified": "2026-06 all banks: liquid assets 423952, due from customers 400037, customer deposits 1661089, due to banks 570994, total 2992954"
+  },
+  "snb_monetary_aggregates": {
+   "cube": "snbmonagg",
+   "dimSel": "D0(B),D1(GM1,GM2,GM3,S0)",
+   "freq": "monthly (~20th; Jul published 2026-08-21)",
+   "verified": "2026-07: M1 769708, M2 1117458, M3 1231109, sight deposits S0 678908"
+  },
+  "efv_mmdrc_auctions": {
+   "url": "https://www.efv.admin.ch/dam/en/sd-web/d9FElh8dV0db/resultate-gmbf.xlsx",
+   "format": "sheet per year; header row 11 (EN): Auction | Settlement | Maturity | Days | ISIN | Total bids | Bids without price | Amount issued | Price | Yield; Excel serial dates; CHF millions",
+   "freq": "weekly (Tuesday auction, Thursday settlement)",
+   "verified": "2026-08-25: bids 2522.45 / issued 397.45 → 6.35x, yield −0.083%; 2026-09-01: 5.21x −0.087%; 2026-09-08: 5.05x −0.083%"
+  },
+  "efv_bond_auctions": {
+   "url": "https://www.efv.admin.ch/dam/en/sd-web/AFFQnqhWiEVW/resultate-anleihen.xlsx",
+   "format": "sheet per year; header row 11: Auction | Settlement | Maturity | prov. ISIN | Fungible ISIN | Bond | Coupon | Total bids | Bids without price | Amount issued | Price | Yield | Own holdings not placed",
+   "freq": "monthly",
+   "verified": "2026-06-10: Eidg. 24.06.26/41 0.875% bids 599.17 / issued 415.17, yield 0.619%, own holdings 300"
+  },
+  "efv_bonds_outstanding": {
+   "url": "https://www.efv.admin.ch/dam/en/sd-web/K9gjjBZzAoPz/ausstehende-anleihen.xlsx",
+   "verified": "2026-09-08 (33 rows; ISIN, bond, maturity, coupon, issued, placed, own holdings)"
+  },
+  "efv_issuance_calendars": {
+   "mmdrc_2026": "https://www.efv.admin.ch/dam/en/sd-web/962GRmuHDjrK/GMBF-Kalender-2026.pdf",
+   "bonds_2026": "https://www.efv.admin.ch/dam/en/sd-web/kb0UBOFNnfjG/Kalender-Anleihen-2026.pdf",
+   "status": "PDF — parser Phase 3"
+  },
+  "six_saron": {
+   "status": "PENDING (Phase 3): daily SARON compound and high/low from SIX; SNB zirepo covers with 3-week lag"
+  },
+  "snb_published_rates": {
+   "cube": "zikrepro",
+   "dimSel": "D0(05Q),D1(MV,50,10)",
+   "freq": "monthly",
+   "verified": "2026-07: variable 2.75, fixed 5y 1.78, fixed 10y 2.05 (median)",
+   "note": "C10; reviewer cube 'zimopo' does not exist"
+  }
+ },
+ "blocks": {
+  "central_bank": {
+   "title": "1 · Central bank liquidity — SNB sight deposits, tiered remuneration, absorption (Bills + repos), FX-driven balance sheet",
+   "equivalence_quality": "high",
+   "equivalence_note": "Sight deposits of domestic banks = reserves (weekly, Monday). Threshold system: 0% up to factor × minimum reserves, −0.25% above. SNB absorbs ~155 bn with Bills and 1-week repos at policy − 5 bp — that is the market anchor, not the policy rate.",
+   "series": {
+    "sight_deposits_domestic_weekly": {
+     "id": "snbgwdchfsgw:GI",
+     "table": "snb_sight_deposits_weekly",
+     "label": "Sight deposits of domestic banks — weekly (Friday)",
+     "freq": "weekly",
+     "usd_analog": "WRESBAL",
+     "status": "verified",
+     "verified": "2026-09-04 = 424977"
+    },
+    "sight_deposits_total_weekly": {
+     "id": "snbgwdchfsgw:TG",
+     "table": "snb_sight_deposits_weekly",
+     "label": "Total sight deposits in CHF at the SNB — weekly",
+     "freq": "weekly",
+     "status": "verified",
+     "verified": "2026-09-04 = 452593"
+    },
+    "other_sight_deposits_weekly": {
+     "id": "snbgwdchfsgw:UEB",
+     "table": "snb_sight_deposits_weekly",
+     "label": "Other sight deposits in CHF — foreign banks, international institutions, Confederation and others (weekly)",
+     "freq": "weekly",
+     "status": "verified",
+     "note": "C6: NOT a Confederation proxy (4 of 5 reviewers); hot-money / intervention channel — flag FOREIGN_SIGHT_DEPOSITS_JUMP"
+    },
+    "min_reserve_sight_deposits": {
+     "id": "snbgwdmigirow:GU",
+     "table": "snb_min_reserve_sight",
+     "label": "Sight deposits for minimum-reserve purposes (period 20th–19th)",
+     "freq": "weekly",
+     "status": "verified"
+    },
+    "min_reserve_requirement": {
+     "id": "bamire:TB,GA",
+     "table": "snb_min_reserves",
+     "label": "Minimum reserve requirement — all banks (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-06 = 49028.66"
+    },
+    "min_reserve_compliance_pct": {
+     "id": "bamire:TB,EP",
+     "table": "snb_min_reserves",
+     "label": "Minimum reserve compliance % (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "unit": "%",
+     "display_only": true
+    },
+    "policy_rate": {
+     "id": "snbgwdzid:LZ",
+     "table": "snb_policy_rates",
+     "label": "SNB policy rate",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "0.00 since 2025-06-20"
+    },
+    "rate_up_to_threshold": {
+     "id": "snbgwdzid:ZIGBL",
+     "table": "snb_policy_rates",
+     "label": "Remuneration of sight deposits up to threshold",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "rate_above_threshold": {
+     "id": "snbgwdzid:ZIG",
+     "table": "snb_policy_rates",
+     "label": "Remuneration of sight deposits above threshold",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "−0.25 since 2025-06-20"
+    },
+    "threshold_factor": {
+     "id": "snbgwdzid:FREI",
+     "table": "snb_policy_rates",
+     "label": "Threshold factor (× minimum reserves)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "13.5 since 2026-08-03 (path 30→28→25→22→20→18→16.5→15→13.5)",
+     "unit": "x"
+    },
+    "special_rate": {
+     "id": "snbgwdzid:ENG",
+     "table": "snb_policy_rates",
+     "label": "Special rate — liquidity-shortage financing facility",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "0.25 since 2026-07-01 (policy + 0.25)"
+    },
+    "fx_investments": {
+     "id": "snbbipo:D",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Foreign currency investments (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 802478"
+    },
+    "total_assets": {
+     "id": "snbbipo:T0",
+     "table": "snb_balance_sheet_monthly",
+     "label": "SNB total assets (monthly)",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "banknotes": {
+     "id": "snbbipo:N",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Banknotes in circulation (monthly)",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "sight_deposits_domestic_monthly": {
+     "id": "snbbipo:GB",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Sight deposits of domestic banks — month-end",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "sight_deposits_foreign": {
+     "id": "snbbipo:GBI",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Sight deposits of foreign banks and institutions",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "snb_bills": {
+     "id": "snbbipo:ES",
+     "table": "snb_balance_sheet_monthly",
+     "label": "SNB Bills outstanding (absorption)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 81901"
+    },
+    "absorbing_repos": {
+     "id": "snbbipo:VRGSF",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Liabilities from CHF repos (absorbing)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 73050"
+    },
+    "supplying_repos": {
+     "id": "snbbipo:FRGSF",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Claims from CHF repos (liquidity-supplying) — emergency signal",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 0",
+     "zero_if_empty": true
+    },
+    "secured_loans": {
+     "id": "snbbipo:GD",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Secured loans (liquidity-shortage facility use)",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "monetary_base": {
+     "id": "snbmoba:N0",
+     "table": "snb_monetary_base",
+     "label": "Monetary base (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 511424"
+    },
+    "fx_transactions_quarterly": {
+     "id": "snbfxtr:T0",
+     "table": "snb_fx_transactions",
+     "label": "SNB foreign-currency purchases (quarterly, + = purchases)",
+     "freq": "quarterly",
+     "status": "verified",
+     "verified": "2026-Q1 = 3940"
+    },
+    "bills_maturity_ladder": {
+     "id": "list:snbbillshreg",
+     "table": "snb_bills_register",
+     "label": "SNB Bills maturing in the next 4 weeks (from the main register)",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "mm_operations_absorbed_month": {
+     "id": "gmges.xlsx: sum(Allocation) where SNB=CT",
+     "table": "snb_money_market_operations",
+     "label": "Liquidity absorbed by SNB operations in the month (repos + Bills)",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "mm_operations_supplied_month": {
+     "id": "gmges.xlsx: sum(Allocation) where SNB=CP",
+     "table": "snb_money_market_operations",
+     "label": "Liquidity supplied by SNB operations in the month (emergency signal)",
+     "freq": "monthly",
+     "status": "verified",
+     "zero_if_empty": true
+    },
+    "swap_balances_chf": {
+     "id": "snbbipo:GSGSF",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Balances from swap transactions against CHF (monthly)",
+     "freq": "monthly",
+     "status": "verified (dimension exists; value pulled in Phase 2)",
+     "note": "C13: SNB FX swaps; also Type=Swaps rows in gmges.xlsx"
+    },
+    "snb_bills_auction_month": {
+     "id": "gmges.xlsx: SNB Bills rows (bids, allocation, yield)",
+     "table": "snb_money_market_operations",
+     "label": "SNB Bills auctions in the month: bid-to-cover, yield vs SARON",
+     "freq": "monthly",
+     "status": "verified"
+    }
+   },
+   "derived": {
+    "sight_deposits_wow": {
+     "formula": "diff(sight_deposits_domestic_weekly,1)",
+     "note": "the Monday number; + = reserves created (FX purchases, Bills roll-off), − = absorption / FX sales / Confederation inflows"
+    },
+    "sight_deposits_4w_change": {
+     "formula": "diff(sight_deposits_domestic_weekly,4)"
+    },
+    "sight_deposits_13w_change_pct": {
+     "formula": "pct_change(sight_deposits_domestic_weekly,13)",
+     "signal_band": "risk_on/risk_off"
+    },
+    "excess_to_required_ratio": {
+     "formula": "sight_deposits_domestic_weekly / min_reserve_requirement (ffill)",
+     "note": "8.7x on 2026-09-04; analogous to JPY 27.5x, AUD 70–100bn range"
+    },
+    "threshold_capacity": {
+     "formula": "threshold_factor × min_reserve_requirement",
+     "note": "aggregate 0%-remunerated capacity ≈ 662 bn (13.5 × 49.0 bn); per-bank thresholds are not published — DESK PROXY"
+    },
+    "threshold_utilisation": {
+     "formula": "sight_deposits_domestic_weekly / threshold_capacity",
+     "note": "C4: DISPLAY ONLY — 'aggregate threshold headroom'. Thresholds are per bank; the aggregate ratio cannot signal scarcity (R3/R4/R5/R6). Replaced in the overlay by absorption_share. Pending: QB tier distribution (R4 claims QB Q2-2026 p.48) — verify in Phase 2",
+     "display_only": true
+    },
+    "absorption_stock": {
+     "formula": "snb_bills + absorbing_repos",
+     "note": "154951 in 2026-07"
+    },
+    "absorption_share": {
+     "formula": "absorption_stock / (sight_deposits_domestic_monthly + absorption_stock)",
+     "note": "26.9% in 2026-07 — how much of the gross reserve creation the SNB is holding back"
+    },
+    "net_liquidity": {
+     "formula": "sight_deposits_domestic_monthly − amounts_due_to_confederation",
+     "note": "C9: cross-currency analogy only (Confederation = 5% of sight deposits); not in the score",
+     "display_only": true
+    },
+    "fx_investments_change_pct": {
+     "formula": "pct_change(fx_investments,1)",
+     "note": "valuation + purchases; confirm purchases with fx_transactions_quarterly"
+    },
+    "fx_intervention_proxy_weekly": {
+     "formula": "sight_deposits_wow − bills_maturing_week (− repo maturities when known)",
+     "note": "C12: jump not explained by maturities = suspected FX purchases; monthly confirmation via GBI/GSGSF, quarterly via snbfxtr"
+    },
+    "bills_roll_off_4w": {
+     "formula": "sum(outstanding volume of snbbillshreg rows with repayment within 28 days)",
+     "note": "liquidity returning if not rolled"
+    },
+    "balance_sheet_phase": {
+     "formula": "ABSORBING if absorption_stock rising 3 months; RELEASING if falling 3 months; FX_EXPANSION if fx_transactions_quarterly > 0 and sight deposits 13w up; STEADY otherwise"
+    },
+    "score": {
+     "formula": "weighted: sight_deposits_13w_change_pct band (±1), absorption_share level (−0.5 WATCH, −1 STRESS), supplying ops > 0 (−1), fx_intervention_proxy_weekly ≥ WATCH (+0.5)",
+     "range": [
+      -1.5,
+      1.5
+     ]
+    },
+    "gross_reserve_creation": {
+     "formula": "sight_deposits_domestic_monthly + absorption_stock",
+     "note": "C2: reserves the system would hold without sterilisation; NOT 'reserves minus absorption' (double counting, rejected)"
+    },
+    "bills_maturing_week": {
+     "formula": "sum(outstanding of snbbillshreg rows with repayment in the coming week) + repo maturities from gmges when available",
+     "note": "C12: known in advance from the register → used to explain weekly sight-deposit jumps"
+    },
+    "bills_yield_minus_saron_bps": {
+     "formula": "(latest SNB Bills 28-day auction yield − saron) × 100",
+     "note": "C14: absorption premium; outside ±3 bp = SNB_BILLS_AUCTION_ANOMALY"
+    },
+    "other_sight_deposits_wow": {
+     "formula": "diff(other_sight_deposits_weekly,1)"
+    }
+   },
+   "thresholds": {
+    "reserves": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "applies_to": "excess_to_required_ratio (weekly)",
+     "primary_absolute": {
+      "desk_proposal_not_snb": true,
+      "ample_above": 5,
+      "watch_below": 3,
+      "stress_below": 1.5,
+      "crisis_below": 1.1,
+      "origin": "DESK PROPOSAL — the SNB publishes no reserve-demand estimate; 8.7x today. Reviewers: point to any SNB paper (Quarterly Bulletin, speeches) quantifying structural reserve demand under the tiered system",
+      "note": "C11: dead-man switch only — under tiering reserves are large by design (R6); price (rates layer) leads"
+     },
+     "secondary_percentile": {
+      "window": "260w",
+      "watch_below": "p15",
+      "stress_below": "p5"
+     }
+    },
+    "sight_deposits_wow": {
+     "method": "percentile",
+     "window": "260w",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "stress_above": "p97",
+     "stress_below": "p3",
+     "hysteresis": {
+      "exit_on": "p80/p20"
+     },
+     "note": "≥ p90 = FX_INTERVENTION_SUSPECT candidate; ≤ p10 = absorption/Confederation drain"
+    },
+    "sight_deposits_13w_change_pct": {
+     "method": "percentile",
+     "window": "260w",
+     "risk_on_above": "p70",
+     "risk_off_below": "p30",
+     "hysteresis": {
+      "exit_on": "p60/p40"
+     }
+    },
+    "absorption_share": {
+     "method": "percentile",
+     "window": "60m",
+     "direction": "high_is_risk",
+     "watch_above": "p85",
+     "stress_above": "p95",
+     "min_n": 12,
+     "secondary_absolute": {
+      "watch": 0.35,
+      "stress": 0.45
+     },
+     "note": "C5: DESK PROPOSAL from R4 (35–40%); 26.9% in 2026-07; recalibrate"
+    },
+    "supplying_repos": {
+     "method": "absolute",
+     "watch_above": 0,
+     "note": "any liquidity-supplying operation at 0% policy = scarcity signal"
+    },
+    "other_sight_deposits_wow": {
+     "method": "percentile",
+     "window": "260w",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "stress_above": "p97",
+     "note": "C6/C14: FOREIGN_SIGHT_DEPOSITS_JUMP"
+    }
+   }
+  },
+  "fiscal": {
+   "title": "2 · Treasury — Confederation cash at the SNB (proxy), MMDRC and bond auctions (AFF/EFV)",
+   "equivalence_quality": "medium-low",
+   "equivalence_note": "No daily statement and no monthly cash report (AFF site verified 2026-09-08: annual/budget only). Monthly 'Amounts due to the Confederation' (SNB balance sheet) + weekly MMDRC auctions + monthly bond auctions. Weight 0.10. The weekly 'other sight deposits' series is NOT a Confederation proxy (C6).",
+   "series": {
+    "amounts_due_to_confederation": {
+     "id": "snbbipo:VB",
+     "table": "snb_balance_sheet_monthly",
+     "label": "Confederation sight deposits at the SNB (monthly)",
+     "freq": "monthly",
+     "usd_analog": "TGA (monthly)",
+     "status": "verified",
+     "verified": "2026-07 = 21033 (06: 28126)"
+    },
+    "mmdrc_auction_results": {
+     "id": "resultate-gmbf.xlsx",
+     "table": "efv_mmdrc_auctions",
+     "label": "MMDRC auctions: bid-to-cover, yield, amount (weekly)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-08: 5.05x, −0.083%, 469.2"
+    },
+    "bond_auction_results": {
+     "id": "resultate-anleihen.xlsx",
+     "table": "efv_bond_auctions",
+     "label": "Confederation bond auctions: bid-to-cover, yield, amount, own holdings (monthly)",
+     "freq": "event",
+     "status": "verified"
+    },
+    "bonds_outstanding": {
+     "id": null,
+     "table": "efv_bonds_outstanding",
+     "label": "Confederation bonds outstanding (placed volume)",
+     "freq": "monthly",
+     "status": "pending — Phase 3 parser (ausstehende-anleihen.xlsx verified 2026-09-08: ISIN, bond, maturity, coupon, issued, placed, own holdings)"
+    },
+    "mmdrc_3m_yield_monthly": {
+     "id": "zimoma:EG3M",
+     "table": "snb_money_market_monthly",
+     "label": "3-month MMDRC yield (monthly average)",
+     "freq": "monthly",
+     "status": "verified",
+     "unit": "%"
+    },
+    "auction_calendar": {
+     "id": null,
+     "table": "efv_issuance_calendars",
+     "label": "MMDRC / bond issuance calendar (PDF)",
+     "freq": "event",
+     "status": "pending — Phase 3 parser"
+    }
+   },
+   "derived": {
+    "confed_cash_mom": {
+     "formula": "diff(amounts_due_to_confederation,1)",
+     "note": "− = Treasury spent / redeemed into reserves (injection); + = taxes / issuance settled (drain)"
+    },
+    "mmdrc_bid_to_cover": {
+     "formula": "total_bids / amount_issued per auction"
+    },
+    "mmdrc_yield_minus_saron_bps": {
+     "formula": "(mmdrc_yield − saron) × 100",
+     "note": "C7: negative = tier-arbitrage bid (banks above threshold prefer −0.08% to −0.25%), informational; POSITIVE = weak demand"
+    },
+    "bond_bid_to_cover": {
+     "formula": "total_bids / amount_issued per auction"
+    },
+    "bond_tail_bp": {
+     "formula": "not available — the EFV file has no average yield; display bid-to-cover and own holdings retained instead"
+    },
+    "net_issuance_month": {
+     "formula": "MMDRC issued + bonds issued − maturities (from outstanding files)",
+     "note": "drain estimate; Phase 2 first pass = issuance only"
+    },
+    "fiscal_regime": {
+     "formula": "INJECTION if confed_cash_mom ≤ p20; DRAIN if ≥ p80; NEUTRAL otherwise (monthly)",
+     "score_cap": 0.5
+    },
+    "bond_own_holdings_share": {
+     "formula": "own_holdings_not_placed / (amount_issued + own_holdings_not_placed) per auction",
+     "note": "C8: routine market-making retention; flag only if > 30% AND bid-to-cover ≤ WATCH"
+    }
+   },
+   "thresholds": {
+    "confed_cash_mom": {
+     "method": "percentile",
+     "window": "60m",
+     "direction": "two_sided",
+     "injection_below": "p20",
+     "drain_above": "p80",
+     "hysteresis": {
+      "exit_on": "p30/p70"
+     },
+     "min_n": 12
+    },
+    "mmdrc_bid_to_cover": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "primary_absolute": {
+      "watch_below": 2.0,
+      "stress_below": 1.5
+     },
+     "secondary_percentile": {
+      "window": "52 auctions",
+      "watch_below": "p10"
+     },
+     "note": "C7: R4 < 2.0 WATCH; R3 < 1.5 STRESS with spread ≥ +5"
+    },
+    "mmdrc_yield_minus_saron_bps": {
+     "method": "absolute",
+     "direction": "high_is_risk",
+     "watch_above": 0,
+     "stress_above": 5,
+     "note": "C7 sign fixed (R3/R4): weak demand = yield at/above SARON"
+    }
+   }
+  },
+  "banking": {
+   "title": "3 · Banking transmission — domestic loans and mortgages, customer deposits, liquid assets, money stock",
+   "equivalence_quality": "medium",
+   "equivalence_note": "Monthly only (~20th). Swiss credit is 85% mortgages (housing/collateral signal); transmission read through customer deposits, bank liquid assets and the published mortgage-rate pass-through (zikrepro).",
+   "series": {
+    "loans_domestic_total": {
+     "id": "bakredinausbm:AV1,I,T1,F",
+     "table": "snb_banks_credit",
+     "label": "Domestic loans — utilisation, all banks",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-06 = 1457651"
+    },
+    "mortgages_domestic": {
+     "id": "bakredinausbm:AV1,I,H,F",
+     "table": "snb_banks_credit",
+     "label": "Domestic mortgage loans",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "other_loans_domestic": {
+     "id": "bakredinausbm:AV1,I,T2,F",
+     "table": "snb_banks_credit",
+     "label": "Domestic other loans (secured + unsecured)",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "customer_deposits": {
+     "id": "babilpobm:A40,T,T,PAS(VKE)",
+     "table": "snb_banks_balance_sheet",
+     "label": "Amounts due in respect of customer deposits — all banks",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-06 = 1661089"
+    },
+    "bank_liquid_assets": {
+     "id": "babilpobm:A40,T,T,AKT(FMI)",
+     "table": "snb_banks_balance_sheet",
+     "label": "Liquid assets — all banks (mostly SNB sight deposits)",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "due_to_banks": {
+     "id": "babilpobm:A40,T,T,PAS(VBA)",
+     "table": "snb_banks_balance_sheet",
+     "label": "Amounts due to banks — interbank funding",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "m1": {
+     "id": "snbmonagg:B,GM1",
+     "table": "snb_monetary_aggregates",
+     "label": "M1",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "m2": {
+     "id": "snbmonagg:B,GM2",
+     "table": "snb_monetary_aggregates",
+     "label": "M2",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "m3": {
+     "id": "snbmonagg:B,GM3",
+     "table": "snb_monetary_aggregates",
+     "label": "M3",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 1231109"
+    },
+    "monetary_base_monthly": {
+     "id": "snbmoba:N0",
+     "table": "snb_monetary_base",
+     "label": "Monetary base",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "mortgage_rate_fixed_5y": {
+     "id": "zikrepro:05Q,50",
+     "table": "snb_published_rates",
+     "label": "Published mortgage rate, fixed 5y — median (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 1.78",
+     "unit": "%"
+    },
+    "mortgage_rate_fixed_10y": {
+     "id": "zikrepro:05Q,10",
+     "table": "snb_published_rates",
+     "label": "Published mortgage rate, fixed 10y — median",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 2.05",
+     "unit": "%"
+    },
+    "mortgage_rate_variable": {
+     "id": "zikrepro:05Q,MV",
+     "table": "snb_published_rates",
+     "label": "Published variable mortgage rate — median",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 2.75",
+     "unit": "%"
+    }
+   },
+   "derived": {
+    "loans_yoy_pct": {
+     "formula": "pct_change(loans_domestic_total,12)"
+    },
+    "mortgages_yoy_pct": {
+     "formula": "pct_change(mortgages_domestic,12)"
+    },
+    "deposits_yoy_pct": {
+     "formula": "pct_change(customer_deposits,12)"
+    },
+    "credit_impulse": {
+     "formula": "zscore(diff(loans_yoy_pct,3), 36)",
+     "note": "C10: 85% mortgages → housing/collateral signal, EXCLUDED from the banking score (displayed)"
+    },
+    "loan_to_deposit": {
+     "formula": "loans_domestic_total / customer_deposits"
+    },
+    "liquid_assets_to_deposits": {
+     "formula": "bank_liquid_assets / customer_deposits"
+    },
+    "m3_yoy_pct": {
+     "formula": "pct_change(m3,12)"
+    },
+    "money_multiplier": {
+     "formula": "m3 / monetary_base_monthly"
+    },
+    "transmission_signal": {
+     "formula": "GREEN if deposits_yoy_pct ≥ 0 and (liquid_assets_to_deposits ≥ p20 or deposits_yoy_pct > p25) and mortgage_5y_minus_policy_bps within p20–p80; RED if deposits_yoy_pct ≤ p10 or (liquid_assets_to_deposits ≤ p5 and deposits_yoy_pct ≤ p25); YELLOW otherwise. Liquid assets shrink mechanically under sterilisation (sight deposits → SNB Bills), so the liquidity leg alone never triggers RED",
+     "note": "C10: transmission read through deposits, bank liquidity and the mortgage-rate pass-through, not through mortgage volumes"
+    },
+    "mortgage_5y_minus_policy_bps": {
+     "formula": "(mortgage_rate_fixed_5y − policy_rate) × 100",
+     "note": "C10: price transmission (R3/R6)"
+    }
+   },
+   "thresholds": {
+    "credit_impulse": {
+     "method": "zscore",
+     "notable_above": 1.0,
+     "extraordinary_above": 2.0
+    },
+    "loans_yoy_pct": {
+     "method": "percentile",
+     "window": "120m",
+     "watch_below": "p15",
+     "stress_below": "p5",
+     "min_n": 12
+    }
+   }
+  },
+  "rates": {
+   "title": "4 · Rates and money market — SARON vs the tiered corridor, repo term curve, Confederation NSS curve",
+   "equivalence_quality": "high",
+   "equivalence_note": "SARON daily (T-1). Market anchor = policy − 5 bp (absorbing repos). SARON compound / term repo rates lag 3 weeks (SNB) until SIX is wired. Confederation curve daily from the SNB warehouse (NSS, 11:00).",
+   "series": {
+    "saron": {
+     "id": "snbgwdzid:SARON",
+     "table": "snb_policy_rates",
+     "label": "SARON fixing at close",
+     "freq": "daily",
+     "usd_analog": "SOFR",
+     "status": "verified",
+     "verified": "2026-09-04 = −0.04"
+    },
+    "policy_rate": {
+     "id": "snbgwdzid:LZ",
+     "table": "snb_policy_rates",
+     "label": "SNB policy rate",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "rate_above_threshold": {
+     "id": "snbgwdzid:ZIG",
+     "table": "snb_policy_rates",
+     "label": "Tier rate above threshold (effective floor for excess balances)",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "special_rate": {
+     "id": "snbgwdzid:ENG",
+     "table": "snb_policy_rates",
+     "label": "Special rate (ceiling)",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "sar1w": {
+     "id": "zirepo:H2",
+     "table": "snb_repo_reference_rates",
+     "label": "SAR1W",
+     "freq": "daily",
+     "status": "verified",
+     "note": "3-week publication lag"
+    },
+    "sar1m": {
+     "id": "zirepo:H4",
+     "table": "snb_repo_reference_rates",
+     "label": "SAR1M",
+     "freq": "daily",
+     "status": "verified",
+     "note": "3-week publication lag"
+    },
+    "sar3m": {
+     "id": "zirepo:H5",
+     "table": "snb_repo_reference_rates",
+     "label": "SAR3M",
+     "freq": "daily",
+     "status": "verified",
+     "note": "3-week publication lag"
+    },
+    "saron_1m_compound": {
+     "id": "zirepo:H6",
+     "table": "snb_repo_reference_rates",
+     "label": "SARON 1M compound",
+     "freq": "daily",
+     "status": "verified",
+     "note": "3-week publication lag"
+    },
+    "saron_3m_compound": {
+     "id": "zirepo:H7",
+     "table": "snb_repo_reference_rates",
+     "label": "SARON 3M compound",
+     "freq": "daily",
+     "status": "verified",
+     "note": "3-week publication lag"
+    },
+    "confed_1y": {
+     "id": "SNB1A.SNB.NSS.KZS.EID:J01M0",
+     "table": "snb_confed_curve_daily",
+     "label": "Confederation spot 1y (NSS, 11:00)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 0.055"
+    },
+    "confed_2y": {
+     "id": "SNB1A.SNB.NSS.KZS.EID:J02M0",
+     "table": "snb_confed_curve_daily",
+     "label": "Confederation spot 2y",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 0.136"
+    },
+    "confed_5y": {
+     "id": "SNB1A.SNB.NSS.KZS.EID:J05M0",
+     "table": "snb_confed_curve_daily",
+     "label": "Confederation spot 5y",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "confed_10y": {
+     "id": "SNB1A.SNB.NSS.KZS.EID:J10M0",
+     "table": "snb_confed_curve_daily",
+     "label": "Confederation spot 10y",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 0.488"
+    },
+    "confed_20y": {
+     "id": "SNB1A.SNB.NSS.KZS.EID:J20M0",
+     "table": "snb_confed_curve_daily",
+     "label": "Confederation spot 20y",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "confed_30y": {
+     "id": "SNB1A.SNB.NSS.KZS.EID:J30M0",
+     "table": "snb_confed_curve_daily",
+     "label": "Confederation spot 30y",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "mmdrc_3m_yield": {
+     "id": "resultate-gmbf.xlsx yield",
+     "table": "efv_mmdrc_auctions",
+     "label": "3-month MMDRC auction yield (weekly)",
+     "freq": "event",
+     "status": "verified"
+    }
+   },
+   "derived": {
+    "saron_minus_policy_bps": {
+     "formula": "(saron − policy_rate) × 100",
+     "note": "cross-currency alias (desk head reads spread vs policy for all currencies); classification lives on saron_minus_absorption_rate_bps"
+    },
+    "saron_minus_absorption_rate_bps": {
+     "formula": "(saron − (policy_rate − 0.05)) × 100",
+     "note": "C3: STRESS SPREAD (primary). 0 = at the absorption anchor; +5 = at policy (friction); +10 STRESS; +20 CRISIS (special rate = +30); ≤ −10 persistent = FLOOR_LEAK (≈ −0.15%). +1 bp on 2026-09-04"
+    },
+    "band_position": {
+     "formula": "(saron − rate_above_threshold) / (special_rate − rate_above_threshold)",
+     "note": "0 = −0.25 tier, 1 = special rate ceiling; 0.42 on 2026-09-04"
+    },
+    "sar3m_minus_saron_bps": {
+     "formula": "(sar3m − saron) × 100",
+     "note": "term repo premium / cut-hike pricing (lagged 3 weeks)"
+    },
+    "saron_3m_compound_minus_policy_bps": {
+     "formula": "(saron_3m_compound − policy_rate) × 100"
+    },
+    "confed_2y_minus_policy_bps": {
+     "formula": "(confed_2y − policy_rate) × 100",
+     "note": "+13.6 bp on 2026-09-07 — market pricing of the next moves"
+    },
+    "curve_10y_2y_bps": {
+     "formula": "(confed_10y − confed_2y) × 100"
+    },
+    "curve_30y_10y_bps": {
+     "formula": "(confed_30y − confed_10y) × 100"
+    },
+    "confed_10y_5d_change_bps": {
+     "formula": "diff(confed_10y,5) × 100"
+    },
+    "mmdrc_3m_minus_saron_bps": {
+     "formula": "(mmdrc_3m_yield − saron) × 100",
+     "note": "−4 bp on 2026-09-08 (−0.083 vs −0.04): T-bills trade through SARON = safe-asset bid"
+    },
+    "friction_confirmed": {
+     "formula": "saron_minus_absorption_rate_bps ≥ +5 for 3 consecutive sessions (SARON at/above policy)"
+    },
+    "floor_leak": {
+     "formula": "saron_minus_absorption_rate_bps ≤ −10 for 5 consecutive sessions"
+    },
+    "score": {
+     "formula": "CORRIDOR CALM +0.75 (spread within [−5, +3]); WATCH 0; STRESS −0.75; CRISIS −1.5; floor_leak −0.25",
+     "range": [
+      -1.5,
+      1.5
+     ]
+    }
+   },
+   "thresholds": {
+    "sar3m_minus_saron_bps": {
+     "method": "percentile",
+     "window": "500d",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "secondary_absolute": {
+      "watch": 10,
+      "stress": 20,
+      "crisis": 35
+     }
+    },
+    "curve_10y_2y_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "stress_above": "p97",
+     "stress_below": "p3"
+    },
+    "curve_30y_10y_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "high_is_risk",
+     "watch_above": "p90",
+     "stress_above": "p97"
+    },
+    "confed_10y_5d_change_bps": {
+     "method": "absolute",
+     "direction": "two_sided",
+     "watch_above": 15,
+     "stress_above": 25,
+     "watch_below": -15,
+     "stress_below": -25
+    },
+    "band_position": {
+     "method": "absolute",
+     "direction": "two_sided",
+     "watch_above": 0.7,
+     "stress_above": 0.9,
+     "watch_below": 0.15,
+     "stress_below": 0.05,
+     "note": "DESK PROPOSAL; band = [rate_above_threshold, special_rate] = [−0.25, +0.25]"
+    },
+    "saron_minus_absorption_rate_bps": {
+     "method": "percentile",
+     "window": "since 2025-06-20 or 500d",
+     "watch_above": "p85",
+     "stress_above": "p95",
+     "crisis_above": "p99",
+     "hysteresis": {
+      "exit_on": "p75/p85/p95"
+     },
+     "secondary_absolute": {
+      "watch": 5,
+      "stress": 10,
+      "crisis": 20,
+      "persistence": {
+       "watch_and_above": "3 consecutive sessions",
+       "exclude_dates": [
+        "quarter_end",
+        "year_end",
+        "reserve_period_end_18_20"
+       ]
+      },
+      "low_side_excess": -10,
+      "origin": "C3: absorbing repos at policy − 5 bp anchor SARON; special rate = +30 from the anchor; −0.25% tier = −20"
+     },
+     "rule": "absolute binding for STRESS/CRISIS; percentile alone caps at WATCH"
+    }
+   }
+  }
+ },
+ "regime": {
+  "weights": {
+   "central_bank": 0.45,
+   "rates": 0.3,
+   "fiscal": 0.1,
+   "banking": 0.15
+  },
+  "weights_note": "v0.1 PROPOSAL: sight deposits and absorption dominate the CHF story; fiscal is small and proxied (0.10); banking 0.15 because Swiss credit (mortgages) is the domestic transmission channel and monthly data are good. To be triangulated.",
+  "reserves_metric": "central_bank.excess_to_required_ratio",
+  "stress_spread_metric": "rates.saron_minus_absorption_rate_bps",
+  "values": [
+   "LIQUIDITY_INJECTION",
+   "LIQUIDITY_DRAIN",
+   "LIQUIDITY_SCARCITY",
+   "FLOOR_FRICTION",
+   "NEUTRAL"
+  ],
+  "rules": {
+   "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: saron_minus_absorption_rate_bps ≥ STRESS persistent AND (supplying_repos > 0 OR mm_operations_supplied_month > 0 OR secured_loans rising); quantity anchor (excess_to_required_ratio ≤ STRESS) is a dead-man switch",
+   "FLOOR_FRICTION": "reserves ample AND friction_confirmed (SARON at/above policy 3 sessions)",
+   "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
+   "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
+   "NEUTRAL": "otherwise"
+  },
+  "orthogonal_flags": {
+   "FX_INTERVENTION_SUSPECT": "C12: sight_deposits_wow ≥ p90 (or ≥ +5000) AND (bills_maturing_week + known repo maturities) < 50% of the jump; monthly confirmation GBI/GSGSF; quarterly snbfxtr > 1000",
+   "THRESHOLD_FACTOR_CHANGE": "threshold_factor changed vs previous session (policy event; 8 cuts since 2022-07)",
+   "FLOOR_LEAK": "saron_minus_absorption_rate_bps ≤ −10 for 5 sessions (drift toward the −0.25% tier)",
+   "ABSORPTION_INTENSITY": "absorption_share level ≥ WATCH (SNB holding back an unusual share of reserves)",
+   "BILLS_ROLL_OFF_AHEAD": "bills_roll_off_4w ≥ 20% of snb_bills (liquidity returns if not rolled)",
+   "SNB_SUPPLYING": "supplying_repos > 0 or mm_operations_supplied_month > 0 (scarcity signal at 0% policy)",
+   "CONFED_CASH_BIG_MOVE": "|confed_cash_mom| ≥ p90 or |confed_cash_proxy_wow| ≥ p90",
+   "MMDRC_DEMAND_WEAK": "mmdrc_bid_to_cover level ≥ WATCH",
+   "TRANSMISSION_FAILURE": "banking RED while central_bank GREEN",
+   "MPA_WEEK": "monetary policy assessment within 5 business days",
+   "DATA_DEGRADED": "quality < 70 or weekly sight deposits missing on Monday 12:00 CET",
+   "FOREIGN_SIGHT_DEPOSITS_JUMP": "other_sight_deposits_wow level ≥ WATCH (foreign banks / institutions — hot money or intervention settlement)",
+   "REPO_ABSORPTION_CHANGE": "monthly absorbed volume (gmges CT allocation) changes ≥ 25% vs prior month",
+   "SNB_BILLS_AUCTION_ANOMALY": "bills_yield_minus_saron_bps outside ±3 or Bills bid-to-cover < 1.0",
+   "COLLATERAL_SCARCITY": "saron_minus_absorption_rate_bps ≥ +5 with reserves ample AND mmdrc_yield_minus_saron_bps ≤ −10 (bills extremely rich)",
+   "TIER_ARBITRAGE_BID": "mmdrc_yield_minus_saron_bps ≤ −5 (informational: banks above threshold buying bills)",
+   "RESERVE_PERIOD_END": "calendar day 18–20 (info; excluded from persistence counts)"
+  },
+  "calibration": {
+   "status": "uncalibrated",
+   "min_live_weeks": 26,
+   "note": "percentile windows anchored at 2025-06-20 (policy 0%) for spreads; weekly sight deposits window 260w (5y) available from the portal; min_n guard: daily 120, weekly 26, monthly 12; persistence counts exclude reserve-period end (18–20) — R5"
+  },
+  "overlays": {
+   "STERILISATION_STRESS": {
+    "min": 2,
+    "conditions": [
+     "central_bank.absorption_share level >= WATCH",
+     "rates.saron_minus_absorption_rate_bps level >= WATCH",
+     "fiscal.mmdrc_bid_to_cover level >= WATCH",
+     "central_bank.other_sight_deposits_wow level >= WATCH"
+    ],
+    "note": "C4/C5: threshold utilisation removed (per-bank thresholds unobservable); absorption share and foreign sight deposits added",
+    "values": [
+     "STERILISATION_STRESS_LOW",
+     "STERILISATION_STRESS_HIGH"
+    ]
+   }
+  },
+  "stress_spread_alias": "rates.saron_minus_policy_bps"
+ },
+ "status_rules": {
+  "fresh_multiplier": 1.5,
+  "stale_multiplier": 3.0,
+  "nominal_period_days": {
+   "daily": 4,
+   "weekly": 9,
+   "monthly": 45,
+   "quarterly": 200,
+   "event": 400
+  },
+  "monthly_lag_allowance_days": 75,
+  "note": "weekly = Friday data on Monday (+2 days) → 9 covers a holiday Monday; zirepo term rates allowed stale 25 days by design (3-week SNB lag); quarterly snbfxtr: Q1 was still the latest on 2026-09-08 (published with the Quarterly Bulletin, ~1 quarter lag) → 200 days"
+ },
+ "quality": {
+  "origin": "CAD quality module",
+  "dedup": "last value wins per date",
+  "outliers": {
+   "method": "modified_zscore_MAD",
+   "rolling_window": 20,
+   "min_points": 5,
+   "z_threshold": {
+    "default": 3.5,
+    "saron": 4.0,
+    "policy_rate": 5.0,
+    "sight_deposits_domestic_weekly": 5.0
+   }
+  },
+  "freshness_hours": {
+   "daily_series": 72,
+   "weekly_series": 216,
+   "monthly_series": 1800,
+   "policy_rate": 1440
+  },
+  "reconciliation": [
+   {
+    "rule": "sight_deposits_domestic_weekly on month-end Friday ≈ snbbipo GB (±3%)",
+    "on_fail": "warn"
+   },
+   {
+    "rule": "sum(snbbillshreg outstanding) ≈ snbbipo ES (±5%)",
+    "on_fail": "warn"
+   },
+   {
+    "rule": "snbbipo T0 == T1",
+    "on_fail": "data_degraded"
+   }
+  ],
+  "null_policy": "null is NEVER neutral: series -> unavailable; FRGSF / supplying operations empty = 0 with last-use memo",
+  "pending_by_design_excluded_from_average": true
+ },
+ "revisions": {
+  "keep_last": 50,
+  "series": [
+   "sight_deposits_domestic_weekly",
+   "fx_investments",
+   "snb_bills",
+   "absorbing_repos",
+   "amounts_due_to_confederation"
+  ],
+  "note": "portal revisions tracked per date"
+ },
+ "alerts": {
+  "origin": "CAD/GBP/AUD/JPY alert state machine",
+  "lifecycle": [
+   "active",
+   "resolved"
+  ],
+  "keep_last": 100,
+  "rules": [
+   {
+    "id": "sight_deposits_jump",
+    "metric": "central_bank.sight_deposits_wow",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "snb_supplying",
+    "metric": "central_bank.supplying_repos",
+    "when": "> 0",
+    "severity": "CRITICAL",
+    "category": "emergency"
+   },
+   {
+    "id": "saron_at_policy",
+    "metric": "rates.saron_minus_absorption_rate_bps",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "funding"
+   },
+   {
+    "id": "saron_stress",
+    "metric": "rates.saron_minus_absorption_rate_bps",
+    "when": "level >= STRESS",
+    "severity": "CRITICAL",
+    "category": "funding"
+   },
+   {
+    "id": "absorption_share_watch",
+    "metric": "central_bank.absorption_share",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "sterilisation"
+   },
+   {
+    "id": "confed_big_move",
+    "metric": "fiscal.confed_cash_mom",
+    "when": "level >= WATCH",
+    "severity": "INFO",
+    "category": "fiscal",
+    "note": "grammar: engine has no percentile operator; confed_cash_mom is classified two-sided p90/p10 in the block, so level >= WATCH == |mom| beyond p90/p10"
+   },
+   {
+    "id": "mmdrc_weak",
+    "metric": "fiscal.mmdrc_bid_to_cover",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "issuance"
+   },
+   {
+    "id": "curve_10y_spike",
+    "metric": "rates.confed_10y_5d_change_bps",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "curve"
+   },
+   {
+    "id": "credit_weak",
+    "metric": "banking.credit_impulse",
+    "when": "level >= STRESS",
+    "severity": "WARNING",
+    "category": "transmission"
+   },
+   {
+    "id": "data_degraded",
+    "metric": "quality.critical_count",
+    "when": "> 0",
+    "severity": "CRITICAL",
+    "category": "data"
+   },
+   {
+    "id": "foreign_sight_jump",
+    "metric": "central_bank.other_sight_deposits_wow",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "bills_anomaly",
+    "metric": "central_bank.bills_yield_minus_saron_bps",
+    "when": "abs >= 3",
+    "severity": "INFO",
+    "category": "sterilisation"
+   }
+  ],
+  "note": "rules use the engine grammar: 'level >= X', '> n', 'abs >= pX'"
+ },
+ "scenarios": {
+  "origin": "liquidity-only set",
+  "items": [
+   {
+    "id": "L1",
+    "name": "FX Intervention / Reserve Creation",
+    "bias": "CHF-NEGATIVE",
+    "min": 2,
+    "conditions": [
+     "central_bank.sight_deposits_wow level >= WATCH",
+     "central_bank.fx_investments_change_pct >= p80",
+     "central_bank.balance_sheet_phase == FX_EXPANSION"
+    ]
+   },
+   {
+    "id": "L2",
+    "name": "Sterilisation Squeeze",
+    "bias": "DEFENSIVE",
+    "min": 2,
+    "conditions": [
+     "central_bank.absorption_share level >= WATCH",
+     "rates.saron_minus_absorption_rate_bps level >= WATCH",
+     "fiscal.mmdrc_bid_to_cover level >= WATCH"
+    ]
+   },
+   {
+    "id": "L3",
+    "name": "Tier Leak (rates to −0.25)",
+    "bias": "CHF-NEGATIVE",
+    "min": 2,
+    "conditions": [
+     "rates.floor_leak == true",
+     "central_bank.absorption_share level >= WATCH",
+     "rates.sar3m_minus_saron_bps level >= WATCH"
+    ]
+   },
+   {
+    "id": "L4",
+    "name": "Funding Stress",
+    "bias": "EMERGENCY",
+    "min": 2,
+    "conditions": [
+     "rates.saron_minus_absorption_rate_bps level >= STRESS",
+     "central_bank.supplying_repos > 0",
+     "rates.band_position level >= WATCH"
+    ]
+   },
+   {
+    "id": "L5",
+    "name": "Confederation Drain",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "fiscal.confed_cash_mom >= p80",
+     "central_bank.sight_deposits_4w_change <= p20",
+     "fiscal.fiscal_regime == DRAIN"
+    ]
+   },
+   {
+    "id": "L6",
+    "name": "Curve Repricing",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "rates.confed_10y_5d_change_bps level >= WATCH",
+     "rates.curve_10y_2y_bps level >= WATCH",
+     "rates.confed_2y_minus_policy_bps >= p90"
+    ]
+   }
+  ]
+ },
+ "calendar": {
+  "snb_mpa_2026": [
+   "2026-09-24",
+   "2026-12-10"
+  ],
+  "snb_mpa_2027": [
+   "2027-03-18",
+   "2027-06-24",
+   "2027-09-23",
+   "2027-12-16"
+  ],
+  "decision_time": "09:30 Europe/Zurich (press release), 10:00 news conference",
+  "sight_deposits_release": "Monday 10:00 CET for the week ending Friday (cube snbgwdchfsgw)",
+  "policy_rates_release": "daily 10:00 CET, T-1 (cube snbgwdzid; SARON of Friday appears Monday)",
+  "confed_curve_release": "daily 11:00 CET, T-1 (warehouse NSS)",
+  "balance_sheet_release": "monthly — day PENDING (set on first live run from portal announcements)",
+  "money_market_operations_release": "last working day of the month 09:00 CET, previous month",
+  "snb_bills_register_release": "monthly, last bank working day (published ~09:00 next working day)",
+  "min_reserves_release": "monthly (bamire), ~2 months lag (June published by Sep)",
+  "reserve_maintenance_period": "20th to 19th of the following month",
+  "money_stock_release": "~20th of the following month (snbmonagg)",
+  "banks_release": "~20th of the following month (bakredinausbm, babilpobm)",
+  "fx_transactions_release": "quarterly, with the Quarterly Bulletin / interim results (snbfxtr)",
+  "mmdrc_auctions": "Tuesday auction, Thursday settlement (EFV calendar 2026 PDF — parser Phase 3)",
+  "bond_auctions": "monthly, Wednesday (EFV calendar 2026 PDF)",
+  "ch_holidays_2026": "pending — business days defined by SARON series presence",
+  "next_mpa_note": "2026-09-24: watch threshold factor (next cut would be the 9th), FX language, absorption stance"
+ },
+ "refresh_lanes": {
+  "daily": {
+   "cron_utc": "0 10 * * 1-5",
+   "note": "12:00 CET: snbgwdzid (policy/SARON T-1, 10:00) + warehouse NSS curve (11:00) + zirepo (lagged) ",
+   "blocks": [
+    "rates",
+    "central_bank"
+   ],
+   "run_agent": false
+  },
+  "weekly": {
+   "cron_utc": "45 9 * * 1",
+   "note": "Monday 11:45 CET after the 10:00 sight-deposits release: snbgwdchfsgw + snbgwdmigirow; Thursday 10:00 UTC: EFV MMDRC results",
+   "blocks": [
+    "central_bank",
+    "fiscal"
+   ],
+   "run_agent": true
+  },
+  "weekly_thu": {
+   "cron_utc": "0 10 * * 4",
+   "note": "EFV resultate-gmbf.xlsx (Tuesday auction) + bond results if any",
+   "blocks": [
+    "fiscal"
+   ],
+   "run_agent": false
+  },
+  "monthly": {
+   "cron_utc": "0 9 13,23 * *",
+   "note": "13th: snbbipo balance sheet (~10–12th per R4, confirm) + snbbillshreg + gmges.xlsx; 23rd: banks, money stock, bamire (~20–22nd), zikrepro",
+   "blocks": [
+    "central_bank",
+    "banking",
+    "fiscal"
+   ],
+   "run_agent": true
+  },
+  "quarterly": {
+   "cron_utc": "0 9 2 1,4,7,10 *",
+   "note": "snbfxtr + MPA calendar check",
+   "blocks": [
+    "central_bank"
+   ],
+   "run_agent": false
+  }
+ },
+ "desk_exports": {
+  "eurchf": {
+   "id": "devkuhistld EUR1?",
+   "table": "snb_portal_api",
+   "label": "EUR/CHF daily (SNB)",
+   "status": "pending dimension check (Phase 2)"
+  },
+  "usdchf": {
+   "status": "pending"
+  }
+ },
+ "agent": {
+  "name": "CHF Currency Agent",
+  "reads": [
+   "data/chf/central_bank.json",
+   "data/chf/fiscal.json",
+   "data/chf/banking.json",
+   "data/chf/rates.json",
+   "data/chf/calendar.json"
+  ],
+  "writes": "agents/chf.json",
+  "vocabulary": "MMT/Mosler; SNB tiered remuneration and threshold factor; absorption via SNB Bills and repos at policy − 5 bp; FX-purchase reserve creation; Confederation cash proxy",
+  "alert_types": [
+   "LIQUIDITY_GAIN",
+   "LIQUIDITY_LOSS",
+   "LIQUIDITY_SCARCITY",
+   "TRANSMISSION_BREAK",
+   "DATA_DEGRADED"
+  ],
+  "never": [
+   "trade execution",
+   "position sizing",
+   "technical analysis"
+  ]
+ },
+ "pending_before_phase2": [
+  "Publication day of snbbipo and bamire — confirm on first run (R4: 10–12 / 20–22)",
+  "QB Q2-2026 'Monetary policy implementation' — check whether the SNB publishes the distribution of sight deposits by tier (R4 claim, unverified); if yes it replaces the aggregate headroom proxy",
+  "SIX SARON compound daily / high-low: public CSV or not (R1 yes, R4/R6 no) — own verification",
+  "EFV issuance calendar PDFs → auction_calendar parser (Phase 3)",
+  "GSGSF swap balances and gmges Type=Swaps: pull and inspect values",
+  "Sander's OK on v0.2 → Fase 2 CHF (site canada-command-center.netlify.app/chf/)"
+ ],
+ "triangulation": {
+  "date": "2026-09-08",
+  "reviews": 6,
+  "matrix": "TRIANGULACION_CHF_matriz.md",
+  "changes": "C1–C15"
+ }
+}
