@@ -1,0 +1,12 @@
+# Publish the repo root as a static site. Frontend reads /data/<ccy>/*.json only.
+[build]
+  publish = "."
+  command = ""
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"

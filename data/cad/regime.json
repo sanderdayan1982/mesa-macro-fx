@@ -1,0 +1,177 @@
+{
+ "currency": "CAD",
+ "generated_at": "2026-09-08T03:08:00+00:00",
+ "as_of": "2026-09-02",
+ "config_version": "0.3.0",
+ "regime": "FLOOR_FRICTION",
+ "traffic_light": "YELLOW",
+ "weighted_score": -0.137,
+ "block_scores": {
+  "central_bank": -1.0,
+  "rates": -0.75,
+  "fiscal": 2.0,
+  "banking": 1.0
+ },
+ "weights": {
+  "central_bank": 0.45,
+  "rates": 0.25,
+  "fiscal": 0.2,
+  "banking": 0.1
+ },
+ "blocks_used": 4,
+ "flags": [
+  "PHASE_NORMALIZATION"
+ ],
+ "inputs": {
+  "reserves_level": "SAFE",
+  "reserves_in_range": true,
+  "spread_level": "STRESS",
+  "spread_bps": 10.0
+ },
+ "rules": {
+  "LIQUIDITY_SCARCITY": "reserves BELOW boc_target_range (absolute) AND overnight_minus_deposit_bps >= STRESS",
+  "FLOOR_FRICTION": "reserves within boc_target_range AND overnight_minus_deposit_bps >= watch (CORRA above target while reserves are ample: distribution friction, not aggregate scarcity)",
+  "LIQUIDITY_DRAIN": "weighted score <= -0.5",
+  "LIQUIDITY_INJECTION": "weighted score >= +0.5",
+  "NEUTRAL": "otherwise"
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "name": "CAD Liquidity Tightening",
+   "bias": "DEFENSIVE",
+   "active": true,
+   "conditions_met": 2,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_flow_7d_cum <= drain",
+     "met": false
+    },
+    {
+     "condition": "rates.overnight_minus_policy_bps level >= WATCH",
+     "met": true
+    },
+    {
+     "condition": "central_bank.reserves_wow_pct <= p20",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L2",
+   "name": "Silent Fiscal Easing",
+   "bias": "CONSTRUCTIVE",
+   "active": true,
+   "conditions_met": 2,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_flow_7d_cum >= injection",
+     "met": true
+    },
+    {
+     "condition": "rates.overnight_minus_policy_bps <= 0",
+     "met": false
+    },
+    {
+     "condition": "central_bank.reserves level == SAFE",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "name": "QT Drag Intensifying",
+   "bias": "RISK-OFF",
+   "active": true,
+   "conditions_met": 2,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.net_liquidity_wow_pct <= risk_off",
+     "met": true
+    },
+    {
+     "condition": "central_bank.sovereign_bonds_wow_pct <= p20",
+     "met": true
+    },
+    {
+     "condition": "central_bank.notes_in_circulation_wow_pct >= p80",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "name": "Funding Stress",
+   "bias": "EMERGENCY",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.overnight_minus_policy_bps level >= STRESS",
+     "met": true
+    },
+    {
+     "condition": "central_bank.reserves level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "central_bank.emergency_lending > 0",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "name": "Curve Normalization",
+   "bias": "DURATION",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.curve_10y_2y_bps > 0",
+     "met": true
+    },
+    {
+     "condition": "rates.policy_minus_3m_bps > 0",
+     "met": false
+    },
+    {
+     "condition": "rates.overnight_minus_policy_bps <= 0",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L6",
+   "name": "Transmission Break",
+   "bias": "CAUTION",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "banking.transmission_signal == RED",
+     "met": false
+    },
+    {
+     "condition": "rates.corra_dispersion_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "banking.deposits_public mom_pct zscore <= -1",
+     "met": false
+    }
+   ]
+  }
+ ],
+ "heartbeat": {
+  "lane": "all",
+  "backfill": true,
+  "errors": []
+ }
+}

@@ -1,0 +1,1164 @@
+{
+  "$schema": "../schema/config.schema.json",
+  "config_version": "0.3.0",
+  "currency": "CAD",
+  "name": "Canadian Dollar",
+  "jurisdiction": "Canada",
+  "central_bank": "Bank of Canada",
+  "treasury": "Department of Finance Canada / Receiver General",
+  "monetary_sovereignty": "full",
+  "framework": "MMT/Mosler",
+  "timezone_source": "America/Toronto",
+  "timezone_operator": "Africa/Malabo",
+  "units": {
+    "balance_sheet": "CAD millions",
+    "rates": "percent",
+    "spreads": "bps"
+  },
+  "sources": {
+    "valet": {
+      "base_url": "https://www.bankofcanada.ca/valet",
+      "auth": "none",
+      "observations": "/observations/{series}/json",
+      "group_observations": "/observations/group/{group}/json",
+      "params": {
+        "backfill": "start_date=2005-01-01",
+        "incremental": "recent=60",
+        "note": "v2.0 used recent=104 (2 years) — insufficient for 3-year percentiles; backfill mandatory on first run"
+      },
+      "rate_limit_note": "no documented limit; batch series in one call with comma-separated IDs",
+      "docs": "https://www.bankofcanada.ca/valet/docs"
+    },
+    "statcan": {
+      "base_url": "https://www150.statcan.gc.ca/t1/wds/rest",
+      "auth": "none",
+      "status": "pending",
+      "note": "credit aggregates moved here from Valet E2 (Valet series end 2020-09); table IDs to be verified in Phase 3"
+    },
+    "fiscal_monitor": {
+      "base_url": "https://www.canada.ca/en/department-finance/services/publications/fiscal-monitor.html",
+      "auth": "none",
+      "status": "pending",
+      "note": "monthly, no API; HTML/PDF scrape deferred"
+    },
+    "boc_rss": {
+      "feeds": [
+        {
+          "name": "boc_press",
+          "url": "https://www.bankofcanada.ca/content_type/press-releases/feed/",
+          "blocks": [
+            "header",
+            "central_bank",
+            "rates"
+          ]
+        },
+        {
+          "name": "boc_notices",
+          "url": "https://www.bankofcanada.ca/content_type/market-notices/feed/",
+          "blocks": [
+            "central_bank",
+            "fiscal"
+          ]
+        },
+        {
+          "name": "boc_announce",
+          "url": "https://www.bankofcanada.ca/content_type/announcements/feed/",
+          "blocks": [
+            "header"
+          ]
+        }
+      ],
+      "note": "official wire strip; rescued from v2.0"
+    },
+    "receiver_general": {
+      "publisher": "Public Services and Procurement Canada (Receiver General)",
+      "dataset": "Daily Cash Balance",
+      "portal": "https://open.canada.ca/data/en/dataset/477bf61b-e764-4f24-8a8a-687a5755002e",
+      "csv_current": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+      "csv_archive": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb-arch.csv",
+      "data_dictionary": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/SGBT-BCMS-dd.xml",
+      "auth": "none",
+      "format": "CSV",
+      "frequency": "daily (business days)",
+      "publication_lag_verified": "~1 week (2026-09-01 row visible on 2026-09-08)",
+      "columns": {
+        "date": "Cash-Business-Date",
+        "closing_cash_balance_boc": "Closing-Cash-Balance-Amount (CAD, at Bank of Canada)",
+        "term_deposits_outstanding": "Term-Deposit-Outstanding-Amount (Receiver General term deposits placed with financial institutions)",
+        "prudential_liquidity_fund": "Prudential-Liquidity-Fund-Closing-Balance-Amount"
+      },
+      "units": "CAD (convert to millions)",
+      "verified": "2026-09-08 via open.canada.ca",
+      "related_datasets_to_verify": [
+        "Deposits at Financial Institutions (bank statement data) 2061075a-55fe-47a5-be2f-984f12fc0d40",
+        "Consolidated Revenue Fund Term Deposits c31a17df-9964-4565-ad3f-42bcd82dba59",
+        "Government of Canada - Domestic Payments e19d7468-6f95-475a-bcfc-4141cad76268"
+      ]
+    }
+  },
+  "blocks": {
+    "central_bank": {
+      "source": "valet",
+      "group": "B2_WEEKLY",
+      "frequency": "weekly",
+      "as_of_weekday": "wednesday",
+      "release": {
+        "weekday": "friday",
+        "time_local": "14:30",
+        "tz": "America/Toronto",
+        "verify_on_first_run": true
+      },
+      "equivalence_quality": "high",
+      "series": {
+        "total_assets": {
+          "id": "V36610",
+          "label": "Total assets",
+          "usd_analog": "WALCL",
+          "first_obs": "2000-01-05"
+        },
+        "reserves": {
+          "id": "V36636",
+          "label": "Members of Payments Canada (settlement balances)",
+          "usd_analog": "WRESBAL",
+          "first_obs": "2000-01-05"
+        },
+        "government_account": {
+          "id": "V36628",
+          "label": "Government of Canada deposits",
+          "usd_analog": "WTREGEN",
+          "first_obs": "2000-01-05"
+        },
+        "reverse_repo": {
+          "id": "V1203435186",
+          "label": "Securities sold under repurchase agreements",
+          "usd_analog": "RRPONTTLD",
+          "zero_is_valid": true
+        },
+        "sovereign_bonds": {
+          "id": "V36613",
+          "label": "Government of Canada Bonds",
+          "usd_analog": "TREAST"
+        },
+        "bills": {
+          "id": "V36612",
+          "label": "Treasury Bills",
+          "usd_analog": null
+        },
+        "mortgage_bonds": {
+          "id": "V1038114416",
+          "label": "Canada Mortgage Bonds",
+          "usd_analog": "MBST",
+          "zero_is_valid": true
+        },
+        "liquidity_repos": {
+          "id": "V44201362",
+          "label": "Securities purchased under resale agreements",
+          "usd_analog": null,
+          "first_obs": "2007-10-03",
+          "composition_note": "B2 line aggregates term repo (structural, bi-weekly 1M/3M since 2025) and overnight repo (tactical). Split via event lane: OR_RESULTS / ORR groups in Valet."
+        },
+        "emergency_lending": {
+          "id": "V36634",
+          "label": "Advances (Standing Liquidity Facility)",
+          "usd_analog": "WLCFLPCL",
+          "zero_is_valid": true
+        },
+        "notes_in_circulation": {
+          "id": "V36625",
+          "label": "Notes in circulation",
+          "usd_analog": "WCURCIR"
+        }
+      },
+      "derived": {
+        "net_liquidity": {
+          "formula": "total_assets - government_account - reverse_repo",
+          "usd_analog": "WALCL - WTREGEN - RRPONTTLD",
+          "triangulation": "KEPT as total_assets - government_account - reverse_repo for cross-currency comparability with WALCL - TGA - RRP (3 of 4 reviewers); currency is outside money, tracked as autonomous drain below"
+        },
+        "net_liquidity_wow_pct": {
+          "formula": "pct_change(net_liquidity, 1)"
+        },
+        "reserves_wow_pct": {
+          "formula": "pct_change(reserves, 1)"
+        },
+        "active_drains": {
+          "formula": "government_account + reverse_repo"
+        },
+        "emergency_lending_wow_pct": {
+          "formula": "pct_change(emergency_lending, 1)",
+          "note": "undefined when previous = 0; report as absolute level instead"
+        },
+        "currency_drain": {
+          "formula": "-diff(notes_in_circulation, 1)",
+          "label": "Autonomous drain from currency in circulation",
+          "sign": "negative = notes growing = reserves drained absent BoC purchases",
+          "status": "native"
+        },
+        "reserves_ex_currency_effect": {
+          "formula": "diff(reserves,1) + diff(notes_in_circulation,1)",
+          "label": "Reserve change excluding currency demand",
+          "note": "isolates policy/fiscal drivers of settlement-balance moves"
+        },
+        "balance_sheet_phase": {
+          "formula": "phase(sovereign_bonds_wow_pct, bills_wow_pct, liquidity_repos_wow_pct)",
+          "values": [
+            "QE",
+            "QT",
+            "NORMALIZATION",
+            "STEADY"
+          ],
+          "note": "informational label, not a regime; post-QT the BoC offsets currency growth with term repo (1M/3M, bi-weekly), bills (from Q4 2025) and later bonds (late 2026) — Gravelle 2025-01-16"
+        }
+      },
+      "thresholds": {
+        "net_liquidity_wow_pct": {
+          "method": "percentile",
+          "window": "156w",
+          "risk_on_above": "p85",
+          "risk_off_below": "p15",
+          "hysteresis": {
+            "exit_on": "p75/p25"
+          },
+          "secondary_absolute": {
+            "risk_on": 2.0,
+            "risk_off": -2.0,
+            "origin": "USD H.4.1 and v2.0 totalAssetsWoW, reference only"
+          }
+        },
+        "reserves": {
+          "method": "absolute_primary",
+          "primary_absolute": {
+            "boc_target_range": [
+              50000,
+              70000
+            ],
+            "source": "Gravelle, \"The end of quantitative tightening and what comes next\", 2025-01-16 (payments demand 20-30B + precautionary)",
+            "below_range_watch": 50000,
+            "stress_below": 40000,
+            "crisis_below": 30000,
+            "above_range_note": ">70000 = ample/excess, no alert"
+          },
+          "secondary_percentile": {
+            "window": "156w",
+            "watch_below": "p20",
+            "stress_below": "p10"
+          },
+          "hysteresis": {
+            "reenter_range_above": 52000
+          },
+          "unit": "CAD millions",
+          "triangulation": "absolute range made primary (3/4 reviewers); percentiles kept as secondary because levels cross policy regimes"
+        },
+        "emergency_lending": {
+          "method": "absolute",
+          "watch_above": 0,
+          "stress_above": 1000,
+          "crisis_above": 5000,
+          "unit": "CAD millions",
+          "note": "absolute and binary: any Advances > 0 is an alert in a floor system (4/4 reviewers)"
+        },
+        "government_account": {
+          "method": "percentile",
+          "window": "156w",
+          "direction": "high_is_drain",
+          "watch_above": "p80",
+          "stress_above": "p90",
+          "hysteresis": {
+            "exit_on": "p70/p80"
+          }
+        },
+        "sovereign_bonds_wow_pct": {
+          "method": "percentile",
+          "window": "156w",
+          "direction": "low_is_qt",
+          "watch_below": "p20",
+          "secondary_absolute": {
+            "qt_drag_below": -1.0,
+            "origin": "v2.0 gocBondsWoW"
+          }
+        },
+        "liquidity_repos_wow_pct": {
+          "method": "percentile",
+          "window": "156w",
+          "secondary_absolute": {
+            "injection_above": 5.0,
+            "fade_below": -5.0,
+            "origin": "v2.0 repoAssetsWoW"
+          }
+        },
+        "notes_in_circulation_wow_pct": {
+          "method": "percentile",
+          "window": "156w",
+          "direction": "high_is_drain",
+          "secondary_absolute": {
+            "cash_drain_above": 1.0,
+            "origin": "v2.0 notesWoW"
+          }
+        },
+        "reserves_wow_pct": {
+          "method": "percentile",
+          "window": "156w",
+          "direction": "low_is_risk",
+          "watch_below": "p20",
+          "stress_below": "p10",
+          "crisis_below": "p3",
+          "hysteresis": {
+            "exit_on": "p30/p20/p10"
+          }
+        }
+      }
+    },
+    "fiscal": {
+      "source": "receiver_general + valet",
+      "frequency": "daily (RG) + weekly (Valet)",
+      "equivalence_quality": "medium-high",
+      "equivalence_note": "Canada has no DTS with receipts/withdrawals, but the Receiver General publishes a DAILY closing cash balance at the BoC plus term deposits placed with banks (found in triangulation, verified 2026-09-08). Daily -dBalance is the analog of -dTGA; term deposits capture cash moved from the BoC to banks (reserve-adding without fiscal meaning). Issuance/redemption from auctions; net spending from monthly Fiscal Monitor (deferred).",
+      "series": {
+        "government_account_cb": {
+          "id": "V36628",
+          "label": "Government of Canada deposits at BoC",
+          "usd_analog": "TGA closing balance"
+        },
+        "government_deposits_banks": {
+          "id": "V36811",
+          "label": "Government of Canada deposits at chartered banks (C2, monthly)",
+          "frequency": "monthly",
+          "status_expected": "stale"
+        },
+        "rg_closing_balance": {
+          "source": "receiver_general",
+          "column": "closing_cash_balance_boc",
+          "label": "Receiver General closing cash balance at BoC (daily)",
+          "usd_analog": "DTS operating cash balance (TGA closing)",
+          "frequency": "daily",
+          "status_expected": "fresh/stale (~1 week lag)",
+          "lag_allowance_days": 7
+        },
+        "rg_term_deposits": {
+          "source": "receiver_general",
+          "column": "term_deposits_outstanding",
+          "label": "RG term deposits outstanding at financial institutions (daily)",
+          "usd_analog": null,
+          "frequency": "daily",
+          "note": "cash transferred from BoC to banks: adds reserves, is NOT fiscal flow",
+          "lag_allowance_days": 7
+        },
+        "rg_prudential_fund": {
+          "source": "receiver_general",
+          "column": "prudential_liquidity_fund",
+          "label": "Prudential Liquidity Fund closing balance",
+          "usd_analog": null,
+          "frequency": "daily",
+          "display_only": true,
+          "lag_allowance_days": 7
+        }
+      },
+      "derived": {
+        "reserve_impact_daily": {
+          "formula": "-diff(rg_closing_balance, 1)",
+          "status": "proxy",
+          "sign": "positive = reserves added (government account at BoC falls)"
+        },
+        "fiscal_flow_proxy_daily": {
+          "formula": "-diff(rg_closing_balance + rg_term_deposits, 1)",
+          "status": "proxy",
+          "note": "total government cash (BoC + term deposits at banks) falls when spending > receipts + net issuance; excludes BoC<->bank cash management transfers"
+        },
+        "fiscal_flow_zscore": {
+          "formula": "zscore(fiscal_flow_proxy_daily, window=30 business days)",
+          "usd_analog": "DTS 30-day Z-score"
+        },
+        "fiscal_flow_7d_cum": {
+          "formula": "rolling_sum(fiscal_flow_proxy_daily, 7)",
+          "usd_analog": "7-day cumulative"
+        },
+        "fiscal_flow_weekly_valet": {
+          "formula": "-diff(government_account_cb, 1)",
+          "status": "proxy",
+          "note": "weekly cross-check against V36628; both must agree in sign"
+        },
+        "net_issuance": {
+          "formula": "auction_issued - redemptions",
+          "source": "valet auctions (AUC_TBILL_RESULTS + bond auctions)",
+          "status": "pending"
+        },
+        "fiscal_regime": {
+          "formula": "regime(fiscal_flow_7d_cum, fiscal_flow_zscore)",
+          "values": [
+            "INJECTION",
+            "DRAIN",
+            "NEUTRAL"
+          ]
+        },
+        "fiscal_regime_score": {
+          "range": [
+            -2,
+            2
+          ]
+        },
+        "fiscal_stress": {
+          "formula": "abs(fiscal_flow_zscore) > 2"
+        },
+        "mmt_note": "Spending creates NFA; taxes destroy NFA; bond issuance drains reserves but does NOT change NFA (composition swap). Reserve impact and NFA creation are tracked as two separate lines (triangulation consensus)."
+      },
+      "thresholds": {
+        "fiscal_flow_zscore": {
+          "method": "absolute",
+          "normal_within": 1.0,
+          "extraordinary_above": 2.0
+        },
+        "fiscal_flow_7d_cum": {
+          "method": "percentile",
+          "window": "750d",
+          "injection_above": "p80",
+          "drain_below": "p20",
+          "hysteresis": {
+            "exit_on": "p70/p30"
+          }
+        }
+      },
+      "release": {
+        "receiver_general": {
+          "frequency": "daily rows, published in batches (~weekly)"
+        },
+        "valet_b2": {
+          "weekday": "friday",
+          "time_local": "14:30",
+          "tz": "America/Toronto"
+        }
+      },
+      "next_release_secondary": {
+        "name": "Fiscal Monitor",
+        "frequency": "monthly",
+        "source": "fiscal_monitor",
+        "status": "pending"
+      }
+    },
+    "banking": {
+      "source": "valet",
+      "groups": [
+        "C1_MONTHLY",
+        "C2_MONTHLY"
+      ],
+      "frequency": "monthly",
+      "publication_lag_days_approx": 75,
+      "equivalence_quality": "medium-low",
+      "equivalence_note": "USD H.8 is weekly; Canadian chartered-bank aggregates are month-end with ~2-3 month lag. Credit aggregates (business, household) left Valet in 2020-09 and live at Statistics Canada — pending verification. Reviewers proposed different StatCan table IDs (10-10-0109-01 vs 10-10-0114-01; 36-10-0639-01; 36-10-0619-01 vs 33-10-0006-01) — none verified; ingestion must resolve against the StatCan WDS API before use.",
+      "series": {
+        "bank_assets": {
+          "id": "V36852",
+          "label": "Total Canadian dollar assets (C1)",
+          "usd_analog": "TOTBKCR",
+          "statcan_candidates": [
+            "10-10-0109-01",
+            "10-10-0114-01"
+          ],
+          "status": "display_only",
+          "quality_note": "V36852 month-end total oscillates 3.4T–5.4T between adjacent months (2025–26) — erratic in Valet; excluded from the transmission signal until StatCan 10-10-0109/0114 is verified"
+        },
+        "deposits_public": {
+          "id": "V41552773",
+          "label": "Total deposits held by general public (C2)",
+          "usd_analog": "DPSACBW027SBOG"
+        },
+        "deposits_government": {
+          "id": "V36811",
+          "label": "Government of Canada deposits (C2)",
+          "usd_analog": null
+        },
+        "borrowings_interbank": {
+          "id": "V36875",
+          "label": "Deposits of banks (C2)",
+          "usd_analog": null,
+          "status": "display_only",
+          "triangulation": "REJECTED as borrowings proxy (2 reject, 2 weak). Interbank stress now read from rates.corra_dispersion_bps and CORRA volume."
+        },
+        "reserves_on_bank_books": {
+          "id": "V36691",
+          "label": "Bank of Canada deposits (C1)",
+          "usd_analog": null
+        },
+        "business_loans": {
+          "id": null,
+          "source": "statcan",
+          "status": "pending",
+          "label": "Total business credit (StatCan)",
+          "usd_analog": "BUSLOANS",
+          "statcan_candidates": [
+            "33-10-0006-01",
+            "36-10-0619-01",
+            "36-10-0640-01"
+          ]
+        },
+        "household_credit": {
+          "id": null,
+          "source": "statcan",
+          "status": "pending",
+          "label": "Total household credit (StatCan)",
+          "usd_analog": "TOTLL",
+          "statcan_candidates": [
+            "36-10-0639-01",
+            "V1231415582"
+          ]
+        },
+        "household_loans_banks": {
+          "id": "V36717",
+          "label": "Personal loans, total (C1, chartered banks)",
+          "usd_analog": "TOTLL (consumer part)",
+          "note": "verified smooth monthly series; bank-only household credit until StatCan aggregates are wired"
+        }
+      },
+      "derived": {
+        "mom_pct": {
+          "formula": "pct_change(series, 1)",
+          "applies_to": [
+            "deposits_public",
+            "household_loans_banks",
+            "reserves_on_bank_books",
+            "business_loans",
+            "household_credit"
+          ]
+        },
+        "heatmap_zscore": {
+          "formula": "zscore(mom_pct, window=26, lookahead=false)"
+        },
+        "base100_index": {
+          "formula": "series / first_valid(series) * 100",
+          "applies_to": [
+            "household_credit",
+            "deposits_public",
+            "borrowings_interbank"
+          ]
+        },
+        "transmission_signal": {
+          "rule": "green if >=3 of {deposits_public up, household_loans_banks up, reserves_on_bank_books stable/up, corra_dispersion SAFE}; red if >=3 opposite; NO SIGNAL if valid_series < 3",
+          "inherited_from": "H.8 v2.1 audit fix C2"
+        }
+      },
+      "thresholds": {
+        "mom_pct": {
+          "method": "zscore",
+          "notable_above": 1.0,
+          "extraordinary_above": 2.0
+        }
+      }
+    },
+    "rates": {
+      "source": "valet",
+      "frequency": "daily",
+      "equivalence_quality": "high",
+      "series": {
+        "policy_rate": {
+          "id": "V39079",
+          "label": "Target for the overnight rate",
+          "usd_analog": "IORB / DFF"
+        },
+        "overnight_rate": {
+          "id": "AVG.INTWO",
+          "label": "CORRA",
+          "usd_analog": "SOFR",
+          "first_obs": "1997-08-12"
+        },
+        "bill_3m": {
+          "id": "TB.CDN.90D.MID",
+          "label": "Treasury bills: 3 month",
+          "usd_analog": "DTB3"
+        },
+        "bond_2y": {
+          "id": "BD.CDN.2YR.DQ.YLD",
+          "label": "Benchmark bond yield: 2 year",
+          "usd_analog": "DGS2"
+        },
+        "bond_10y": {
+          "id": "BD.CDN.10YR.DQ.YLD",
+          "label": "Benchmark bond yield: 10 year",
+          "usd_analog": "DGS10"
+        },
+        "corra_volume": {
+          "id": "CORRA_TRIMMED_VOLUME",
+          "label": "CORRA trimmed volume",
+          "usd_analog": null
+        },
+        "corra_p95": {
+          "id": "CORRA_RATE_AT_PERCENTILE_95",
+          "label": "CORRA 95th percentile rate",
+          "usd_analog": null
+        },
+        "bank_rate": {
+          "id": "V39078",
+          "label": "Bank Rate (corridor ceiling, target + 25 bps)",
+          "usd_analog": "Discount window primary credit rate",
+          "display_only": true
+        },
+        "bond_5y": {
+          "id": "BD.CDN.5YR.DQ.YLD",
+          "label": "Benchmark bond yield: 5 year",
+          "usd_analog": "DGS5"
+        },
+        "corra_total_volume": {
+          "id": "CORRA_TOTAL_VOLUME",
+          "label": "CORRA total eligible volume",
+          "usd_analog": null
+        },
+        "deposit_rate": {
+          "id": null,
+          "derived_from": "V39079",
+          "formula": "policy_rate - 0.05 (from 2025-01-30); policy_rate (before 2025-01-30)",
+          "label": "Deposit rate (floor of operating band)",
+          "usd_analog": "IORB",
+          "source_note": "BoC market notice 2025-01-29: deposit rate set 5 bp below target effective 2025-01-30",
+          "verified": "2026-09-08"
+        },
+        "corra_p5": {
+          "id": "CORRA_RATE_AT_PERCENTILE_5",
+          "label": "CORRA 5th percentile rate"
+        }
+      },
+      "derived": {
+        "overnight_minus_policy_bps": {
+          "formula": "(overnight_rate - policy_rate) * 100",
+          "usd_analog": "SOFR - IORB",
+          "common_date_rule": true,
+          "role": "secondary: deviation from policy target (CORRA > target = floor system under strain)"
+        },
+        "policy_minus_3m_bps": {
+          "formula": "(policy_rate - bill_3m) * 100",
+          "usd_analog": "FF - 3M",
+          "common_date_rule": true
+        },
+        "curve_10y_2y_bps": {
+          "formula": "(bond_10y - bond_2y) * 100",
+          "usd_analog": "10Y - 2Y",
+          "common_date_rule": true
+        },
+        "overnight_minus_deposit_bps": {
+          "formula": "(overnight_rate - deposit_rate) * 100",
+          "usd_analog": "SOFR - IORB (primary stress spread, triangulation consensus 3/4)",
+          "common_date_rule": true
+        },
+        "band_position": {
+          "formula": "(overnight_rate - deposit_rate) / (bank_rate - deposit_rate)",
+          "range": "0 = at floor, 1 = at Bank Rate ceiling",
+          "note": "operating band = [target - 5 bp, target + 25 bp] since 2025-01-30"
+        },
+        "corra_dispersion_bps": {
+          "formula": "(CORRA_RATE_AT_PERCENTILE_95 - CORRA_RATE_AT_PERCENTILE_5) * 100",
+          "label": "CORRA intraday dispersion",
+          "role": "interbank stress from price distribution (replaces the rejected deposits-of-banks proxy)"
+        }
+      },
+      "thresholds": {
+        "overnight_minus_policy_bps": {
+          "method": "percentile",
+          "window": "750d",
+          "watch_above": "p80",
+          "stress_above": "p90",
+          "crisis_above": "p97",
+          "hysteresis": {
+            "exit_on": "p70/p80/p90"
+          },
+          "secondary_absolute": {
+            "watch": 0,
+            "stress": 5,
+            "crisis": 10,
+            "origin": "v2.0 corraPolicySpread (green <0, amber 0-5, red >5); crisis level added",
+            "note": "floor-system regime: CORRA persistently above target = reserve scarcity signal"
+          }
+        },
+        "curve_10y_2y_bps": {
+          "method": "absolute",
+          "deep_inversion_below": -50,
+          "inverted_below": 0,
+          "flat_below": 25
+        },
+        "policy_minus_3m_bps": {
+          "method": "absolute",
+          "normal_below": 10,
+          "elevated_below": 30,
+          "tight_above": 30
+        },
+        "overnight_minus_deposit_bps": {
+          "method": "percentile",
+          "window": "750d",
+          "watch_above": "p80",
+          "stress_above": "p90",
+          "crisis_above": "p97",
+          "hysteresis": {
+            "exit_on": "p70/p80/p90"
+          },
+          "secondary_absolute": {
+            "watch": 5,
+            "stress": 10,
+            "crisis": 20,
+            "note": "+5 = CORRA at target; +10 = today (2026-09-03); >= +30 = CORRA at Bank Rate ceiling"
+          }
+        },
+        "band_position": {
+          "method": "absolute",
+          "friction_above": 0.17,
+          "stress_above": 0.5,
+          "crisis_at": 1.0,
+          "note": "0.17 = CORRA at target"
+        }
+      },
+      "release": {
+        "overnight_rate": {
+          "time_local": "09:00",
+          "next_business_day": true
+        },
+        "yields": {
+          "time_local": "16:00"
+        },
+        "policy_decisions_per_year": 8,
+        "decision_time_local": "09:45"
+      },
+      "methodology_notes": [
+        "CORRA is compared to V39079 (target), never to V39078 (Bank Rate) nor to deposit rate; do NOT subtract 25 bps (rescued from v2.0 README).",
+        "Spreads on common dates only (mergeSeries rule).",
+        "Deposit rate = target - 5 bp since 2025-01-30 (BoC notice 2025-01-29). Reviewers claiming a +/-25 bp corridor with deposit = target - 25 were wrong: Bank Rate is target + 25, deposit is target - 5."
+      ]
+    }
+  },
+  "regime": {
+    "weights": {
+      "central_bank": 0.45,
+      "rates": 0.25,
+      "fiscal": 0.2,
+      "banking": 0.1
+    },
+    "weights_note": "triangulation consensus: fiscal lowered from 0.30 (proxy), rates raised (daily, price-based); revisit fiscal weight once RG daily data validated over one issuance cycle",
+    "values": [
+      "LIQUIDITY_INJECTION",
+      "LIQUIDITY_DRAIN",
+      "LIQUIDITY_SCARCITY",
+      "FLOOR_FRICTION",
+      "NEUTRAL"
+    ],
+    "rules": {
+      "LIQUIDITY_SCARCITY": "reserves BELOW boc_target_range (absolute) AND overnight_minus_deposit_bps >= STRESS",
+      "FLOOR_FRICTION": "reserves within boc_target_range AND overnight_minus_deposit_bps >= watch (CORRA above target while reserves are ample: distribution friction, not aggregate scarcity)",
+      "LIQUIDITY_DRAIN": "weighted score <= -0.5",
+      "LIQUIDITY_INJECTION": "weighted score >= +0.5",
+      "NEUTRAL": "otherwise"
+    },
+    "orthogonal_flags": {
+      "TRANSMISSION_FAILURE": "banking.transmission_signal == RED while reserves within/above range (credit contracting despite ample liquidity)",
+      "BALANCE_SHEET_PHASE": "central_bank.balance_sheet_phase label"
+    },
+    "min_blocks_for_signal": 2
+  },
+  "status_rules": {
+    "fresh_multiplier": 1.5,
+    "stale_multiplier": 3.0,
+    "nominal_period_days": {
+      "daily": 4,
+      "weekly": 7,
+      "monthly": 31
+    },
+    "monthly_lag_allowance_days": 75,
+    "lag_allowance_days": {
+      "receiver_general": 7
+    },
+    "note": "daily=4 covers weekends/holidays and the CORRA next-day publication"
+  },
+  "refresh_lanes": {
+    "weekly": {
+      "cron_utc": "0 19 * * 5",
+      "note": "Friday 20:00 WAT / 15:00 ET in summer — verify B2 availability on first run",
+      "blocks": [
+        "central_bank",
+        "fiscal"
+      ],
+      "run_agent": true
+    },
+    "daily": {
+      "cron_utc": "30 21 * * 1-5",
+      "note": "22:30 WAT",
+      "blocks": [
+        "rates"
+      ],
+      "run_agent": false
+    },
+    "monthly": {
+      "cron_utc": "0 6 * * 1",
+      "note": "Monday check for new C1/C2 month-end",
+      "blocks": [
+        "banking"
+      ],
+      "run_agent": true
+    },
+    "event": {
+      "trigger": "boc_decision_dates",
+      "blocks": [
+        "rates",
+        "central_bank"
+      ],
+      "run_agent": true
+    }
+  },
+  "agent": {
+    "name": "CAD Currency Agent",
+    "reads": [
+      "data/cad/central_bank.json",
+      "data/cad/fiscal.json",
+      "data/cad/banking.json",
+      "data/cad/rates.json",
+      "data/cad/calendar.json"
+    ],
+    "writes": "agents/cad.json",
+    "vocabulary": "MMT/Mosler: government spending creates NFA, taxes/issuance destroy them; reserves != NFA; central bank sets price not quantity",
+    "alert_types": [
+      "LIQUIDITY_GAIN",
+      "LIQUIDITY_LOSS",
+      "LIQUIDITY_SCARCITY",
+      "TRANSMISSION_BREAK",
+      "DATA_DEGRADED"
+    ],
+    "never": [
+      "trade execution",
+      "position sizing",
+      "technical analysis"
+    ]
+  },
+  "lineage": {
+    "predecessor": "Canada Command Center v2.0 (Netlify Functions + Blobs, methodology 1.0.0)",
+    "rescued": [
+      "Valet series map",
+      "quality pipeline (MAD outliers, null streaks, holiday-aware freshness, confidence 0-100)",
+      "revision detection",
+      "alert state machine active/resolved",
+      "regime changelog + 52-week heatmap",
+      "scenario engine (liquidity-only subset)",
+      "BoC RSS wire",
+      "operator log",
+      "JSON audit export",
+      "SVG chart engine"
+    ],
+    "dropped": [
+      "Yahoo Finance v8",
+      "Netlify Blobs storage",
+      "green-count regime mixing prices with liquidity",
+      "absolute-only thresholds duplicated in frontend",
+      "null treated as amber"
+    ]
+  },
+  "desk_exports": {
+    "note": "series fetched by the CAD ingestion but consumed by the Desk / Cross-Market tabs, not by the CAD liquidity tab",
+    "series": {
+      "usdcad_boc": {
+        "id": "FXUSDCAD",
+        "source": "valet",
+        "label": "USD/CAD daily average (BoC official)"
+      },
+      "fed_boc_spread_bps": {
+        "formula": "(DFEDTARU - V39079) * 100",
+        "sources": [
+          "fred",
+          "valet"
+        ],
+        "label": "Fed upper target minus BoC target",
+        "v2_thresholds_reference": {
+          "green_below": 75,
+          "red_above": 150
+        }
+      },
+      "us_ca_10y_spread_bps": {
+        "formula": "(DGS10 - BD.CDN.10YR.DQ.YLD) * 100",
+        "v2_thresholds_reference": {
+          "green_below": 50,
+          "red_above": 100
+        }
+      }
+    }
+  },
+  "quality": {
+    "origin": "v2.0 quality.mjs, ported to Python",
+    "dedup": "last value wins per date, duplicates counted",
+    "outliers": {
+      "method": "modified_zscore_MAD",
+      "rolling_window": 20,
+      "min_points": 5,
+      "z_threshold": {
+        "default": 3.5,
+        "overnight_rate": 4.0,
+        "policy_rate": 5.0,
+        "bank_rate": 5.0,
+        "corra_total_volume": 4.5
+      }
+    },
+    "freshness_hours": {
+      "weekly_series": 192,
+      "daily_series": 72,
+      "policy_rate": 1440,
+      "monthly_series": 1800
+    },
+    "holiday_aware": true,
+    "null_streaks": "unexpected nulls only (weekends/holidays excluded)",
+    "confidence": {
+      "start": 100,
+      "penalties": {
+        "stale": "min(30, 30*(hours_over/threshold))",
+        "nulls_last30": "40*share",
+        "ongoing_streak": "min(25, 5*len)",
+        "latest_outlier": "8 or 15 if |mz|>5",
+        "duplicates": "min(10, 3*n)"
+      },
+      "tiers": {
+        "HIGH": 90,
+        "MEDIUM": 70,
+        "LOW": 50,
+        "CRITICAL": 0
+      }
+    },
+    "null_policy": "null is NEVER neutral/amber: series -> unavailable, block signal suppressed below min coverage"
+  },
+  "revisions": {
+    "origin": "v2.0 revisions.mjs",
+    "method": "diff every overlapping date between previous committed JSON and new fetch; log old/new/delta/delta_pct",
+    "series": [
+      "total_assets",
+      "sovereign_bonds",
+      "government_account",
+      "reserves",
+      "overnight_rate",
+      "bond_10y",
+      "bill_3m"
+    ],
+    "keep_last": 50,
+    "git_note": "previous JSON comes from the last commit, not from a blob"
+  },
+  "alerts": {
+    "origin": "v2.0 alerts.mjs state machine (active -> resolved), rules re-expressed on percentile levels",
+    "lifecycle": [
+      "active",
+      "resolved"
+    ],
+    "keep_last": 100,
+    "rules": [
+      {
+        "id": "reserves_stress",
+        "metric": "central_bank.reserves",
+        "when": "level >= STRESS",
+        "severity": "CRITICAL",
+        "category": "reserves"
+      },
+      {
+        "id": "reserves_watch",
+        "metric": "central_bank.reserves",
+        "when": "level == WATCH",
+        "severity": "WARNING",
+        "category": "reserves"
+      },
+      {
+        "id": "corra_stress",
+        "metric": "rates.overnight_minus_policy_bps",
+        "when": "level >= STRESS",
+        "severity": "CRITICAL",
+        "category": "funding"
+      },
+      {
+        "id": "corra_watch",
+        "metric": "rates.overnight_minus_policy_bps",
+        "when": "level == WATCH",
+        "severity": "WARNING",
+        "category": "funding"
+      },
+      {
+        "id": "net_liq_drain",
+        "metric": "central_bank.net_liquidity_wow_pct",
+        "when": "<= risk_off",
+        "severity": "WARNING",
+        "category": "liquidity"
+      },
+      {
+        "id": "fiscal_drain",
+        "metric": "fiscal.fiscal_flow_4w_cum",
+        "when": "<= drain",
+        "severity": "WARNING",
+        "category": "fiscal"
+      },
+      {
+        "id": "fiscal_extraordinary",
+        "metric": "fiscal.fiscal_flow_zscore",
+        "when": "abs >= 2",
+        "severity": "INFO",
+        "category": "fiscal"
+      },
+      {
+        "id": "emergency_lending",
+        "metric": "central_bank.emergency_lending",
+        "when": "> 0",
+        "severity": "CRITICAL",
+        "category": "stress"
+      },
+      {
+        "id": "curve_inversion",
+        "metric": "rates.curve_10y_2y_bps",
+        "when": "< -50",
+        "severity": "WARNING",
+        "category": "curve"
+      },
+      {
+        "id": "transmission_break",
+        "metric": "banking.transmission_signal",
+        "when": "== RED",
+        "severity": "WARNING",
+        "category": "transmission"
+      },
+      {
+        "id": "data_degraded",
+        "metric": "quality.system.blw70",
+        "when": "> 0",
+        "severity": "INFO",
+        "category": "data"
+      }
+    ]
+  },
+  "scenarios": {
+    "origin": "v2.0 scenarios.mjs engine (conditions, min N met); liquidity-only subset kept in the CAD tab, price-based scenarios (External Pressure, Risk-On Reflation, Stagflation) moved to Desk Cross-Market",
+    "items": [
+      {
+        "id": "L1",
+        "name": "CAD Liquidity Tightening",
+        "bias": "DEFENSIVE",
+        "min": 2,
+        "conditions": [
+          "fiscal.fiscal_flow_7d_cum <= drain",
+          "rates.overnight_minus_policy_bps level >= WATCH",
+          "central_bank.reserves_wow_pct <= p20"
+        ]
+      },
+      {
+        "id": "L2",
+        "name": "Silent Fiscal Easing",
+        "bias": "CONSTRUCTIVE",
+        "min": 2,
+        "conditions": [
+          "fiscal.fiscal_flow_7d_cum >= injection",
+          "rates.overnight_minus_policy_bps <= 0",
+          "central_bank.reserves level == SAFE"
+        ]
+      },
+      {
+        "id": "L3",
+        "name": "QT Drag Intensifying",
+        "bias": "RISK-OFF",
+        "min": 2,
+        "conditions": [
+          "central_bank.net_liquidity_wow_pct <= risk_off",
+          "central_bank.sovereign_bonds_wow_pct <= p20",
+          "central_bank.notes_in_circulation_wow_pct >= p80"
+        ]
+      },
+      {
+        "id": "L4",
+        "name": "Funding Stress",
+        "bias": "EMERGENCY",
+        "min": 2,
+        "conditions": [
+          "rates.overnight_minus_policy_bps level >= STRESS",
+          "central_bank.reserves level >= STRESS",
+          "central_bank.emergency_lending > 0"
+        ]
+      },
+      {
+        "id": "L5",
+        "name": "Curve Normalization",
+        "bias": "DURATION",
+        "min": 2,
+        "conditions": [
+          "rates.curve_10y_2y_bps > 0",
+          "rates.policy_minus_3m_bps > 0",
+          "rates.overnight_minus_policy_bps <= 0"
+        ]
+      },
+      {
+        "id": "L6",
+        "name": "Transmission Break",
+        "bias": "CAUTION",
+        "min": 2,
+        "conditions": [
+          "banking.transmission_signal == RED",
+          "rates.corra_dispersion_bps level >= WATCH",
+          "banking.deposits_public mom_pct zscore <= -1"
+        ]
+      }
+    ]
+  },
+  "calendar": {
+    "origin": "v2.0 holidays.mjs (2026); extend yearly",
+    "boc_decision_dates_2026": [
+      "2026-01-28",
+      "2026-03-18",
+      "2026-04-29",
+      "2026-06-10",
+      "2026-07-15",
+      "2026-09-02",
+      "2026-10-28",
+      "2026-12-09"
+    ],
+    "boc_mpr_dates_2026": [
+      "2026-01-28",
+      "2026-04-29",
+      "2026-07-15",
+      "2026-10-28"
+    ],
+    "decision_time": "09:45 America/Toronto",
+    "ca_market_holidays_2026": [
+      "2026-01-01",
+      "2026-02-16",
+      "2026-04-03",
+      "2026-05-18",
+      "2026-07-01",
+      "2026-08-03",
+      "2026-09-07",
+      "2026-10-12",
+      "2026-12-25",
+      "2026-12-28"
+    ],
+    "us_market_holidays_2026": [
+      "2026-01-01",
+      "2026-01-19",
+      "2026-02-16",
+      "2026-04-03",
+      "2026-05-25",
+      "2026-07-03",
+      "2026-09-07",
+      "2026-11-26",
+      "2026-12-25"
+    ],
+    "todo": "add 2027 dates when BoC publishes its schedule (usually July)"
+  },
+  "operator_log": {
+    "origin": "v2.0 oplog.mjs",
+    "storage": "logs/cad/oplog.json committed by the workflow",
+    "keep_last": 500,
+    "events": [
+      "REFRESH_AUTO",
+      "REFRESH_MANUAL",
+      "SOURCE_ERROR",
+      "REVISION_DETECTED",
+      "REGIME_CHANGE",
+      "CONFIG_CHANGE (from git commit)"
+    ]
+  },
+  "triangulation": {
+    "date": "2026-09-08",
+    "reviewers": 4,
+    "global_verdict": "VALIDADO CON CAMBIOS (4/4)",
+    "matrix_file": "TRIANGULACION_CAD_matriz.md"
+  },
+  "architecture": {
+    "storage": "git (kept: GitHub-web-UI workflow, versioned audit trail); revisit object storage if repo > 500 MB",
+    "mitigations": {
+      "json_size": "data/{ccy}/*.json hold latest + 52-week compact history only; full history appended to history/{ccy}/*.csv (append-only, no rewrites)",
+      "concurrency": "one workflow file with currency matrix; concurrency group per currency to serialize commits",
+      "heartbeat": "every JSON carries generated_at and as_of; frontend and agent show DEGRADED if generated_at older than 2x lane period",
+      "cron_keepalive": "GitHub disables scheduled workflows after 60 days without repo activity — workflow commits count, plus a monthly keepalive step",
+      "cdn_cache": "Netlify headers: Cache-Control no-cache for data/*.json",
+      "id_drift": "ingestion validates each series label against config label on every run; mismatch -> unavailable + SOURCE_ERROR log",
+      "idempotency": "runs are re-executable; revision detection diffs against last committed JSON"
+    },
+    "adapters": "LiquidityProvider abstraction: valet, fred, receiver_general, statcan, ecb, boe, snb, rba, rbnz, boj — engine only sees the block schema"
+  }
+}

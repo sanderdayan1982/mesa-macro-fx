@@ -1,0 +1,53 @@
+{
+ "generated_at": "2026-09-08T03:08:00+00:00",
+ "alerts": [
+  {
+   "id": "alert_2026-09-08T030800+0000_corra_stress",
+   "rule_id": "corra_stress",
+   "timestamp": "2026-09-08T03:08:00+00:00",
+   "severity": "CRITICAL",
+   "category": "funding",
+   "metric": "rates.overnight_minus_policy_bps",
+   "value": 5.0,
+   "level": "STRESS",
+   "message": "funding: rates.overnight_minus_policy_bps (level >= STRESS)",
+   "status": "active"
+  },
+  {
+   "id": "alert_2026-09-08T030800+0000_net_liq_drain",
+   "rule_id": "net_liq_drain",
+   "timestamp": "2026-09-08T03:08:00+00:00",
+   "severity": "WARNING",
+   "category": "liquidity",
+   "metric": "central_bank.net_liquidity_wow_pct",
+   "value": -5.0347,
+   "level": "SAFE",
+   "message": "liquidity: central_bank.net_liquidity_wow_pct (<= risk_off)",
+   "status": "active"
+  },
+  {
+   "id": "alert_2026-09-08T030800+0000_fiscal_extraordinary",
+   "rule_id": "fiscal_extraordinary",
+   "timestamp": "2026-09-08T03:08:00+00:00",
+   "severity": "INFO",
+   "category": "fiscal",
+   "metric": "fiscal.fiscal_flow_zscore",
+   "value": 4.3226,
+   "level": "SAFE",
+   "message": "fiscal: fiscal.fiscal_flow_zscore (abs >= 2)",
+   "status": "active"
+  },
+  {
+   "id": "alert_2026-09-08T030800+0000_data_degraded",
+   "rule_id": "data_degraded",
+   "timestamp": "2026-09-08T03:08:00+00:00",
+   "severity": "INFO",
+   "category": "data",
+   "metric": "quality.system.blw70",
+   "value": null,
+   "level": null,
+   "message": "data: quality.system.blw70 (> 0)",
+   "status": "active"
+  }
+ ]
+}

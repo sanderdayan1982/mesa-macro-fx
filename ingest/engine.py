@@ -1,0 +1,237 @@
+"""Regime / scenarios / alerts / revisions / calendar / oplog — the cross-block engine.
+Ported from v2.0 regime.mjs, scenarios.mjs, alerts.mjs, revisions.mjs, oplog.mjs, holidays.mjs and rewritten on
+the Desk Standard: weighted block scores, LIQUIDITY_SCARCITY and FLOOR_FRICTION rules, orthogonal flags."""
+from __future__ import annotations
+import json
+import os
+from datetime import datetime, timedelta, timezone
+from typing import Dict, List, Optional
+
+LEVEL_RANK = {"NO DATA": -1, "SAFE": 0, "WATCH": 1, "STRESS": 2, "CRISIS": 3}
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+# ───────────────────────────── regime ─────────────────────────────
+def _get(blocks: Dict[str, dict], path: str):
+    """'central_bank.reserves' -> entry dict (series or derived)."""
+    blk, key = path.split(".", 1)
+    b = blocks.get(blk) or {}
+    return (b.get("series", {}).get(key) or b.get("derived", {}).get(key) or {})
+
+
+def classify_regime(cfg: dict, blocks: Dict[str, dict]) -> dict:
+    rc = cfg["regime"]
+    w = rc["weights"]
+    scores, used = {}, 0
+    for name, weight in w.items():
+        b = blocks.get(name)
+        if b and b["signals"]["traffic_light"] != "NONE":
+            scores[name] = b["signals"]["score"]
+            used += 1
+    tot_w = sum(w[n] for n in scores) or 1.0
+    weighted = round(sum(w[n] * s for n, s in scores.items()) / tot_w, 3)
+    res = _get(blocks, "central_bank.reserves")
+    spr = _get(blocks, "rates.overnight_minus_deposit_bps")
+    r_lvl, s_lvl = res.get("level", "NO DATA"), spr.get("level", "NO DATA")
+    in_range = res.get("in_range")
+    if used < rc.get("min_blocks_for_signal", 2):
+        regime = "NO SIGNAL"
+    elif in_range is False and r_lvl in ("WATCH", "STRESS", "CRISIS") and LEVEL_RANK[s_lvl] >= LEVEL_RANK["STRESS"]:
+        regime = "LIQUIDITY_SCARCITY"
+    elif in_range and LEVEL_RANK[s_lvl] >= LEVEL_RANK["WATCH"]:
+        regime = "FLOOR_FRICTION" if weighted > -0.5 else "LIQUIDITY_DRAIN"
+    elif weighted <= -0.5:
+        regime = "LIQUIDITY_DRAIN"
+    elif weighted >= 0.5:
+        regime = "LIQUIDITY_INJECTION"
+    else:
+        regime = "NEUTRAL"
+    flags = []
+    tsig = _get(blocks, "banking.transmission_signal").get("signal")
+    if tsig == "RED" and (in_range or res.get("above_range")):
+        flags.append("TRANSMISSION_FAILURE")
+    if in_range and LEVEL_RANK[s_lvl] >= LEVEL_RANK["WATCH"] and regime != "FLOOR_FRICTION":
+        flags.append("FLOOR_FRICTION")
+    phase = _get(blocks, "central_bank.balance_sheet_phase").get("phase")
+    if phase:
+        flags.append("PHASE_" + phase)
+    tl = {"LIQUIDITY_INJECTION": "GREEN", "NEUTRAL": "YELLOW", "FLOOR_FRICTION": "YELLOW", "LIQUIDITY_DRAIN": "RED", "LIQUIDITY_SCARCITY": "RED", "NO SIGNAL": "NONE"}[regime]
+    return {"regime": regime, "traffic_light": tl, "weighted_score": weighted, "block_scores": scores, "weights": w, "blocks_used": used,
+            "flags": flags, "inputs": {"reserves_level": r_lvl, "reserves_in_range": in_range, "spread_level": s_lvl, "spread_bps": spr.get("value")},
+            "rules": rc.get("rules", {})}
+
+
+# ───────────────────────────── scenarios ─────────────────────────────
+def _resolve_condition(cond: str, blocks: Dict[str, dict]) -> Optional[bool]:
+    """Mini-language: '<path> level >= WATCH' | '<path> level == SAFE' | '<path> <= drain' | '<path> >= injection' |
+    '<path> <= p20' | '<path> > 0' | '<path> == RED' | '<path> mom_pct zscore >= 1'."""
+    parts = cond.split()
+    path = parts[0]
+    e = _get(blocks, path)
+    if parts[1] == "level":
+        lvl = e.get("level", "NO DATA")
+        op, tgt = parts[2], parts[3]
+        if lvl == "NO DATA":
+            return None
+        return {"==": LEVEL_RANK[lvl] == LEVEL_RANK[tgt], ">=": LEVEL_RANK[lvl] >= LEVEL_RANK[tgt], "<=": LEVEL_RANK[lvl] <= LEVEL_RANK[tgt]}[op]
+    if parts[1] == "mom_pct":  # banking.<k> mom_pct zscore >= 1
+        e = _get(blocks, path + "_mom_pct")
+        z = e.get("zscore")
+        if z is None:
+            return None
+        op, tgt = parts[3], float(parts[4])
+        return z >= tgt if op == ">=" else z <= tgt
+    op, tgt = parts[1], parts[2]
+    if tgt in ("RED", "GREEN", "YELLOW"):
+        return (e.get("signal") == tgt) if e.get("signal") else None
+    if tgt in ("risk_off", "risk_on"):
+        return (e.get("signal") == tgt.upper()) if e.get("signal") not in (None, "NO DATA") else None
+    if tgt in ("drain", "injection"):
+        reg = e.get("regime") or (blocks.get("fiscal", {}).get("derived", {}).get("fiscal_regime", {}).get("regime"))
+        if reg in (None, "NO DATA"):
+            return None
+        return reg == tgt.upper()
+    v = e.get("value")
+    if v is None:
+        return None
+    if tgt.startswith("p"):
+        pr = e.get("percentile")
+        if pr is None:
+            return None
+        p = float(tgt[1:])
+        return pr <= p if op == "<=" else pr >= p
+    t = float(tgt)
+    return {">": v > t, "<": v < t, ">=": v >= t, "<=": v <= t, "==": v == t}[op]
+
+
+def evaluate_scenarios(cfg: dict, blocks: Dict[str, dict]) -> List[dict]:
+    out = []
+    for sc in cfg.get("scenarios", {}).get("items", []):
+        det = []
+        for cnd in sc["conditions"]:
+            try:
+                met = _resolve_condition(cnd, blocks)
+            except Exception:
+                met = None
+            det.append({"condition": cnd, "met": met})
+        n = sum(1 for d in det if d["met"])
+        out.append({"id": sc["id"], "name": sc["name"], "bias": sc["bias"], "active": n >= sc["min"], "conditions_met": n, "total": len(det), "details": det})
+    return out
+
+
+# ───────────────────────────── alerts ─────────────────────────────
+def _rule_hit(rule: dict, blocks: Dict[str, dict], quality: dict) -> Optional[bool]:
+    when, metric = rule["when"], rule["metric"]
+    if metric.startswith("quality."):
+        v = quality.get("system", {}).get(metric.split(".")[-1])
+        return None if v is None else v > 0
+    e = _get(blocks, metric)
+    if when.startswith("level"):
+        lvl = e.get("level", "NO DATA")
+        if lvl == "NO DATA":
+            return None
+        op, tgt = when.split()[1], when.split()[2]
+        return LEVEL_RANK[lvl] >= LEVEL_RANK[tgt] if op == ">=" else LEVEL_RANK[lvl] == LEVEL_RANK[tgt]
+    if when == "<= risk_off":
+        return None if not e.get("signal") else e["signal"] == "RISK_OFF"
+    if when == "<= drain":
+        reg = blocks.get("fiscal", {}).get("derived", {}).get("fiscal_regime", {}).get("regime")
+        return None if reg in (None, "NO DATA") else reg == "DRAIN"
+    if when.startswith("abs"):
+        v = e.get("value")
+        return None if v is None else abs(v) >= float(when.split()[-1])
+    if when == "== RED":
+        return None if not e.get("signal") else e["signal"] == "RED"
+    v = e.get("value")
+    if v is None:
+        return None
+    op, t = when.split()[0], float(when.split()[1])
+    return {">": v > t, "<": v < t, ">=": v >= t, "<=": v <= t}[op]
+
+
+def evaluate_alerts(cfg: dict, blocks: Dict[str, dict], quality: dict, existing: List[dict]) -> List[dict]:
+    now = now_iso()
+    active = {a["rule_id"]: a for a in existing if a.get("status") == "active"}
+    out = [a for a in existing if a.get("status") != "active"]
+    for rule in cfg.get("alerts", {}).get("rules", []):
+        hit = _rule_hit(rule, blocks, quality)
+        e = _get(blocks, rule["metric"]) if not rule["metric"].startswith("quality.") else {}
+        if hit and rule["id"] not in active:
+            out.append({"id": "alert_%s_%s" % (now.replace(":", ""), rule["id"]), "rule_id": rule["id"], "timestamp": now, "severity": rule["severity"],
+                        "category": rule["category"], "metric": rule["metric"], "value": e.get("value"), "level": e.get("level"), "message": "%s: %s (%s)" % (rule["category"], rule["metric"], rule["when"]), "status": "active"})
+        elif hit and rule["id"] in active:
+            a = dict(active[rule["id"]])
+            a["value"], a["last_seen"] = e.get("value"), now
+            out.append(a)
+        elif hit is False and rule["id"] in active:
+            a = dict(active[rule["id"]])
+            a["status"], a["resolved_at"] = "resolved", now
+            out.append(a)
+        elif hit is None and rule["id"] in active:
+            out.append(active[rule["id"]])  # keep, data missing
+    return out[-cfg.get("alerts", {}).get("keep_last", 100):]
+
+
+# ───────────────────────────── revisions ─────────────────────────────
+def detect_revisions(prev_hist: Dict[str, Dict[str, float]], new_hist: Dict[str, Dict[str, float]], keep: List[str]) -> List[dict]:
+    out = []
+    now = now_iso()
+    for name in keep:
+        p, n = prev_hist.get(name) or {}, new_hist.get(name) or {}
+        for d, v in n.items():
+            if d in p and p[d] is not None and v is not None and abs(p[d] - v) > 1e-9:
+                delta = v - p[d]
+                out.append({"series": name, "date": d, "old_value": p[d], "new_value": v, "delta": round(delta, 4),
+                            "delta_pct": round(delta / abs(p[d]) * 100, 4) if p[d] else None, "detected_at": now})
+    return out
+
+
+def block_history_map(block: dict) -> Dict[str, Dict[str, float]]:
+    h = block.get("history", {})
+    dates = h.get("dates", [])
+    return {k: {d: v for d, v in zip(dates, vals)} for k, vals in h.get("rows", {}).items()}
+
+
+# ───────────────────────────── calendar ─────────────────────────────
+def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
+    cal = cfg.get("calendar", {})
+    now = datetime.now(timezone.utc)
+    items = []
+    for d in cal.get("boc_decision_dates_2026", []):
+        items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
+    # next weekly B2 (Friday) and next daily/RG
+    d = now.date()
+    while d.weekday() != 4:
+        d += timedelta(days=1)
+    items.append({"date": d.isoformat(), "title": "BoC weekly balance sheet (B2, data as of Wednesday)", "type": "central_bank", "impact": "HIGH", "time_local": "14:30 ET"})
+    items.append({"date": (now.date() + timedelta(days=1)).isoformat(), "title": "CORRA + benchmark yields (daily)", "type": "rates", "impact": "MEDIUM", "time_local": "09:00 ET / 16:00 ET"})
+    items.append({"date": None, "title": "Receiver General Daily Cash Balance (batch, ~weekly)", "type": "fiscal", "impact": "MEDIUM", "time_local": ""})
+    items.append({"date": None, "title": "Chartered banks C1/C2 month-end (Valet, ~75-day lag)", "type": "banking", "impact": "LOW", "time_local": ""})
+    for h in cal.get("ca_market_holidays_2026", []):
+        items.append({"date": h, "title": "Canada market holiday", "type": "holiday", "impact": "LOW", "time_local": ""})
+    def _k(x):
+        return x["date"] or "9999"
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= now.date().isoformat()], key=_k)
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - now.date()).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "ET+5h in summer, ET+6h in winter", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
+
+
+# ───────────────────────────── oplog ─────────────────────────────
+def log_event(path: str, etype: str, category: str, details: dict, keep: int = 500) -> None:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    log = {"entries": []}
+    if os.path.exists(path):
+        try:
+            log = json.load(open(path))
+        except Exception:
+            pass
+    log["entries"].insert(0, {"timestamp": now_iso(), "type": etype, "category": category, "details": details})
+    log["entries"] = log["entries"][:keep]
+    json.dump(log, open(path, "w"), indent=1)

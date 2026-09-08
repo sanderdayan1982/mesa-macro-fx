@@ -1,0 +1,453 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mesa-macro/block.schema.json",
+  "title": "Mesa Macro FX \u2014 per-currency block data file (data/{ccy}/{block}.json)",
+  "type": "object",
+  "required": [
+    "currency",
+    "block",
+    "generated_at",
+    "source_health",
+    "series",
+    "derived",
+    "signals",
+    "history"
+  ],
+  "properties": {
+    "currency": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "AUD",
+        "NZD",
+        "CAD",
+        "CHF"
+      ]
+    },
+    "block": {
+      "type": "string",
+      "enum": [
+        "central_bank",
+        "fiscal",
+        "banking",
+        "rates",
+        "calendar"
+      ]
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "config_version": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date",
+      "description": "latest observation date across the block"
+    },
+    "equivalence_quality": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium-high",
+        "medium",
+        "medium-low",
+        "low"
+      ]
+    },
+    "equivalence_note": {
+      "type": "string"
+    },
+    "source_health": {
+      "type": "object",
+      "required": [
+        "status",
+        "series_loaded",
+        "series_expected"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "series_loaded": {
+          "type": "integer"
+        },
+        "series_expected": {
+          "type": "integer"
+        },
+        "last_fetch_ok": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "next_release": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "at_source_tz": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "at_operator_tz": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "series": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/series"
+      }
+    },
+    "derived": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/series"
+      }
+    },
+    "signals": {
+      "type": "object",
+      "required": [
+        "traffic_light",
+        "score",
+        "label"
+      ],
+      "properties": {
+        "traffic_light": {
+          "type": "string",
+          "enum": [
+            "GREEN",
+            "YELLOW",
+            "RED",
+            "NONE"
+          ]
+        },
+        "score": {
+          "type": "number",
+          "minimum": -2,
+          "maximum": 2
+        },
+        "label": {
+          "type": "string",
+          "description": "e.g. LIQUIDITY_INJECTION, DRAIN, SCARCITY, NEUTRAL, NO SIGNAL"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "alerts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "metric",
+              "level",
+              "value",
+              "threshold",
+              "status"
+            ],
+            "properties": {
+              "metric": {
+                "type": "string"
+              },
+              "level": {
+                "type": "string",
+                "enum": [
+                  "SAFE",
+                  "WATCH",
+                  "STRESS",
+                  "CRISIS",
+                  "NO DATA"
+                ]
+              },
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "threshold": {
+                "type": [
+                  "number",
+                  "string",
+                  "object",
+                  "null"
+                ],
+                "description": "resolved threshold levels (object) or a single number"
+              },
+              "status": {
+                "$ref": "#/$defs/status"
+              },
+              "action_hint": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "history": {
+      "type": "object",
+      "description": "compact record for tables/sparklines; full history stays in history/{ccy}/{block}.csv",
+      "properties": {
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "rows": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "signal_log": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "score": {
+                "type": "number"
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "fresh",
+        "stale",
+        "proxy",
+        "degraded",
+        "unavailable"
+      ]
+    },
+    "series": {
+      "type": "object",
+      "required": [
+        "status",
+        "value",
+        "date"
+      ],
+      "properties": {
+        "source_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "usd_analog": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "frequency": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly",
+            "event"
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "value": {
+          "type": [
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "prev_value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "prev_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "change_abs": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "change_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "zscore": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "rolling, no lookahead"
+        },
+        "percentile": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "rank of current value within the rolling window, 0-100"
+        },
+        "window": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "e.g. 156w, 750d, 26m"
+        },
+        "thresholds": {
+          "type": "object",
+          "properties": {
+            "upper": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "lower": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "levels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "method": {
+              "type": "string",
+              "enum": [
+                "percentile",
+                "absolute",
+                "zscore"
+              ]
+            }
+          }
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "SAFE",
+            "WATCH",
+            "STRESS",
+            "CRISIS",
+            "NO DATA"
+          ]
+        },
+        "sparkline": {
+          "type": "array",
+          "items": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "maxItems": 52
+        },
+        "high_low": {
+          "type": "object",
+          "properties": {
+            "high": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "high_date": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "low": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "low_date": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "equivalence_note": {
+          "type": "string"
+        },
+        "age_days": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

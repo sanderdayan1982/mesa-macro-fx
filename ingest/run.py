@@ -1,0 +1,221 @@
+"""Mesa Macro FX — ingestion runner.
+Usage:
+  python -m ingest.run --ccy cad --lane weekly|daily|monthly|all [--backfill] [--fixtures fixtures/cad]
+Writes data/<ccy>/*.json, history/<ccy>/*.csv, logs/<ccy>/*.json. Never fetches from the browser: this is the only
+place that talks to sources. Frontend and agents read the JSON only."""
+from __future__ import annotations
+import argparse
+import csv
+import json
+import os
+import sys
+from typing import Dict, List, Optional
+from . import blocks as B
+from . import engine as E
+from .providers import ValetProvider, ReceiverGeneralProvider, ProviderError, fetch_rss
+from .quality import evaluate_series, system_summary
+from .series import Series, clean
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def load_json(path: str) -> Optional[dict]:
+    if os.path.exists(path):
+        try:
+            return json.load(open(path, encoding="utf-8"))
+        except Exception:
+            return None
+    return None
+
+
+def save_json(path: str, obj: dict) -> None:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, indent=1, ensure_ascii=False)
+
+
+def append_history_csv(path: str, name: str, series: Series) -> None:
+    """Append-only CSV per series (full history; JSON keeps only the compact window)."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    existing: Dict[str, float] = {}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for row in csv.reader(f):
+                if len(row) == 2 and row[0] != "date":
+                    try:
+                        existing[row[0]] = float(row[1])
+                    except ValueError:
+                        pass
+    merged = dict(existing)
+    merged.update({d: v for d, v in series if v is not None})
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["date", name])
+        for d in sorted(merged):
+            w.writerow([d, merged[d]])
+
+
+def series_ids(cfg: dict, block: str) -> List[str]:
+    return [s["id"] for s in cfg["blocks"][block]["series"].values() if s.get("id")]
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--ccy", default="cad")
+    ap.add_argument("--lane", default="all", choices=["weekly", "daily", "monthly", "all"])
+    ap.add_argument("--backfill", action="store_true", help="fetch full history (first run / monthly revalidation)")
+    ap.add_argument("--fixtures", default=None, help="offline mode: read CSV fixtures from this dir instead of HTTP")
+    ap.add_argument("--no-rss", action="store_true")
+    a = ap.parse_args(argv)
+
+    ccy = a.ccy.lower()
+    cfg = json.load(open(os.path.join(ROOT, "config", "%s.json" % ccy), encoding="utf-8"))
+    data_dir = os.path.join(ROOT, "data", ccy)
+    hist_dir = os.path.join(ROOT, "history", ccy)
+    log_dir = os.path.join(ROOT, "logs", ccy)
+    oplog = os.path.join(log_dir, "oplog.json")
+    errors: List[str] = []
+
+    valet = ValetProvider(cfg["sources"]["valet"]["base_url"], fixtures_dir=a.fixtures)
+    rg_cfg = cfg["sources"]["receiver_general"]
+    rgp = ReceiverGeneralProvider(rg_cfg["csv_current"], rg_cfg["csv_archive"], fixtures_dir=a.fixtures)
+
+    lanes = ["weekly", "daily", "monthly"] if a.lane == "all" else [a.lane]
+    start = cfg["sources"]["valet"]["params"]["backfill"].split("=")[1] if a.backfill else None
+    recent = None if a.backfill else int(cfg["sources"]["valet"]["params"]["incremental"].split("=")[1])
+
+    # previous JSON (for hysteresis, revisions, signal logs)
+    prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+
+    def fetch_valet(ids: List[str]) -> Dict[str, Series]:
+        try:
+            got = valet.fetch(ids, start_date=start, recent=recent)
+        except ProviderError as e:
+            errors.append("valet: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "valet", "error": str(e)})
+            return {i: [] for i in ids}
+        # incremental: merge with history CSVs so percentiles keep their window
+        if not a.backfill and not a.fixtures:
+            for i in ids:
+                p = os.path.join(hist_dir, "%s.csv" % i)
+                if os.path.exists(p):
+                    old = [(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"]
+                    got[i] = clean(old + got[i])
+        return got
+
+    # ── 1 · central bank + 4 · rates (weekly lane also refreshes rates so spreads are current) ──
+    if "weekly" in lanes or "daily" in lanes:
+        ids = series_ids(cfg, "rates")
+        rates_raw = fetch_valet(ids)
+        blocks["rates"] = B.build_rates(cfg, rates_raw, prev.get("rates"))
+        for i in ids:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, rates_raw.get(i, []))
+    if "weekly" in lanes:
+        ids = series_ids(cfg, "central_bank")
+        cb_raw = fetch_valet(ids)
+        blocks["central_bank"] = B.build_central_bank(cfg, cb_raw, prev.get("central_bank"))
+        for i in ids:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, cb_raw.get(i, []))
+    # ── 2 · fiscal (daily lane: Receiver General; weekly Valet cross-check) ──
+    if "daily" in lanes or "weekly" in lanes:
+        try:
+            rg = rgp.fetch(include_archive=a.backfill)
+        except ProviderError as e:
+            errors.append("receiver_general: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "receiver_general", "error": str(e)})
+            rg = {}
+        if not a.backfill and not a.fixtures:
+            for k in ReceiverGeneralProvider.KEYS:
+                p = os.path.join(hist_dir, "%s.csv" % k)
+                if os.path.exists(p):
+                    old = [(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"]
+                    rg[k] = clean(old + rg.get(k, []))
+        fis_valet = fetch_valet(["V36628", "V36811"])
+        blocks["fiscal"] = B.build_fiscal(cfg, fis_valet, rg, prev.get("fiscal"))
+        for k in ReceiverGeneralProvider.KEYS:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, rg.get(k, []))
+    # ── 3 · banking transmission (monthly) ──
+    if "monthly" in lanes or (a.backfill and "weekly" in lanes):
+        ids = series_ids(cfg, "banking")
+        bk_raw = fetch_valet(ids)
+        blocks["banking"] = B.build_banking(cfg, bk_raw, blocks.get("rates"), prev.get("banking"))
+        for i in ids:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, bk_raw.get(i, []))
+
+    # ── quality (system-wide) ──
+    per: Dict[str, dict] = {}
+    for bname, blk in blocks.items():
+        for k, e in blk.get("series", {}).items():
+            if isinstance(e, dict) and "confidence" in e:
+                per[bname + "." + k] = {"freshness": e["status"], "confidence": {"score": e["confidence"], "tier": "HIGH" if e["confidence"] >= 90 else "MEDIUM" if e["confidence"] >= 70 else "LOW" if e["confidence"] >= 50 else "CRITICAL"},
+                                        "last_valid_date": e.get("date"), "age_days": e.get("age_days"), "latest_outlier": e.get("latest_outlier", False)}
+    quality = {"currency": cfg["currency"], "generated_at": E.now_iso(), "series": per, "system": system_summary({k: {"confidence": v["confidence"]} for k, v in per.items()}), "errors": errors}
+    # heartbeat / degraded flags at block level
+    for bname, blk in blocks.items():
+        if errors and any(bname in x or "valet" in x for x in errors) and blk["source_health"]["series_loaded"] == 0:
+            blk["source_health"]["status"] = "unavailable"
+        blk["source_health"]["errors"] = [x for x in errors]
+
+    # ── regime, scenarios, alerts, revisions ──
+    regime = E.classify_regime(cfg, blocks)
+    scenarios = E.evaluate_scenarios(cfg, blocks)
+    alerts_path = os.path.join(log_dir, "alerts.json")
+    existing = (load_json(alerts_path) or {}).get("alerts", [])
+    alerts = E.evaluate_alerts(cfg, blocks, quality, existing)
+    revs: List[dict] = []
+    keep = cfg.get("revisions", {}).get("series", [])
+    for bname, blk in blocks.items():
+        if prev.get(bname):
+            revs += E.detect_revisions(E.block_history_map(prev[bname]), E.block_history_map(blk), keep)
+    rev_path = os.path.join(log_dir, "revisions.json")
+    old_revs = (load_json(rev_path) or {}).get("revisions", [])
+    all_revs = (revs + old_revs)[:cfg.get("revisions", {}).get("keep_last", 50)]
+    # regime history (52-week heatmap) + changelog
+    rh_path = os.path.join(log_dir, "regime_history.json")
+    rh = load_json(rh_path) or {"weeks": [], "changelog": []}
+    as_of = blocks.get("central_bank", {}).get("as_of") or E.now_iso()[:10]
+    week = {"week_of": as_of, "regime": regime["regime"], "score": regime["weighted_score"],
+            "cells": {b: {"traffic_light": blocks[b]["signals"]["traffic_light"], "score": blocks[b]["signals"]["score"]} for b in blocks},
+            "flags": regime["flags"]}
+    rh["weeks"] = [w for w in rh["weeks"] if w["week_of"] != as_of] + [week]
+    rh["weeks"] = rh["weeks"][-52:]
+    prev_reg = rh.get("current")
+    if prev_reg and prev_reg != regime["regime"]:
+        rh["changelog"].insert(0, {"timestamp": E.now_iso(), "old": prev_reg, "new": regime["regime"], "score": regime["weighted_score"], "cause": "DATA_DRIVEN"})
+        rh["changelog"] = rh["changelog"][:50]
+        E.log_event(oplog, "REGIME_CHANGE", "system", {"old": prev_reg, "new": regime["regime"]})
+    rh["current"] = regime["regime"]
+
+    # ── news wire (optional) ──
+    news = []
+    if not a.no_rss and not a.fixtures:
+        try:
+            news = fetch_rss(cfg["sources"].get("boc_rss", {}).get("feeds", []))
+        except Exception:
+            news = []
+
+    # ── write outputs ──
+    for bname, blk in blocks.items():
+        save_json(os.path.join(data_dir, "%s.json" % bname), blk)
+    save_json(os.path.join(data_dir, "calendar.json"), E.build_calendar(cfg, blocks))
+    save_json(os.path.join(data_dir, "quality.json"), quality)
+    save_json(os.path.join(data_dir, "regime.json"), {"currency": cfg["currency"], "generated_at": E.now_iso(), "as_of": as_of, "config_version": cfg["config_version"],
+                                                       **regime, "scenarios": scenarios, "heartbeat": {"lane": a.lane, "backfill": a.backfill, "errors": errors}})
+    save_json(os.path.join(data_dir, "news.json"), {"generated_at": E.now_iso(), "items": news})
+    save_json(alerts_path, {"generated_at": E.now_iso(), "alerts": alerts})
+    save_json(rev_path, {"generated_at": E.now_iso(), "revisions": all_revs})
+    save_json(rh_path, rh)
+    # mirror logs into data for the frontend (single read root)
+    save_json(os.path.join(data_dir, "alerts.json"), {"generated_at": E.now_iso(), "alerts": alerts})
+    save_json(os.path.join(data_dir, "revisions.json"), {"generated_at": E.now_iso(), "revisions": all_revs})
+    save_json(os.path.join(data_dir, "regime_history.json"), rh)
+    E.log_event(oplog, "REFRESH_AUTO", "system", {"lane": a.lane, "backfill": a.backfill, "blocks": list(blocks), "errors": errors, "regime": regime["regime"], "new_revisions": len(revs)})
+    save_json(os.path.join(data_dir, "oplog.json"), load_json(oplog) or {"entries": []})
+
+    print("regime=%s score=%s flags=%s blocks=%s errors=%s" % (regime["regime"], regime["weighted_score"], regime["flags"], list(blocks), errors))
+    return 0 if not errors else 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
