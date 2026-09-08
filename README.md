@@ -60,7 +60,7 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 ## Phase status
 - Phase 1 Desk Standard + CAD source map: sealed (v0.3, triangulated 2026-09-08).
 - Phase 2 CAD flagship: **this repo**. Pending: StatCan credit tables, auction net issuance, RG archive backfill on first live run.
-- Phase 3 GBP → CHF → AUD → NZD → JPY → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
+- Phase 3 GBP → AUD → JPY (live) → CHF → NZD → USD migration → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
 
 ## GBP Command Center (config/gbp.json v0.2.1)
 
@@ -76,3 +76,12 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Anchor: RBA demand estimate for reserves $70–100bn (Jacobs, "The Road to Ample", 25 Aug 2026); OMO full allotment at target + 10 bp since 9 Apr 2025; open repo ends early 2027.
 - Lanes: `.github/workflows/refresh-aud.yml` — daily 02:30 UTC, weekly Fri 08:00 UTC, monthly 2nd, backfill 1st.
 - Offline test: `python -m ingest.run --ccy aud --lane all --backfill --fixtures fixtures/aud --no-rss && python -m ingest.validate --ccy aud`
+
+## JPY Command Center (config/jpy.json v0.2.1)
+
+- Sources (all verified 2026-09-08): BoJ daily "Sources of Changes in Current Account Balances and Market Operations" XLSX (`d_release/jd|jx|jp`, parsed by English label with aliases + structure hash — the old www3 page was suspended 2025-10-06), BoJ Accounts every ten days (HTML, thousand yen → 100m with a magnitude guard), the official BoJ Time-Series API (`stat-search.boj.or.jp/api/v1/getDataCode`: FM01 TONA daily; MD13 loans/deposits, MD02 money stock, MD01 base, MD06 monthly factor attribution incl. MASDM26 FX, MD08 CAB by sector), BoJ call-market `fcall.xlsx` snapshot, BoJ basic loan rate CSV (`cdab0101.csv`; policy = basic loan rate − 0.25, IOER = policy), MoF JGB yields CSV (`jgbcme.csv` + history), MoF auction results XLS (bid-to-cover per tenor), MoF monthly Receipts & Payments of Treasury Funds XLS (taxes, pension, FEFSA, JGB, T-Bills), MoF ITS weekly CSV (snapshot), JSDA Tokyo Repo Rate XLS (daily + history since 2012). Legacy XLS needs `xlrd` (requirements.txt).
+- Layers: 1 Bank of Japan (CAB daily, excess vs required, ΔCAB, JGB purchases vs the MPM plan, pooled collateral, CLF, SLF, Accounts) → 2 MoF (treasury funds daily = DTS analogue, BoJ next-day projection, MoF monthly attribution, FEFSA = FX-intervention footprint, super-long bid-to-cover) → 3 loans / money stock / foreign banks' reserve share → 4 TONA − IOER (floor, persistence + absolute), TONA high, Tokyo Repo Rate − IOER (GC), term repo, JGB 2/10/20/30/40Y curve.
+- Regime: weights CB 0.35 · rates 0.35 · fiscal 0.20 · banking 0.10; LIQUIDITY_SCARCITY price-gated only; QT_STRESS overlay (20Y−10Y, 30Y−10Y, SLF, GC, bid-to-cover); flags CLF_USED, FLOOR_LEAK, GC_ABOVE_FLOOR, SUPER_LONG_STRESS, JGB_PURCHASES_VS_PLAN_*, FX_INTERVENTION_SUSPECT, FISCAL_BIG_DAY, FOREIGN_BANK_YEN_SHORT.
+- Lanes: `.github/workflows/refresh-jpy.yml` — daily 02:30 UTC (+ retry 03:30), daily_provisional 09:30 UTC, ten_day 3rd/13th/23rd, weekly Fri 04:00, monthly 15th, backfill 1st.
+- Offline test: `python -m ingest.run --ccy jpy --lane all --backfill --fixtures fixtures/jpy --no-rss && python -m ingest.validate --ccy jpy`
+- Netlify: same site, dashboard at `/jpy/`. Units: files in 100 million yen, dashboard in tn (10^12).

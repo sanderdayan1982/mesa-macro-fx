@@ -1,0 +1,35 @@
+JPY FASE 2 — QUÉ SUBIR AL REPO mesa-macro-fx (GitHub web UI), EN ESTE ORDEN
+==========================================================================
+Todo se sube en la raíz del repo, respetando las carpetas. "Add file → Upload files" acepta carpetas enteras arrastradas.
+
+1) Ficheros compartidos que CAMBIAN (sustituyen a los existentes):
+   - ingest/run.py                (añade fetch_jpy y los carriles daily_provisional / ten_day)
+   - ingest/engine.py             (overlays de régimen QT_STRESS + calendario JPY)
+   - schema/block.schema.json     (frecuencia "ten_day")
+   - requirements.txt             (añade xlrd para los XLS antiguos de JSDA y MoF)
+   - index.html                   (landing: JPY en verde)
+   - README.md                    (sección JPY)
+
+2) Ficheros NUEVOS:
+   - ingest/providers_jpy.py
+   - ingest/blocks_jpy.py
+   - config/jpy.json
+   - jpy/index.html
+   - .github/workflows/refresh-jpy.yml      ← OJO: dentro de la carpeta ".github/workflows" (con el punto). Si no existe la
+                                              ruta al arrastrar, créala escribiendo ".github/workflows/refresh-jpy.yml" en
+                                              "Add file → Create new file" y pega el contenido.
+   - fixtures/jpy/*  (13 CSV: pruebas offline, datos reales capturados el 8-sep-2026)
+   - data/jpy/*, history/jpy/*, logs/jpy/*  (primer estado, generado offline con las fixtures; el primer workflow lo sobreescribe)
+   - FASE1_JPY_Source_Map.md, PROMPT_TRIANGULACION_JPY.md, TRIANGULACION_JPY_matriz.md
+
+3) Commit: "feat(jpy): Fase 2 — JPY Command Center v0.2.1"
+
+4) Actions → refresh-jpy → Run workflow → lane = all, backfill = true. Tarda ~6–8 min (≈230 XLSX diarios del BoJ a 1 s cada uno).
+   Verde = data/jpy actualizado con datos vivos. Si sale amarillo, abre logs/jpy/oplog.json y pégame el error.
+
+5) Netlify: el sitio canada-command-center ya sirve la raíz; al desplegarse el commit, el dashboard está en
+   https://canada-command-center.netlify.app/jpy/
+
+Notas:
+- La carpeta suelta "github-workflows" (sin punto) sigue sobrando en el repo; bórrala cuando quieras.
+- El carril daily corre 02:30 UTC (11:30 JST) con reintento 03:30; provisional 09:30 UTC; Accounts 3/13/23; semanal viernes; mensual día 15.
