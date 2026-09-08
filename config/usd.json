@@ -1,0 +1,1092 @@
+{
+ "$schema": "mesa-macro/config.schema.json",
+ "config_version": "0.1.0",
+ "currency": "USD",
+ "name": "USD Liquidity Command Center — H.4.1 · DTS · H.8/H.15 (desk migration)",
+ "jurisdiction": "United States",
+ "central_bank": "Federal Reserve",
+ "treasury": "U.S. Treasury — Bureau of the Fiscal Service (Daily Treasury Statement)",
+ "monetary_sovereignty": "full (currency issuer; floor system with IORB, ON RRP as sub-floor)",
+ "framework": "Fed ample-reserves floor system: IORB 3.65 (verified 2026-09-09), ON RRP award rate as the sub-floor, SOFR the market rate; balance sheet in QT run-off; TGA at the Fed = fiscal drain/injection; DTS daily flows (T-1); H.8 weekly bank credit; H.15 daily curve",
+ "timezone_source": "America/New_York",
+ "timezone_operator": "Africa/Lagos",
+ "units": {
+  "balance_sheet": "USD millions",
+  "rates": "percent",
+  "spreads": "bps"
+ },
+ "lineage": {
+  "origin": "Sander's three USD dashboards: 'USD Liquidity Command Center — H.4.1' v2.0-AUDIT, 'US Treasury Liquidity Dashboard — DTS Tracker' v3.0-AUDIT, 'H.8 Banking & H.15 Rates Monitor' v2.1-AUDIT (HTML shared 2026-09-08)",
+  "rule": "EXACT metric set and thresholds of the three dashboards (no AI triangulation, Sander's instruction 2026-09-08); desk percentiles only as secondary context",
+  "corrections_from_primary_sources": [
+   "H.4.1 v2.0 'UNITS' multiplied WTREGEN and WRESBAL by 1000: FRED publishes both in $ millions (verified 2026-09-08: WRESBAL 2,894,531 = $2.89T; WTREGEN 967,935 = $968B); only RRPONTTLD is $ billions → the legacy Net Liquidity and the WRESBAL/TGA badges were computed on 1000x values (reserves always 'AMPLE', NL ≈ −$1T). Fixed here: all series in $M",
+   "H.8 v2.1 'Borrowings (TLBACBW027SBOG)': that id is Total Liabilities, All Commercial Banks; borrowings weekly SA = H8B3094NCBA ($M) (BOWACBW027SBOG discontinued). Fixed",
+   "H.8 v2.1 'C&I Loans (BUSLOANS)': BUSLOANS is MONTHLY; the weekly H.8 series is TOTCI ($B, SA). Fixed (BUSLOANS kept as monthly display)",
+   "H.15: DFF is a 7-day series, DTB3/DGS2/DGS10 business days → spreads on common dates only (kept from v2.1)"
+  ]
+ },
+ "sources": {
+  "fred_csv": {
+   "base": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=<ID>&cosd=<YYYY-MM-DD>",
+   "auth": "none (keyless CSV endpoint)",
+   "verified": "2026-09-08 all 20 ids",
+   "rate_limit": "one request per id per lane, ≥ 0.6 s apart",
+   "note": "H.4.1 series are Wednesday levels published Thursday 16:30 ET; H.8 Wednesday levels published Friday 16:15 ET; H.15 T+1 ~16:15 ET; SOFR published 08:00 ET next day; IORB dated forward"
+  },
+  "fred_api": {
+   "base": "https://api.stlouisfed.org/fred/series/observations",
+   "auth": "FRED_API_KEY (GitHub secret, optional fallback)"
+  },
+  "fiscaldata_dts": {
+   "base": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service",
+   "endpoints": {
+    "cash": "/v1/accounting/dts/operating_cash_balance",
+    "tx": "/v1/accounting/dts/deposits_withdrawals_operating_cash",
+    "debt": "/v1/accounting/dts/debt_subject_to_limit"
+   },
+   "auth": "none",
+   "release": "~16:00 ET Mon–Fri, record_date = T-1 business day",
+   "units": "$ millions",
+   "verified": "2026-09-08: record 2026-09-04, 180 tx rows/day, closing TGA 888,923",
+   "quirks": [
+    "closing balance stored in open_today_bal on the '...Closing Balance' row (post-Apr-2022 format)",
+    "total rows have transaction_catg = 'null' (one Deposits + one Withdrawals per date) — cross-checked with 'Total TGA Deposits/Withdrawals (Table II)' in operating_cash_balance",
+    "sort=-record_date so a page cut loses the oldest days, never the newest"
+   ]
+  }
+ },
+ "blocks": {
+  "central_bank": {
+   "title": "1 · Federal Reserve — H.4.1 balance sheet, reserves, drains (weekly) + ON RRP daily",
+   "equivalence_quality": "high",
+   "equivalence_note": "H.4.1 Wednesday levels via FRED (Thu 16:30 ET = 22:30 WAT). Net Liquidity = WALCL − WTREGEN − RRPONTTLD (RRP = latest observation ≤ the H.4.1 date). All $M.",
+   "series": {
+    "total_assets": {
+     "id": "WALCL",
+     "label": "Total Fed Assets (WALCL)",
+     "freq": "weekly",
+     "usd_analog": "WALCL",
+     "verified": "2026-09-02 = 6,737,204"
+    },
+    "treasury_securities": {
+     "id": "TREAST",
+     "label": "U.S. Treasury Securities held (TREAST)",
+     "freq": "weekly",
+     "usd_analog": "TREAST",
+     "verified": "2026-09-02 = 4,552,347"
+    },
+    "mbs": {
+     "id": "WSHOMCB",
+     "label": "Mortgage-Backed Securities (WSHOMCB)",
+     "freq": "weekly",
+     "usd_analog": "WSHOMCB",
+     "verified": "2026-09-02 = 1,913,585"
+    },
+    "primary_credit": {
+     "id": "WLCFLPCL",
+     "label": "Loans — Primary Credit (WLCFLPCL)",
+     "freq": "weekly",
+     "usd_analog": "WLCFLPCL",
+     "verified": "2026-09-02 = 5,282",
+     "role": "stress monitor: +20% w/w = PANIC"
+    },
+    "tga": {
+     "id": "WTREGEN",
+     "label": "TGA — Treasury General Account, weekly average (WTREGEN)",
+     "freq": "weekly",
+     "usd_analog": "WTREGEN",
+     "verified": "2026-09-02 = 967,935"
+    },
+    "on_rrp": {
+     "id": "RRPONTTLD",
+     "label": "ON RRP — overnight reverse repo (RRPONTTLD)",
+     "freq": "daily",
+     "usd_analog": "RRPONTTLD",
+     "unit": "USD millions (FRED $B × 1000)",
+     "verified": "2026-09-08 = 626"
+    },
+    "reserves": {
+     "id": "WRESBAL",
+     "label": "Reserve Balances with Federal Reserve Banks, weekly average (WRESBAL)",
+     "freq": "weekly",
+     "usd_analog": "WRESBAL",
+     "verified": "2026-09-02 = 2,894,531"
+    }
+   },
+   "derived": {
+    "net_liquidity": {
+     "formula": "WALCL − WTREGEN − RRPONTTLD (RRP = latest daily ≤ H.4.1 date; weeks without TGA/RRP coverage are skipped, never zero-filled)",
+     "unit": "USD millions"
+    },
+    "net_liquidity_wow_pct": {
+     "formula": "Δ% w/w of net_liquidity",
+     "signal": "≥ +2% RISK-ON · ≤ −2% RISK-OFF · else NEUTRAL (H.4.1 rule)"
+    },
+    "reserves_status": {
+     "rule": "WRESBAL < 2.5T CRITICAL · < 3.0T NERVOUS · else AMPLE"
+    },
+    "tga_status": {
+     "rule": "≥ 900B HEAVY DRAIN · ≥ 750B DRAIN WATCH · else SAFE (alerts table: > 800B rising = active drain)"
+    },
+    "rrp_status": {
+     "rule": "≥ 200B WATCH (capital parked / rebound signal) · else LOW"
+    },
+    "primary_credit_wow_pct": {
+     "rule": "> +20% w/w = PANIC · else LOW"
+    },
+    "total_assets_wow": {
+     "formula": "Δ WALCL w/w ($M) — QT ↓ / QE ↑ (assets table)"
+    },
+    "drains_total": {
+     "formula": "TGA + ON RRP (stacked active drains)"
+    },
+    "balance_sheet_phase": {
+     "rule": "13-week Δ WALCL < −50B → QT; > +50B → QE; else STEADY"
+    }
+   },
+   "thresholds": {
+    "reserves": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "primary_absolute": {
+      "boc_target_range": [
+       3000000,
+       4000000
+      ],
+      "below_range_watch": true,
+      "stress_below": 2500000,
+      "crisis_below": 2500000
+     },
+     "secondary_percentile": {
+      "window": "156w",
+      "watch_below": "p20",
+      "stress_below": "p10",
+      "crisis_below": "p5"
+     },
+     "note": "H.4.1 rule: <3.0T NERVOUS (WATCH), <2.5T CRITICAL (CRISIS). 3.0–4.0T = 'ample band' for the desk regime (above 4.0T = abundant); the only operative numbers are Sander's 3.0T / 2.5T"
+    },
+    "tga": {
+     "method": "absolute",
+     "watch_above": 750000,
+     "stress_above": 900000,
+     "note": "H.4.1: DRAIN WATCH ≥ 750B, HEAVY DRAIN ≥ 900B"
+    },
+    "on_rrp": {
+     "method": "absolute",
+     "watch_above": 200000,
+     "note": "H.4.1: $200B rebound = SIGNAL"
+    },
+    "primary_credit_wow_pct": {
+     "method": "absolute",
+     "crisis_above": 20,
+     "note": "H.4.1: +20% weekly = PANIC / bank in trouble"
+    },
+    "net_liquidity_wow_pct": {
+     "window": "156w",
+     "risk_on_above": "p85",
+     "risk_off_below": "p15",
+     "secondary_absolute": {
+      "risk_on": 2.0,
+      "risk_off": -2.0
+     },
+     "note": "H.4.1: ±2% weekly (absolute rule mandatory); percentile only informs"
+    },
+    "total_assets_wow": {
+     "method": "percentile",
+     "window": "156w",
+     "direction": "low_is_qt",
+     "watch_below": "p15",
+     "stress_below": "p5",
+     "min_n": 26
+    }
+   }
+  },
+  "fiscal": {
+   "title": "2 · U.S. Treasury — Daily Treasury Statement: TGA, deposits, withdrawals, debt, Net Treasury Flow (daily, T-1)",
+   "equivalence_quality": "high",
+   "equivalence_note": "DTS via Fiscal Data API, ~16:00 ET (22:00 WAT), record_date = previous business day. Views Daily / MTD / FYTD kept as fields on every line item. Net Treasury Flow (MMT sign) = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues): + = net fiscal injection (NFA creation), − = drain. Reserve impact ≠ NFA: −ΔTGA.",
+   "series": {
+    "tga_closing": {
+     "id": "DTS:tga_close",
+     "label": "TGA Closing Balance (DTS Table I)",
+     "freq": "daily",
+     "usd_analog": "TGA",
+     "verified": "2026-09-04 = 888,923"
+    },
+    "tga_opening": {
+     "id": "DTS:tga_open",
+     "label": "TGA Opening Balance",
+     "freq": "daily",
+     "display_only": true
+    },
+    "total_deposits": {
+     "id": "DTS:total_deposits",
+     "label": "Total TGA Deposits (Table II)",
+     "freq": "daily",
+     "verified": "2026-09-04 = 17,562"
+    },
+    "total_withdrawals": {
+     "id": "DTS:total_withdrawals",
+     "label": "Total TGA Withdrawals (Table II)",
+     "freq": "daily",
+     "verified": "2026-09-04 = 32,567"
+    },
+    "debt_issues": {
+     "id": "DTS:debt_issues",
+     "label": "Public Debt Cash Issues (Table IIIB)",
+     "freq": "daily"
+    },
+    "debt_redemptions": {
+     "id": "DTS:debt_redemptions",
+     "label": "Public Debt Cash Redemptions (Table IIIB)",
+     "freq": "daily"
+    },
+    "debt_public": {
+     "id": "DTS:debt_public",
+     "label": "Debt Held by the Public",
+     "freq": "daily",
+     "verified": "2026-09-04 = 32,410,786"
+    },
+    "debt_intragov": {
+     "id": "DTS:debt_intragov",
+     "label": "Intragovernmental Holdings",
+     "freq": "daily",
+     "display_only": true
+    },
+    "debt_total": {
+     "id": "DTS:debt_total",
+     "label": "Total Public Debt Outstanding (Public + Intragovernmental)",
+     "freq": "daily",
+     "verified": "2026-09-04 = 40,094,591"
+    },
+    "debt_limit": {
+     "id": "DTS:debt_limit",
+     "label": "Statutory Debt Limit",
+     "freq": "daily",
+     "display_only": true
+    },
+    "dep_taxes_withheld_individual_fica": {
+     "id": "DTS:D|Taxes - Withheld Individual/FICA",
+     "label": "Taxes — Withheld Individual / FICA",
+     "freq": "daily",
+     "group": "deposits",
+     "dts_key": "Taxes - Withheld Individual/FICA"
+    },
+    "dep_taxes_non_withheld_ind_seca_electronic": {
+     "id": "DTS:D|Taxes - Non Withheld Ind/SECA Electronic",
+     "label": "Taxes — Non Withheld Ind/SECA Electronic",
+     "freq": "daily",
+     "group": "deposits",
+     "dts_key": "Taxes - Non Withheld Ind/SECA Electronic"
+    },
+    "dep_taxes_non_withheld_ind_seca_other": {
+     "id": "DTS:D|Taxes - Non Withheld Ind/SECA Other",
+     "label": "Taxes — Non Withheld Ind/SECA Other",
+     "freq": "daily",
+     "group": "deposits",
+     "dts_key": "Taxes - Non Withheld Ind/SECA Other"
+    },
+    "dep_taxes_corporate_income": {
+     "id": "DTS:D|Taxes - Corporate Income",
+     "label": "Taxes — Corporate Income",
+     "freq": "daily",
+     "group": "deposits",
+     "dts_key": "Taxes - Corporate Income"
+    },
+    "dep_dhs_customs_duties_taxes_and_fees": {
+     "id": "DTS:D|DHS - Customs Duties, Taxes, and Fees",
+     "label": "DHS — Customs Duties, Taxes & Fees",
+     "freq": "daily",
+     "group": "deposits",
+     "dts_key": "DHS - Customs Duties, Taxes, and Fees"
+    },
+    "dep_hhs_medicare_premiums": {
+     "id": "DTS:D|HHS - Medicare Premiums",
+     "label": "HHS — Medicare Premiums",
+     "freq": "daily",
+     "group": "deposits",
+     "dts_key": "HHS - Medicare Premiums"
+    },
+    "wd_hhs_federal_hospital_insr_trust_fund": {
+     "id": "DTS:W|HHS - Federal Hospital Insr Trust Fund",
+     "label": "HHS — Federal Hospital Insurance (Part A)",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "HHS - Federal Hospital Insr Trust Fund"
+    },
+    "wd_hhs_federal_supple_med_insr_trust_fund": {
+     "id": "DTS:W|HHS - Federal Supple Med Insr Trust Fund",
+     "label": "HHS — Supplementary Medical Ins. (Part B)",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "HHS - Federal Supple Med Insr Trust Fund"
+    },
+    "wd_hhs_grants_to_states_for_medicaid": {
+     "id": "DTS:W|HHS - Grants to States for Medicaid",
+     "label": "HHS — Grants to States for Medicaid",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "HHS - Grants to States for Medicaid"
+    },
+    "wd_hhs_medicare_prescription_drugs": {
+     "id": "DTS:W|HHS - Medicare Prescription Drugs",
+     "label": "HHS — Medicare Prescription Drugs (Part D)",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "HHS - Medicare Prescription Drugs"
+    },
+    "wd_dept_of_defense_dod_misc": {
+     "id": "DTS:W|Dept of Defense (DoD) - misc",
+     "label": "Dept of Defense (DoD) — Misc",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "Dept of Defense (DoD) - misc"
+    },
+    "wd_dept_of_health_human_serv_hhs_misc": {
+     "id": "DTS:W|Dept of Health & Human Serv (HHS) - misc",
+     "label": "Dept of HHS — Misc",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "Dept of Health & Human Serv (HHS) - misc"
+    },
+    "wd_usda_supp_nutrition_assist_prog_snap": {
+     "id": "DTS:W|USDA - Supp Nutrition Assist Prog (SNAP)",
+     "label": "USDA — SNAP (Food Stamps)",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "USDA - Supp Nutrition Assist Prog (SNAP)"
+    },
+    "wd_dol_unemployment_benefits": {
+     "id": "DTS:W|DOL - Unemployment Benefits",
+     "label": "DOL — Unemployment Benefits",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "DOL - Unemployment Benefits"
+    },
+    "wd_taxes_individual_tax_refunds_eft": {
+     "id": "DTS:W|Taxes - Individual Tax Refunds (EFT)",
+     "label": "Taxes — Individual Tax Refunds (EFT)",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "Taxes - Individual Tax Refunds (EFT)"
+    },
+    "wd_interest_on_treasury_securities": {
+     "id": "DTS:W|Interest on Treasury Securities",
+     "label": "Interest on Treasury Securities",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "Interest on Treasury Securities"
+    },
+    "wd_ssa_benefits_payments": {
+     "id": "DTS:W|SSA - Benefits Payments",
+     "label": "SSA — Benefits Payments",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "SSA - Benefits Payments"
+    },
+    "wd_ssa_supplemental_security_income": {
+     "id": "DTS:W|SSA - Supplemental Security Income",
+     "label": "SSA — Supplemental Security Income",
+     "freq": "daily",
+     "group": "withdrawals",
+     "dts_key": "SSA - Supplemental Security Income"
+    }
+   },
+   "dts_items": {
+    "deposits": [
+     "Taxes - Withheld Individual/FICA",
+     "Taxes - Non Withheld Ind/SECA Electronic",
+     "Taxes - Non Withheld Ind/SECA Other",
+     "Taxes - Corporate Income",
+     "DHS - Customs Duties, Taxes, and Fees",
+     "HHS - Medicare Premiums"
+    ],
+    "withdrawals": [
+     "HHS - Federal Hospital Insr Trust Fund",
+     "HHS - Federal Supple Med Insr Trust Fund",
+     "HHS - Grants to States for Medicaid",
+     "HHS - Medicare Prescription Drugs",
+     "Dept of Defense (DoD) - misc",
+     "Dept of Health & Human Serv (HHS) - misc",
+     "USDA - Supp Nutrition Assist Prog (SNAP)",
+     "DOL - Unemployment Benefits",
+     "Taxes - Individual Tax Refunds (EFT)",
+     "Interest on Treasury Securities",
+     "SSA - Benefits Payments",
+     "SSA - Supplemental Security Income"
+    ]
+   },
+   "derived": {
+    "net_spending": {
+     "formula": "total_withdrawals − debt_redemptions"
+    },
+    "net_deposits": {
+     "formula": "total_deposits − debt_issues"
+    },
+    "net_treasury_flow": {
+     "formula": "net_spending − net_deposits (MMT sign: + inject / − drain)",
+     "stats": "rolling 30-business-day mean, σ, Z (population σ, window includes the day, as the DTS Tracker)"
+    },
+    "net_treasury_flow_7d": {
+     "formula": "sum of the last 7 daily NTF"
+    },
+    "tga_reserve_impact": {
+     "formula": "−Δ TGA closing d/d (TGA down = reserves added)"
+    },
+    "tga_dod": {
+     "formula": "Δ TGA closing d/d"
+    },
+    "debt_total_dod": {
+     "formula": "Δ total public debt d/d"
+    },
+    "seasonal_flag": {
+     "rule": "Quarter-End (3/31, 6/30, 9/30, 12/31) · Tax Day (Apr 14–16) · Est. Tax Day (14–16 of Jan/Jun/Sep) · Mid-Month Settl. (14–16) · Payments Window (≥ 25)"
+    },
+    "fiscal_regime": {
+     "rule": "INJECTION if NTF 7-day sum > 0 and Z ≥ 0 or Z ≥ 1; DRAIN if 7-day sum < 0 and Z ≤ 0 or Z ≤ −1; else NEUTRAL"
+    }
+   },
+   "thresholds": {
+    "net_treasury_flow": {
+     "method": "zscore",
+     "notable_above": 1.0,
+     "extraordinary_above": 2.0,
+     "note": "DTS Tracker: |Z| ≥ 1 notable, ≥ 2 extraordinary (30-day window)"
+    },
+    "tga_closing": {
+     "method": "absolute",
+     "watch_above": 750000,
+     "stress_above": 900000,
+     "note": "same TGA bands as H.4.1 applied to the daily close"
+    },
+    "tga_dod": {
+     "method": "percentile",
+     "window": "250d",
+     "watch_above": "p90",
+     "stress_above": "p97",
+     "min_n": 60,
+     "note": "desk context only: a large one-day TGA build = reserve drain day"
+    }
+   }
+  },
+  "banking": {
+   "title": "3 · Banking transmission — H.8 commercial banks (weekly): bank credit, loans & leases, C&I, deposits, borrowings",
+   "equivalence_quality": "high",
+   "equivalence_note": "H.8 Wednesday levels via FRED, published Friday 16:15 ET (22:15 WAT), seasonally adjusted. Traffic light exactly as the H.8 monitor v2.1: GREEN ≥ 3 series green, RED ≥ 3 red, else YELLOW; < 3 valid series → NO SIGNAL. All $M.",
+   "series": {
+    "bank_credit": {
+     "id": "TOTBKCR",
+     "label": "Bank Credit (TOTBKCR)",
+     "freq": "weekly",
+     "unit": "USD millions (FRED $B × 1000)",
+     "verified": "2026-08-26 = 19,830.2B"
+    },
+    "loans_leases": {
+     "id": "TOTLL",
+     "label": "Loans & Leases in Bank Credit (TOTLL)",
+     "freq": "weekly",
+     "unit": "USD millions (FRED $B × 1000)",
+     "verified": "2026-08-26 = 14,033.9B"
+    },
+    "ci_loans": {
+     "id": "TOTCI",
+     "label": "C&I Loans, weekly (TOTCI)",
+     "freq": "weekly",
+     "unit": "USD millions (FRED $B × 1000)",
+     "verified": "2026-08-26 = 2,956.9B",
+     "note": "replaces BUSLOANS (monthly) of the legacy monitor"
+    },
+    "deposits": {
+     "id": "DPSACBW027SBOG",
+     "label": "Deposits (DPSACBW027SBOG)",
+     "freq": "weekly",
+     "unit": "USD millions (FRED $B × 1000)",
+     "verified": "2026-08-26 = 19,559.5B"
+    },
+    "borrowings": {
+     "id": "H8B3094NCBA",
+     "label": "Borrowings (H8B3094NCBA, SA)",
+     "freq": "weekly",
+     "verified": "2026-08-26 = 2,221,354",
+     "note": "replaces TLBACBW027SBOG (= Total Liabilities) of the legacy monitor"
+    },
+    "ci_loans_monthly": {
+     "id": "BUSLOANS",
+     "label": "C&I Loans, monthly (BUSLOANS) — legacy id",
+     "freq": "monthly",
+     "unit": "USD millions (FRED $B × 1000)",
+     "display_only": true,
+     "verified": "2026-07-01 = 2,899.3B"
+    }
+   },
+   "derived": {
+    "<series>_wow_pct": {
+     "formula": "Δ% w/w",
+     "status": "credit/loans: > 0 EXPANDING · < −0.1 CONTRACTING · else FLAT; C&I: < −0.1 WEAK; deposits: > 0 STABLE · < −0.1 WEAKENING · else FLAT; borrowings: < 0 FALLING · > 0.5 RISING FAST · else STABLE"
+    },
+    "heatmap_z": {
+     "formula": "Z of each weekly Δ% vs the previous 26 weeks (no lookahead, ≥ 10 points): |Z| > 2 extraordinary, > 1 notable"
+    },
+    "index_base100": {
+     "formula": "loans / deposits / borrowings rebased to 100 at the first common date of the window (combined chart)"
+    },
+    "transmission_signal": {
+     "rule": "H.8 v2.1 vote: LL>0, DEP>0, BOR<0, CI>0, BC>0 → green; LL<−0.1, DEP<−0.1, BOR>0.5, CI<−0.1, BC<−0.1 → red; GREEN ≥3 green, RED ≥3 red, YELLOW else, NO SIGNAL <3 valid"
+    }
+   },
+   "thresholds": {
+    "bank_credit_wow_pct": {
+     "method": "absolute",
+     "watch_below": -0.1
+    },
+    "loans_leases_wow_pct": {
+     "method": "absolute",
+     "watch_below": -0.1
+    },
+    "ci_loans_wow_pct": {
+     "method": "absolute",
+     "watch_below": -0.1
+    },
+    "deposits_wow_pct": {
+     "method": "absolute",
+     "watch_below": -0.1
+    },
+    "borrowings_wow_pct": {
+     "method": "absolute",
+     "watch_above": 0.5
+    }
+   }
+  },
+  "rates": {
+   "title": "4 · Rates & money market — SOFR−IORB stress spread (daily) + H.15 curve: Fed funds, 3M bill, 2Y, 10Y",
+   "equivalence_quality": "high",
+   "equivalence_note": "SOFR (NY Fed, 08:00 ET T+1) and IORB (Board) via FRED; H.15 daily closes via FRED (T+1). Spreads on common dates only (DFF is a 7-day series). STRESS SPREAD = SOFR − IORB: 0–5 SAFE · 5–15 WATCH · >15 STRESS · >30 CRISIS (H.4.1 badge: NORMAL / STRESS / CRITICAL).",
+   "series": {
+    "sofr": {
+     "id": "SOFR",
+     "label": "SOFR — Secured Overnight Financing Rate",
+     "freq": "daily",
+     "unit": "percent",
+     "verified": "2026-09-04 = 3.65"
+    },
+    "iorb": {
+     "id": "IORB",
+     "label": "IORB — Interest on Reserve Balances",
+     "freq": "daily",
+     "unit": "percent",
+     "verified": "2026-09-09 = 3.65 (dated forward)"
+    },
+    "fed_funds": {
+     "id": "DFF",
+     "label": "Effective Fed Funds Rate (DFF)",
+     "freq": "daily",
+     "unit": "percent",
+     "verified": "2026-09-07 = 3.63"
+    },
+    "tbill_3m": {
+     "id": "DTB3",
+     "label": "3-Month T-Bill (DTB3)",
+     "freq": "daily",
+     "unit": "percent",
+     "verified": "2026-09-04 = 3.77"
+    },
+    "ust_2y": {
+     "id": "DGS2",
+     "label": "2-Year Treasury (DGS2)",
+     "freq": "daily",
+     "unit": "percent",
+     "verified": "2026-09-04 = 4.37"
+    },
+    "ust_10y": {
+     "id": "DGS10",
+     "label": "10-Year Treasury (DGS10)",
+     "freq": "daily",
+     "unit": "percent",
+     "verified": "2026-09-04 = 4.78"
+    }
+   },
+   "derived": {
+    "sofr_minus_iorb_bps": {
+     "formula": "(SOFR − IORB) × 100, IORB = latest ≤ SOFR date",
+     "role": "STRESS SPREAD; friction_confirmed = > 15 bp on the latest print and on ≥ 1 of the 2 prior sessions (desk persistence so a month-end print alone never flips the regime)"
+    },
+    "curve_10y_2y_bps": {
+     "formula": "(DGS10 − DGS2) × 100",
+     "status": "< −50 DEEP INVERSION · < 0 INVERTED · < 50 FLAT · else STEEPENING (overlay: < 25 FLAT CURVE)"
+    },
+    "ff_minus_3m_bps": {
+     "formula": "(DFF − DTB3) × 100 on common dates",
+     "status": "> 30 TIGHT · > 10 ELEVATED · else NORMAL; FF > 3M = market prices cuts"
+    },
+    "fed_funds_stance": {
+     "rule": "DFF > 5 RESTRICTIVE · > 3 ELEVATED · else ACCOMMODATIVE"
+    },
+    "rates_signal": {
+     "rule": "H.15 v2.1: RED if 10Y−2Y < −20 and FF−3M > 20 · GREEN if 10Y−2Y > 0 and FF−3M < 10 · else YELLOW; NO SIGNAL if a spread is missing"
+    },
+    "forex_signal_matrix": {
+     "rule": "H.4.1: NL Δ% RISK-ON/OFF · SOFR−IORB > 30 USD BULLISH, > 15 USD WATCH · WRESBAL < 3T NERVOUS · TGA ≥ 800B HIGH DRAIN"
+    }
+   },
+   "thresholds": {
+    "sofr_minus_iorb_bps": {
+     "method": "absolute",
+     "watch_above": 5,
+     "stress_above": 15,
+     "crisis_above": 30,
+     "note": "H.4.1: 0–5 safe · 15–30 stress · > 30 crisis (5–15 = watch band in the chart)"
+    },
+    "curve_10y_2y_bps": {
+     "method": "absolute",
+     "watch_below": 0,
+     "stress_below": -50
+    },
+    "ff_minus_3m_bps": {
+     "method": "absolute",
+     "watch_above": 10,
+     "stress_above": 30
+    },
+    "ust_10y_5d_change_bps": {
+     "method": "absolute",
+     "watch_above": 15,
+     "stress_above": 25,
+     "two_sided": true,
+     "note": "desk context (same as NZD/CHF): 5-session move in the 10Y"
+    }
+   }
+  }
+ },
+ "regime": {
+  "weights": {
+   "central_bank": 0.4,
+   "rates": 0.25,
+   "fiscal": 0.25,
+   "banking": 0.1
+  },
+  "weights_note": "desk proposal (no triangulation for USD): DTS is one of Sander's three dashboards and is daily → fiscal 0.25; recalibrate with live history",
+  "reserves_metric": "central_bank.reserves",
+  "stress_spread_metric": "rates.sofr_minus_iorb_bps",
+  "values": [
+   "LIQUIDITY_INJECTION",
+   "LIQUIDITY_DRAIN",
+   "LIQUIDITY_SCARCITY",
+   "FLOOR_FRICTION",
+   "NEUTRAL"
+  ],
+  "rules": {
+   "LIQUIDITY_SCARCITY": "WRESBAL below 3.0T (WATCH+) AND SOFR − IORB ≥ STRESS (> 15 bp)",
+   "FLOOR_FRICTION": "reserves in/above the ample band AND SOFR − IORB friction_confirmed",
+   "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
+   "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
+   "NEUTRAL": "otherwise"
+  },
+  "orthogonal_flags": {
+   "TRANSMISSION_FAILURE": "H.8 RED while reserves ample",
+   "PRIMARY_CREDIT_PANIC": "primary credit +20% w/w",
+   "RRP_REBOUND": "ON RRP ≥ 200B",
+   "TGA_HEAVY_DRAIN": "TGA ≥ 900B",
+   "NTF_EXTRAORDINARY": "|Z| ≥ 2 on the daily Net Treasury Flow",
+   "CURVE_INVERTED": "10Y − 2Y < 0",
+   "PHASE_*": "balance-sheet phase (QT / QE / STEADY)"
+  },
+  "min_blocks_for_signal": 2,
+  "calibration": {
+   "status": "planned",
+   "method": "after ≥ 26 weeks live: grid over weights scored against SOFR − IORB > 15 episodes"
+  }
+ },
+ "status_rules": {
+  "fresh_multiplier": 1.5,
+  "stale_multiplier": 3.0,
+  "nominal_period_days": {
+   "daily": 4,
+   "weekly": 9,
+   "monthly": 45,
+   "event": 400
+  },
+  "monthly_lag_allowance_days": 60,
+  "note": "H.4.1/H.8 Wednesday data published Thu/Fri; SOFR/H.15 T+1; DTS T-1 at 16:00 ET; US market holidays leave gaps"
+ },
+ "quality": {
+  "origin": "CAD quality module",
+  "dedup": "last value wins per date",
+  "outliers": {
+   "method": "modified_zscore_MAD",
+   "rolling_window": 20,
+   "min_points": 5,
+   "z_threshold": {
+    "default": 3.5,
+    "tga_closing": 4.0,
+    "net_treasury_flow": 5.0,
+    "primary_credit": 4.0
+   }
+  },
+  "reconciliation": [
+   {
+    "rule": "DTS total deposits/withdrawals (Table II) == the catg='null' total rows of the transactions table (exact)",
+    "on_fail": "warn"
+   },
+   {
+    "rule": "TGA closing (DTS, daily) vs WTREGEN (H.4.1 weekly average) within ±15%",
+    "on_fail": "warn"
+   },
+   {
+    "rule": "Fiscal Data meta total-count == rows fetched (page truncation)",
+    "on_fail": "data_degraded"
+   }
+  ],
+  "null_policy": "null is NEVER neutral: series → unavailable, never zero (H.4.1 v2.0 fix A1: weeks without TGA/RRP coverage are skipped)"
+ },
+ "revisions": {
+  "keep_last": 50,
+  "series": [
+   "reserves",
+   "total_assets",
+   "tga",
+   "tga_closing",
+   "net_treasury_flow",
+   "bank_credit"
+  ]
+ },
+ "alerts": {
+  "keep_last": 100,
+  "rules": [
+   {
+    "id": "reserves_nervous",
+    "metric": "central_bank.reserves",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "reserves_critical",
+    "metric": "central_bank.reserves",
+    "when": "level >= CRISIS",
+    "severity": "CRITICAL",
+    "category": "reserves"
+   },
+   {
+    "id": "primary_credit_panic",
+    "metric": "central_bank.primary_credit_wow_pct",
+    "when": "level >= CRISIS",
+    "severity": "CRITICAL",
+    "category": "emergency"
+   },
+   {
+    "id": "tga_drain_watch",
+    "metric": "central_bank.tga",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "fiscal"
+   },
+   {
+    "id": "tga_heavy_drain",
+    "metric": "central_bank.tga",
+    "when": "level >= STRESS",
+    "severity": "CRITICAL",
+    "category": "fiscal"
+   },
+   {
+    "id": "rrp_rebound",
+    "metric": "central_bank.on_rrp",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "drains"
+   },
+   {
+    "id": "sofr_iorb_stress",
+    "metric": "rates.sofr_minus_iorb_bps",
+    "when": "level >= STRESS",
+    "severity": "WARNING",
+    "category": "funding"
+   },
+   {
+    "id": "sofr_iorb_crisis",
+    "metric": "rates.sofr_minus_iorb_bps",
+    "when": "level >= CRISIS",
+    "severity": "CRITICAL",
+    "category": "funding"
+   },
+   {
+    "id": "net_liq_risk_off",
+    "metric": "central_bank.net_liquidity_wow_pct",
+    "when": "<= risk_off",
+    "severity": "WARNING",
+    "category": "liquidity"
+   },
+   {
+    "id": "ntf_extraordinary",
+    "metric": "fiscal.net_treasury_flow",
+    "when": "level >= STRESS",
+    "severity": "WARNING",
+    "category": "fiscal"
+   },
+   {
+    "id": "fiscal_drain",
+    "metric": "fiscal.fiscal_regime",
+    "when": "<= drain",
+    "severity": "INFO",
+    "category": "fiscal"
+   },
+   {
+    "id": "curve_inverted",
+    "metric": "rates.curve_10y_2y_bps",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "curve"
+   },
+   {
+    "id": "ff_3m_tight",
+    "metric": "rates.ff_minus_3m_bps",
+    "when": "level >= STRESS",
+    "severity": "WARNING",
+    "category": "curve"
+   },
+   {
+    "id": "h8_red",
+    "metric": "banking.transmission_signal",
+    "when": "== RED",
+    "severity": "WARNING",
+    "category": "transmission"
+   },
+   {
+    "id": "data_degraded",
+    "metric": "quality.series_below_70",
+    "when": "> 0",
+    "severity": "INFO",
+    "category": "data"
+   }
+  ]
+ },
+ "scenarios": {
+  "origin": "liquidity-only set (H.4.1 signal matrix + DTS)",
+  "items": [
+   {
+    "id": "L1",
+    "name": "Ample reserves, calm floor",
+    "bias": "NEUTRAL",
+    "min": 3,
+    "conditions": [
+     "central_bank.reserves level == SAFE",
+     "rates.sofr_minus_iorb_bps level == SAFE",
+     "central_bank.on_rrp level == SAFE"
+    ]
+   },
+   {
+    "id": "L2",
+    "name": "Reserve scarcity building (Sept-2019 pattern)",
+    "bias": "USD-BULLISH",
+    "min": 2,
+    "conditions": [
+     "central_bank.reserves level >= WATCH",
+     "rates.sofr_minus_iorb_bps level >= WATCH",
+     "central_bank.tga level >= WATCH"
+    ]
+   },
+   {
+    "id": "L3",
+    "name": "Funding stress",
+    "bias": "EMERGENCY",
+    "min": 2,
+    "conditions": [
+     "rates.sofr_minus_iorb_bps level >= STRESS",
+     "central_bank.primary_credit_wow_pct level >= CRISIS",
+     "rates.friction_confirmed == true"
+    ]
+   },
+   {
+    "id": "L4",
+    "name": "Treasury drain (TGA rebuild)",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "fiscal.fiscal_regime == DRAIN",
+     "central_bank.tga level >= WATCH",
+     "central_bank.net_liquidity_wow_pct <= risk_off"
+    ]
+   },
+   {
+    "id": "L5",
+    "name": "Fiscal injection / TGA drawdown",
+    "bias": "RISK-ON",
+    "min": 2,
+    "conditions": [
+     "fiscal.fiscal_regime == INJECTION",
+     "central_bank.net_liquidity_wow_pct >= risk_on",
+     "fiscal.net_treasury_flow level >= WATCH"
+    ]
+   },
+   {
+    "id": "L6",
+    "name": "Credit contraction",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "banking.transmission_signal == RED",
+     "rates.curve_10y_2y_bps level >= WATCH",
+     "banking.borrowings_wow_pct level >= WATCH"
+    ]
+   }
+  ]
+ },
+ "calendar": {
+  "fomc_dates_2026": [
+   "2026-01-28",
+   "2026-03-18",
+   "2026-04-29",
+   "2026-06-17",
+   "2026-07-29",
+   "2026-09-16",
+   "2026-10-28",
+   "2026-12-09"
+  ],
+  "fomc_dates_2027": [
+   "2027-01-27",
+   "2027-03-17",
+   "2027-04-28",
+   "2027-06-09",
+   "2027-07-28",
+   "2027-09-15",
+   "2027-10-27",
+   "2027-12-08"
+  ],
+  "fomc_sep_dates": [
+   "2026-03-18",
+   "2026-06-17",
+   "2026-09-16",
+   "2026-12-09",
+   "2027-03-17",
+   "2027-06-09",
+   "2027-09-15",
+   "2027-12-08"
+  ],
+  "fomc_note": "verified 2026-09-08 against federalreserve.gov/monetarypolicy/fomccalendars.htm (second day of each meeting; statement 14:00 ET; SEP in Mar/Jun/Sep/Dec)",
+  "h41_release": "Thursday 16:30 ET (22:30 WAT) — Wednesday levels; operative window 22:30 → 02:30 WAT",
+  "h8_release": "Friday 16:15 ET (22:15 WAT) — Wednesday levels",
+  "h15_release": "daily ~16:15 ET T+1 (FRED next morning)",
+  "sofr_release": "08:00 ET (14:00 WAT) for the previous business day",
+  "dts_release": "~16:00 ET Mon–Fri (22:00 WAT), record_date = T-1; smart poll 15:55–18:00 ET",
+  "decision_time": "16:30 America/New_York",
+  "fiscal_seasonality": {
+   "quarter_end": [
+    "03-31",
+    "06-30",
+    "09-30",
+    "12-31"
+   ],
+   "tax_day": "04-14..04-16",
+   "estimated_tax": "14–16 of Jan/Jun/Sep",
+   "mid_month_settlement": "14–16",
+   "payments_window": "≥ 25 (SNAP, SSI, month-end payrolls)",
+   "ssa_benefits": "3rd + 2nd/3rd/4th Wednesday"
+  },
+  "us_market_holidays_2026": [
+   "2026-01-01",
+   "2026-01-19",
+   "2026-02-16",
+   "2026-04-03",
+   "2026-05-25",
+   "2026-06-19",
+   "2026-07-03",
+   "2026-09-07",
+   "2026-11-26",
+   "2026-12-25"
+  ],
+  "us_market_holidays_2027": [
+   "2027-01-01",
+   "2027-01-18",
+   "2027-02-15",
+   "2027-03-26",
+   "2027-05-31",
+   "2027-06-18",
+   "2027-07-05",
+   "2027-09-06",
+   "2027-11-25",
+   "2027-12-24"
+  ],
+  "holidays_note": "NYSE hours-calendars page verified 2026-09-08 (2026 and 2027)"
+ },
+ "refresh_lanes": {
+  "daily": {
+   "cron_utc": "20 20 * * 1-5 + 20 21 * * 1-5",
+   "note": "16:20 ET Mon–Fri: DTS (T-1) + SOFR/IORB/RRP + H.15 → fiscal + rates + central_bank(RRP)",
+   "blocks": [
+    "fiscal",
+    "rates",
+    "central_bank"
+   ],
+   "run_agent": false
+  },
+  "daily_retry": {
+   "cron_utc": "0 23 * * 1-5",
+   "note": "18:00 ET: DTS late publication retry (same as daily)",
+   "blocks": [
+    "fiscal",
+    "rates",
+    "central_bank"
+   ],
+   "run_agent": false
+  },
+  "weekly_thu": {
+   "cron_utc": "40 20 * * 4 + 40 21 * * 4",
+   "note": "Thursday 16:40 ET: H.4.1 (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL)",
+   "blocks": [
+    "central_bank"
+   ],
+   "run_agent": true
+  },
+  "weekly": {
+   "cron_utc": "25 20 * * 5 + 25 21 * * 5",
+   "note": "Friday 16:25 ET: H.8 (TOTBKCR, TOTLL, TOTCI, DPSACBW027SBOG, H8B3094NCBA)",
+   "blocks": [
+    "banking"
+   ],
+   "run_agent": true
+  },
+  "monthly": {
+   "cron_utc": "0 22 2 * *",
+   "note": "2nd of month: BUSLOANS monthly + full backfill revalidation",
+   "blocks": [
+    "banking"
+   ],
+   "run_agent": false
+  }
+ },
+ "desk_exports": {
+  "dxy": {
+   "id": "DTWEXBGS",
+   "label": "Trade-weighted USD index, broad (daily)",
+   "status": "pending (agent layer)"
+  }
+ },
+ "agent": {
+  "name": "USD Currency Agent",
+  "reads": [
+   "data/usd/central_bank.json",
+   "data/usd/fiscal.json",
+   "data/usd/banking.json",
+   "data/usd/rates.json",
+   "data/usd/calendar.json"
+  ],
+  "writes": "agents/usd.json",
+  "vocabulary": "MMT/Mosler; Fed floor system (IORB, ON RRP, SOFR); H.4.1 net liquidity; TGA and the DTS (Net Treasury Flow = NFA creation); H.8 transmission; H.15 curve",
+  "alert_types": [
+   "LIQUIDITY_GAIN",
+   "LIQUIDITY_LOSS",
+   "LIQUIDITY_SCARCITY",
+   "TRANSMISSION_BREAK",
+   "DATA_DEGRADED"
+  ],
+  "never": [
+   "trade execution",
+   "position sizing",
+   "technical analysis"
+  ]
+ },
+ "pending_before_phase3": [
+  "FRED API fallback needs the FRED_API_KEY secret (only if the CSV endpoint ever blocks the runner)",
+  "DTS Table IIIA/IIIC (debt issues by tenor) not in the legacy dashboards — not added (no triangulation)",
+  "H.4.1 direct XML (federalreserve.gov) as a second path",
+  "NY Fed SOFR/EFFR direct API for T+0 08:00 ET"
+ ]
+}
