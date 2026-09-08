@@ -1,0 +1,181 @@
+{
+ "currency": "USD",
+ "generated_at": "2026-09-08T23:42:41+00:00",
+ "as_of": "2026-09-08",
+ "config_version": "0.1.0",
+ "regime": "NEUTRAL",
+ "traffic_light": "YELLOW",
+ "weighted_score": 0.343,
+ "block_scores": {
+  "central_bank": -0.7,
+  "rates": 1.5,
+  "fiscal": 0.19,
+  "banking": 2.0
+ },
+ "weights": {
+  "central_bank": 0.4,
+  "rates": 0.25,
+  "fiscal": 0.25,
+  "banking": 0.1
+ },
+ "blocks_used": 4,
+ "flags": [
+  "PHASE_STEADY",
+  "TGA_HEAVY_DRAIN"
+ ],
+ "overlays": {},
+ "inputs": {
+  "reserves_level": "WATCH",
+  "reserves_in_range": false,
+  "reserves_above_range": false,
+  "spread_level": "SAFE",
+  "spread_bps": 0.0,
+  "friction_confirmed": false
+ },
+ "rules": {
+  "LIQUIDITY_SCARCITY": "WRESBAL below 3.0T (WATCH+) AND SOFR − IORB ≥ STRESS (> 15 bp)",
+  "FLOOR_FRICTION": "reserves in/above the ample band AND SOFR − IORB friction_confirmed",
+  "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
+  "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
+  "NEUTRAL": "otherwise"
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "name": "Ample reserves, calm floor",
+   "bias": "NEUTRAL",
+   "active": false,
+   "conditions_met": 2,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.reserves level == SAFE",
+     "met": false
+    },
+    {
+     "condition": "rates.sofr_minus_iorb_bps level == SAFE",
+     "met": true
+    },
+    {
+     "condition": "central_bank.on_rrp level == SAFE",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L2",
+   "name": "Reserve scarcity building (Sept-2019 pattern)",
+   "bias": "USD-BULLISH",
+   "active": true,
+   "conditions_met": 2,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.reserves level >= WATCH",
+     "met": true
+    },
+    {
+     "condition": "rates.sofr_minus_iorb_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.tga level >= WATCH",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "name": "Funding stress",
+   "bias": "EMERGENCY",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.sofr_minus_iorb_bps level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "central_bank.primary_credit_wow_pct level >= CRISIS",
+     "met": false
+    },
+    {
+     "condition": "rates.friction_confirmed == true",
+     "met": null
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "name": "Treasury drain (TGA rebuild)",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_regime == DRAIN",
+     "met": null
+    },
+    {
+     "condition": "central_bank.tga level >= WATCH",
+     "met": true
+    },
+    {
+     "condition": "central_bank.net_liquidity_wow_pct <= risk_off",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "name": "Fiscal injection / TGA drawdown",
+   "bias": "RISK-ON",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_regime == INJECTION",
+     "met": null
+    },
+    {
+     "condition": "central_bank.net_liquidity_wow_pct >= risk_on",
+     "met": false
+    },
+    {
+     "condition": "fiscal.net_treasury_flow level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L6",
+   "name": "Credit contraction",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "banking.transmission_signal == RED",
+     "met": false
+    },
+    {
+     "condition": "rates.curve_10y_2y_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "banking.borrowings_wow_pct level >= WATCH",
+     "met": false
+    }
+   ]
+  }
+ ],
+ "heartbeat": {
+  "lane": "all",
+  "backfill": true,
+  "errors": []
+ }
+}
