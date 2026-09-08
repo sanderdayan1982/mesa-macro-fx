@@ -1,0 +1,1836 @@
+{
+ "$schema": "../schema/block.schema.json",
+ "config_version": "0.2.1",
+ "currency": "NZD",
+ "name": "NZD Command Center — Reserve Bank of New Zealand / New Zealand Debt Management liquidity desk",
+ "jurisdiction": "New Zealand",
+ "central_bank": "Reserve Bank of New Zealand (RBNZ) — Te Pūtea Matua",
+ "treasury": "The Treasury / New Zealand Debt Management (NZDM) — Crown Settlement Account (CSA) at the RBNZ; no daily cash statement",
+ "monetary_sovereignty": "full (NZD issuer; floating exchange rate; NZGB issuance in NZD)",
+ "framework": "MMT/Mosler: floor system — ALL settlement cash remunerated at the OCR (Overnight Deposit Rate = OCR), ceiling = Overnight Reverse Repurchase Facility at OCR + 50 bp. Settlement cash is shrinking as LSAP bonds mature / are sold to NZDM (NZ$415m per month) and is now re-supplied by weekly full-allotment reverse-repo OMOs at OCR + 10 bp (7 and 28 days, Thursdays, since 2026-04-02). Quantity is only a dead-man switch; the RBNZ defines 'ample' by observable conditions (short rates near the OCR, smooth settlement). Crown spending/taxes move settlement cash through the CSA; NZDM tenders (T-bills Tuesday, bonds Thursday) drain reserves on settlement without changing net financial assets",
+ "timezone_source": "Pacific/Auckland",
+ "timezone_operator": "Africa/Malabo",
+ "units": {
+  "balance_sheet": "NZD millions (display: bn = 10^9)",
+  "rates": "percent",
+  "spreads": "bps",
+  "note": "RBNZ XLSX deliver NZ$ millions (D3/D12/R1/R3/C5/C50) except LSAP sales and BMLS holdings in NZ$ (face value) → divide by 1e6; NZDM tender files in NZ$ millions"
+ },
+ "lineage": {
+  "origin": "NZD Command Center V3.1 Institutional (index.html + data.json/data.js static 'live-ready' seed, Chart.js; no ingestion — settlement/CSA/spread series were hard-coded monthly values)",
+  "rescued": [
+   "block ideas: settlement cash weekly change, CSA change as fiscal trigger, NZGB tender load (issuance vs maturities + coupons), BKBM − OCR as first stress signal, 2s10s, housing/business credit, core funding"
+  ],
+  "discarded": [
+   "Global Dairy Trade / Stats NZ trade / TWI overlays (price & external — not liquidity; live in the Desk cross-market tab)",
+   "composite score 0–100",
+   "static seed data",
+   "60-second refresh (no source publishes intraday)"
+  ]
+ },
+ "sources": {
+  "rbnz_statistics": {
+   "base": "https://www.rbnz.govt.nz/statistics/series/<topic>/<table>",
+   "files": "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/<group>/<table>/h<table>.xlsx (stable URLs, whole history in one workbook; first sheet 'Data' with a 'Series Id' row for B-tables, multi-sheet for D3/D12)",
+   "release": "all tables released after 15:00 NZT on the release day (NZST = UTC+12; NZDT = UTC+13 from the last Sunday of September to the first Sunday of April); not released on NZ public holidays",
+   "rate_limit": "one request per file per lane, ≥ 1 s apart, identifiable User-Agent; XLSX parsed by header/series-id, never by column position",
+   "auth": "none",
+   "verified": "2026-09-08"
+  },
+  "rbnz_d12": {
+   "file": "d-f-r/d12/hd12.xlsx",
+   "sheets": {
+    "Standing Facilities": "Transaction Date (serial) | Settlement Cash $m | Overnight Reverse Repo $m | Autorepo Rollovers $m (discontinued Feb-2020) | Total FX Swaps $m",
+    "Bond Lending Facility": "per-transaction rows (amount, issuer, bond maturity)",
+    "Term Lending Facility": "closed (fully repaid 2026)",
+    "Funding for Lending Programme": "fully repaid (last repayment 2025-12)",
+    "Standing Repurchase Facility": "rows to 2025-06"
+   },
+   "freq": "daily (T-1, 15:00 NZT)",
+   "verified": "2026-09-07: settlement cash 24,588; ORRF 0; FX swaps 0; 6,905 rows since 1999"
+  },
+  "rbnz_d3": {
+   "file": "d-f-r/d3/hd3.xlsx",
+   "sheets": {
+    "Reverse Repo - OMO": "Date Held | Maturity | Volume Bid and Allocated $m | Rate (spread to OCR, % p.a.) — new framework since 2026-04-02 (weekly Thursday, 7d + 28d, full allotment at OCR + 0.10)",
+    "RR - OMO up to 01 Apr 26": "old discretionary reverse repos (minimum rate, ranges)",
+    "LSAP bond sales": "monthly sales of LSAP NZGBs to NZDM: face value NZ$ 415m/month, total to date NZ$20.83bn (2026-08-17)",
+    "Govt Bond Repurchases": "early repurchases of soon-to-mature NZGBs (face value NZ$)",
+    "RB Bills - OMO&Tender": "RB Bill tenders (none since 2025-06)",
+    "BMLS": "Bond Market Liquidity Support holdings (NZGB 20m, LGFA 70m face)"
+   },
+   "freq": "daily page; OMO Thursday 11:30–11:45 NZT",
+   "verified": "2026-09-03: 5,023m 7-day + 45m 28-day at +0.10; 2026-08-27 etc. weekly"
+  },
+  "rbnz_b2": {
+   "file": "b/b2/hb2-daily-close.xlsx",
+   "sheet": "Data (row 'Series Id')",
+   "series_ids": {
+    "INM.DP1.N": "Official Cash Rate",
+    "INM.DD1.N": "Overnight Deposit Rate (= OCR, floor)",
+    "INM.DD2.N": "Overnight Reverse Repurchase Facility Rate (= OCR + 0.50, ceiling)",
+    "INM.DN.NZK": "Overnight interbank cash rate (sparse — published only on days with trades)",
+    "INM.DB01.NZZV": "bank bill 30 days",
+    "INM.DB02.NZZV": "60 days",
+    "INM.DB03.NZZV": "90 days",
+    "INM.DG101.NZZCF": "govt bond 1 year",
+    "INM.DG102.NZZCF": "2 year",
+    "INM.DG105.NZZCF": "5 year",
+    "INM.DG110.NZZCF": "10 year",
+    "INM.DG19.NS<yymm>ZC": "individual NZGB lines",
+    "INM.DS01..DS15.NZZC": "swap rates 1–15 years",
+    "INM.DS61.NZZC": "swap 2-10 spread (bps)"
+   },
+   "freq": "daily close, published next day 15:00 NZT",
+   "verified": "2026-09-07: OCR 2.75, ODR 2.75, ORRF 3.25, 30d 2.95, 90d 3.06, 1y 3.10, 2y 3.61, 5y 4.21, 10y 4.78, swap 2-10 75 bp; interbank 2.83 on 09-03 (hike day)"
+  },
+  "rbnz_r1": {
+   "file": "d-f-r/r1/hr1.xlsx",
+   "freq": "monthly, ~14th (Jul-2026 released 2026-08-14; next 2026-09-14)",
+   "items": "Cash balances, FX investments, NZGS investments, reverse repos (Securities purchased under agreements to resell), LSAP securities, Crown indemnity, Deposits (ESAS + CSA + other), Currency in circulation, RB Bills, repos",
+   "verified": "2026-07: total assets 73,237; LSAP 11,860; reverse repos 15,926; deposits 55,428; currency 10,241"
+  },
+  "rbnz_r3": {
+   "file": "d-f-r/r3/hr3.xlsx",
+   "freq": "monthly, ~14th",
+   "items": "Net foreign assets, claims/liabilities to central government, monetary base, currency, liabilities to other depository corporations (= settlement cash month-end); memo: Crown settlement accounts, settlement institutions' balances",
+   "verified": "2026-07: Crown settlement accounts 29,080; settlement institutions' balances 25,819; monetary base 36,057; net foreign assets 44,085"
+  },
+  "rbnz_d10": {
+   "file": "d-f-r/d10/hd10.xlsx",
+   "freq": "monthly, last day of the following month (Jul-2026 released 2026-08-31; next 2026-09-30)",
+   "items": "cash at beginning of month; Government cash influence; Reserve Bank transactions; bonds issued / matured; T-bills issued / matured; foreign exchange; liquidity management (net reverse repos, repos, FX swaps, RB bills, ORRF)",
+   "verified": "2026-07: govt cash influence +6,846; bonds issued −7,840 (incl. May-2038 syndication 7.0bn); T-bills issued −1,001 / matured +1,705; FX +266; net reverse repos +540; net FX swaps +1,154"
+  },
+  "rbnz_d9": {
+   "file": "d/d9/hd9-weekly.xlsx",
+   "freq": "weekly (Monday, week to Friday)",
+   "items": "NZGB secondary-market turnover total and by line",
+   "verified": "week to 2026-09-04: 71,033m; range Jul–Sep 66.6–94.0bn"
+  },
+  "rbnz_d30": {
+   "file": "d/d30/hd30.xlsx",
+   "freq": "monthly, ~18th (Jul-2026 released 2026-08-18; next 2026-09-16)",
+   "items": "NZGS on issue by holder sector (non-residents, financial corporations, central government incl. RBNZ)",
+   "verified": "2026-07: total 236,741; nominal bonds 206,463 of which non-residents 118,400 (57%), financial corporations 75,827, central government 10,978"
+  },
+  "rbnz_c50": {
+   "file": "c/c50/hc50.xlsx",
+   "freq": "monthly, last day of following month",
+   "verified": "2026-07: broad money 458,490 (Jul-2025 439,451)"
+  },
+  "rbnz_c5": {
+   "file": "c/c5/hc5.xlsx",
+   "freq": "monthly, last day of following month",
+   "verified": "2026-07: housing 401,944 (+5.6% y/y), business 142,861 (+4.4%), agriculture 65,238 (+2.4%), consumer 14,425 (+1.9%)"
+  },
+  "rbnz_l2": {
+   "file": "l-s/l2/hl2.xlsx",
+   "freq": "monthly, ~3rd (Jul-2026 released 2026-09-03)",
+   "verified": "2026-07: core funding ratio 89.2% (minimum 75% since 2022-01-01); core funding 525,269; loans 588,845"
+  },
+  "rbnz_l1": {
+   "file": "l-s/l1/hl1.xlsx",
+   "freq": "monthly",
+   "status": "pending: pull and inspect 1-week / 1-month mismatch ratios (Phase 2)"
+  },
+  "rbnz_s40_s10": {
+   "files": [
+    "l-s/s40/hs40.xlsx",
+    "l-s/s10/hs10.xlsx"
+   ],
+   "freq": "monthly",
+   "status": "pending: deposits by sector and bank balance sheet — confirm file paths on first pull (Phase 2)"
+  },
+  "rbnz_b20_b21": {
+   "files": [
+    "b/b20/hb20.xlsx",
+    "b/b21/hb21.xlsx"
+   ],
+   "freq": "monthly",
+   "status": "pending: standard / special mortgage rates — confirm on first pull"
+  },
+  "nzdm_data_page": {
+   "url": "https://debtmanagement.treasury.govt.nz/investor-resources/data",
+   "note": "file names carry the publication date (e.g. Tbills-tender-history-2026-09-08.xlsx, govtbonds-tender-history-2026-09-03v2.xlsx) → the parser scrapes the data page for the current links every run",
+   "verified": "2026-09-08"
+  },
+  "nzdm_tbill_tenders": {
+   "file": "Tbills-tender-history-<date>.xlsx",
+   "sheet": "Sheet1, header row 5: Tender Date | Maturity Date | Tender No | Volume Offered | Total Number of Bids | Number of Successful bids | Volume Bid | Volume Accepted | Over/Under Allocation | Lowest / Highest Accepted Yield | Wtd Avg Successful Yield | Lowest / Highest / Wtd Avg Unsuccessful Yield; serial dates; newest first",
+   "freq": "weekly (Tuesday 14:00–14:30 NZT; results ~14:45)",
+   "verified": "2026-09-08 tender 1887: offered 100, bid 255 (2.55x), accepted 100, wavg 2.8775%, maturity 2026-11-18",
+   "note": "three series per tender (≈3m / 6m / 1y); settlement T+1 business day (verified 1887: 8-Sep → 9-Sep); XLSX = history, HTML = same-day"
+  },
+  "nzdm_bond_tenders": {
+   "file": "govtbonds-tender-history-<date>.xlsx",
+   "sheets": {
+    "Nominals": "Tender Date | Maturity Date | Coupon | Type | Tender No | Volume Offered | Total Number of Bids | Number of Successful Bids | Volume Bid | Volume Accepted | Coverage Ratio | Over/Under Allocation | Lowest / Highest Accepted Yield | Wtd Avg successful Yield | Lowest / Highest / Wtd Avg Unsuccessful Yield",
+    "IIBs": "inflation-indexed (Auction Type SPA/MPA, Issue Yield, Median Successful Yield)"
+   },
+   "freq": "weekly (Thursday 14:00–14:30 NZT), per line",
+   "verified": "2026-09-03 tender 1007: 15-May-2030 4.5% offered 275, bid 1,115, coverage 4.05x, wavg 4.0227%, highest accepted 4.0275",
+   "note": "settlement T+3 business days (verified 1007: Thu 3-Sep → Tue 8-Sep); 2–3 lines per tender"
+  },
+  "nzdm_tender_schedule": {
+   "url": "https://debtmanagement.treasury.govt.nz/investor-resources/new-zealand-government-bond-tender-schedule-<month>-<year>",
+   "freq": "monthly (last week of the previous month)",
+   "verified": "September 2026: tenders 1007–1010 on 3/10/17/24 Sep, NZ$450m each, settlement T+3 business days; bond programme 2026/27 NZ$34bn (BEFU 2026-05-28); 15-May-2038 syndication NZ$7.0bn on 2026-07-14"
+  },
+  "nzdm_on_issue": {
+   "files": [
+    "govtbonds-onissue-history-<month-end>.xlsx",
+    "TBills-onissue-history-<month-end>.xlsx",
+    "Repurchase-history-<date>.xlsx"
+   ],
+   "freq": "monthly",
+   "status": "verified links 2026-09-08; parse in Phase 2 for the maturity / coupon calendar (NZGB coupons 15 Apr / 15 May / 15 Sep etc.)"
+  },
+  "treasury_monthly_statements": {
+   "url": "https://www.treasury.govt.nz/publications/financial-statements-government/month-end-financial-statements",
+   "freq": "monthly, ~6 weeks after month-end (11 months to 31 May 2026 = latest on 2026-09-08; June = annual audited statements in October)",
+   "role": "confirmation only (core Crown residual cash, borrowings) — the RBNZ D10 and R3 are the faster fiscal footprints",
+   "verified": "2026-09-08"
+  },
+  "rbnz_mpc": {
+   "dates_2026": [
+    "2026-10-28",
+    "2026-12-09"
+   ],
+   "dates_2027": [
+    "2027-02-10",
+    "2027-03-17",
+    "2027-05-05",
+    "2027-06-16",
+    "2027-08-04",
+    "2027-09-15",
+    "2027-10-27",
+    "2027-12-08"
+   ],
+   "dates_2028": [
+    "2028-02-09"
+   ],
+   "mps": [
+    "2026-12-09",
+    "2027-03-17",
+    "2027-06-16",
+    "2027-09-15",
+    "2027-12-08"
+   ],
+   "time": "14:00 NZT",
+   "verified": "OCR 2.75% since 2026-09-03 (hike +25 bp on 2026-09-02, MPS; CPI 4.1% y/y Q2-2026; 'the OCR may need to increase further'); path 2.25 (Nov-2025 → May-2026) → 2.50 (2026-07-08) → 2.75 (2026-09-02); 8 decisions a year from 2027"
+  },
+  "rbnz_liquidity_review": {
+   "doc": "Speech 2026-03-19 (A. Richardson, Director Financial Markets) 'The RBNZ's liquidity management framework – some updates following consultation' + Liquidity Management Review key decisions",
+   "decisions": "weekly reverse-repo OMO from 2026-04-02: Thursdays 11:30–11:45 NZT, 7 and 28 days, full allotment, floating OCR + 10 bp, collateral NZGB / RB Bills / Kauri / LGFA; ORRF kept at OCR + 50 daily; ODR = OCR; no numeric settlement-cash target — 'ample' judged by rates near OCR and smooth settlement; foreign reserves build partially offset the LSAP unwind",
+   "verified": "2026-09-08"
+  },
+  "nzdm_tender_results_html": {
+   "url_tbill": "https://debtmanagement.treasury.govt.nz/tender/treasury-bill-tender-<n>",
+   "url_bond": "https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-<n> (occasionally -<n>-0)",
+   "listing": "https://debtmanagement.treasury.govt.nz/government-securities/treasury-bills and /nominal-bonds (tables with 'View details' links)",
+   "timing": "bids close 14:30 NZT, results 14:35 NZT — the HTML page is the PRIMARY parser; the dated XLSX history is the backfill",
+   "verified": "2026-09-08 T-bill 1887 (settlement 2026-09-09 = T+1): 18-Nov-2026 100/100, 8 bids 255m, 2.55x, wavg 2.8775; 10-Mar-2027 100/100, 16 bids 365m, 3.65x, 3.0675; 25-Aug-2027 offered 50 ALLOCATED 25, 8 bids 140m, 3.3675 (under-allocation). Bond 1007 (2026-09-03, settlement 2026-09-08 = T+3): 4.5% May-2030 275/275 48 bids 1,115m 4.0545x 4.0227 (4.0150–4.0275); 2.75% Apr-2037 175/175 50 bids 767m 4.3829x 4.8797 (4.8725–4.8875)"
+  },
+  "nzfbf_bkbm": {
+   "url": "https://www.nzfbf.co.nz/benchmarks/bkbm",
+   "note": "BKBM 1/3/6-month set in a two-minute window at 10:20 NZT (2/4/5 m interpolated); operating rules Jan-2026; public/delayed data feed NOT verified (nzfma.org 'Free to Air' to inspect) — Phase 3",
+   "verified": "2026-09-08 (page read)"
+  }
+ },
+ "blocks": {
+  "central_bank": {
+   "title": "1 · Central bank liquidity — Reserve Bank of New Zealand (settlement cash, OMO, standing facilities, LSAP unwind)",
+   "equivalence_quality": "high",
+   "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
+   "series": {
+    "settlement_cash_daily": {
+     "id": "D12:settlement_cash",
+     "table": "rbnz_d12",
+     "label": "Settlement cash level (ESAS balances) — daily",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "WRESBAL (daily)",
+     "verified": "2026-09-07 = 24588"
+    },
+    "orrf_usage_daily": {
+     "id": "D12:overnight_reverse_repo",
+     "table": "rbnz_d12",
+     "label": "Overnight Reverse Repurchase Facility usage — daily",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "Discount window / SRF",
+     "verified": "2026-09-07 = 0; routine 1–20 m on ~40 days since 2024; 1,000 m on 2025-04-08"
+    },
+    "fx_swaps_daily": {
+     "id": "D12:fx_swaps",
+     "table": "rbnz_d12",
+     "label": "RBNZ FX swaps outstanding (liquidity tool) — daily",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 0"
+    },
+    "blf_usage_daily": {
+     "id": "D12:blf_amount",
+     "table": "rbnz_d12",
+     "label": "Bond Lending Facility — amount lent (collateral scarcity)",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "SLF-like",
+     "verified": "2026-08-20 = 1 (NZGB)"
+    },
+    "omo_allocated_weekly": {
+     "id": "D3:rr_omo_allocated",
+     "table": "rbnz_d3",
+     "label": "Weekly reverse-repo OMO — volume allocated (7d + 28d)",
+     "freq": "weekly",
+     "status": "verified",
+     "usd_analog": "Fed repo ops",
+     "verified": "2026-09-03 = 5068 (5023 7d + 45 28d)"
+    },
+    "omo_outstanding": {
+     "id": "D3:rr_omo_outstanding",
+     "table": "rbnz_d3",
+     "label": "Reverse-repo OMO stock outstanding (allocations not yet matured)",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "repo ops outstanding",
+     "verified": "2026-09-07 = 8,358 (5,023 + 45 + 640 + 850 + 1,800 live) = 34% of settlement cash — the Fase 1 '5.1 bn / 20%' counted only the latest 7-day allocation"
+    },
+    "omo_spread_to_ocr_bps": {
+     "id": "D3:rr_omo_rate",
+     "table": "rbnz_d3",
+     "label": "OMO rate — spread to OCR (bp)",
+     "freq": "weekly",
+     "status": "verified",
+     "verified": "+10 since 2026-04-02"
+    },
+    "lsap_sales_month": {
+     "id": "D3:lsap_sales",
+     "table": "rbnz_d3",
+     "label": "LSAP NZGB sales to NZDM — face value per month",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-08-17 = 415m (total 20,830m)"
+    },
+    "bond_repurchases": {
+     "id": "D3:govt_bond_repurchases",
+     "table": "rbnz_d3",
+     "label": "Early government-bond repurchases (smoothing maturities)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-02 = 57m (Apr-2026 line)"
+    },
+    "bmls_holdings": {
+     "id": "D3:bmls_nzgb",
+     "table": "rbnz_d3",
+     "label": "Bond Market Liquidity Support holdings (NZGB face)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 20m NZGB / 70m LGFA"
+    },
+    "total_assets": {
+     "id": "R1:total_assets",
+     "table": "rbnz_r1",
+     "label": "RBNZ total assets (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "usd_analog": "WALCL",
+     "verified": "2026-07 = 73237"
+    },
+    "lsap_holdings": {
+     "id": "R1:lsap",
+     "table": "rbnz_r1",
+     "label": "Securities — LSAP programme (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "usd_analog": "SOMA",
+     "verified": "2026-07 = 11860"
+    },
+    "reverse_repos_monthly": {
+     "id": "R1:reverse_repos",
+     "table": "rbnz_r1",
+     "label": "Securities purchased under agreements to resell (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 15926"
+    },
+    "fx_investments": {
+     "id": "R1:fx_investments",
+     "table": "rbnz_r1",
+     "label": "Investments — foreign currency (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 18228"
+    },
+    "deposits_total": {
+     "id": "R1:deposits",
+     "table": "rbnz_r1",
+     "label": "Deposits (ESAS + Crown + other) (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 55428"
+    },
+    "currency_in_circulation": {
+     "id": "R1:currency",
+     "table": "rbnz_r1",
+     "label": "Currency in circulation (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "usd_analog": "WCURCIR",
+     "verified": "2026-07 = 10241"
+    },
+    "monetary_base": {
+     "id": "R3:monetary_base",
+     "table": "rbnz_r3",
+     "label": "Monetary base (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 36057"
+    },
+    "settlement_balances_monthly": {
+     "id": "R3:settlement_institutions_balances",
+     "table": "rbnz_r3",
+     "label": "Settlement institutions' balances — month-end (reconciliation with D12)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 25819"
+    },
+    "net_foreign_assets": {
+     "id": "R3:net_foreign_assets",
+     "table": "rbnz_r3",
+     "label": "Net foreign assets (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 44085"
+    },
+    "d10_govt_cash_influence": {
+     "id": "D10:government_cash_influence",
+     "table": "rbnz_d10",
+     "label": "Government cash influence on settlement cash (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "usd_analog": "DTS net (monthly)",
+     "verified": "2026-07 = +6846"
+    },
+    "d10_rbnz_transactions": {
+     "id": "D10:reserve_bank_transactions",
+     "table": "rbnz_d10",
+     "label": "Reserve Bank transactions (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = −697"
+    },
+    "d10_fx": {
+     "id": "D10:foreign_exchange",
+     "table": "rbnz_d10",
+     "label": "Foreign exchange influence (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = +266"
+    },
+    "d10_net_reverse_repos": {
+     "id": "D10:net_reverse_repos",
+     "table": "rbnz_d10",
+     "label": "Net reverse repos (monthly liquidity management)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = +540"
+    },
+    "d10_net_fx_swaps": {
+     "id": "D10:net_fx_swaps",
+     "table": "rbnz_d10",
+     "label": "Net FX swaps and basis swaps (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = +1154"
+    }
+   },
+   "derived": {
+    "settlement_cash_dod": {
+     "formula": "diff(settlement_cash_daily,1)",
+     "note": "daily reserve impulse; + = injection (Crown spending, OMO settlement, bond maturity), − = drain (tax, tender settlement, LSAP sale, OMO maturity)"
+    },
+    "settlement_cash_wow": {
+     "formula": "settlement_cash_daily − value 5 sessions earlier",
+     "note": "the V3.1 'weekly change' — two-sided percentile"
+    },
+    "settlement_cash_20d_change": {
+     "formula": "settlement_cash_daily − value 20 sessions earlier"
+    },
+    "omo_reliance_share": {
+     "formula": "omo_outstanding / settlement_cash_daily",
+     "note": "share of settlement cash supplied by the weekly OMO — the structural gauge of the LSAP unwind: rising reliance = the system is being kept ample by the RBNZ, not by autonomous factors (34% on 2026-09-07: 8.4 bn live stock / 24.6 bn — corrected in Fase 2 from the 20% single-allocation figure) | N2 (CodeWord): the ratio rises MECHANICALLY as the denominator shrinks — read it together with omo_outstanding (absolute) and omo_takeup_wow; the phase rule uses the absolute stock trend"
+    },
+    "omo_takeup_wow": {
+     "formula": "diff(omo_allocated_weekly,1)",
+     "note": "full allotment → take-up IS demand; a jump = banks bidding for cash (OMO_TAKEUP_SURGE, cf. AUD)"
+    },
+    "settlement_cash_ex_omo": {
+     "formula": "settlement_cash_daily − omo_outstanding",
+     "note": "'organic' settlement cash — what would remain without the weekly operation; trending toward the RBNZ's unspecified sufficient level"
+    },
+    "orrf_used": {
+     "formula": "orrf_usage_daily > 0",
+     "note": "any use of the ceiling facility = STANDING_FACILITY_USED flag (price above OCR + 50 needed)"
+    },
+    "lsap_runoff_12m": {
+     "formula": "lsap_holdings − value 12 months earlier",
+     "note": "mechanical drain: maturities + NZ$415m/month sales to NZDM"
+    },
+    "reconciliation_settlement_cash": {
+     "formula": "settlement_cash_daily on month-end vs settlement_balances_monthly (R3)",
+     "note": "±2% else DATA_DEGRADED"
+    },
+    "balance_sheet_phase": {
+     "formula": "OMO_SUPPLIED if omo_outstanding_4w_change > 0 for 2 consecutive months AND omo_reliance_share ≥ 0.25; LSAP_UNWIND if lsap_runoff_12m < 0 and omo_outstanding_4w_change ≤ 0; STEADY otherwise",
+     "values": [
+      "LSAP_UNWIND",
+      "OMO_SUPPLIED",
+      "STEADY"
+     ]
+    },
+    "omo_outstanding_4w_change": {
+     "formula": "omo_outstanding − value 20 sessions earlier",
+     "note": "absolute OMO stock trend (N2)"
+    },
+    "residual_flow_daily": {
+     "formula": "settlement_cash_dod − diff(omo_outstanding,1) − diff(fx_swaps_daily,1) − diff(orrf_usage_daily,1)",
+     "note": "COINCIDENT, NOISY residual (N4, all reviewers): Crown cash + currency + LSAP sales/repurchases + RBNZ portfolio coupons + FX reserve transactions. Shown with a ± band = monthly reconciliation error vs D10; known non-fiscal days are tagged (COUPON_PAYMENT_DAY, BOND_MATURITY_DAY, LSAP_SALE_DAY from the D3/on-issue calendars) and excluded from FISCAL_BIG_DAY. Never a flag on its own"
+    },
+    "residual_flow_5d_cum": {
+     "formula": "sum(residual_flow_daily, 5)"
+    },
+    "residual_flow_20d_cum": {
+     "formula": "sum(residual_flow_daily, 20)"
+    },
+    "residual_flow_band": {
+     "formula": "± |sum(residual_flow_daily over last month) − (D10 govt cash influence + reserve bank transactions + FX)| / business days",
+     "note": "reconciliation band published with the series (N4)"
+    },
+    "fx_swap_active": {
+     "formula": "fx_swaps_daily ≠ 0",
+     "note": "FX_SWAP_ACTIVE flag (N9, DeepSeek): the RBNZ uses FX swaps as a liquidity tool (D10 net FX swaps +1,154m in Jul-2026)"
+    }
+   },
+   "thresholds": {
+    "reserves": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "applies_to": "settlement_cash_daily",
+     "primary_absolute": {
+      "desk_proposal_not_rbnz": true,
+      "ample_above": 20000,
+      "watch_below": 15000,
+      "stress_below": 10000,
+      "crisis_below": 7000,
+      "origin": "DESK PROPOSAL — the RBNZ publishes NO numeric sufficient level ('ample' = rates near OCR + smooth settlement, speech 2026-03-19). Pre-COVID settlement cash ran ~7–8bn (2019); the framework note says the new level will be 'higher than pre-COVID, lower than post-AMP'. 20/15/10/7 bn are dead-man switches to be triangulated and recalibrated with the OMO take-up | Triangulation N1 (DeepSeek/CodeWord/Qwen/Gemini): no RBNZ number exists; pre-COVID settlement cash ran ~6–8 bn; anchors are dead-man switches ONLY and never a regime trigger. Percentile-primary rejected: the series trends down by design (LSAP unwind) so a rolling percentile would sit at WATCH permanently"
+     },
+     "secondary_percentile": {
+      "window": "750d",
+      "watch_below": "p10",
+      "min_n": 120
+     },
+     "note": "quantity never drives SCARCITY alone — price gate (see rates)",
+     "regime_trigger": false
+    },
+    "settlement_cash_wow": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "stress_above": "p97",
+     "stress_below": "p3",
+     "hysteresis": {
+      "exit_on": "p80/p20"
+     },
+     "min_n": 120
+    },
+    "settlement_cash_dod": {
+     "method": "zscore",
+     "window": "250d",
+     "notable_above": 2.0,
+     "extraordinary_above": 3.0,
+     "note": "FISCAL_BIG_DAY = |residual_flow_daily| ≥ NZ$2bn or |Z| ≥ 2 AND the day is not a coupon / maturity / LSAP-sale / tender-settlement day (N4)"
+    },
+    "omo_reliance_share": {
+     "method": "percentile",
+     "window": "since 2026-04-02 or 250d",
+     "direction": "high_is_risk",
+     "watch_above": "p85",
+     "stress_above": "p95",
+     "min_n": 12,
+     "secondary_absolute": {
+      "watch": 0.3,
+      "stress": 0.45
+     },
+     "note": "DESK PROPOSAL — 20% in Sep-2026; the RBNZ said it expects to supply more as the LSAP unwinds; recalibrate after 26 weeks of the new framework"
+    },
+    "omo_takeup_wow": {
+     "method": "percentile",
+     "window": "since 2026-04-02",
+     "direction": "high_is_risk",
+     "watch_above": "p90",
+     "min_n": 12,
+     "secondary_absolute": {
+      "watch": 2000,
+      "stress": 4000
+     }
+    },
+    "orrf_usage_daily": {
+     "method": "absolute",
+     "watch_above": 100,
+     "stress_above": 500,
+     "note": "Fase 2 correction: small ORRF use (1–20 m) is ROUTINE in D12 (dozens of days since 2024); large prints 1,000 m (2025-04-08), 550 (2025-04-22), 250 (2024-11-28), 189 (2026-07-21) → ≥ 100 m WATCH, ≥ 500 m STRESS"
+    },
+    "omo_outstanding": {
+     "method": "percentile",
+     "window": "since 2026-04-02",
+     "direction": "high_is_risk",
+     "watch_above": "p85",
+     "stress_above": "p95",
+     "min_n": 12,
+     "secondary_absolute": {
+      "watch": 8000,
+      "stress": 12000
+     },
+     "note": "DESK PROPOSAL (N2) — 5.1 bn in Sep-2026"
+    },
+    "residual_flow_5d_cum": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "two_sided",
+     "injection_above": "p80",
+     "drain_below": "p20",
+     "min_n": 120
+    }
+   }
+  },
+  "fiscal": {
+   "title": "2 · Treasury / fiscal — Crown Settlement Account (RBNZ), NZDM tenders (T-bills Tuesday, bonds Thursday), D10 government cash influence",
+   "equivalence_quality": "medium",
+   "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
+   "series": {
+    "crown_settlement_account": {
+     "id": "R3:crown_settlement_accounts",
+     "table": "rbnz_r3",
+     "label": "Crown settlement accounts at the RBNZ — month-end",
+     "freq": "monthly",
+     "status": "verified",
+     "usd_analog": "TGA (monthly)",
+     "verified": "2026-07 = 29080"
+    },
+    "govt_cash_influence_month": {
+     "id": "D10:government_cash_influence",
+     "table": "rbnz_d10",
+     "label": "Government cash influence on settlement cash (monthly, + = injection)",
+     "freq": "monthly",
+     "status": "verified",
+     "usd_analog": "DTS net monthly",
+     "verified": "2026-07 = +6846"
+    },
+    "bonds_issued_month": {
+     "id": "D10:bonds_issued",
+     "table": "rbnz_d10",
+     "label": "NZGB issued (settlement cash effect, − = drain)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = −7840"
+    },
+    "bond_maturities_month": {
+     "id": "D10:bond_maturities",
+     "table": "rbnz_d10",
+     "label": "NZGB maturities (+ = injection)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-05 = +7855 (15-May-2026 line)"
+    },
+    "tbills_issued_month": {
+     "id": "D10:tbills_issued",
+     "table": "rbnz_d10",
+     "label": "T-bills issued (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = −1001"
+    },
+    "tbills_matured_month": {
+     "id": "D10:tbills_matured",
+     "table": "rbnz_d10",
+     "label": "T-bills matured (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = +1705"
+    },
+    "tbill_tender_btc": {
+     "id": "NZDM:tbill_btc",
+     "table": "nzdm_tbill_tenders",
+     "label": "T-bill tender coverage (volume-weighted across the 3 series, Tuesday)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-08: 255+365+140 bid / 250 offered = 3.04x (series 2.55x / 3.65x / 2.80x)"
+    },
+    "tbill_tender_yield": {
+     "id": "NZDM:tbill_wavg_yield",
+     "table": "nzdm_tbill_tenders",
+     "label": "T-bill tender weighted-average successful yield",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-08 = 2.8775"
+    },
+    "tbill_tender_volume": {
+     "id": "NZDM:tbill_accepted",
+     "table": "nzdm_tbill_tenders",
+     "label": "T-bill volume accepted (weekly)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-08 = 100"
+    },
+    "bond_tender_coverage": {
+     "id": "NZDM:bond_coverage",
+     "table": "nzdm_bond_tenders",
+     "label": "NZGB tender coverage ratio (volume-weighted across lines, Thursday) — WATCH-only unless persistent",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-03 tender 1007: (1115+767)/(275+175) = 4.18x (lines 4.05x / 4.38x)"
+    },
+    "bond_tender_tail_bp": {
+     "id": "NZDM:bond_tail",
+     "table": "nzdm_bond_tenders",
+     "label": "NZGB tender tail = highest accepted − weighted average successful yield (bp, worst line)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-03: May-2030 4.0275−4.0227 = 0.5 bp; Apr-2037 4.8875−4.8797 = 0.8 bp → worst line 0.8"
+    },
+    "bond_tender_volume": {
+     "id": "NZDM:bond_accepted",
+     "table": "nzdm_bond_tenders",
+     "label": "NZGB volume accepted per tender (all lines)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-03 = 450 offered"
+    },
+    "tender_schedule_month": {
+     "id": "NZDM:schedule",
+     "table": "nzdm_tender_schedule",
+     "label": "Scheduled nominal tenders remaining in the month (listing)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "September 2026 = 1800"
+    },
+    "nzgb_non_resident_holdings": {
+     "id": "D30:non_residents_nominal",
+     "table": "rbnz_d30",
+     "label": "Non-resident holdings of nominal NZGBs (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 118400"
+    },
+    "nzgb_outstanding": {
+     "id": "D30:nominal_total",
+     "table": "rbnz_d30",
+     "label": "Nominal NZGBs on issue (monthly)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 206463"
+    },
+    "treasury_residual_cash": {
+     "id": null,
+     "table": "treasury_monthly_statements",
+     "label": "Core Crown residual cash (Treasury monthly statements)",
+     "freq": "monthly",
+     "status": "pending — Phase 3 parser of the monthly statements (≈6-week lag); confirmation only"
+    },
+    "tbill_allocation_ratio": {
+     "id": "NZDM:tbill_allocated_over_offered",
+     "table": "nzdm_tender_results_html",
+     "label": "T-bill volume allocated / offered (under-allocation = NZDM rejecting yields)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-08: 225/250 = 0.90 (1-year series 25/50)"
+    },
+    "tbill_1y_yield": {
+     "id": "NZDM:tbill_1y_wavg",
+     "table": "nzdm_tender_results_html",
+     "label": "T-bill ~1-year series weighted-average yield (hike pricing at the Crown's cost)",
+     "freq": "event",
+     "status": "verified",
+     "verified": "2026-09-08 25-Aug-2027 = 3.3675"
+    },
+    "nzdm_ecp_on_issue": {
+     "id": "NZDM:ecp_onissue",
+     "table": "nzdm_on_issue",
+     "label": "NZDM Euro-Commercial Paper on issue (month-end) — Crown cash-management footprint",
+     "freq": "monthly",
+     "status": "pending: parse ECP-onissue file (N9, DeepSeek)"
+    },
+    "kauri_holdings": {
+     "id": "D35:total",
+     "table": "rbnz_statistics",
+     "label": "Kauri bonds on issue / holdings (D35) — NZD debt of foreign issuers",
+     "freq": "monthly",
+     "status": "pending: pull hd35.xlsx (N9)"
+    }
+   },
+   "derived": {
+    "csa_mom": {
+     "formula": "diff(crown_settlement_account,1)",
+     "note": "V3.1 'CSA weekly change' becomes monthly (no weekly source): − = Crown spent into settlement cash (injection), + = taxes/issuance settled (drain)"
+    },
+    "net_issuance_month": {
+     "formula": "−(bonds_issued_month + tbills_issued_month) − (bond_maturities_month + tbills_matured_month)",
+     "note": "net drain from Crown debt transactions (D10); the V3.1 'tender load ratio' = gross issuance / (maturities + coupons) is displayed when the coupon calendar is parsed (Phase 2)"
+    },
+    "tender_load_ratio": {
+     "formula": "(bonds_issued_month + tbills_issued_month) / (bond_maturities_month + tbills_matured_month + coupons_month)",
+     "note": "pending coupons (on-issue file); display"
+    },
+    "tbill_yield_minus_ocr_bps": {
+     "formula": "(tbill_tender_yield − ocr) × 100",
+     "note": "T-bill at/below OCR = cash-rich bidders (bills as OCR-deposit substitute for non-ESAS holders); well above OCR = hike pricing or weak demand"
+    },
+    "bond_tender_coverage_level": {
+     "formula": "coverage ratio classification",
+     "note": "< 2.0 WATCH, < 1.5 STRESS (NZDM tenders are normally 2–5x)"
+    },
+    "issuance_ahead_5d": {
+     "formula": "sum of scheduled tender volumes settling in the next 5 business days (schedule + T+3)",
+     "note": "known drain ahead — SUPPLY_AHEAD flag; bonds settle T+3, T-bills T+1 (N5 verified)"
+    },
+    "non_resident_share": {
+     "formula": "nzgb_non_resident_holdings / nzgb_outstanding",
+     "note": "57% in Jul-2026 — the offshore funding of the Crown; a falling share with rising yields = FOREIGN_DEMAND_FADE"
+    },
+    "fiscal_regime": {
+     "formula": "INJECTION if govt_cash_influence_month ≥ p80 or (residual_flow_20d_cum ≥ p80 and reconciliation band ≤ 30% of the cumulative); DRAIN if ≤ p20 symmetric; NEUTRAL otherwise (N4: the residual only counts when the band is tight)",
+     "values": [
+      "INJECTION",
+      "DRAIN",
+      "NEUTRAL"
+     ]
+    },
+    "fiscal_regime_score": {
+     "formula": "±0.5 cap",
+     "range": [
+      -0.5,
+      0.5
+     ]
+    },
+    "mmt_note": {
+     "text": "Crown spending credits settlement accounts (creates net financial assets); taxes debit them; NZGB and T-bill tenders drain settlement cash on settlement without changing the private sector's net financial assets — they swap reserves for bonds. New Zealand publishes no daily Crown cash figure: the desk reads the Crown through the residual movement of settlement cash after RBNZ operations, and confirms it monthly with D10 / R3."
+    },
+    "long_end_turnover_share": {
+     "formula": "D9 turnover of lines maturing ≥ 2034 / total turnover (weekly)",
+     "note": "N7 (CodeWord): offshore demand shows in the absorption of the long end and syndications, not in the holdings stock; D9 by line"
+    }
+   },
+   "thresholds": {
+    "csa_mom": {
+     "method": "percentile",
+     "window": "60m",
+     "direction": "two_sided",
+     "injection_below": "p20",
+     "drain_above": "p80",
+     "min_n": 12
+    },
+    "govt_cash_influence_month": {
+     "method": "percentile",
+     "window": "60m",
+     "direction": "two_sided",
+     "injection_above": "p80",
+     "drain_below": "p20",
+     "min_n": 12
+    },
+    "tbill_tender_btc": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "watch_below": 2.0,
+     "stress_below": 1.5,
+     "secondary_percentile": {
+      "window": "104 tenders",
+      "watch_below": "p15"
+     },
+     "cap": "WATCH unless ≤ threshold in 2 of the last 3 tenders (then STRESS) — N6 (CodeWord): NZ$450m tenders can be thinly covered by composition, not stress"
+    },
+    "bond_tender_coverage": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "watch_below": 2.0,
+     "stress_below": 1.5,
+     "secondary_percentile": {
+      "window": "52 tenders",
+      "watch_below": "p15"
+     },
+     "cap": "WATCH unless ≤ threshold in 2 of the last 3 tenders (then STRESS) — N6 (CodeWord): NZ$450m tenders can be thinly covered by composition, not stress"
+    },
+    "bond_tender_tail_bp": {
+     "method": "percentile",
+     "window": "52 tenders",
+     "direction": "high_is_risk",
+     "watch_above": "p85",
+     "stress_above": "p95",
+     "secondary_absolute": {
+      "watch": 2,
+      "stress": 4,
+      "crisis": 8
+     },
+     "note": "DESK PROPOSAL — NZGB tenders usually clear within 1 bp",
+     "cap": "WATCH unless ≥ watch in 2 of the last 3 tenders (N6)"
+    },
+    "tbill_yield_minus_ocr_bps": {
+     "method": "percentile",
+     "window": "104 tenders",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "secondary_absolute": {
+      "watch": 25,
+      "stress": 40
+     }
+    },
+    "tbill_allocation_ratio": {
+     "method": "absolute",
+     "watch_below": 0.75,
+     "stress_below": 0.5,
+     "note": "Fase 2 correction: NZDM under-allocates the 1-year series routinely (e.g. 1886: 30/100 on the Nov line, 0/50 on the Aug-2027 line) → 0.75 WATCH / 0.50 STRESS on the volume-weighted ratio"
+    }
+   }
+  },
+  "banking": {
+   "title": "3 · Banking transmission — sector lending (C5), money & credit (C50), core funding ratio (L2), mismatch (L1), mortgage rates",
+   "equivalence_quality": "medium",
+   "equivalence_note": "Monthly, released on the last day of the following month (C5/C50) and ~3rd (L2). Housing credit is the domestic money-creation engine (V3.1 idea kept); core funding ratio = structural funding health (minimum 75%) | v0.2: the slowest block of the desk (no weekly credit since 2021) — accepted, not disguised with proxies (N8)",
+   "series": {
+    "housing_lending": {
+     "id": "C5:housing",
+     "table": "rbnz_c5",
+     "label": "Housing lending (banks + non-banks)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 401944"
+    },
+    "business_lending": {
+     "id": "C5:business",
+     "table": "rbnz_c5",
+     "label": "Business lending",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 142861"
+    },
+    "agriculture_lending": {
+     "id": "C5:agriculture",
+     "table": "rbnz_c5",
+     "label": "Agriculture lending",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 65238"
+    },
+    "consumer_lending": {
+     "id": "C5:consumer",
+     "table": "rbnz_c5",
+     "label": "Personal consumer lending",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 14425"
+    },
+    "broad_money": {
+     "id": "C50:broad_money",
+     "table": "rbnz_c50",
+     "label": "Broad money (depository corporations)",
+     "freq": "monthly",
+     "status": "verified",
+     "usd_analog": "M2",
+     "verified": "2026-07 = 458490"
+    },
+    "private_sector_credit": {
+     "id": "C50:private_sector_credit",
+     "table": "rbnz_c50",
+     "label": "Private sector credit",
+     "freq": "monthly",
+     "status": "pending: confirm row label on first pull"
+    },
+    "core_funding_ratio": {
+     "id": "L2:cfr",
+     "table": "rbnz_l2",
+     "label": "Core funding ratio (%; minimum 75)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 89.2"
+    },
+    "core_funding": {
+     "id": "L2:core_funding",
+     "table": "rbnz_l2",
+     "label": "Core funding ($m)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 525269"
+    },
+    "loans_and_advances": {
+     "id": "L2:loans",
+     "table": "rbnz_l2",
+     "label": "Total loans and advances ($m)",
+     "freq": "monthly",
+     "status": "verified",
+     "verified": "2026-07 = 588845"
+    },
+    "mismatch_ratio_1w": {
+     "id": "L1:mismatch_1w",
+     "table": "rbnz_l1",
+     "label": "One-week mismatch ratio (%)",
+     "freq": "monthly",
+     "status": "pending: pull L1 in Phase 2"
+    },
+    "deposits_by_sector_total": {
+     "id": "S40:total",
+     "table": "rbnz_s40_s10",
+     "label": "Bank deposits — total (S40)",
+     "freq": "monthly",
+     "status": "pending: confirm file path"
+    },
+    "mortgage_rate_2y_special": {
+     "id": "B21:2y",
+     "table": "rbnz_b20_b21",
+     "label": "New residential mortgage special rate — 2 years (B21)",
+     "freq": "monthly",
+     "status": "pending: confirm file path"
+    }
+   },
+   "derived": {
+    "housing_yoy_pct": {
+     "formula": "pct_change(housing_lending,12)"
+    },
+    "business_agri_yoy_pct": {
+     "formula": "pct_change(business_lending + agriculture_lending,12)",
+     "note": "V3.1 'productive credit'"
+    },
+    "broad_money_yoy_pct": {
+     "formula": "pct_change(broad_money,12)"
+    },
+    "credit_impulse": {
+     "formula": "housing_yoy_pct − value 3 months earlier",
+     "note": "display only; not in score"
+    },
+    "loan_to_core_funding": {
+     "formula": "loans_and_advances / core_funding"
+    },
+    "cfr_headroom_pp": {
+     "formula": "core_funding_ratio − 75",
+     "note": "buffer over the regulatory minimum (14.2 pp in Jul-2026) — DISPLAY + RED gate only (N8, CodeWord/DeepSeek/Qwen)"
+    },
+    "transmission_signal": {
+     "formula": "GREEN if broad_money_yoy_pct ≥ 0 and housing_yoy_pct within p20–p80 and cfr_headroom_pp ≥ 5; RED if broad_money_yoy_pct ≤ p10 or cfr_headroom_pp < 2; YELLOW otherwise — CFR is a slow regulatory buffer (N8): gate only, never the score",
+     "values": [
+      "GREEN",
+      "YELLOW",
+      "RED"
+     ]
+    }
+   },
+   "thresholds": {
+    "housing_yoy_pct": {
+     "method": "percentile",
+     "window": "120m",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "min_n": 24
+    },
+    "broad_money_yoy_pct": {
+     "method": "percentile",
+     "window": "120m",
+     "direction": "low_is_risk",
+     "watch_below": "p10",
+     "stress_below": "p5",
+     "min_n": 24
+    },
+    "cfr_headroom_pp": {
+     "method": "absolute",
+     "watch_below": 5,
+     "stress_below": 2
+    },
+    "credit_impulse": {
+     "method": "zscore",
+     "notable_above": 1.0,
+     "extraordinary_above": 2.0
+    }
+   }
+  },
+  "rates": {
+   "title": "4 · Rates & money market — OCR corridor (floor = ODR = OCR, ceiling = ORRF +50), bank bills, NZGB curve, swaps",
+   "equivalence_quality": "high",
+   "equivalence_note": "B2 daily close (T-1, 15:00 NZT). Floor system: the overnight interbank rate should sit at/just above the OCR; it is published only on days with trades (sparse) → the daily stress spread is the 30-day bank bill − OCR with a persistence rule, corrected for hike pricing by the 90-day bill and 1-year swap; the OMO price is fixed (OCR + 10) so price stress shows up in ORRF use and bills, not in the operation | v0.2: B2 bank bills are NZFMA/LSEG closing rates (the 10:20 NZT BKBM fixing itself is published by NZFBF; public delayed feed unverified — pending); NZ OIS has no public feed (not available, not proxied)",
+   "series": {
+    "ocr": {
+     "id": "INM.DP1.N",
+     "table": "rbnz_b2",
+     "label": "Official Cash Rate",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "Fed funds target",
+     "verified": "2026-09-07 = 2.75"
+    },
+    "odr": {
+     "id": "INM.DD1.N",
+     "table": "rbnz_b2",
+     "label": "Overnight Deposit Rate (floor = OCR)",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "IORB",
+     "verified": "2026-09-07 = 2.75"
+    },
+    "orrf_rate": {
+     "id": "INM.DD2.N",
+     "table": "rbnz_b2",
+     "label": "Overnight Reverse Repurchase Facility rate (ceiling = OCR + 0.50)",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "SRF rate",
+     "verified": "2026-09-07 = 3.25"
+    },
+    "overnight_interbank": {
+     "id": "INM.DN.NZK",
+     "table": "rbnz_b2",
+     "label": "Overnight interbank cash rate (sparse — days with trades only)",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "EFFR",
+     "verified": "2026-09-03 = 2.83; 09-01 = 2.57"
+    },
+    "bank_bill_30d": {
+     "id": "INM.DB01.NZZV",
+     "table": "rbnz_b2",
+     "label": "Bank bill yield 30 days",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 2.95"
+    },
+    "bank_bill_60d": {
+     "id": "INM.DB02.NZZV",
+     "table": "rbnz_b2",
+     "label": "Bank bill yield 60 days",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 3.00"
+    },
+    "bank_bill_90d": {
+     "id": "INM.DB03.NZZV",
+     "table": "rbnz_b2",
+     "label": "Bank bill yield 90 days (BKBM)",
+     "freq": "daily",
+     "status": "verified",
+     "usd_analog": "3M term rate",
+     "verified": "2026-09-07 = 3.06"
+    },
+    "nzgb_1y": {
+     "id": "INM.DG101.NZZCF",
+     "table": "rbnz_b2",
+     "label": "NZ government bond 1 year",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 3.10"
+    },
+    "nzgb_2y": {
+     "id": "INM.DG102.NZZCF",
+     "table": "rbnz_b2",
+     "label": "NZ government bond 2 year",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 3.61"
+    },
+    "nzgb_5y": {
+     "id": "INM.DG105.NZZCF",
+     "table": "rbnz_b2",
+     "label": "NZ government bond 5 year",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 4.21"
+    },
+    "nzgb_10y": {
+     "id": "INM.DG110.NZZCF",
+     "table": "rbnz_b2",
+     "label": "NZ government bond 10 year",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 4.78"
+    },
+    "swap_1y": {
+     "id": "INM.DS01.NZZC",
+     "table": "rbnz_b2",
+     "label": "Swap rate 1 year",
+     "freq": "daily",
+     "status": "verified id in Series Definitions; value check on first pull"
+    },
+    "swap_2y": {
+     "id": "INM.DS02.NZZC",
+     "table": "rbnz_b2",
+     "label": "Swap rate 2 year",
+     "freq": "daily",
+     "status": "verified id; value check on first pull"
+    },
+    "swap_10y": {
+     "id": "INM.DS10.NZZC",
+     "table": "rbnz_b2",
+     "label": "Swap rate 10 year",
+     "freq": "daily",
+     "status": "verified id; value check on first pull"
+    },
+    "swap_2_10_spread_bps": {
+     "id": "INM.DS61.NZZC",
+     "table": "rbnz_b2",
+     "label": "Swap 2-10 spread (bp)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 75"
+    },
+    "nzgb_turnover_weekly": {
+     "id": "D9:total",
+     "table": "rbnz_d9",
+     "label": "NZGB secondary-market turnover — weekly total",
+     "freq": "weekly",
+     "status": "verified",
+     "verified": "week to 2026-09-04 = 71033"
+    }
+   },
+   "derived": {
+    "bank_bill_30d_minus_ocr_bps": {
+     "formula": "(bank_bill_30d − ocr) × 100",
+     "note": "STRESS SPREAD (daily). Floor logic: bills should trade near the OCR (+5–15 bp in calm conditions per Qwen/DeepSeek, unverified); classified RAW by percentile (window since the cycle start 2026-07-08 or 250 sessions, whichever is longer, min_n 120) plus absolute anchors; SCARCITY needs friction_confirmed (overnight ≥ OCR+10 when published, or ORRF > 0) and hike pricing not being the driver (N3)"
+    },
+    "overnight_interbank_minus_ocr_bps": {
+     "formula": "(overnight_interbank − ocr) × 100",
+     "note": "the true floor test, sparse; classified when present"
+    },
+    "band_position": {
+     "formula": "(overnight_interbank − odr) / (orrf_rate − odr)",
+     "note": "0 = floor, 1 = ceiling; sparse"
+    },
+    "bank_bill_90d_minus_ocr_bps": {
+     "formula": "(bank_bill_90d − ocr) × 100",
+     "note": "BKBM − OCR (V3.1 signal): term premium + hike pricing"
+    },
+    "hike_pricing_bps": {
+     "formula": "(swap_1y − ocr) × 100",
+     "note": "CONTEXT ONLY (N3, CodeWord): the 1-year swap discounts ~12 months of moves and over-corrects a 30-day bill; no public NZ OIS 1–3 m feed exists to do it properly → nothing is subtracted from the stress spread; hike pricing is displayed next to it and used by the SCARCITY gate ('not explained by hike pricing' = bill_curve_slope_bps > 0 and hike_pricing_bps ≥ p80)"
+    },
+    "nzgb_2y_minus_ocr_bps": {
+     "formula": "(nzgb_2y − ocr) × 100"
+    },
+    "curve_10y_2y_bps": {
+     "formula": "(nzgb_10y − nzgb_2y) × 100",
+     "note": "V3.1 2s10s"
+    },
+    "bond_swap_spread_10y_bps": {
+     "formula": "(nzgb_10y − swap_10y) × 100",
+     "note": "NZGB supply / offshore demand gauge (positive and rising = bonds cheapening vs swaps = supply indigestion)"
+    },
+    "nzgb_10y_5d_change_bps": {
+     "formula": "(nzgb_10y − value 5 sessions earlier) × 100"
+    },
+    "turnover_wow_pct": {
+     "formula": "pct_change(nzgb_turnover_weekly,1)",
+     "note": "market liquidity (display)"
+    },
+    "friction_confirmed": {
+     "formula": "bank_bill_30d_minus_ocr_bps ≥ WATCH for 3 sessions AND (overnight_interbank_minus_ocr_bps ≥ 10 on a published day within the window OR orrf_usage_daily > 0)",
+     "note": "price stress needs the overnight market or the ceiling facility to confirm"
+    },
+    "floor_leak": {
+     "formula": "overnight_interbank_minus_ocr_bps ≤ −5 for 3 published sessions",
+     "note": "trading below the floor = non-ESAS cash with no OCR access; rare"
+    },
+    "bill_curve_slope_bps": {
+     "formula": "(bank_bill_90d − bank_bill_30d) × 100",
+     "note": "near-term expectation proxy inside the bill curve (N3): positive slope = further hikes priced beyond one month; the 30-day bill itself embeds at most one MPC"
+    }
+   },
+   "thresholds": {
+    "bank_bill_30d_minus_ocr_bps": {
+     "method": "percentile",
+     "window": "since 2026-07-08 or 250d",
+     "direction": "high_is_risk",
+     "watch_above": "p85",
+     "stress_above": "p95",
+     "hysteresis": {
+      "exit_on": "p75"
+     },
+     "persistence_sessions": 3,
+     "secondary_absolute": {
+      "watch": 25,
+      "stress": 40,
+      "crisis": 60
+     },
+     "low_side_leak": -10,
+     "note": "DESK PROPOSAL: +20 bp on 2026-09-07 with the hike just delivered and another priced; absolute anchors 25/40/60 to recalibrate after 120 sessions (N3)"
+    },
+    "overnight_interbank_minus_ocr_bps": {
+     "method": "absolute",
+     "watch_above": 10,
+     "stress_above": 25,
+     "crisis_above": 45,
+     "watch_below": -5,
+     "note": "corridor is 0 … +50"
+    },
+    "bank_bill_90d_minus_ocr_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10",
+     "secondary_absolute": {
+      "watch": 40,
+      "stress": 60
+     }
+    },
+    "hike_pricing_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10"
+    },
+    "curve_10y_2y_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "two_sided",
+     "watch_above": "p90",
+     "watch_below": "p10"
+    },
+    "bond_swap_spread_10y_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "direction": "high_is_risk",
+     "watch_above": "p90",
+     "stress_above": "p97",
+     "min_n": 120
+    },
+    "nzgb_10y_5d_change_bps": {
+     "method": "absolute",
+     "watch_above": 15,
+     "stress_above": 25,
+     "two_sided": true
+    }
+   }
+  }
+ },
+ "regime": {
+  "weights": {
+   "central_bank": 0.4,
+   "rates": 0.3,
+   "fiscal": 0.15,
+   "banking": 0.15
+  },
+  "weights_note": "v0.1 PROPOSAL: settlement cash + OMO reliance carry the NZD story (0.40); price confirmation 0.30; fiscal 0.15 (weekly tenders + monthly D10/R3, derived daily footprint); banking 0.15 (monthly, housing-credit economy). To be triangulated",
+  "reserves_metric": "central_bank.settlement_cash_daily",
+  "stress_spread_metric": "rates.bank_bill_30d_minus_ocr_bps",
+  "values": [
+   "LIQUIDITY_INJECTION",
+   "LIQUIDITY_DRAIN",
+   "LIQUIDITY_SCARCITY",
+   "FLOOR_FRICTION",
+   "NEUTRAL"
+  ],
+  "rules": {
+   "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: bank_bill_30d_minus_ocr_bps ≥ STRESS persistent AND friction_confirmed (overnight ≥ OCR + 10 or ORRF used) AND NOT (bill_curve_slope_bps > 0 and hike_pricing_bps ≥ p80); settlement cash anchors are dead-man switches, never triggers (N1/N3)",
+   "FLOOR_FRICTION": "reserves ample AND friction_confirmed",
+   "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
+   "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
+   "NEUTRAL": "otherwise"
+  },
+  "overlays": {
+   "OMO_DEPENDENCE": {
+    "min": 2,
+    "conditions": [
+     "central_bank.omo_reliance_share level >= WATCH",
+     "central_bank.omo_takeup_wow level >= WATCH",
+     "rates.bank_bill_30d_minus_ocr_bps level >= WATCH",
+     "fiscal.bond_bid_to_cover level >= WATCH"
+    ],
+    "values": [
+     "OMO_DEPENDENCE_LOW",
+     "OMO_DEPENDENCE_HIGH"
+    ],
+    "note": "NZD-specific: the system is transitioning from LSAP-created reserves to RBNZ-supplied reserves; HIGH = reserves scarce enough that banks lean on the weekly operation while bills and tenders show strain | N10: each condition must hold on 2 consecutive observations",
+    "persistence": 2
+   }
+  },
+  "flags": [
+   "STANDING_FACILITY_USED",
+   "FX_SWAP_ACTIVE",
+   "OMO_TAKEUP_SURGE",
+   "OMO_RELIANCE_RISING",
+   "FLOOR_LEAK",
+   "FISCAL_BIG_DAY",
+   "SUPPLY_AHEAD",
+   "TENDER_WEAK",
+   "TENDER_TAIL",
+   "TBILL_UNDERALLOCATED",
+   "COUPON_PAYMENT_DAY",
+   "BOND_MATURITY_DAY",
+   "LSAP_SALE_DAY",
+   "TAX_DAY",
+   "FOREIGN_DEMAND_FADE",
+   "MPC_WEEK",
+   "TRANSMISSION_FAILURE",
+   "DATA_DEGRADED",
+   "PHASE_LSAP_UNWIND",
+   "PHASE_OMO_SUPPLIED",
+   "PHASE_STEADY"
+  ],
+  "flags_note": "v0.2: FX_SWAP_ACTIVE, TBILL_UNDERALLOCATED, COUPON_PAYMENT_DAY, BOND_MATURITY_DAY, LSAP_SALE_DAY, TAX_DAY added (N9); FOREIGN_DEMAND_FADE stays monthly (D30) with daily canaries bond_swap_spread_10y and long_end_turnover_share (N7). INJECTION/DRAIN kept (desk-standard cross-currency enum: they describe reserve FLOW, scarcity is price-gated) — CodeWord's removal rejected (N11). Score arithmetic: max |weighted| = 0.40×1.5 + 0.30×1.5 + 0.15×0.5 + 0.15×1.0 = 1.275 → ±0.5 reachable"
+ },
+ "status_rules": {
+  "fresh_multiplier": 1.5,
+  "stale_multiplier": 3.0,
+  "nominal_period_days": {
+   "daily": 4,
+   "weekly": 9,
+   "monthly": 45,
+   "event": 400
+  },
+  "monthly_lag_allowance_days": 60,
+  "note": "daily = T-1 at 15:00 NZT (= 03:00 UTC NZST / 02:00 UTC NZDT) → the 04:00 UTC lane sees T-1; NZ public holidays leave gaps (no release); holiday-aware: expected data dates skip nz_public_holidays (N13)",
+  "holiday_aware": true
+ },
+ "quality": {
+  "origin": "CAD quality module",
+  "dedup": "last value wins per date",
+  "outliers": {
+   "method": "modified_zscore_MAD",
+   "rolling_window": 20,
+   "min_points": 5,
+   "z_threshold": {
+    "default": 3.5,
+    "settlement_cash_daily": 4.0,
+    "ocr": 5.0
+   }
+  },
+  "reconciliation": [
+   {
+    "rule": "settlement_cash_daily (month-end) ≈ R3 settlement institutions' balances (±2%)",
+    "on_fail": "warn"
+   },
+   {
+    "rule": "sum(autonomous_flow_daily over month) ≈ D10 government cash influence + reserve bank transactions + FX (±15%)",
+    "on_fail": "warn"
+   },
+   {
+    "rule": "R1 total assets == total liabilities + equity",
+    "on_fail": "data_degraded"
+   }
+  ],
+  "null_policy": "null is NEVER neutral: series → unavailable, never zero"
+ },
+ "revisions": {
+  "keep_last": 50,
+  "series": [
+   "settlement_cash_daily",
+   "omo_allocated_weekly",
+   "crown_settlement_account",
+   "govt_cash_influence_month",
+   "lsap_holdings"
+  ]
+ },
+ "alerts": {
+  "origin": "CAD/GBP/AUD/JPY/CHF alert state machine",
+  "lifecycle": [
+   "active",
+   "resolved"
+  ],
+  "keep_last": 100,
+  "rules": [
+   {
+    "id": "settlement_cash_low",
+    "metric": "central_bank.settlement_cash_daily",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "orrf_used",
+    "metric": "central_bank.orrf_usage_daily",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "emergency"
+   },
+   {
+    "id": "bills_at_watch",
+    "metric": "rates.bank_bill_30d_minus_ocr_bps",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "funding"
+   },
+   {
+    "id": "bills_stress",
+    "metric": "rates.bank_bill_30d_minus_ocr_bps",
+    "when": "level >= STRESS",
+    "severity": "CRITICAL",
+    "category": "funding"
+   },
+   {
+    "id": "omo_reliance",
+    "metric": "central_bank.omo_reliance_share",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "omo_surge",
+    "metric": "central_bank.omo_takeup_wow",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "big_residual_day",
+    "metric": "central_bank.residual_flow_daily",
+    "when": "abs >= 2000",
+    "severity": "INFO",
+    "category": "fiscal"
+   },
+   {
+    "id": "tender_weak",
+    "metric": "fiscal.bond_bid_to_cover",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "fiscal"
+   },
+   {
+    "id": "tbill_weak",
+    "metric": "fiscal.tbill_bid_to_cover",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "fiscal"
+   },
+   {
+    "id": "curve_spike",
+    "metric": "rates.nzgb_10y_5d_change_bps",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "rates"
+   },
+   {
+    "id": "bond_swap_wide",
+    "metric": "rates.bond_swap_spread_10y_bps",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "rates"
+   },
+   {
+    "id": "cfr_thin",
+    "metric": "banking.cfr_headroom_pp",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "banking"
+   },
+   {
+    "id": "data_degraded",
+    "metric": "quality.critical_count",
+    "when": "> 0",
+    "severity": "CRITICAL",
+    "category": "system"
+   },
+   {
+    "id": "orrf_stress",
+    "metric": "central_bank.orrf_used",
+    "when": "level >= STRESS",
+    "severity": "CRITICAL",
+    "category": "emergency"
+   },
+   {
+    "id": "omo_outstanding_watch",
+    "metric": "central_bank.omo_outstanding_level",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "tbill_underallocated",
+    "metric": "fiscal.tbill_allocation",
+    "when": "level >= WATCH",
+    "severity": "INFO",
+    "category": "fiscal"
+   },
+   {
+    "id": "supply_ahead",
+    "metric": "fiscal.issuance_ahead_5d",
+    "when": "level >= WATCH",
+    "severity": "INFO",
+    "category": "fiscal"
+   }
+  ]
+ },
+ "scenarios": {
+  "origin": "liquidity-only set",
+  "items": [
+   {
+    "id": "L1",
+    "name": "OMO-supplied ample (LSAP unwind absorbed)",
+    "bias": "NEUTRAL",
+    "min": 2,
+    "conditions": [
+     "central_bank.omo_reliance_share level >= WATCH",
+     "rates.bank_bill_30d_minus_ocr_bps level == SAFE",
+     "central_bank.settlement_cash_daily level == SAFE"
+    ]
+   },
+   {
+    "id": "L2",
+    "name": "Reserve scarcity building",
+    "bias": "NZD-DEFENSIVE",
+    "min": 2,
+    "conditions": [
+     "central_bank.settlement_cash_daily level >= WATCH",
+     "rates.bank_bill_30d_minus_ocr_bps level >= WATCH",
+     "central_bank.omo_takeup_wow level >= WATCH"
+    ]
+   },
+   {
+    "id": "L3",
+    "name": "Funding stress",
+    "bias": "EMERGENCY",
+    "min": 2,
+    "conditions": [
+     "rates.bank_bill_30d_minus_ocr_bps level >= STRESS",
+     "central_bank.orrf_usage_daily > 0",
+     "rates.friction_confirmed == true"
+    ]
+   },
+   {
+    "id": "L4",
+    "name": "Crown drain / supply indigestion",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "fiscal.fiscal_regime == DRAIN",
+     "fiscal.bond_bid_to_cover level >= WATCH",
+     "rates.bond_swap_spread_10y_bps level >= WATCH"
+    ]
+   },
+   {
+    "id": "L5",
+    "name": "Fiscal injection",
+    "bias": "NZD-SUPPORTIVE",
+    "min": 2,
+    "conditions": [
+     "fiscal.fiscal_regime == INJECTION",
+     "central_bank.settlement_cash_wow level >= WATCH",
+     "central_bank.residual_flow_5d_cum >= p80"
+    ]
+   },
+   {
+    "id": "L6",
+    "name": "Curve repricing (hiking cycle)",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "rates.nzgb_10y_5d_change_bps level >= WATCH",
+     "rates.hike_pricing_bps >= p90",
+     "rates.curve_10y_2y_bps level >= WATCH"
+    ]
+   }
+  ]
+ },
+ "calendar": {
+  "rbnz_mpc_2026": [
+   "2026-10-28",
+   "2026-12-09"
+  ],
+  "rbnz_mpc_2027": [
+   "2027-02-10",
+   "2027-03-17",
+   "2027-05-05",
+   "2027-06-16",
+   "2027-08-04",
+   "2027-09-15",
+   "2027-10-27",
+   "2027-12-08"
+  ],
+  "rbnz_mps": [
+   "2026-12-09",
+   "2027-03-17",
+   "2027-06-16",
+   "2027-09-15",
+   "2027-12-08"
+  ],
+  "decision_time": "14:00 Pacific/Auckland",
+  "daily_release": "B2, D3, D12, B1 after 15:00 NZT (T-1 data)",
+  "omo": "Thursday 11:30–11:45 NZT, 7d + 28d reverse repo, full allotment at OCR + 10 bp (result in D3 the same day)",
+  "tbill_tender": "Tuesday 14:00–14:30 NZT (NZDM), settlement T+1 business day? — confirm; results on the NZDM site and in the tender-history file the same afternoon",
+  "bond_tender": "Thursday 14:00–14:30 NZT, settlement T+3 business days (schedule statement); monthly schedule published the last week of the previous month",
+  "d9_turnover": "Monday (week to Friday)",
+  "r1_r3_release": "~14th of the following month",
+  "d10_release": "last day of the following month",
+  "c5_c50_release": "last day of the following month",
+  "l2_release": "~3rd",
+  "d30_release": "~18th",
+  "nzgb_maturities": "15-Apr and 15-May lines (next 15-Apr-2027); coupons semi-annual on the 15th (Apr/Oct, May/Nov, Sep/Mar…) — exact dates from the on-issue file (Phase 2) → COUPON_PAYMENT_DAY / BOND_MATURITY_DAY (N4/N9)",
+  "lsap_sales": "monthly NZ$415m sale to NZDM (mid-month) — drain",
+  "dst_note": "NZDT (UTC+13) from 2026-09-27 to 2027-04-04; NZST (UTC+12) otherwise",
+  "nz_public_holidays_2026": [
+   "2026-01-01",
+   "2026-01-02",
+   "2026-01-19",
+   "2026-01-26",
+   "2026-02-06",
+   "2026-04-03",
+   "2026-04-06",
+   "2026-04-27",
+   "2026-06-01",
+   "2026-07-10",
+   "2026-10-26",
+   "2026-12-25",
+   "2026-12-28"
+  ],
+  "nz_public_holidays_2027": [
+   "2027-01-01",
+   "2027-01-04",
+   "2027-01-25",
+   "2027-02-01",
+   "2027-02-08",
+   "2027-03-26",
+   "2027-03-29",
+   "2027-04-26",
+   "2027-06-07",
+   "2027-06-25",
+   "2027-10-25",
+   "2027-12-27",
+   "2027-12-28"
+  ],
+  "holidays_note": "employment.govt.nz verified 2026-09-08 (observed dates; Wellington 19-Jan-2026 / 25-Jan-2027 and Auckland 26-Jan-2026 / 1-Feb-2027 anniversaries included — ESAS/RBNZ follow Wellington). Freshness rule: a data date is 'expected' only on business days; a holiday never makes a series stale (N13)",
+  "tax_dates": {
+   "provisional_tax_standard": [
+    "08-28",
+    "01-15",
+    "05-07"
+   ],
+   "provisional_tax_ratio": [
+    "06-28",
+    "08-28",
+    "10-28",
+    "01-15",
+    "02-28",
+    "05-07"
+   ],
+   "gst_paye": "GST 28th (15-Jan and 7-May exceptions) and PAYE 20th — PENDING verification in IRD IR328 calendar",
+   "source": "ird.govt.nz payment dates for provisional tax (verified 2026-09-08)",
+   "use": "TAX_DAY context flag for residual_flow_daily (N14, CodeWord)"
+  }
+ },
+ "refresh_lanes": {
+  "daily": {
+   "cron_utc": "0 4 * * 1-5",
+   "note": "16:00 NZST / 17:00 NZDT after the 15:00 NZT release: hb2-daily-close.xlsx + hd12.xlsx + hd3.xlsx (3 files); rebuilds all blocks from history",
+   "blocks": [
+    "rates",
+    "central_bank",
+    "fiscal"
+   ],
+   "run_agent": false
+  },
+  "daily_retry": {
+   "cron_utc": "0 6 * * 1-5",
+   "note": "late release / holiday catch-up",
+   "blocks": [
+    "rates",
+    "central_bank"
+   ],
+   "run_agent": false
+  },
+  "weekly_tue": {
+   "cron_utc": "0 3 * * 2",
+   "note": "after the T-bill tender (14:30 NZT Tuesday): NZDM data page → Tbills-tender-history",
+   "blocks": [
+    "fiscal"
+   ],
+   "run_agent": false
+  },
+  "weekly_thu": {
+   "cron_utc": "0 3 * * 4",
+   "note": "after the bond tender (14:30 NZT Thursday) and the OMO (11:45): govtbonds-tender-history + hd3.xlsx",
+   "blocks": [
+    "fiscal",
+    "central_bank"
+   ],
+   "run_agent": true
+  },
+  "weekly_mon": {
+   "cron_utc": "0 4 * * 1",
+   "note": "D9 weekly turnover",
+   "blocks": [
+    "rates"
+   ],
+   "run_agent": false
+  },
+  "monthly": {
+   "cron_utc": "0 4 3,15,19 * *",
+   "note": "3rd: L2/L1; 15th: R1/R3 (14th); 19th: D30 (18th); 1st (backfill): D10/C5/C50 of the previous month (last day)",
+   "blocks": [
+    "central_bank",
+    "fiscal",
+    "banking"
+   ],
+   "run_agent": true
+  },
+  "backfill": {
+   "cron_utc": "0 5 1 * *",
+   "note": "full revalidation on the 1st",
+   "blocks": [
+    "all"
+   ],
+   "run_agent": false
+  },
+  "note": "GitHub Actions 5-field cron (CodeWord's EventBridge 6-field format applies to another platform — rejected, N12)"
+ },
+ "desk_exports": {
+  "nzdusd": {
+   "id": "B1:USD",
+   "table": "rbnz_statistics",
+   "label": "NZD/USD daily (B1)",
+   "status": "pending dimension check (Phase 2)"
+  },
+  "twi": {
+   "id": "B1:TWI",
+   "status": "pending"
+  }
+ },
+ "agent": {
+  "name": "NZD Currency Agent",
+  "reads": [
+   "data/nzd/central_bank.json",
+   "data/nzd/fiscal.json",
+   "data/nzd/banking.json",
+   "data/nzd/rates.json",
+   "data/nzd/calendar.json"
+  ],
+  "writes": "agents/nzd.json",
+  "vocabulary": "MMT/Mosler; floor system at the OCR; settlement cash and the weekly OMO under the LSAP unwind; Crown Settlement Account; NZDM tenders; offshore holders of NZGBs",
+  "alert_types": [
+   "LIQUIDITY_GAIN",
+   "LIQUIDITY_LOSS",
+   "LIQUIDITY_SCARCITY",
+   "TRANSMISSION_BREAK",
+   "DATA_DEGRADED"
+  ],
+  "never": [
+   "trade execution",
+   "position sizing",
+   "technical analysis"
+  ]
+ },
+ "pending_before_phase2": [
+  "Sander's OK on v0.2 → Fase 2 NZD",
+  "NZGB on-issue file → coupon and maturity calendar (COUPON_PAYMENT_DAY, BOND_MATURITY_DAY, tender_load_ratio)",
+  "Pull and inspect: L1 mismatch, S40 deposits, B20/B21 mortgage rates, D35 Kauri, ECP on-issue, C50 private-sector-credit row, swap 1y/2y/10y values, B1 NZD/USD + TWI, D9 by line",
+  "NZFBF/NZFMA BKBM public feed (Phase 3); NZ OIS: no public source",
+  "IRD IR328 calendar: confirm GST 28th / PAYE 20th",
+  "Treasury monthly statements parser — Phase 3"
+ ],
+ "triangulation": {
+  "date": "2026-09-08",
+  "reviews": 6,
+  "real_reviews": 4,
+  "matrix": "TRIANGULACION_NZD_matriz.md",
+  "changes": "N1–N15",
+  "ranking": "CodeWord > Qwen > DeepSeek > Gemini > Perplexity = Kimi (summaries only, no review)"
+ }
+}
