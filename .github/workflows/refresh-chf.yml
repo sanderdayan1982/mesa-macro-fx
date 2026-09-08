@@ -1,0 +1,68 @@
+# Mesa Macro FX — CHF refresh lanes (config/chf.json v0.2, Desk Standard v0.3)
+# Lanes (UTC; Zurich = UTC+1 winter / +2 summer): daily Mon–Fri 10:00 (12:00 CET: snbgwdzid policy/SARON T-1 10:00 + NSS curve 11:00 + zirepo)
+#   · weekly Mon 09:45 (11:45 CET, after the 10:00 sight-deposits release) · weekly_thu Thu 10:00 (EFV MMDRC results, Tuesday auction)
+#   · monthly 13th (balance sheet, Bills register, gmges ops) and 23rd (banks, money stock, minimum reserves, mortgage rates) 09:00
+#   · quarterly 2nd of Jan/Apr/Jul/Oct 09:00 (snbfxtr) · backfill on the 1st.
+# Courtesy rule: one request per cube per lane, identifiable User-Agent, >= 1 s apart, backoff on 429/403; raw JSON snapshots in logs/chf/raw.
+name: refresh-chf
+on:
+  schedule:
+    - cron: "0 10 * * 1-5"     # daily lane
+    - cron: "45 9 * * 1"       # weekly lane — sight deposits (Monday)
+    - cron: "0 10 * * 4"       # weekly_thu lane — EFV auction results
+    - cron: "0 9 13,23 * *"    # monthly lane — balance sheet / banks
+    - cron: "0 9 2 1,4,7,10 *" # quarterly lane — FX transactions
+    - cron: "0 5 1 * *"        # keepalive + full revalidation (backfill) on the 1st
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "daily | weekly | weekly_thu | monthly | quarterly | all"
+        default: "all"
+      backfill:
+        description: "full history refetch (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: refresh-chf
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resolve lane
+        id: lane
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "lane=${{ github.event.inputs.lane }}" >> $GITHUB_OUTPUT
+            echo "backfill=${{ github.event.inputs.backfill }}" >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.schedule }}" in
+              "0 10 * * 1-5")     echo "lane=daily"      >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "45 9 * * 1")       echo "lane=weekly"     >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 10 * * 4")       echo "lane=weekly_thu" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 9 13,23 * *")    echo "lane=monthly"    >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 9 2 1,4,7,10 *") echo "lane=quarterly"  >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              *)                  echo "lane=all"        >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      - name: Run ingestion (CHF)
+        run: |
+          if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
+          python -m ingest.run --ccy chf --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/chf/oplog.json) — last good JSON kept as stale"
+      - name: Validate JSON against schema
+        run: python -m ingest.validate --ccy chf
+      - name: Commit data
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/chf history/chf logs/chf
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "data(chf): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push
