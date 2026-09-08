@@ -122,7 +122,15 @@ def xlsx_cells(blob: bytes, sheet: str = "xl/worksheets/sheet1.xml") -> Dict[str
     if "xl/sharedStrings.xml" in z.namelist():
         root = ET.fromstring(z.read("xl/sharedStrings.xml"))
         for si in root.iter("{%s}si" % NS["m"]):
-            ss.append("".join(t.text or "" for t in si.iter("{%s}t" % NS["m"])))
+            # skip <rPh> phonetic (furigana) runs — BoJ files carry them and they would be glued onto the label text
+            parts: List[str] = []
+            for child in si:
+                tag = child.tag.split("}")[-1]
+                if tag == "t":
+                    parts.append(child.text or "")
+                elif tag == "r":
+                    parts.extend(t.text or "" for t in child.iter("{%s}t" % NS["m"]))
+            ss.append("".join(parts))
     cells: Dict[str, object] = {}
     root = ET.fromstring(z.read(sheet))
     for c in root.iter("{%s}c" % NS["m"]):
@@ -139,6 +147,27 @@ def xlsx_cells(blob: bytes, sheet: str = "xl/worksheets/sheet1.xml") -> Dict[str
             except ValueError:
                 cells[ref] = v.text
     return cells
+
+
+def _collapse_errors(kind: str, errs: List[str], keep: int = 3) -> List[str]:
+    """Same error text repeated for many dates → one line ('N dates, first…last'). Keeps the banner readable."""
+    if len(errs) <= keep:
+        return errs
+    groups: Dict[str, List[str]] = {}
+    for e in errs:
+        m = re.match(r"^%s (\d{4}-\d{2}-\d{2}): (.*)$" % re.escape(kind), e)
+        if m:
+            groups.setdefault(m.group(2), []).append(m.group(1))
+        else:
+            groups.setdefault(e, []).append("")
+    out: List[str] = []
+    for msg, dates in groups.items():
+        dates = [d for d in dates if d]
+        if len(dates) <= keep:
+            out.extend("%s %s: %s" % (kind, d, msg) for d in dates) if dates else out.append(msg)
+        else:
+            out.append("%s: %s (%d dates, %s … %s)" % (kind, msg, len(dates), min(dates), max(dates)))
+    return out
 
 
 def _rows(cells: Dict[str, object]) -> Dict[int, Dict[str, object]]:
@@ -196,10 +225,12 @@ class BojDailyCabProvider:
         labels: List[str] = []
         for r in sorted(rows):
             row = rows[r]
-            txt = next((row[c] for c in ("B", "C", "D", "E") if isinstance(row.get(c), str)), None)
+            # Label = first NON-EMPTY string in B..E. Indented items carry empty-string cells in B (and C/D) before the
+            # label — the 2026-09 live run failed on exactly that (ops_ex_lsp / reserve_bal / excess reported missing).
+            txt = next((row[c].strip() for c in ("B", "C", "D", "E") if isinstance(row.get(c), str) and row[c].strip()), None)
             if not txt:
                 continue
-            txt = txt.strip()
+            txt = re.sub(r"\s+", " ", txt)
             for key, pat in cls.ITEMS:
                 if key in found:
                     continue
@@ -245,7 +276,7 @@ class BojDailyCabProvider:
             for k, v in vals.items():
                 if v is not None:
                     out.setdefault(k, []).append((d, v))
-        return {k: clean(v) for k, v in out.items()}, errs, hashes
+        return {k: clean(v) for k, v in out.items()}, _collapse_errors(kind, errs), hashes
 
 
 # ───────────────────────── BoJ Accounts (every ten days, HTML) ─────────────────────────
