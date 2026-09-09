@@ -1,6 +1,6 @@
 {
  "currency": "CHF",
- "generated_at": "2026-09-08T19:23:16+00:00",
+ "generated_at": "2026-09-09T10:07:40+00:00",
  "as_of": "2026-09-04",
  "config_version": "0.2",
  "regime": "NEUTRAL",
@@ -19,6 +19,44 @@
   "banking": 0.15
  },
  "blocks_used": 4,
+ "regimes": {
+  "central_bank": {
+   "regime": "NEUTRAL",
+   "score": 0.0,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-09-04",
+   "detail": "GI 424977.0 (wow -6313.0, 13w -1.8923%, NEUTRAL) · absorption 154950.9195 (26.9%) · ratio 8.67x · factor 13.5 · phase STEADY"
+  },
+  "fiscal": {
+   "regime": "INJECTION",
+   "score": 0.5,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-09",
+   "detail": "Confederation 21033.14176246 (mom -7092.7149) · MMDRC 5.049x at -0.0831% (-4.3 bp vs SARON) · bonds 1.534x"
+  },
+  "general": {
+   "regime": "NEUTRAL",
+   "score": 0.2,
+   "rule": "partial (NEUTRAL vs INJECTION): dual score +0.20 vs thresholds +0.50/-0.50",
+   "price_gate": null,
+   "dual_weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "calibration": "provisional — per-currency thresholds pending (desk rule 2026-09-09)"
+  }
+ },
+ "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_STEADY",
   "CONFED_CASH_BIG_MOVE"
@@ -38,9 +76,9 @@
  "rules": {
   "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: saron_minus_absorption_rate_bps ≥ STRESS persistent AND (supplying_repos > 0 OR mm_operations_supplied_month > 0 OR secured_loans rising); quantity anchor (excess_to_required_ratio ≤ STRESS) is a dead-man switch",
   "FLOOR_FRICTION": "reserves ample AND friction_confirmed (SARON at/above policy 3 sessions)",
-  "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
-  "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
-  "NEUTRAL": "otherwise"
+  "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+  "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+  "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
  },
  "scenarios": [
   {
@@ -178,7 +216,7 @@
  ],
  "heartbeat": {
   "lane": "all",
-  "backfill": true,
+  "backfill": false,
   "errors": []
  }
 }
