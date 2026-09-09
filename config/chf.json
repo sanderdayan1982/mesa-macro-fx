@@ -1137,9 +1137,9 @@
   "rules": {
    "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: saron_minus_absorption_rate_bps ≥ STRESS persistent AND (supplying_repos > 0 OR mm_operations_supplied_month > 0 OR secured_loans rising); quantity anchor (excess_to_required_ratio ≤ STRESS) is a dead-man switch",
    "FLOOR_FRICTION": "reserves ample AND friction_confirmed (SARON at/above policy 3 sessions)",
-   "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
-   "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
-   "NEUTRAL": "otherwise"
+   "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+   "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+   "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
   },
   "orthogonal_flags": {
    "FX_INTERVENTION_SUSPECT": "C12: sight_deposits_wow ≥ p90 (or ≥ +5000) AND (bills_maturing_week + known repo maturities) < 50% of the jump; monthly confirmation GBI/GSGSF; quarterly snbfxtr > 1000",
@@ -1181,7 +1181,24 @@
     ]
    }
   },
-  "stress_spread_alias": "rates.saron_minus_policy_bps"
+  "stress_spread_alias": "rates.saron_minus_policy_bps",
+  "dual": {
+   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   }
+  },
+  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)"
  },
  "status_rules": {
   "fresh_multiplier": 1.5,

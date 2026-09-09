@@ -1,6 +1,6 @@
 {
  "$schema": "mesa-macro/config.schema.json",
- "config_version": "0.1.0",
+ "config_version": "0.1.1",
  "currency": "USD",
  "name": "USD Liquidity Command Center — H.4.1 · DTS · H.8/H.15 (desk migration)",
  "jurisdiction": "United States",
@@ -23,6 +23,9 @@
    "H.8 v2.1 'Borrowings (TLBACBW027SBOG)': that id is Total Liabilities, All Commercial Banks; borrowings weekly SA = H8B3094NCBA ($M) (BOWACBW027SBOG discontinued). Fixed",
    "H.8 v2.1 'C&I Loans (BUSLOANS)': BUSLOANS is MONTHLY; the weekly H.8 series is TOTCI ($B, SA). Fixed (BUSLOANS kept as monthly display)",
    "H.15: DFF is a 7-day series, DTB3/DGS2/DGS10 business days → spreads on common dates only (kept from v2.1)"
+  ],
+  "desk_additions": [
+   "v0.1.1: structural fiscal impulse (ntf_20d, ntf_60d, ntf_fytd_vs_prior_fy, fiscal_impulse) — approved by Sander 2026-09-09"
   ]
  },
  "sources": {
@@ -443,7 +446,22 @@
      "rule": "Quarter-End (3/31, 6/30, 9/30, 12/31) · Tax Day (Apr 14–16) · Est. Tax Day (14–16 of Jan/Jun/Sep) · Mid-Month Settl. (14–16) · Payments Window (≥ 25)"
     },
     "fiscal_regime": {
-     "rule": "INJECTION if NTF 7-day sum > 0 and Z ≥ 0 or Z ≥ 1; DRAIN if 7-day sum < 0 and Z ≤ 0 or Z ≤ −1; else NEUTRAL"
+     "rule": "daily surprise rule (DTS Tracker) kept for display; the block label/score come from fiscal_impulse"
+    },
+    "ntf_20d": {
+     "formula": "sum of the last 20 daily NTF",
+     "note": "v0.1.1 structural impulse; Z vs 250 sessions"
+    },
+    "ntf_60d": {
+     "formula": "sum of the last 60 daily NTF",
+     "note": "v0.1.1 structural impulse; Z vs 250 sessions; its sign sets the structural direction"
+    },
+    "ntf_fytd_vs_prior_fy": {
+     "formula": "NTF FYTD / NTF FYTD at the same date of the prior fiscal year − 1 (DTS cumulative fields)"
+    },
+    "fiscal_impulse": {
+     "formula": "score = 0.5 × structural + 0.5 × surprise; structural = sign(ntf_60d) × clamp(1 + 0.5 × Z60 × sign ± 0.25 if FYTD pace ±10% vs prior FY, 0.5..2); surprise = 0.75 × clamp(Z30) + 0.5 × sign(NTF 7d)",
+     "note": "v0.1.1 (Sander 2026-09-09): the fiscal block scores the LEVEL of the injection, not only the daily surprise; a sustained deficit is an injection by construction (MMT sign)"
     }
    },
    "thresholds": {
@@ -676,9 +694,9 @@
   "rules": {
    "LIQUIDITY_SCARCITY": "WRESBAL below 3.0T (WATCH+) AND SOFR − IORB ≥ STRESS (> 15 bp)",
    "FLOOR_FRICTION": "reserves in/above the ample band AND SOFR − IORB friction_confirmed",
-   "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
-   "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
-   "NEUTRAL": "otherwise"
+   "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+   "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+   "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
   },
   "orthogonal_flags": {
    "TRANSMISSION_FAILURE": "H.8 RED while reserves ample",
@@ -687,13 +705,31 @@
    "TGA_HEAVY_DRAIN": "TGA ≥ 900B",
    "NTF_EXTRAORDINARY": "|Z| ≥ 2 on the daily Net Treasury Flow",
    "CURVE_INVERTED": "10Y − 2Y < 0",
-   "PHASE_*": "balance-sheet phase (QT / QE / STEADY)"
+   "PHASE_*": "balance-sheet phase (QT / QE / STEADY)",
+   "STRUCTURAL_DEFICIT_INJECTION": "fiscal_impulse.structural ≥ 1.0"
   },
   "min_blocks_for_signal": 2,
   "calibration": {
    "status": "planned",
    "method": "after ≥ 26 weeks live: grid over weights scored against SOFR − IORB > 15 episodes"
-  }
+  },
+  "dual": {
+   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   }
+  },
+  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)"
  },
  "status_rules": {
   "fresh_multiplier": 1.5,

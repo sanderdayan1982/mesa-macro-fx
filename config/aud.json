@@ -1,1200 +1,1217 @@
 {
-  "$schema": "../schema/config.schema.json",
-  "config_version": "0.2.2",
-  "currency": "AUD",
-  "name": "AUD Command Center",
-  "jurisdiction": "Australia",
-  "central_bank": "Reserve Bank of Australia (RBA)",
-  "treasury": "Australian Treasury / AOFM (Australian Office of Financial Management) / Department of Finance",
-  "monetary_sovereignty": "full (AUD issuer, floating FX, domestic-currency debt)",
-  "framework": "Ample reserves, demand-driven: weekly full-allotment OMO repos (7d and 28d, Wednesdays 09:20 Sydney) priced at cash rate target + 10 bp since 2025-04-09 (Kent, 2025-04-02); ES rate = target − 10 bp (floor); overnight standing-facility repo = target + 25 bp (ceiling); zero-cost 'open repo' standing facility ceases early 2027 (Jacobs, 'The Road to Ample', 2026-08-25)",
-  "timezone_source": "Australia/Sydney",
-  "timezone_operator": "Africa/Malabo",
-  "units": {
-    "balance_sheet": "AUD millions",
-    "rates": "percent",
-    "spreads": "bps"
+ "$schema": "../schema/config.schema.json",
+ "config_version": "0.2.2",
+ "currency": "AUD",
+ "name": "AUD Command Center",
+ "jurisdiction": "Australia",
+ "central_bank": "Reserve Bank of Australia (RBA)",
+ "treasury": "Australian Treasury / AOFM (Australian Office of Financial Management) / Department of Finance",
+ "monetary_sovereignty": "full (AUD issuer, floating FX, domestic-currency debt)",
+ "framework": "Ample reserves, demand-driven: weekly full-allotment OMO repos (7d and 28d, Wednesdays 09:20 Sydney) priced at cash rate target + 10 bp since 2025-04-09 (Kent, 2025-04-02); ES rate = target − 10 bp (floor); overnight standing-facility repo = target + 25 bp (ceiling); zero-cost 'open repo' standing facility ceases early 2027 (Jacobs, 'The Road to Ample', 2026-08-25)",
+ "timezone_source": "Australia/Sydney",
+ "timezone_operator": "Africa/Malabo",
+ "units": {
+  "balance_sheet": "AUD millions",
+  "rates": "percent",
+  "spreads": "bps"
+ },
+ "lineage": {
+  "origin": "AUD Liquidity Command Center v2.1 (Netlify Functions + Blobs, Plotly, FRED for rates/FX)",
+  "rescued": [
+   "RBA A1 weekly balance sheet as the core (ESA, Australian Government deposits, total assets, AUD investments, gold & FX)",
+   "'plumbing spread' idea (ESA − government deposits)",
+   "fiscal pulse = −Δ government deposits",
+   "3M − cash spread thresholds 25/50 bp",
+   "freshness badges, no metric eliminated"
+  ],
+  "dropped": [
+   "Net Liquidity = Assets + ESA − Gov (double counts: ESA is a liability of the same balance sheet) → replaced by Total assets − Government deposits",
+   "FRED monthly 3M/10Y (RBA F1/F2 are daily)",
+   "FRED DEXUSAL for AUD/USD (RBA F11 daily; prices go to the Desk anyway)",
+   "FX divergence and AUD/USD inside the liquidity score",
+   "stress composite of absolute % changes (no distribution, no hysteresis)",
+   "Netlify Blobs + scheduled functions → GitHub Actions + JSON in git",
+   "A3 daily OMO table (ended 2021-10) → A3 ES balances and repo agreements (daily, current)"
+  ],
+  "triangulation": {
+   "date": "2026-09-08",
+   "reviewers": [
+    "Kimi",
+    "CodeWord",
+    "Perplexity",
+    "DeepSeek",
+    "Qwen",
+    "Claude",
+    "Gemini (text identical to Claude's)"
+   ],
+   "verdict": "7/7 VALIDADO CON CAMBIOS; applied in v0.2 (TRIANGULACION_AUD_matriz.md)"
+  }
+ },
+ "sources": {
+  "rba_tables": {
+   "base_url": "https://www.rba.gov.au/statistics/tables/csv/",
+   "auth": "none",
+   "format": "CSV, 11 header rows (Title/Description/Frequency/Type/Units/Source/Publication date/Series ID) then DD-Mon-YYYY rows; $ million",
+   "verified": "2026-09-08 via in-app browser",
+   "tables": {
+    "a1": {
+     "file": "a1-data.csv",
+     "freq": "weekly (Wednesday data, published Friday)",
+     "last": "2026-09-02"
+    },
+    "a2": {
+     "file": "a2-data.csv",
+     "freq": "as announced (cash rate target, ES rate, overnight repo rate)",
+     "last": "2026-05-06: target 4.35, ES 4.25, overnight repo 4.60"
+    },
+    "a3_es": {
+     "file": "a3-es-balances-and-repo-agreements.csv",
+     "freq": "daily (T+1)",
+     "last": "2026-09-07"
+    },
+    "f1": {
+     "file": "f1-data.csv",
+     "freq": "daily",
+     "last": "2026-09-07"
+    },
+    "f2": {
+     "file": "f2-data.csv",
+     "freq": "daily values, file updated weekly (~2-business-day lag)",
+     "last": "2026-09-02"
+    },
+    "d1": {
+     "file": "d1-data.csv",
+     "freq": "monthly (credit growth)",
+     "date_format": "DD/MM/YYYY (monthly rows)"
+    },
+    "d3": {
+     "file": "d3-data.csv",
+     "freq": "monthly (monetary aggregates)",
+     "date_format": "DD/MM/YYYY"
+    },
+    "d2": {
+     "file": "d2-data.csv",
+     "freq": "monthly (lending & credit aggregates, levels)"
+    },
+    "f11": {
+     "file": "f11-data.csv",
+     "freq": "monthly end-of-month (daily FX in f11.1-data.csv, Phase 3)",
+     "status": "F11 verified (FXRUSD 0.7166 on 2026-08-31)"
+    },
+    "a3_omo_repo": {
+     "file": "a3-omo-repo-transaction-details.csv",
+     "freq": "per operation (weekly)",
+     "status": "pending parse"
+    },
+    "a31": {
+     "file": "a3.1-summary.csv",
+     "freq": "monthly"
+    },
+    "a32": {
+     "file": "a3.2-rba-securities-lending.csv",
+     "freq": "event"
+    },
+    "a4": {
+     "file": "a4-data.csv",
+     "freq": "monthly"
+    }
+   },
+   "rate_limit_rule": "one GET per table per lane, ≥ 2 s apart, identifiable User-Agent; files are 60k+ lines (F2) — parse streaming, keep raw copy",
+   "hardening": [
+    "parse by column name from the 'Series ID' / 'Title' header rows",
+    "schema check each run (expected ids present) — fail loudly",
+    "raw CSV snapshot per run",
+    "F2 weekly cadence; A3 open-repo column may vanish early 2027",
+    "no SDMX/API endpoint verified for the RBA (Claude/Gemini claim not confirmed) — CSV remains the source"
+   ]
   },
-  "lineage": {
-    "origin": "AUD Liquidity Command Center v2.1 (Netlify Functions + Blobs, Plotly, FRED for rates/FX)",
-    "rescued": [
-      "RBA A1 weekly balance sheet as the core (ESA, Australian Government deposits, total assets, AUD investments, gold & FX)",
-      "'plumbing spread' idea (ESA − government deposits)",
-      "fiscal pulse = −Δ government deposits",
-      "3M − cash spread thresholds 25/50 bp",
-      "freshness badges, no metric eliminated"
-    ],
-    "dropped": [
-      "Net Liquidity = Assets + ESA − Gov (double counts: ESA is a liability of the same balance sheet) → replaced by Total assets − Government deposits",
-      "FRED monthly 3M/10Y (RBA F1/F2 are daily)",
-      "FRED DEXUSAL for AUD/USD (RBA F11 daily; prices go to the Desk anyway)",
-      "FX divergence and AUD/USD inside the liquidity score",
-      "stress composite of absolute % changes (no distribution, no hysteresis)",
-      "Netlify Blobs + scheduled functions → GitHub Actions + JSON in git",
-      "A3 daily OMO table (ended 2021-10) → A3 ES balances and repo agreements (daily, current)"
-    ],
-    "triangulation": {
-      "date": "2026-09-08",
-      "reviewers": [
-        "Kimi",
-        "CodeWord",
-        "Perplexity",
-        "DeepSeek",
-        "Qwen",
-        "Claude",
-        "Gemini (text identical to Claude's)"
+  "aofm": {
+   "base_url": "https://www.aofm.gov.au/data-hub",
+   "status": "pending (Phase 2/3)",
+   "files": {
+    "treasury_bonds_issuance": "tender results history XLSX (coverage ratio, weighted avg yield, amount)",
+    "treasury_notes_issuance": "weekly T-note tenders XLSX",
+    "headline_cash_balance": "headline_cash_balance.csv (monthly)",
+    "gross_funding_req": "gross_funding_req.csv"
+   },
+   "note": "Data Hub file URLs carry upload dates; resolve the link from the Data Hub page at each run (link discovery), keep checksum; tender results per event on aofm.gov.au"
+  },
+  "finance_monthly": {
+   "name": "Department of Finance — Australian Government Monthly Financial Statements",
+   "status": "pending (Phase 3)",
+   "freq": "monthly, ~4-week lag"
+  },
+  "fred_fallback": {
+   "status": "degraded-only",
+   "series": {
+    "IRSTCI01AUM156N": "cash rate (monthly)",
+    "IRLTLT01AUM156N": "10Y (monthly)"
+   },
+   "note": "never for balance sheet / ES"
+  }
+ },
+ "blocks": {
+  "central_bank": {
+   "title": "1 · Central bank liquidity — Reserve Bank of Australia",
+   "equivalence_quality": "high",
+   "equivalence_note": "Weekly A1 balance sheet + DAILY ES balances (A3): the AUD has a daily reserves series, closer to the Fed's H.4.1/daily data than CAD or GBP.",
+   "series": {
+    "es_balances_daily": {
+     "id": "AESAT",
+     "table": "a3_es",
+     "label": "Total Exchange Settlement (ES) balances — daily",
+     "freq": "daily",
+     "usd_analog": "WRESBAL (daily)",
+     "status": "verified",
+     "verified": "2026-09-07 = 168149"
+    },
+    "es_surplus_daily": {
+     "id": "AESALRRCRT",
+     "table": "a3_es",
+     "label": "Surplus ES balances (adjusted for late payments / minimum requirements)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 135369"
+    },
+    "sf_repos_surplus_rate": {
+     "id": "AORRLFCRT",
+     "table": "a3_es",
+     "label": "Open repo (standing facility at the ES rate) — operational, used for payments, NOT stress",
+     "freq": "daily",
+     "status": "verified",
+     "role": "operational; usage < $5bn (Aug 2026); facility ceases early 2027 → parser must tolerate the column disappearing",
+     "sunset": "2027-Q1"
+    },
+    "sf_repos_margin": {
+     "id": "AORRLFPR",
+     "table": "a3_es",
+     "label": "Overnight standing-facility repos at target + 25 bp (penalty)",
+     "freq": "daily",
+     "status": "verified",
+     "role": "emergency gauge (Primary credit analogue): > 0 = flag, sustained = panic",
+     "usd_analog": "Primary credit"
+    },
+    "omo_reverse_repos": {
+     "id": "AORROMO",
+     "table": "a3_es",
+     "label": "Outstanding OMO reverse repos (liquidity provided by the RBA)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 27679",
+     "role": "demand-driven full-allotment repos — quantity is not a policy signal"
+    },
+    "omo_triparty": {
+     "id": "AORROMOTRI",
+     "table": "a3_es",
+     "label": "Outstanding OMO triparty reverse repos",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "2026-09-07 = 15556"
+    },
+    "omo_repos_absorb": {
+     "id": "AOROMO",
+     "table": "a3_es",
+     "label": "Outstanding OMO repos (liquidity absorbed)",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "reserves": {
+     "id": "ARBALESBW",
+     "table": "a1",
+     "label": "Exchange settlement balances — weekly (A1)",
+     "freq": "weekly",
+     "usd_analog": "WRESBAL",
+     "status": "verified",
+     "verified": "2026-09-02 = 169961"
+    },
+    "government_account": {
+     "id": "ARBALDOGIAGW",
+     "table": "a1",
+     "label": "Australian Government deposits at the RBA",
+     "freq": "weekly",
+     "usd_analog": "WTREGEN (TGA)",
+     "status": "verified",
+     "verified": "2026-09-02 = 80294 (from 46550 on 2026-08-19)"
+    },
+    "state_deposits": {
+     "id": "ARBALDOGISW",
+     "table": "a1",
+     "label": "State Governments deposits",
+     "freq": "weekly",
+     "status": "verified",
+     "display_only": true
+    },
+    "notes_in_circulation": {
+     "id": "ARBALNOIW",
+     "table": "a1",
+     "label": "Notes on issue",
+     "freq": "weekly",
+     "status": "verified",
+     "verified": "2026-09-02 = 108500"
+    },
+    "overseas_deposits": {
+     "id": "ARBALDOOIW",
+     "table": "a1",
+     "label": "Deposits of overseas institutions",
+     "freq": "weekly",
+     "status": "verified",
+     "display_only": true
+    },
+    "total_assets": {
+     "id": "ARBAATAW",
+     "table": "a1",
+     "label": "Total RBA assets",
+     "freq": "weekly",
+     "usd_analog": "WALCL",
+     "status": "verified",
+     "verified": "2026-09-02 = 357899"
+    },
+    "aud_investments": {
+     "id": "ARBAAASTW",
+     "table": "a1",
+     "label": "Australian dollar investments (AGS/semis held outright + repo)",
+     "freq": "weekly",
+     "usd_analog": "SOMA",
+     "status": "verified",
+     "verified": "2026-09-02 = 243713"
+    },
+    "gold_fx": {
+     "id": "ARBAAGFXW",
+     "table": "a1",
+     "label": "Gold and foreign exchange",
+     "freq": "weekly",
+     "status": "verified",
+     "display_only": true
+    },
+    "omo_takeup_weekly": {
+     "id": null,
+     "table": "a3-omo-repo-transaction-details",
+     "label": "OMO weekly take-up: amount allotted (7d + 28d), by operation",
+     "freq": "weekly (Wednesday)",
+     "status": "pending (Phase 2 parser)",
+     "role": "THE demand-driven signal: rising take-up = banks replacing declining reserves; surge > p90 = early friction before AONIA moves (RBA's own scarcity indicator #2)"
+    },
+    "apf_holdings_a31": {
+     "id": null,
+     "table": "a3.1-summary",
+     "label": "RBA holdings of AGS and semis (run-off of the bond portfolio)",
+     "freq": "monthly",
+     "status": "pending (Phase 2)",
+     "role": "structural driver of reserve decline"
+    },
+    "securities_lending": {
+     "id": null,
+     "table": "a3.2-rba-securities-lending",
+     "label": "RBA securities lending (own + on behalf of AOFM)",
+     "freq": "event",
+     "status": "pending (Phase 3)",
+     "role": "collateral squeeze flag"
+    },
+    "fx_transactions": {
+     "id": null,
+     "table": "a4-data",
+     "label": "RBA net FX transactions / official reserve assets (A4 monthly; A5 daily intervention, rare)",
+     "freq": "monthly",
+     "status": "pending (Phase 3)",
+     "role": "binary flag FX_OPERATION; not a regular liquidity tool today"
+    }
+   },
+   "derived": {
+    "net_liquidity": {
+     "formula": "total_assets - government_account",
+     "usd_analog": "WALCL − TGA (no RRP analogue in Australia)",
+     "label": "Balance-sheet liquidity (assets − government deposits)",
+     "note": "kept as the cross-currency balance-sheet analogue; NOT the primary AUD reserves gauge (that is ES total vs the RBA demand estimate + price). State-government deposits exist in A1 but are immaterial (< $50m)."
+    },
+    "net_liquidity_wow_pct": {
+     "formula": "pct_change(net_liquidity,1)"
+    },
+    "reserves_wow_pct": {
+     "formula": "pct_change(reserves,1)"
+    },
+    "es_balances_dod": {
+     "formula": "diff(es_balances_daily,1)",
+     "note": "daily reserve impulse — mirrors fiscal flows and OMO on the day"
+    },
+    "omo_share_of_es": {
+     "formula": "(omo_reverse_repos + omo_triparty) / es_balances_daily",
+     "note": "repo-supplied share of ES; RBA Aug-2026: OMO $20–30bn outstanding vs ES ~$200bn. Escalates only with price confirmation"
+    },
+    "currency_drain": {
+     "formula": "-diff(notes_in_circulation,1)"
+    },
+    "balance_sheet_phase": {
+     "formula": "QT if aud_investments falling 13w AND omo not rising, else NORMALIZATION/STEADY"
+    }
+   },
+   "thresholds": {
+    "reserves": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "applies_to": "es_balances_daily (ES total) and reserves (weekly)",
+     "primary_absolute": {
+      "boc_target_range": [
+       70000,
+       100000
       ],
-      "verdict": "7/7 VALIDADO CON CAMBIOS; applied in v0.2 (TRIANGULACION_AUD_matriz.md)"
+      "range_name": "RBA estimate of banks' demand for reserves in an ample regime",
+      "source": "Jacobs, 'The Road to Ample', 2026-08-25: demand estimated $70–100bn (was $100–200bn in 2024); ES ~$200bn Aug 2026",
+      "below_range_watch": 70000,
+      "stress_below": 60000,
+      "crisis_below": 50000,
+      "above_range_note": "> 100bn = ample; the RBA explicitly does not target a level — scarcity is read in PRICE (AONIA vs target, OMO take-up)",
+      "in_range_note": "inside 70–100bn = approaching ample; informational WATCH, escalate only with price/OMO confirmation",
+      "review_rule": "re-check at every RBA speech/SMP that updates the demand estimate"
+     },
+     "percentile_note": "no percentile on the LEVEL (structural decline under run-off); percentiles on es_balances_dod, reserves_wow_pct, and on es_surplus_daily wow since 2025-02 (ample-reserves regime window), not 3y"
+    },
+    "net_liquidity_wow_pct": {
+     "method": "percentile",
+     "window": "156w",
+     "risk_on_above": "p85",
+     "risk_off_below": "p15",
+     "hysteresis": {
+      "exit_on": "p75/p25"
+     }
+    },
+    "reserves_wow_pct": {
+     "method": "percentile",
+     "window": "156w",
+     "direction": "low_is_risk",
+     "watch_below": "p20",
+     "stress_below": "p10",
+     "crisis_below": "p3",
+     "hysteresis": {
+      "exit_on": "p30/p20/p10"
+     }
+    },
+    "es_balances_dod": {
+     "method": "percentile",
+     "window": "since 2025-02-01 (regime window) or 750d, whichever shorter",
+     "watch_below": "p10",
+     "stress_below": "p3",
+     "hysteresis": {
+      "exit_on": "p20/p10"
+     }
+    },
+    "sf_repos_margin": {
+     "method": "absolute",
+     "watch_above": 0,
+     "stress_above": 500,
+     "crisis_above": 2000,
+     "origin": "any penalty-rate standing facility use = flag (analogue of Advances > 0)"
+    },
+    "omo_share_of_es": {
+     "method": "percentile",
+     "window": "156w",
+     "watch_above": "p80",
+     "stress_above": "p90",
+     "escalation_requires": "rates.overnight_minus_target_bps >= 0 persistent"
+    },
+    "omo_takeup_weekly": {
+     "method": "percentile",
+     "window": "since 2025-04-09",
+     "watch_above": "p80",
+     "stress_above": "p90",
+     "note": "OMO_TAKEUP_SURGE flag"
     }
+   }
   },
-  "sources": {
-    "rba_tables": {
-      "base_url": "https://www.rba.gov.au/statistics/tables/csv/",
-      "auth": "none",
-      "format": "CSV, 11 header rows (Title/Description/Frequency/Type/Units/Source/Publication date/Series ID) then DD-Mon-YYYY rows; $ million",
-      "verified": "2026-09-08 via in-app browser",
-      "tables": {
-        "a1": {
-          "file": "a1-data.csv",
-          "freq": "weekly (Wednesday data, published Friday)",
-          "last": "2026-09-02"
-        },
-        "a2": {
-          "file": "a2-data.csv",
-          "freq": "as announced (cash rate target, ES rate, overnight repo rate)",
-          "last": "2026-05-06: target 4.35, ES 4.25, overnight repo 4.60"
-        },
-        "a3_es": {
-          "file": "a3-es-balances-and-repo-agreements.csv",
-          "freq": "daily (T+1)",
-          "last": "2026-09-07"
-        },
-        "f1": {
-          "file": "f1-data.csv",
-          "freq": "daily",
-          "last": "2026-09-07"
-        },
-        "f2": {
-          "file": "f2-data.csv",
-          "freq": "daily values, file updated weekly (~2-business-day lag)",
-          "last": "2026-09-02"
-        },
-        "d1": {
-          "file": "d1-data.csv",
-          "freq": "monthly (credit growth)",
-          "date_format": "DD/MM/YYYY (monthly rows)"
-        },
-        "d3": {
-          "file": "d3-data.csv",
-          "freq": "monthly (monetary aggregates)",
-          "date_format": "DD/MM/YYYY"
-        },
-        "d2": {
-          "file": "d2-data.csv",
-          "freq": "monthly (lending & credit aggregates, levels)"
-        },
-        "f11": {
-          "file": "f11-data.csv",
-          "freq": "monthly end-of-month (daily FX in f11.1-data.csv, Phase 3)",
-          "status": "F11 verified (FXRUSD 0.7166 on 2026-08-31)"
-        },
-        "a3_omo_repo": {
-          "file": "a3-omo-repo-transaction-details.csv",
-          "freq": "per operation (weekly)",
-          "status": "pending parse"
-        },
-        "a31": {
-          "file": "a3.1-summary.csv",
-          "freq": "monthly"
-        },
-        "a32": {
-          "file": "a3.2-rba-securities-lending.csv",
-          "freq": "event"
-        },
-        "a4": {
-          "file": "a4-data.csv",
-          "freq": "monthly"
-        }
-      },
-      "rate_limit_rule": "one GET per table per lane, ≥ 2 s apart, identifiable User-Agent; files are 60k+ lines (F2) — parse streaming, keep raw copy",
-      "hardening": [
-        "parse by column name from the 'Series ID' / 'Title' header rows",
-        "schema check each run (expected ids present) — fail loudly",
-        "raw CSV snapshot per run",
-        "F2 weekly cadence; A3 open-repo column may vanish early 2027",
-        "no SDMX/API endpoint verified for the RBA (Claude/Gemini claim not confirmed) — CSV remains the source"
-      ]
+  "fiscal": {
+   "title": "2 · Treasury / fiscal equivalent — Australian Government deposits at the RBA, AOFM, Department of Finance",
+   "equivalence_quality": "medium-high",
+   "equivalence_note": "Government deposits at the RBA are WEEKLY (A1) — a true TGA analogue at weekly resolution (better than GBP, worse than CAD's daily Receiver General). Issuance/tenders from AOFM (event). Monthly financial statements from Finance for the NFA flow.",
+   "series": {
+    "government_account": {
+     "id": "ARBALDOGIAGW",
+     "table": "a1",
+     "label": "Australian Government deposits at the RBA (weekly)",
+     "freq": "weekly",
+     "usd_analog": "WTREGEN",
+     "status": "verified"
     },
-    "aofm": {
-      "base_url": "https://www.aofm.gov.au/data-hub",
-      "status": "pending (Phase 2/3)",
-      "files": {
-        "treasury_bonds_issuance": "tender results history XLSX (coverage ratio, weighted avg yield, amount)",
-        "treasury_notes_issuance": "weekly T-note tenders XLSX",
-        "headline_cash_balance": "headline_cash_balance.csv (monthly)",
-        "gross_funding_req": "gross_funding_req.csv"
-      },
-      "note": "Data Hub file URLs carry upload dates; resolve the link from the Data Hub page at each run (link discovery), keep checksum; tender results per event on aofm.gov.au"
+    "aofm_bond_tenders": {
+     "id": null,
+     "label": "AOFM Treasury Bond tenders: amount, coverage ratio, weighted avg yield",
+     "freq": "event (typically Wed/Fri)",
+     "status": "pending",
+     "source": "aofm treasury bonds - issuance.xlsx"
     },
-    "finance_monthly": {
-      "name": "Department of Finance — Australian Government Monthly Financial Statements",
-      "status": "pending (Phase 3)",
-      "freq": "monthly, ~4-week lag"
+    "aofm_note_tenders": {
+     "id": null,
+     "label": "AOFM Treasury Note tenders (weekly Thu)",
+     "freq": "event",
+     "status": "pending"
     },
-    "fred_fallback": {
-      "status": "degraded-only",
-      "series": {
-        "IRSTCI01AUM156N": "cash rate (monthly)",
-        "IRLTLT01AUM156N": "10Y (monthly)"
-      },
-      "note": "never for balance sheet / ES"
+    "headline_cash_balance": {
+     "id": null,
+     "label": "Australian Government headline cash balance (monthly)",
+     "freq": "monthly",
+     "status": "pending",
+     "source": "aofm headline_cash_balance.csv / Finance monthly statements"
+    },
+    "receipts_payments_monthly": {
+     "id": null,
+     "label": "Receipts and payments (Finance monthly statements)",
+     "freq": "monthly",
+     "status": "pending (Phase 3)"
+    },
+    "tnotes_on_issue": {
+     "id": null,
+     "label": "Treasury Notes on issue (AOFM, weekly estimate)",
+     "freq": "weekly",
+     "status": "pending",
+     "role": "short-term fiscal drain alongside AOFM term deposits"
+    },
+    "ags_redemptions": {
+     "id": null,
+     "label": "AGS maturity calendar (large redemptions > $20bn = fiscal event)",
+     "freq": "event",
+     "status": "pending"
     }
-  },
-  "blocks": {
-    "central_bank": {
-      "title": "1 · Central bank liquidity — Reserve Bank of Australia",
-      "equivalence_quality": "high",
-      "equivalence_note": "Weekly A1 balance sheet + DAILY ES balances (A3): the AUD has a daily reserves series, closer to the Fed's H.4.1/daily data than CAD or GBP.",
-      "series": {
-        "es_balances_daily": {
-          "id": "AESAT",
-          "table": "a3_es",
-          "label": "Total Exchange Settlement (ES) balances — daily",
-          "freq": "daily",
-          "usd_analog": "WRESBAL (daily)",
-          "status": "verified",
-          "verified": "2026-09-07 = 168149"
-        },
-        "es_surplus_daily": {
-          "id": "AESALRRCRT",
-          "table": "a3_es",
-          "label": "Surplus ES balances (adjusted for late payments / minimum requirements)",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "2026-09-07 = 135369"
-        },
-        "sf_repos_surplus_rate": {
-          "id": "AORRLFCRT",
-          "table": "a3_es",
-          "label": "Open repo (standing facility at the ES rate) — operational, used for payments, NOT stress",
-          "freq": "daily",
-          "status": "verified",
-          "role": "operational; usage < $5bn (Aug 2026); facility ceases early 2027 → parser must tolerate the column disappearing",
-          "sunset": "2027-Q1"
-        },
-        "sf_repos_margin": {
-          "id": "AORRLFPR",
-          "table": "a3_es",
-          "label": "Overnight standing-facility repos at target + 25 bp (penalty)",
-          "freq": "daily",
-          "status": "verified",
-          "role": "emergency gauge (Primary credit analogue): > 0 = flag, sustained = panic",
-          "usd_analog": "Primary credit"
-        },
-        "omo_reverse_repos": {
-          "id": "AORROMO",
-          "table": "a3_es",
-          "label": "Outstanding OMO reverse repos (liquidity provided by the RBA)",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "2026-09-07 = 27679",
-          "role": "demand-driven full-allotment repos — quantity is not a policy signal"
-        },
-        "omo_triparty": {
-          "id": "AORROMOTRI",
-          "table": "a3_es",
-          "label": "Outstanding OMO triparty reverse repos",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "2026-09-07 = 15556"
-        },
-        "omo_repos_absorb": {
-          "id": "AOROMO",
-          "table": "a3_es",
-          "label": "Outstanding OMO repos (liquidity absorbed)",
-          "freq": "daily",
-          "status": "verified"
-        },
-        "reserves": {
-          "id": "ARBALESBW",
-          "table": "a1",
-          "label": "Exchange settlement balances — weekly (A1)",
-          "freq": "weekly",
-          "usd_analog": "WRESBAL",
-          "status": "verified",
-          "verified": "2026-09-02 = 169961"
-        },
-        "government_account": {
-          "id": "ARBALDOGIAGW",
-          "table": "a1",
-          "label": "Australian Government deposits at the RBA",
-          "freq": "weekly",
-          "usd_analog": "WTREGEN (TGA)",
-          "status": "verified",
-          "verified": "2026-09-02 = 80294 (from 46550 on 2026-08-19)"
-        },
-        "state_deposits": {
-          "id": "ARBALDOGISW",
-          "table": "a1",
-          "label": "State Governments deposits",
-          "freq": "weekly",
-          "status": "verified",
-          "display_only": true
-        },
-        "notes_in_circulation": {
-          "id": "ARBALNOIW",
-          "table": "a1",
-          "label": "Notes on issue",
-          "freq": "weekly",
-          "status": "verified",
-          "verified": "2026-09-02 = 108500"
-        },
-        "overseas_deposits": {
-          "id": "ARBALDOOIW",
-          "table": "a1",
-          "label": "Deposits of overseas institutions",
-          "freq": "weekly",
-          "status": "verified",
-          "display_only": true
-        },
-        "total_assets": {
-          "id": "ARBAATAW",
-          "table": "a1",
-          "label": "Total RBA assets",
-          "freq": "weekly",
-          "usd_analog": "WALCL",
-          "status": "verified",
-          "verified": "2026-09-02 = 357899"
-        },
-        "aud_investments": {
-          "id": "ARBAAASTW",
-          "table": "a1",
-          "label": "Australian dollar investments (AGS/semis held outright + repo)",
-          "freq": "weekly",
-          "usd_analog": "SOMA",
-          "status": "verified",
-          "verified": "2026-09-02 = 243713"
-        },
-        "gold_fx": {
-          "id": "ARBAAGFXW",
-          "table": "a1",
-          "label": "Gold and foreign exchange",
-          "freq": "weekly",
-          "status": "verified",
-          "display_only": true
-        },
-        "omo_takeup_weekly": {
-          "id": null,
-          "table": "a3-omo-repo-transaction-details",
-          "label": "OMO weekly take-up: amount allotted (7d + 28d), by operation",
-          "freq": "weekly (Wednesday)",
-          "status": "pending (Phase 2 parser)",
-          "role": "THE demand-driven signal: rising take-up = banks replacing declining reserves; surge > p90 = early friction before AONIA moves (RBA's own scarcity indicator #2)"
-        },
-        "apf_holdings_a31": {
-          "id": null,
-          "table": "a3.1-summary",
-          "label": "RBA holdings of AGS and semis (run-off of the bond portfolio)",
-          "freq": "monthly",
-          "status": "pending (Phase 2)",
-          "role": "structural driver of reserve decline"
-        },
-        "securities_lending": {
-          "id": null,
-          "table": "a3.2-rba-securities-lending",
-          "label": "RBA securities lending (own + on behalf of AOFM)",
-          "freq": "event",
-          "status": "pending (Phase 3)",
-          "role": "collateral squeeze flag"
-        },
-        "fx_transactions": {
-          "id": null,
-          "table": "a4-data",
-          "label": "RBA net FX transactions / official reserve assets (A4 monthly; A5 daily intervention, rare)",
-          "freq": "monthly",
-          "status": "pending (Phase 3)",
-          "role": "binary flag FX_OPERATION; not a regular liquidity tool today"
-        }
-      },
-      "derived": {
-        "net_liquidity": {
-          "formula": "total_assets - government_account",
-          "usd_analog": "WALCL − TGA (no RRP analogue in Australia)",
-          "label": "Balance-sheet liquidity (assets − government deposits)",
-          "note": "kept as the cross-currency balance-sheet analogue; NOT the primary AUD reserves gauge (that is ES total vs the RBA demand estimate + price). State-government deposits exist in A1 but are immaterial (< $50m)."
-        },
-        "net_liquidity_wow_pct": {
-          "formula": "pct_change(net_liquidity,1)"
-        },
-        "reserves_wow_pct": {
-          "formula": "pct_change(reserves,1)"
-        },
-        "es_balances_dod": {
-          "formula": "diff(es_balances_daily,1)",
-          "note": "daily reserve impulse — mirrors fiscal flows and OMO on the day"
-        },
-        "omo_share_of_es": {
-          "formula": "(omo_reverse_repos + omo_triparty) / es_balances_daily",
-          "note": "repo-supplied share of ES; RBA Aug-2026: OMO $20–30bn outstanding vs ES ~$200bn. Escalates only with price confirmation"
-        },
-        "currency_drain": {
-          "formula": "-diff(notes_in_circulation,1)"
-        },
-        "balance_sheet_phase": {
-          "formula": "QT if aud_investments falling 13w AND omo not rising, else NORMALIZATION/STEADY"
-        }
-      },
-      "thresholds": {
-        "reserves": {
-          "method": "absolute_primary",
-          "direction": "low_is_risk",
-          "applies_to": "es_balances_daily (ES total) and reserves (weekly)",
-          "primary_absolute": {
-            "boc_target_range": [
-              70000,
-              100000
-            ],
-            "range_name": "RBA estimate of banks' demand for reserves in an ample regime",
-            "source": "Jacobs, 'The Road to Ample', 2026-08-25: demand estimated $70–100bn (was $100–200bn in 2024); ES ~$200bn Aug 2026",
-            "below_range_watch": 70000,
-            "stress_below": 60000,
-            "crisis_below": 50000,
-            "above_range_note": "> 100bn = ample; the RBA explicitly does not target a level — scarcity is read in PRICE (AONIA vs target, OMO take-up)",
-            "in_range_note": "inside 70–100bn = approaching ample; informational WATCH, escalate only with price/OMO confirmation",
-            "review_rule": "re-check at every RBA speech/SMP that updates the demand estimate"
-          },
-          "percentile_note": "no percentile on the LEVEL (structural decline under run-off); percentiles on es_balances_dod, reserves_wow_pct, and on es_surplus_daily wow since 2025-02 (ample-reserves regime window), not 3y"
-        },
-        "net_liquidity_wow_pct": {
-          "method": "percentile",
-          "window": "156w",
-          "risk_on_above": "p85",
-          "risk_off_below": "p15",
-          "hysteresis": {
-            "exit_on": "p75/p25"
-          }
-        },
-        "reserves_wow_pct": {
-          "method": "percentile",
-          "window": "156w",
-          "direction": "low_is_risk",
-          "watch_below": "p20",
-          "stress_below": "p10",
-          "crisis_below": "p3",
-          "hysteresis": {
-            "exit_on": "p30/p20/p10"
-          }
-        },
-        "es_balances_dod": {
-          "method": "percentile",
-          "window": "since 2025-02-01 (regime window) or 750d, whichever shorter",
-          "watch_below": "p10",
-          "stress_below": "p3",
-          "hysteresis": {
-            "exit_on": "p20/p10"
-          }
-        },
-        "sf_repos_margin": {
-          "method": "absolute",
-          "watch_above": 0,
-          "stress_above": 500,
-          "crisis_above": 2000,
-          "origin": "any penalty-rate standing facility use = flag (analogue of Advances > 0)"
-        },
-        "omo_share_of_es": {
-          "method": "percentile",
-          "window": "156w",
-          "watch_above": "p80",
-          "stress_above": "p90",
-          "escalation_requires": "rates.overnight_minus_target_bps >= 0 persistent"
-        },
-        "omo_takeup_weekly": {
-          "method": "percentile",
-          "window": "since 2025-04-09",
-          "watch_above": "p80",
-          "stress_above": "p90",
-          "note": "OMO_TAKEUP_SURGE flag"
-        }
-      }
+   },
+   "derived": {
+    "fiscal_flow_weekly": {
+     "formula": "-diff(government_account,1)",
+     "usd_analog": "−ΔTGA",
+     "sign": "positive = government deposits fell = net injection into ES balances (spending/redemptions > receipts/issuance)"
     },
-    "fiscal": {
-      "title": "2 · Treasury / fiscal equivalent — Australian Government deposits at the RBA, AOFM, Department of Finance",
-      "equivalence_quality": "medium-high",
-      "equivalence_note": "Government deposits at the RBA are WEEKLY (A1) — a true TGA analogue at weekly resolution (better than GBP, worse than CAD's daily Receiver General). Issuance/tenders from AOFM (event). Monthly financial statements from Finance for the NFA flow.",
-      "series": {
-        "government_account": {
-          "id": "ARBALDOGIAGW",
-          "table": "a1",
-          "label": "Australian Government deposits at the RBA (weekly)",
-          "freq": "weekly",
-          "usd_analog": "WTREGEN",
-          "status": "verified"
-        },
-        "aofm_bond_tenders": {
-          "id": null,
-          "label": "AOFM Treasury Bond tenders: amount, coverage ratio, weighted avg yield",
-          "freq": "event (typically Wed/Fri)",
-          "status": "pending",
-          "source": "aofm treasury bonds - issuance.xlsx"
-        },
-        "aofm_note_tenders": {
-          "id": null,
-          "label": "AOFM Treasury Note tenders (weekly Thu)",
-          "freq": "event",
-          "status": "pending"
-        },
-        "headline_cash_balance": {
-          "id": null,
-          "label": "Australian Government headline cash balance (monthly)",
-          "freq": "monthly",
-          "status": "pending",
-          "source": "aofm headline_cash_balance.csv / Finance monthly statements"
-        },
-        "receipts_payments_monthly": {
-          "id": null,
-          "label": "Receipts and payments (Finance monthly statements)",
-          "freq": "monthly",
-          "status": "pending (Phase 3)"
-        },
-        "tnotes_on_issue": {
-          "id": null,
-          "label": "Treasury Notes on issue (AOFM, weekly estimate)",
-          "freq": "weekly",
-          "status": "pending",
-          "role": "short-term fiscal drain alongside AOFM term deposits"
-        },
-        "ags_redemptions": {
-          "id": null,
-          "label": "AGS maturity calendar (large redemptions > $20bn = fiscal event)",
-          "freq": "event",
-          "status": "pending"
-        }
-      },
-      "derived": {
-        "fiscal_flow_weekly": {
-          "formula": "-diff(government_account,1)",
-          "usd_analog": "−ΔTGA",
-          "sign": "positive = government deposits fell = net injection into ES balances (spending/redemptions > receipts/issuance)"
-        },
-        "fiscal_flow_4w_cum": {
-          "formula": "rolling_sum(fiscal_flow_weekly,4)"
-        },
-        "fiscal_flow_zscore": {
-          "formula": "zscore(fiscal_flow_weekly, window=52)"
-        },
-        "net_issuance_event": {
-          "formula": "sum(tender amounts) per week − maturities (pending AOFM parser)"
-        },
-        "fiscal_regime": {
-          "formula": "regime(fiscal_flow_4w_cum percentile, zscore)",
-          "values": [
-            "INJECTION",
-            "DRAIN",
-            "NEUTRAL"
-          ]
-        },
-        "mmt_note": "Spending creates NFA; taxes destroy NFA; AGS issuance drains ES balances without changing NFA. Government deposits at the RBA are the only weekly window on the fiscal flow; tax dates (monthly BAS, quarterly company tax) and bond settlements drive large swings — annotate seasonality. Early-September jumps are NOT BAS (Kimi): read them as AOFM cash/term-deposit management or issuance settlement.",
-        "fiscal_big_week": {
-          "formula": "abs(fiscal_flow_weekly) >= 15000 OR abs(fiscal_flow_zscore) >= 2",
-          "note": "seasonally annotated: 21st monthly PAYG/GST, 28th after quarter-end BAS, company tax instalments, super guarantee 28 Jul/Oct/Jan/Apr, EOFY 30-Jun (cash rebuild Jul–Oct), AOFM cash-buffer management — none of these is scarcity"
-        }
-      },
-      "thresholds": {
-        "fiscal_flow_zscore": {
-          "method": "absolute",
-          "normal_within": 1.0,
-          "extraordinary_above": 2.0
-        },
-        "fiscal_flow_4w_cum": {
-          "method": "percentile",
-          "window": "156w",
-          "risk_on_above": "p80",
-          "risk_off_below": "p20",
-          "hysteresis": {
-            "exit_on": "p70/p30"
-          }
-        }
-      }
+    "fiscal_flow_4w_cum": {
+     "formula": "rolling_sum(fiscal_flow_weekly,4)"
     },
-    "banking": {
-      "title": "3 · Banking transmission — RBA financial aggregates (D1/D2/D3)",
-      "equivalence_quality": "medium",
-      "equivalence_note": "Monthly, ~1-month lag; D1 = growth rates, D2 = levels of lending/credit, D3 = monetary aggregates. APRA's D2A reporting decommission may delay financial aggregates (RBA notice, Sep 2026) → status degraded-by-design until confirmed. No weekly H.8 analogue.",
-      "series": {
-        "credit_total_mom": {
-          "id": "DGFACNFM",
-          "table": "d1",
-          "label": "Credit; Total excluding financial businesses — monthly growth %",
-          "freq": "monthly",
-          "status": "verified 2026-07 = 0.6"
-        },
-        "credit_housing_mom": {
-          "id": "DGFACHM",
-          "table": "d1",
-          "label": "Credit; Housing — monthly growth %",
-          "freq": "monthly",
-          "status": "verified"
-        },
-        "credit_business_mom": {
-          "id": "DGFACBNFM",
-          "table": "d1",
-          "label": "Credit; Non-financial business — monthly growth %",
-          "freq": "monthly",
-          "status": "verified 2026-07 = 0.9"
-        },
-        "credit_personal_mom": {
-          "id": "DGFACOPM",
-          "table": "d1",
-          "label": "Credit; Other personal — monthly growth %",
-          "freq": "monthly",
-          "status": "verified"
-        },
-        "m3_mom": {
-          "id": "DGFAM3M",
-          "table": "d1",
-          "label": "M3 — monthly growth %",
-          "freq": "monthly",
-          "status": "verified"
-        },
-        "broad_money_yoy": {
-          "id": "DGFABM12",
-          "table": "d1",
-          "label": "Broad money — 12-month growth %",
-          "freq": "monthly",
-          "status": "verified"
-        },
-        "m3_level": {
-          "id": "DMAM3S",
-          "table": "d3",
-          "label": "M3 seasonally adjusted (level)",
-          "freq": "monthly",
-          "status": "verified 2026-07 = 3497.2",
-          "unit": "AUD billions"
-        },
-        "money_base": {
-          "id": "DMAMMB",
-          "table": "d3",
-          "label": "Money base",
-          "freq": "monthly",
-          "status": "verified",
-          "display_only": true,
-          "unit": "AUD billions"
-        }
-      },
-      "derived": {
-        "transmission_signal": {
-          "rule": "green if ≥3 of {credit total, housing, business, M3, broad money} growth > 0 with z ≥ 0; red if ≥3 z ≤ −1; NO SIGNAL if < 3 valid"
-        },
-        "heatmap_zscore": {
-          "window": 24
-        }
-      },
-      "signal_rule": {
-        "use": "growth rates (already flows) → z-scores 24m",
-        "min_series_valid": 3,
-        "role": "confirmation layer"
-      },
-      "code_policy": "series ids resolved from the CSV 'Series ID' header row at ingest (parse by column name, never by position); fail loudly if an id disappears"
+    "fiscal_flow_zscore": {
+     "formula": "zscore(fiscal_flow_weekly, window=52)"
     },
-    "rates": {
-      "title": "4 · Rates & money market — cash rate corridor, BBSW/OIS, AGS curve",
-      "equivalence_quality": "high",
-      "equivalence_note": "F1 daily: target, actual interbank overnight cash rate (with high/low and volume), BBSW 1/3/6M, OIS 1/3/6M, T-notes; F2 daily AGS 2/3/5/10Y. Corridor known from A2.",
-      "series": {
-        "policy_rate": {
-          "id": "FIRMMCRTD",
-          "table": "f1",
-          "label": "Cash Rate Target",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "4.35 (2026-09-07)"
-        },
-        "overnight_rate": {
-          "id": "FIRMMCRID",
-          "table": "f1",
-          "label": "Interbank Overnight Cash Rate (actual, AONIA)",
-          "freq": "daily",
-          "usd_analog": "EFFR/SOFR",
-          "status": "verified",
-          "verified": "4.35 (2026-09-07)"
-        },
-        "overnight_high": {
-          "id": "FIRMMCRIH",
-          "table": "f1",
-          "label": "Highest interbank overnight cash rate",
-          "freq": "daily",
-          "status": "verified"
-        },
-        "overnight_low": {
-          "id": "FIRMMCRIL",
-          "table": "f1",
-          "label": "Lowest interbank overnight cash rate",
-          "freq": "daily",
-          "status": "verified"
-        },
-        "cash_market_volume": {
-          "id": "FIRMMCRIV",
-          "table": "f1",
-          "label": "Volume of cash market transactions ($m)",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "1859 (2026-09-07)"
-        },
-        "bbsw_1m": {
-          "id": "FIRMMBAB30D",
-          "table": "f1",
-          "label": "1M BABs/NCDs (BBSW)",
-          "freq": "daily",
-          "status": "verified"
-        },
-        "bbsw_3m": {
-          "id": "FIRMMBAB90D",
-          "table": "f1",
-          "label": "3M BABs/NCDs (BBSW)",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "4.62 (2026-09-07)"
-        },
-        "ois_1m": {
-          "table": "f1",
-          "label": "1M OIS",
-          "freq": "daily",
-          "status": "unavailable (F1 column empty since Dec-2022)",
-          "id_note": "FIRMMOIS1D",
-          "id": null
-        },
-        "ois_3m": {
-          "table": "f1",
-          "label": "3M OIS",
-          "freq": "daily",
-          "status": "unavailable (F1 column empty since Dec-2022)",
-          "id_note": "FIRMMOIS3D",
-          "id": null
-        },
-        "tnote_3m": {
-          "table": "f1",
-          "label": "3M Treasury Note",
-          "freq": "daily",
-          "status": "unavailable (F1 column empty since Dec-2022)",
-          "id_note": "FIRMMTN3D",
-          "id": null
-        },
-        "bond_2y": {
-          "id": "FCMYGBAG2D",
-          "table": "f2",
-          "label": "AGS 2Y",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "4.831 (2026-09-02)",
-          "lane": "weekly"
-        },
-        "bond_3y": {
-          "id": "FCMYGBAG3D",
-          "table": "f2",
-          "label": "AGS 3Y",
-          "freq": "daily",
-          "status": "verified"
-        },
-        "bond_5y": {
-          "id": "FCMYGBAG5D",
-          "table": "f2",
-          "label": "AGS 5Y",
-          "freq": "daily",
-          "status": "verified"
-        },
-        "bond_10y": {
-          "id": "FCMYGBAG10D",
-          "table": "f2",
-          "label": "AGS 10Y",
-          "freq": "daily",
-          "status": "verified",
-          "verified": "5.220 (2026-09-02)",
-          "lane": "weekly"
-        },
-        "es_rate": {
-          "id": "ARBAMPNRPESB",
-          "table": "a2",
-          "label": "ES rate (rate paid on surplus ES balances) = target − 10 bp",
-          "freq": "event",
-          "status": "verified",
-          "verified": "4.25 (2026-05-06)"
-        },
-        "overnight_repo_rate": {
-          "id": "ARBAMPNORR",
-          "table": "a2",
-          "label": "Overnight standing-facility repo rate = target + 25 bp",
-          "freq": "event",
-          "status": "verified",
-          "verified": "4.60 (2026-05-06)"
-        }
-      },
-      "derived": {
-        "overnight_minus_target_bps": {
-          "formula": "(overnight_rate - policy_rate) * 100",
-          "usd_analog": "EFFR − target midpoint",
-          "note": "PRIMARY stress spread. Under OMO at +10, AONIA is anchored AT target (RBA: private overnight repo ~+2 bp, Aug 2026). ≥ +3 early flag; ≥ +5 three sessions = STRESS; ≥ +15 = CRISIS (ceiling +25). Also flag the LOW side: AONIA ≤ target − 5 persistent = excess (not scarcity)"
-        },
-        "overnight_minus_es_rate_bps": {
-          "formula": "(overnight_rate - es_rate) * 100",
-          "usd_analog": "SOFR − IORB",
-          "note": "secondary: distance from the floor (normal ≈ +10). CodeWord/Qwen asked to anchor here; kept secondary because AONIA is anchored at target since 2025 (Kimi), band_position covers it"
-        },
-        "band_position": {
-          "formula": "(overnight_rate - es_rate) / (overnight_repo_rate - es_rate)",
-          "note": "0 = floor, 1 = ceiling; normal ≈ 0.29"
-        },
-        "bbsw_ois_3m_bps": {
-          "formula": "(bbsw_3m - ois_3m) * 100",
-          "status": "unavailable (OIS discontinued in F1)",
-          "note": "kept for lineage"
-        },
-        "cash_market_dispersion_bps": {
-          "formula": "(overnight_high - overnight_low) * 100",
-          "usd_analog": "CORRA/SOFR dispersion"
-        },
-        "curve_10y_2y_bps": {
-          "formula": "(bond_10y - bond_2y) * 100"
-        },
-        "target_minus_2y_bps": {
-          "formula": "(policy_rate - bond_2y) * 100",
-          "note": "> 0 = market prices cuts"
-        },
-        "bbsw_minus_target_bps": {
-          "formula": "(bbsw_3m - policy_rate) * 100",
-          "usd_analog": "3M − FF (embeds rate expectations)",
-          "note": "funding-stress proxy while OIS is unavailable; PRIMARY = rolling percentile (750d) because the level embeds expected hikes/cuts; absolute secondary 30/45/70"
-        }
-      },
-      "thresholds": {
-        "overnight_minus_target_bps": {
-          "method": "percentile",
-          "window": "750d",
-          "watch_above": "p80",
-          "stress_above": "p90",
-          "crisis_above": "p97",
-          "hysteresis": {
-            "exit_on": "p70/p80/p90"
-          },
-          "secondary_absolute": {
-            "watch": 3,
-            "stress": 5,
-            "crisis": 15,
-            "persistence": {
-              "stress_and_above": "3 consecutive sessions",
-              "exclude_dates": [
-                "quarter_end",
-                "tax_days_21_28",
-                "EOFY_30_jun"
-              ]
-            },
-            "origin": "AONIA normally within ±2 bp of target; +25 = ceiling (standing facility)",
-            "low_side_excess": -5
-          }
-        },
-        "curve_10y_2y_bps": {
-          "method": "absolute",
-          "deep_inversion_below": -50,
-          "inverted_below": 0,
-          "flat_below": 25
-        },
-        "target_minus_2y_bps": {
-          "method": "absolute",
-          "normal_below": 10,
-          "elevated_below": 30,
-          "tight_above": 30
-        },
-        "band_position": {
-          "method": "absolute",
-          "watch_above": 0.6,
-          "stress_above": 0.85
-        },
-        "bbsw_minus_target_bps": {
-          "method": "percentile",
-          "window": "750d",
-          "watch_above": "p80",
-          "stress_above": "p90",
-          "crisis_above": "p97",
-          "hysteresis": {
-            "exit_on": "p70/p80/p90"
-          },
-          "secondary_absolute": {
-            "watch": 30,
-            "stress": 45,
-            "crisis": 70
-          },
-          "rule": "absolute is binding for STRESS/CRISIS; percentile alone caps at WATCH (BBSW−target embeds rate expectations: a hiking cycle is p99 but not funding stress)",
-          "origin": "v0.2.2 after first live run (p98.9 at 27 bp)"
-        }
-      },
-      "note_f2": "F2 values are daily but the file is updated WEEKLY with ~2-business-day lag (Kimi, verified: last row 2026-09-02 on 2026-09-08); F1 is daily. Curve cards carry 'weekly' cadence; semis yields removed from F2 in 2023 → unavailable"
-    }
-  },
-  "regime": {
-    "weights": {
-      "central_bank": 0.4,
-      "rates": 0.25,
-      "fiscal": 0.25,
-      "banking": 0.1
+    "net_issuance_event": {
+     "formula": "sum(tender amounts) per week − maturities (pending AOFM parser)"
     },
-    "weights_note": "v0.2: kept 0.40/0.25/0.25/0.10 — reviewers split (Qwen/Claude 0.15–0.20 fiscal, CodeWord ≥0.30, Kimi/DeepSeek/Perplexity 0.25). Median = proposal. Recalibrate with live history (regime.calibration).",
-    "stress_spread_metric": "rates.overnight_minus_target_bps",
-    "values": [
-      "LIQUIDITY_INJECTION",
-      "LIQUIDITY_DRAIN",
-      "LIQUIDITY_SCARCITY",
-      "FLOOR_FRICTION",
+    "fiscal_regime": {
+     "formula": "regime(fiscal_flow_4w_cum percentile, zscore)",
+     "values": [
+      "INJECTION",
+      "DRAIN",
       "NEUTRAL"
-    ],
-    "rules": {
-      "LIQUIDITY_SCARCITY": "surplus ES balances at/below p10 (156w) AND overnight_minus_target_bps ≥ STRESS persistent (or sf_repos_margin > 0)",
-      "FLOOR_FRICTION": "ES ample AND overnight_minus_target_bps ≥ WATCH persistent",
-      "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
-      "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
-      "NEUTRAL": "otherwise"
+     ]
     },
-    "orthogonal_flags": {
-      "TRANSMISSION_FAILURE": "banking.transmission_signal == RED while ES ample",
-      "OMO_DEPENDENCE_HEALTHY/STRESS": "omo_share_of_es ≥ WATCH without/with price confirmation",
-      "FISCAL_BIG_WEEK": "|fiscal_flow_zscore| ≥ 2",
-      "PHASE_*": "balance-sheet phase",
-      "OMO_TAKEUP_SURGE": "omo_takeup_weekly ≥ p90 (regime window) — early friction",
-      "OPEN_REPO_SUNSET": "informational until early 2027",
-      "FX_OPERATION": "A4/A5 non-zero (rare)",
-      "STANDING_FACILITY_USED": "sf_repos_margin (+25 bp) > 0 — NOT the open repo at the ES rate"
-    },
-    "min_blocks_for_signal": 2,
-    "calibration": {
-      "status": "planned",
-      "method": "same as GBP: after ≥26 weeks live, grid over weights scored against price-confirmed stress (AONIA ≥ target+5, OMO take-up surges)"
-    },
-    "reserves_metric": "central_bank.es_balances_daily"
-  },
-  "status_rules": {
-    "fresh_multiplier": 1.5,
-    "stale_multiplier": 3.0,
-    "nominal_period_days": {
-      "daily": 4,
-      "weekly": 7,
-      "monthly": 31
-    },
-    "monthly_lag_allowance_days": 75,
-    "lag_allowance_days": {
-      "receiver_general": 7
-    },
-    "note": "daily=4 covers weekends/holidays and the CORRA next-day publication"
-  },
-  "quality": {
-    "origin": "v2.0 quality.mjs, ported to Python",
-    "dedup": "last value wins per date, duplicates counted",
-    "outliers": {
-      "method": "modified_zscore_MAD",
-      "rolling_window": 20,
-      "min_points": 5,
-      "z_threshold": {
-        "default": 3.5,
-        "overnight_rate": 4.0,
-        "policy_rate": 5.0,
-        "bank_rate": 5.0,
-        "corra_total_volume": 4.5
-      }
-    },
-    "freshness_hours": {
-      "weekly_series": 192,
-      "daily_series": 72,
-      "policy_rate": 1440,
-      "monthly_series": 1800
-    },
-    "holiday_aware": true,
-    "null_streaks": "unexpected nulls only (weekends/holidays excluded)",
-    "confidence": {
-      "start": 100,
-      "penalties": {
-        "stale": "min(30, 30*(hours_over/threshold))",
-        "nulls_last30": "40*share",
-        "ongoing_streak": "min(25, 5*len)",
-        "latest_outlier": "8 or 15 if |mz|>5",
-        "duplicates": "min(10, 3*n)"
-      },
-      "tiers": {
-        "HIGH": 90,
-        "MEDIUM": 70,
-        "LOW": 50,
-        "CRITICAL": 0
-      }
-    },
-    "null_policy": "null is NEVER neutral/amber: series -> unavailable, block signal suppressed below min coverage"
-  },
-  "revisions": {
-    "keep_last": 50,
-    "series": [
-      "reserves",
-      "government_account",
-      "total_assets",
-      "es_balances_daily"
-    ]
-  },
-  "alerts": {
-    "origin": "CAD/GBP alert state machine",
-    "lifecycle": [
-      "active",
-      "resolved"
-    ],
-    "keep_last": 100,
-    "rules": [
-      {
-        "id": "es_drop",
-        "metric": "central_bank.es_balances_dod",
-        "when": "level >= WATCH",
-        "severity": "WARNING",
-        "category": "reserves"
-      },
-      {
-        "id": "sf_margin_used",
-        "metric": "central_bank.sf_repos_margin",
-        "when": "> 0",
-        "severity": "CRITICAL",
-        "category": "emergency"
-      },
-      {
-        "id": "aonia_above_target",
-        "metric": "rates.overnight_minus_target_bps",
-        "when": "level >= WATCH",
-        "severity": "WARNING",
-        "category": "funding"
-      },
-      {
-        "id": "aonia_stress",
-        "metric": "rates.overnight_minus_target_bps",
-        "when": "level >= STRESS",
-        "severity": "CRITICAL",
-        "category": "funding"
-      },
-      {
-        "id": "bbsw_stress",
-        "metric": "rates.bbsw_minus_target_bps",
-        "when": "level >= STRESS",
-        "severity": "WARNING",
-        "category": "funding"
-      },
-      {
-        "id": "net_liq_drain",
-        "metric": "central_bank.net_liquidity_wow_pct",
-        "when": "<= risk_off",
-        "severity": "WARNING",
-        "category": "liquidity"
-      },
-      {
-        "id": "fiscal_drain",
-        "metric": "fiscal.fiscal_flow_4w_cum",
-        "when": "<= drain",
-        "severity": "WARNING",
-        "category": "fiscal"
-      },
-      {
-        "id": "curve_inversion",
-        "metric": "rates.curve_10y_2y_bps",
-        "when": "< -50",
-        "severity": "WARNING",
-        "category": "curve"
-      },
-      {
-        "id": "transmission_break",
-        "metric": "banking.transmission_signal",
-        "when": "== RED",
-        "severity": "WARNING",
-        "category": "transmission"
-      },
-      {
-        "id": "data_degraded",
-        "metric": "quality.system.blw70",
-        "when": "> 0",
-        "severity": "INFO",
-        "category": "data"
-      }
-    ]
-  },
-  "scenarios": {
-    "origin": "CAD/GBP scenario engine; AUD liquidity-only set",
-    "items": [
-      {
-        "id": "L1",
-        "name": "ES Scarcity Approach",
-        "bias": "DEFENSIVE",
-        "min": 2,
-        "conditions": [
-          "central_bank.es_balances_dod level >= WATCH",
-          "rates.overnight_minus_target_bps level >= WATCH",
-          "central_bank.reserves_wow_pct <= p20"
-        ]
-      },
-      {
-        "id": "L2",
-        "name": "OMO-led Absorption",
-        "bias": "NEUTRAL",
-        "min": 2,
-        "conditions": [
-          "central_bank.omo_share_of_es >= p80",
-          "rates.overnight_minus_target_bps level == SAFE",
-          "central_bank.reserves level == SAFE"
-        ]
-      },
-      {
-        "id": "L3",
-        "name": "Fiscal Drain (tax week / issuance)",
-        "bias": "RISK-OFF",
-        "min": 2,
-        "conditions": [
-          "fiscal.fiscal_flow_4w_cum <= drain",
-          "fiscal.fiscal_flow_zscore <= -1.5",
-          "central_bank.net_liquidity_wow_pct <= risk_off"
-        ]
-      },
-      {
-        "id": "L4",
-        "name": "Funding Stress",
-        "bias": "EMERGENCY",
-        "min": 2,
-        "conditions": [
-          "rates.overnight_minus_target_bps level >= STRESS",
-          "rates.bbsw_minus_target_bps level >= STRESS",
-          "central_bank.sf_repos_margin > 0"
-        ]
-      },
-      {
-        "id": "L5",
-        "name": "Fiscal Injection",
-        "bias": "CONSTRUCTIVE",
-        "min": 2,
-        "conditions": [
-          "fiscal.fiscal_flow_4w_cum >= injection",
-          "fiscal.fiscal_flow_zscore >= 1",
-          "central_bank.reserves_wow_pct >= p80"
-        ]
-      },
-      {
-        "id": "L6",
-        "name": "Transmission Break",
-        "bias": "CAUTION",
-        "min": 2,
-        "conditions": [
-          "banking.transmission_signal == RED",
-          "banking.credit_business_mom mom_pct zscore <= -1",
-          "banking.m3_mom mom_pct zscore <= -1"
-        ]
-      }
-    ]
-  },
-  "calendar": {
-    "rba_board_dates_2026": [
-      "2026-02-03",
-      "2026-03-17",
-      "2026-05-05",
-      "2026-06-16",
-      "2026-08-11",
-      "2026-09-29",
-      "2026-11-03",
-      "2026-12-08"
-    ],
-    "a1_release": "Friday ~16:30 Sydney (Wednesday data)",
-    "a3_es_release": "daily T+1 ~11:00 Sydney",
-    "f1_f2_release": "daily ~16:30/next morning Sydney",
-    "d1_d3_release": "last business day of month + 1 (~09:30 Sydney)",
-    "aofm_tenders": "bonds Wed/Fri 12:00 AEST, notes Thu; announced the Friday before",
-    "tax_dates": "pending — monthly BAS 21st, quarterly company tax, June year-end",
-    "decision_time": "14:30 Australia/Sydney",
-    "fiscal_seasonality": {
-      "monthly_21": "PAYG withholding / GST for monthly lodgers",
-      "quarterly_28_after_quarter": "BAS quarterly (Jan/Apr/Jul/Oct 28)",
-      "company_tax_instalments": "quarterly, following month",
-      "super_guarantee": [
-        "01-28",
-        "04-28",
-        "07-28",
-        "10-28"
-      ],
-      "eofy": "06-30 (cash rebuild Jul–Oct)",
-      "fbt": "05-21"
-    },
-    "omo_day": "Wednesday 09:20 Sydney (7d + 28d)",
-    "open_repo_sunset": "early 2027",
-    "rba_board_source": "RBA media release 2025-02 (verified 2026-09-08); decision 14:30 Sydney, presser 15:30",
-    "au_holidays_2026": [
-      "2026-01-01",
-      "2026-01-26",
-      "2026-04-03",
-      "2026-04-06",
-      "2026-04-25",
-      "2026-06-08",
-      "2026-12-25",
-      "2026-12-28"
-    ]
-  },
-  "refresh_lanes": {
-    "daily": {
-      "cron_utc": "30 2 * * 1-5",
-      "note": "12:30 Sydney: A3 ES (T+1) + F1 (AONIA, BBSW, OIS)",
-      "blocks": [
-        "central_bank",
-        "rates"
-      ],
-      "run_agent": false
-    },
-    "weekly": {
-      "cron_utc": "0 8 * * 5",
-      "note": "Friday after A1 + F2 weekly file + OMO take-up (Wed op)",
-      "blocks": [
-        "central_bank",
-        "fiscal",
-        "rates"
-      ],
-      "run_agent": true
-    },
-    "monthly": {
-      "cron_utc": "0 3 2 * *",
-      "note": "D1/D3 out on the 1st business day",
-      "blocks": [
-        "banking"
-      ],
-      "run_agent": true
+    "mmt_note": "Spending creates NFA; taxes destroy NFA; AGS issuance drains ES balances without changing NFA. Government deposits at the RBA are the only weekly window on the fiscal flow; tax dates (monthly BAS, quarterly company tax) and bond settlements drive large swings — annotate seasonality. Early-September jumps are NOT BAS (Kimi): read them as AOFM cash/term-deposit management or issuance settlement.",
+    "fiscal_big_week": {
+     "formula": "abs(fiscal_flow_weekly) >= 15000 OR abs(fiscal_flow_zscore) >= 2",
+     "note": "seasonally annotated: 21st monthly PAYG/GST, 28th after quarter-end BAS, company tax instalments, super guarantee 28 Jul/Oct/Jan/Apr, EOFY 30-Jun (cash rebuild Jul–Oct), AOFM cash-buffer management — none of these is scarcity"
     }
-  },
-  "desk_exports": {
-    "audusd": {
-      "id": "FXRUSD",
-      "table": "f11",
-      "label": "A$1 = USD (monthly F11; daily F11.1 pending)",
-      "status": "verified monthly"
+   },
+   "thresholds": {
+    "fiscal_flow_zscore": {
+     "method": "absolute",
+     "normal_within": 1.0,
+     "extraordinary_above": 2.0
+    },
+    "fiscal_flow_4w_cum": {
+     "method": "percentile",
+     "window": "156w",
+     "risk_on_above": "p80",
+     "risk_off_below": "p20",
+     "hysteresis": {
+      "exit_on": "p70/p30"
+     }
     }
+   }
   },
-  "agent": {
-    "name": "GBP Currency Agent",
-    "reads": [
-      "data/gbp/central_bank.json",
-      "data/gbp/fiscal.json",
-      "data/gbp/banking.json",
-      "data/gbp/rates.json",
-      "data/gbp/calendar.json"
-    ],
-    "writes": "agents/gbp.json",
-    "vocabulary": "MMT/Mosler; BoE repo-led demand-driven framework; PMRR",
-    "alert_types": [
-      "LIQUIDITY_GAIN",
-      "LIQUIDITY_LOSS",
-      "LIQUIDITY_SCARCITY",
-      "TRANSMISSION_BREAK",
-      "DATA_DEGRADED"
-    ],
-    "never": [
-      "trade execution",
-      "position sizing",
-      "technical analysis"
-    ]
+  "banking": {
+   "title": "3 · Banking transmission — RBA financial aggregates (D1/D2/D3)",
+   "equivalence_quality": "medium",
+   "equivalence_note": "Monthly, ~1-month lag; D1 = growth rates, D2 = levels of lending/credit, D3 = monetary aggregates. APRA's D2A reporting decommission may delay financial aggregates (RBA notice, Sep 2026) → status degraded-by-design until confirmed. No weekly H.8 analogue.",
+   "series": {
+    "credit_total_mom": {
+     "id": "DGFACNFM",
+     "table": "d1",
+     "label": "Credit; Total excluding financial businesses — monthly growth %",
+     "freq": "monthly",
+     "status": "verified 2026-07 = 0.6"
+    },
+    "credit_housing_mom": {
+     "id": "DGFACHM",
+     "table": "d1",
+     "label": "Credit; Housing — monthly growth %",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "credit_business_mom": {
+     "id": "DGFACBNFM",
+     "table": "d1",
+     "label": "Credit; Non-financial business — monthly growth %",
+     "freq": "monthly",
+     "status": "verified 2026-07 = 0.9"
+    },
+    "credit_personal_mom": {
+     "id": "DGFACOPM",
+     "table": "d1",
+     "label": "Credit; Other personal — monthly growth %",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "m3_mom": {
+     "id": "DGFAM3M",
+     "table": "d1",
+     "label": "M3 — monthly growth %",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "broad_money_yoy": {
+     "id": "DGFABM12",
+     "table": "d1",
+     "label": "Broad money — 12-month growth %",
+     "freq": "monthly",
+     "status": "verified"
+    },
+    "m3_level": {
+     "id": "DMAM3S",
+     "table": "d3",
+     "label": "M3 seasonally adjusted (level)",
+     "freq": "monthly",
+     "status": "verified 2026-07 = 3497.2",
+     "unit": "AUD billions"
+    },
+    "money_base": {
+     "id": "DMAMMB",
+     "table": "d3",
+     "label": "Money base",
+     "freq": "monthly",
+     "status": "verified",
+     "display_only": true,
+     "unit": "AUD billions"
+    }
+   },
+   "derived": {
+    "transmission_signal": {
+     "rule": "green if ≥3 of {credit total, housing, business, M3, broad money} growth > 0 with z ≥ 0; red if ≥3 z ≤ −1; NO SIGNAL if < 3 valid"
+    },
+    "heatmap_zscore": {
+     "window": 24
+    }
+   },
+   "signal_rule": {
+    "use": "growth rates (already flows) → z-scores 24m",
+    "min_series_valid": 3,
+    "role": "confirmation layer"
+   },
+   "code_policy": "series ids resolved from the CSV 'Series ID' header row at ingest (parse by column name, never by position); fail loudly if an id disappears"
   },
-  "pending_before_phase2": [
-    "Parsers: A3 ES (column-name based, open-repo sunset tolerant), A3 OMO take-up weekly, A1, F1 daily, F2 weekly, D1/D2/D3 monthly (monthly date format)",
-    "AOFM link discovery + tender XLSX layout; T-notes on issue; redemption calendar",
-    "RBA Board 2026 dates",
-    "CLF removed (phased out); FX operations as A4/A5 flag only",
-    "Sander's OK on v0.2 → Fase 2 AUD"
+  "rates": {
+   "title": "4 · Rates & money market — cash rate corridor, BBSW/OIS, AGS curve",
+   "equivalence_quality": "high",
+   "equivalence_note": "F1 daily: target, actual interbank overnight cash rate (with high/low and volume), BBSW 1/3/6M, OIS 1/3/6M, T-notes; F2 daily AGS 2/3/5/10Y. Corridor known from A2.",
+   "series": {
+    "policy_rate": {
+     "id": "FIRMMCRTD",
+     "table": "f1",
+     "label": "Cash Rate Target",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "4.35 (2026-09-07)"
+    },
+    "overnight_rate": {
+     "id": "FIRMMCRID",
+     "table": "f1",
+     "label": "Interbank Overnight Cash Rate (actual, AONIA)",
+     "freq": "daily",
+     "usd_analog": "EFFR/SOFR",
+     "status": "verified",
+     "verified": "4.35 (2026-09-07)"
+    },
+    "overnight_high": {
+     "id": "FIRMMCRIH",
+     "table": "f1",
+     "label": "Highest interbank overnight cash rate",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "overnight_low": {
+     "id": "FIRMMCRIL",
+     "table": "f1",
+     "label": "Lowest interbank overnight cash rate",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "cash_market_volume": {
+     "id": "FIRMMCRIV",
+     "table": "f1",
+     "label": "Volume of cash market transactions ($m)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "1859 (2026-09-07)"
+    },
+    "bbsw_1m": {
+     "id": "FIRMMBAB30D",
+     "table": "f1",
+     "label": "1M BABs/NCDs (BBSW)",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "bbsw_3m": {
+     "id": "FIRMMBAB90D",
+     "table": "f1",
+     "label": "3M BABs/NCDs (BBSW)",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "4.62 (2026-09-07)"
+    },
+    "ois_1m": {
+     "table": "f1",
+     "label": "1M OIS",
+     "freq": "daily",
+     "status": "unavailable (F1 column empty since Dec-2022)",
+     "id_note": "FIRMMOIS1D",
+     "id": null
+    },
+    "ois_3m": {
+     "table": "f1",
+     "label": "3M OIS",
+     "freq": "daily",
+     "status": "unavailable (F1 column empty since Dec-2022)",
+     "id_note": "FIRMMOIS3D",
+     "id": null
+    },
+    "tnote_3m": {
+     "table": "f1",
+     "label": "3M Treasury Note",
+     "freq": "daily",
+     "status": "unavailable (F1 column empty since Dec-2022)",
+     "id_note": "FIRMMTN3D",
+     "id": null
+    },
+    "bond_2y": {
+     "id": "FCMYGBAG2D",
+     "table": "f2",
+     "label": "AGS 2Y",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "4.831 (2026-09-02)",
+     "lane": "weekly"
+    },
+    "bond_3y": {
+     "id": "FCMYGBAG3D",
+     "table": "f2",
+     "label": "AGS 3Y",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "bond_5y": {
+     "id": "FCMYGBAG5D",
+     "table": "f2",
+     "label": "AGS 5Y",
+     "freq": "daily",
+     "status": "verified"
+    },
+    "bond_10y": {
+     "id": "FCMYGBAG10D",
+     "table": "f2",
+     "label": "AGS 10Y",
+     "freq": "daily",
+     "status": "verified",
+     "verified": "5.220 (2026-09-02)",
+     "lane": "weekly"
+    },
+    "es_rate": {
+     "id": "ARBAMPNRPESB",
+     "table": "a2",
+     "label": "ES rate (rate paid on surplus ES balances) = target − 10 bp",
+     "freq": "event",
+     "status": "verified",
+     "verified": "4.25 (2026-05-06)"
+    },
+    "overnight_repo_rate": {
+     "id": "ARBAMPNORR",
+     "table": "a2",
+     "label": "Overnight standing-facility repo rate = target + 25 bp",
+     "freq": "event",
+     "status": "verified",
+     "verified": "4.60 (2026-05-06)"
+    }
+   },
+   "derived": {
+    "overnight_minus_target_bps": {
+     "formula": "(overnight_rate - policy_rate) * 100",
+     "usd_analog": "EFFR − target midpoint",
+     "note": "PRIMARY stress spread. Under OMO at +10, AONIA is anchored AT target (RBA: private overnight repo ~+2 bp, Aug 2026). ≥ +3 early flag; ≥ +5 three sessions = STRESS; ≥ +15 = CRISIS (ceiling +25). Also flag the LOW side: AONIA ≤ target − 5 persistent = excess (not scarcity)"
+    },
+    "overnight_minus_es_rate_bps": {
+     "formula": "(overnight_rate - es_rate) * 100",
+     "usd_analog": "SOFR − IORB",
+     "note": "secondary: distance from the floor (normal ≈ +10). CodeWord/Qwen asked to anchor here; kept secondary because AONIA is anchored at target since 2025 (Kimi), band_position covers it"
+    },
+    "band_position": {
+     "formula": "(overnight_rate - es_rate) / (overnight_repo_rate - es_rate)",
+     "note": "0 = floor, 1 = ceiling; normal ≈ 0.29"
+    },
+    "bbsw_ois_3m_bps": {
+     "formula": "(bbsw_3m - ois_3m) * 100",
+     "status": "unavailable (OIS discontinued in F1)",
+     "note": "kept for lineage"
+    },
+    "cash_market_dispersion_bps": {
+     "formula": "(overnight_high - overnight_low) * 100",
+     "usd_analog": "CORRA/SOFR dispersion"
+    },
+    "curve_10y_2y_bps": {
+     "formula": "(bond_10y - bond_2y) * 100"
+    },
+    "target_minus_2y_bps": {
+     "formula": "(policy_rate - bond_2y) * 100",
+     "note": "> 0 = market prices cuts"
+    },
+    "bbsw_minus_target_bps": {
+     "formula": "(bbsw_3m - policy_rate) * 100",
+     "usd_analog": "3M − FF (embeds rate expectations)",
+     "note": "funding-stress proxy while OIS is unavailable; PRIMARY = rolling percentile (750d) because the level embeds expected hikes/cuts; absolute secondary 30/45/70"
+    }
+   },
+   "thresholds": {
+    "overnight_minus_target_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "watch_above": "p80",
+     "stress_above": "p90",
+     "crisis_above": "p97",
+     "hysteresis": {
+      "exit_on": "p70/p80/p90"
+     },
+     "secondary_absolute": {
+      "watch": 3,
+      "stress": 5,
+      "crisis": 15,
+      "persistence": {
+       "stress_and_above": "3 consecutive sessions",
+       "exclude_dates": [
+        "quarter_end",
+        "tax_days_21_28",
+        "EOFY_30_jun"
+       ]
+      },
+      "origin": "AONIA normally within ±2 bp of target; +25 = ceiling (standing facility)",
+      "low_side_excess": -5
+     }
+    },
+    "curve_10y_2y_bps": {
+     "method": "absolute",
+     "deep_inversion_below": -50,
+     "inverted_below": 0,
+     "flat_below": 25
+    },
+    "target_minus_2y_bps": {
+     "method": "absolute",
+     "normal_below": 10,
+     "elevated_below": 30,
+     "tight_above": 30
+    },
+    "band_position": {
+     "method": "absolute",
+     "watch_above": 0.6,
+     "stress_above": 0.85
+    },
+    "bbsw_minus_target_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "watch_above": "p80",
+     "stress_above": "p90",
+     "crisis_above": "p97",
+     "hysteresis": {
+      "exit_on": "p70/p80/p90"
+     },
+     "secondary_absolute": {
+      "watch": 30,
+      "stress": 45,
+      "crisis": 70
+     },
+     "rule": "absolute is binding for STRESS/CRISIS; percentile alone caps at WATCH (BBSW−target embeds rate expectations: a hiking cycle is p99 but not funding stress)",
+     "origin": "v0.2.2 after first live run (p98.9 at 27 bp)"
+    }
+   },
+   "note_f2": "F2 values are daily but the file is updated WEEKLY with ~2-business-day lag (Kimi, verified: last row 2026-09-02 on 2026-09-08); F1 is daily. Curve cards carry 'weekly' cadence; semis yields removed from F2 in 2023 → unavailable"
+  }
+ },
+ "regime": {
+  "weights": {
+   "central_bank": 0.4,
+   "rates": 0.25,
+   "fiscal": 0.25,
+   "banking": 0.1
+  },
+  "weights_note": "v0.2: kept 0.40/0.25/0.25/0.10 — reviewers split (Qwen/Claude 0.15–0.20 fiscal, CodeWord ≥0.30, Kimi/DeepSeek/Perplexity 0.25). Median = proposal. Recalibrate with live history (regime.calibration).",
+  "stress_spread_metric": "rates.overnight_minus_target_bps",
+  "values": [
+   "LIQUIDITY_INJECTION",
+   "LIQUIDITY_DRAIN",
+   "LIQUIDITY_SCARCITY",
+   "FLOOR_FRICTION",
+   "NEUTRAL"
+  ],
+  "rules": {
+   "LIQUIDITY_SCARCITY": "surplus ES balances at/below p10 (156w) AND overnight_minus_target_bps ≥ STRESS persistent (or sf_repos_margin > 0)",
+   "FLOOR_FRICTION": "ES ample AND overnight_minus_target_bps ≥ WATCH persistent",
+   "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+   "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+   "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
+  },
+  "orthogonal_flags": {
+   "TRANSMISSION_FAILURE": "banking.transmission_signal == RED while ES ample",
+   "OMO_DEPENDENCE_HEALTHY/STRESS": "omo_share_of_es ≥ WATCH without/with price confirmation",
+   "FISCAL_BIG_WEEK": "|fiscal_flow_zscore| ≥ 2",
+   "PHASE_*": "balance-sheet phase",
+   "OMO_TAKEUP_SURGE": "omo_takeup_weekly ≥ p90 (regime window) — early friction",
+   "OPEN_REPO_SUNSET": "informational until early 2027",
+   "FX_OPERATION": "A4/A5 non-zero (rare)",
+   "STANDING_FACILITY_USED": "sf_repos_margin (+25 bp) > 0 — NOT the open repo at the ES rate"
+  },
+  "min_blocks_for_signal": 2,
+  "calibration": {
+   "status": "planned",
+   "method": "same as GBP: after ≥26 weeks live, grid over weights scored against price-confirmed stress (AONIA ≥ target+5, OMO take-up surges)"
+  },
+  "reserves_metric": "central_bank.es_balances_daily",
+  "dual": {
+   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   }
+  },
+  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)"
+ },
+ "status_rules": {
+  "fresh_multiplier": 1.5,
+  "stale_multiplier": 3.0,
+  "nominal_period_days": {
+   "daily": 4,
+   "weekly": 7,
+   "monthly": 31
+  },
+  "monthly_lag_allowance_days": 75,
+  "lag_allowance_days": {
+   "receiver_general": 7
+  },
+  "note": "daily=4 covers weekends/holidays and the CORRA next-day publication"
+ },
+ "quality": {
+  "origin": "v2.0 quality.mjs, ported to Python",
+  "dedup": "last value wins per date, duplicates counted",
+  "outliers": {
+   "method": "modified_zscore_MAD",
+   "rolling_window": 20,
+   "min_points": 5,
+   "z_threshold": {
+    "default": 3.5,
+    "overnight_rate": 4.0,
+    "policy_rate": 5.0,
+    "bank_rate": 5.0,
+    "corra_total_volume": 4.5
+   }
+  },
+  "freshness_hours": {
+   "weekly_series": 192,
+   "daily_series": 72,
+   "policy_rate": 1440,
+   "monthly_series": 1800
+  },
+  "holiday_aware": true,
+  "null_streaks": "unexpected nulls only (weekends/holidays excluded)",
+  "confidence": {
+   "start": 100,
+   "penalties": {
+    "stale": "min(30, 30*(hours_over/threshold))",
+    "nulls_last30": "40*share",
+    "ongoing_streak": "min(25, 5*len)",
+    "latest_outlier": "8 or 15 if |mz|>5",
+    "duplicates": "min(10, 3*n)"
+   },
+   "tiers": {
+    "HIGH": 90,
+    "MEDIUM": 70,
+    "LOW": 50,
+    "CRITICAL": 0
+   }
+  },
+  "null_policy": "null is NEVER neutral/amber: series -> unavailable, block signal suppressed below min coverage"
+ },
+ "revisions": {
+  "keep_last": 50,
+  "series": [
+   "reserves",
+   "government_account",
+   "total_assets",
+   "es_balances_daily"
   ]
+ },
+ "alerts": {
+  "origin": "CAD/GBP alert state machine",
+  "lifecycle": [
+   "active",
+   "resolved"
+  ],
+  "keep_last": 100,
+  "rules": [
+   {
+    "id": "es_drop",
+    "metric": "central_bank.es_balances_dod",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "sf_margin_used",
+    "metric": "central_bank.sf_repos_margin",
+    "when": "> 0",
+    "severity": "CRITICAL",
+    "category": "emergency"
+   },
+   {
+    "id": "aonia_above_target",
+    "metric": "rates.overnight_minus_target_bps",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "funding"
+   },
+   {
+    "id": "aonia_stress",
+    "metric": "rates.overnight_minus_target_bps",
+    "when": "level >= STRESS",
+    "severity": "CRITICAL",
+    "category": "funding"
+   },
+   {
+    "id": "bbsw_stress",
+    "metric": "rates.bbsw_minus_target_bps",
+    "when": "level >= STRESS",
+    "severity": "WARNING",
+    "category": "funding"
+   },
+   {
+    "id": "net_liq_drain",
+    "metric": "central_bank.net_liquidity_wow_pct",
+    "when": "<= risk_off",
+    "severity": "WARNING",
+    "category": "liquidity"
+   },
+   {
+    "id": "fiscal_drain",
+    "metric": "fiscal.fiscal_flow_4w_cum",
+    "when": "<= drain",
+    "severity": "WARNING",
+    "category": "fiscal"
+   },
+   {
+    "id": "curve_inversion",
+    "metric": "rates.curve_10y_2y_bps",
+    "when": "< -50",
+    "severity": "WARNING",
+    "category": "curve"
+   },
+   {
+    "id": "transmission_break",
+    "metric": "banking.transmission_signal",
+    "when": "== RED",
+    "severity": "WARNING",
+    "category": "transmission"
+   },
+   {
+    "id": "data_degraded",
+    "metric": "quality.system.blw70",
+    "when": "> 0",
+    "severity": "INFO",
+    "category": "data"
+   }
+  ]
+ },
+ "scenarios": {
+  "origin": "CAD/GBP scenario engine; AUD liquidity-only set",
+  "items": [
+   {
+    "id": "L1",
+    "name": "ES Scarcity Approach",
+    "bias": "DEFENSIVE",
+    "min": 2,
+    "conditions": [
+     "central_bank.es_balances_dod level >= WATCH",
+     "rates.overnight_minus_target_bps level >= WATCH",
+     "central_bank.reserves_wow_pct <= p20"
+    ]
+   },
+   {
+    "id": "L2",
+    "name": "OMO-led Absorption",
+    "bias": "NEUTRAL",
+    "min": 2,
+    "conditions": [
+     "central_bank.omo_share_of_es >= p80",
+     "rates.overnight_minus_target_bps level == SAFE",
+     "central_bank.reserves level == SAFE"
+    ]
+   },
+   {
+    "id": "L3",
+    "name": "Fiscal Drain (tax week / issuance)",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "fiscal.fiscal_flow_4w_cum <= drain",
+     "fiscal.fiscal_flow_zscore <= -1.5",
+     "central_bank.net_liquidity_wow_pct <= risk_off"
+    ]
+   },
+   {
+    "id": "L4",
+    "name": "Funding Stress",
+    "bias": "EMERGENCY",
+    "min": 2,
+    "conditions": [
+     "rates.overnight_minus_target_bps level >= STRESS",
+     "rates.bbsw_minus_target_bps level >= STRESS",
+     "central_bank.sf_repos_margin > 0"
+    ]
+   },
+   {
+    "id": "L5",
+    "name": "Fiscal Injection",
+    "bias": "CONSTRUCTIVE",
+    "min": 2,
+    "conditions": [
+     "fiscal.fiscal_flow_4w_cum >= injection",
+     "fiscal.fiscal_flow_zscore >= 1",
+     "central_bank.reserves_wow_pct >= p80"
+    ]
+   },
+   {
+    "id": "L6",
+    "name": "Transmission Break",
+    "bias": "CAUTION",
+    "min": 2,
+    "conditions": [
+     "banking.transmission_signal == RED",
+     "banking.credit_business_mom mom_pct zscore <= -1",
+     "banking.m3_mom mom_pct zscore <= -1"
+    ]
+   }
+  ]
+ },
+ "calendar": {
+  "rba_board_dates_2026": [
+   "2026-02-03",
+   "2026-03-17",
+   "2026-05-05",
+   "2026-06-16",
+   "2026-08-11",
+   "2026-09-29",
+   "2026-11-03",
+   "2026-12-08"
+  ],
+  "a1_release": "Friday ~16:30 Sydney (Wednesday data)",
+  "a3_es_release": "daily T+1 ~11:00 Sydney",
+  "f1_f2_release": "daily ~16:30/next morning Sydney",
+  "d1_d3_release": "last business day of month + 1 (~09:30 Sydney)",
+  "aofm_tenders": "bonds Wed/Fri 12:00 AEST, notes Thu; announced the Friday before",
+  "tax_dates": "pending — monthly BAS 21st, quarterly company tax, June year-end",
+  "decision_time": "14:30 Australia/Sydney",
+  "fiscal_seasonality": {
+   "monthly_21": "PAYG withholding / GST for monthly lodgers",
+   "quarterly_28_after_quarter": "BAS quarterly (Jan/Apr/Jul/Oct 28)",
+   "company_tax_instalments": "quarterly, following month",
+   "super_guarantee": [
+    "01-28",
+    "04-28",
+    "07-28",
+    "10-28"
+   ],
+   "eofy": "06-30 (cash rebuild Jul–Oct)",
+   "fbt": "05-21"
+  },
+  "omo_day": "Wednesday 09:20 Sydney (7d + 28d)",
+  "open_repo_sunset": "early 2027",
+  "rba_board_source": "RBA media release 2025-02 (verified 2026-09-08); decision 14:30 Sydney, presser 15:30",
+  "au_holidays_2026": [
+   "2026-01-01",
+   "2026-01-26",
+   "2026-04-03",
+   "2026-04-06",
+   "2026-04-25",
+   "2026-06-08",
+   "2026-12-25",
+   "2026-12-28"
+  ]
+ },
+ "refresh_lanes": {
+  "daily": {
+   "cron_utc": "30 2 * * 1-5",
+   "note": "12:30 Sydney: A3 ES (T+1) + F1 (AONIA, BBSW, OIS)",
+   "blocks": [
+    "central_bank",
+    "rates"
+   ],
+   "run_agent": false
+  },
+  "weekly": {
+   "cron_utc": "0 8 * * 5",
+   "note": "Friday after A1 + F2 weekly file + OMO take-up (Wed op)",
+   "blocks": [
+    "central_bank",
+    "fiscal",
+    "rates"
+   ],
+   "run_agent": true
+  },
+  "monthly": {
+   "cron_utc": "0 3 2 * *",
+   "note": "D1/D3 out on the 1st business day",
+   "blocks": [
+    "banking"
+   ],
+   "run_agent": true
+  }
+ },
+ "desk_exports": {
+  "audusd": {
+   "id": "FXRUSD",
+   "table": "f11",
+   "label": "A$1 = USD (monthly F11; daily F11.1 pending)",
+   "status": "verified monthly"
+  }
+ },
+ "agent": {
+  "name": "GBP Currency Agent",
+  "reads": [
+   "data/gbp/central_bank.json",
+   "data/gbp/fiscal.json",
+   "data/gbp/banking.json",
+   "data/gbp/rates.json",
+   "data/gbp/calendar.json"
+  ],
+  "writes": "agents/gbp.json",
+  "vocabulary": "MMT/Mosler; BoE repo-led demand-driven framework; PMRR",
+  "alert_types": [
+   "LIQUIDITY_GAIN",
+   "LIQUIDITY_LOSS",
+   "LIQUIDITY_SCARCITY",
+   "TRANSMISSION_BREAK",
+   "DATA_DEGRADED"
+  ],
+  "never": [
+   "trade execution",
+   "position sizing",
+   "technical analysis"
+  ]
+ },
+ "pending_before_phase2": [
+  "Parsers: A3 ES (column-name based, open-repo sunset tolerant), A3 OMO take-up weekly, A1, F1 daily, F2 weekly, D1/D2/D3 monthly (monthly date format)",
+  "AOFM link discovery + tender XLSX layout; T-notes on issue; redemption calendar",
+  "RBA Board 2026 dates",
+  "CLF removed (phased out); FX operations as A4/A5 flag only",
+  "Sander's OK on v0.2 → Fase 2 AUD"
+ ]
 }

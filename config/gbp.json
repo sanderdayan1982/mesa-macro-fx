@@ -1,1314 +1,1331 @@
 {
-  "$schema": "../schema/config.schema.json",
-  "config_version": "0.2.2",
-  "currency": "GBP",
-  "name": "Pound Sterling",
-  "jurisdiction": "United Kingdom",
-  "central_bank": "Bank of England",
-  "treasury": "HM Treasury / Debt Management Office",
-  "monetary_sovereignty": "full",
-  "framework": "MMT/Mosler",
-  "timezone_source": "Europe/London",
-  "timezone_operator": "Africa/Malabo",
-  "units": {
-    "balance_sheet": "GBP millions",
-    "rates": "percent",
-    "spreads": "bps"
+ "$schema": "../schema/config.schema.json",
+ "config_version": "0.2.2",
+ "currency": "GBP",
+ "name": "Pound Sterling",
+ "jurisdiction": "United Kingdom",
+ "central_bank": "Bank of England",
+ "treasury": "HM Treasury / Debt Management Office",
+ "monetary_sovereignty": "full",
+ "framework": "MMT/Mosler",
+ "timezone_source": "Europe/London",
+ "timezone_operator": "Africa/Malabo",
+ "units": {
+  "balance_sheet": "GBP millions",
+  "rates": "percent",
+  "spreads": "bps"
+ },
+ "lineage": {
+  "predecessor": "UK Command Center v2.0 (static, Apr 2026) + GBP-ICC v4.3 (Netlify Functions + Blobs, manual BoE ingest)",
+  "rescued": [
+   "UK<->US equivalence map",
+   "policy-assets aggregate (STR+ILTR+TFSME+APF+Bonds)",
+   "v2.1 absolute thresholds as secondary",
+   "signal QA: null never amber",
+   "fiscal day-type narrative for the agent"
+  ],
+  "dropped": [
+   "manual /admin.html ingest",
+   "OECD monthly gilt proxies via FRED",
+   "static fiscal constants from DMO Remit",
+   "Stooq/Frankfurter/scraping",
+   "prices inside the regime",
+   "Netlify Blobs"
+  ],
+  "triangulation": {
+   "date": "2026-09-08",
+   "reviewers": [
+    "DeepSeek",
+    "Gemini",
+    "CodeWord",
+    "Qwen"
+   ],
+   "perplexity": "returned a summary, not a review — to be re-run",
+   "verdict": "4/4 VALIDADO CON CHANGES; applied in v0.2 (see TRIANGULACION_GBP_matriz.md)"
+  }
+ },
+ "sources": {
+  "boe_iadb": {
+   "base_url": "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp",
+   "auth": "none",
+   "format": "CSV (application/csv)",
+   "query": "?csv.x=yes&Datefrom=DD/Mon/YYYY&Dateto=DD/Mon/YYYY&SeriesCodes=A,B,C&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N",
+   "date_format": "%d %b %Y",
+   "verified": "2026-09-08 via in-app browser",
+   "rate_limit_rule": "Akamai bot manager: ONE request per lane with all codes batched, identifiable User-Agent, >=2 s between requests, never parallel; an unknown code fails the whole request",
+   "robots_note": "boeapps is disallowed for generic crawlers; the IADB is the BoE's own programmatic export — use a named User-Agent and low frequency",
+   "batches": {
+    "weekly_verified": "RPWB56A,RPWB55A,RPWB72A,RPWB67A,RPWB69A,RPWZ4TJ,RPWZ4TK,RPWZ4TL,RPWZ4TM,RPWZOQ4,RPWZ4TN,RPWB59A,YWMB84C,YWMB85C",
+    "daily_verified": "IUDBEDR,IUDSOIA,IUDSNPY,IUDMNPY,IUDLNPY,XUDLUSS,XUDLERS",
+    "monthly_verified": "RPMB53Q,RPMB54Q,RPMB57Q,RPMB58Q,LPMBZ2A,LPMBZ2C,LPMVTVJ,LPMVTVX,LPMB3PS,LPMBC57,LPMVWNQ,LPMVVHR,LPMAUYN",
+    "rule": "one request per batch, CSVF=TT for descriptions on backfill, TN thereafter; ≥2 s between batches; an invalid code returns HTML (text/html) for the whole batch → mark degraded and bisect"
+   },
+   "max_codes_per_request": "unknown (DeepSeek claims 300, unverified); use 20–30 and test incrementally; 75 parallel triggered Akamai",
+   "hardening": [
+    "save raw CSV snapshot per request",
+    "check Content-Type: HTML instead of CSV → status degraded, do not parse",
+    "exponential backoff with jitter, never parallel",
+    "on failure keep last good JSON as stale, never synthesize",
+    "dead-man switch after 2 consecutive lane failures",
+    "GitHub Actions runner IPs may be blocked harder than a home IP → identifiable UA + manual escape hatch"
+   ],
+   "fallback": "FRED IUDSOIA/Bank Rate/gilt yields as degraded fallback for RATES ONLY (never for reserves/APF)",
+   "code_map_source": "https://www.bankofengland.co.uk/statistics/tables — full Bankstats code map (hrefs carry full codes incl. LPM/RPM/RPW prefixes)"
   },
-  "lineage": {
-    "predecessor": "UK Command Center v2.0 (static, Apr 2026) + GBP-ICC v4.3 (Netlify Functions + Blobs, manual BoE ingest)",
-    "rescued": [
-      "UK<->US equivalence map",
-      "policy-assets aggregate (STR+ILTR+TFSME+APF+Bonds)",
-      "v2.1 absolute thresholds as secondary",
-      "signal QA: null never amber",
-      "fiscal day-type narrative for the agent"
-    ],
-    "dropped": [
-      "manual /admin.html ingest",
-      "OECD monthly gilt proxies via FRED",
-      "static fiscal constants from DMO Remit",
-      "Stooq/Frankfurter/scraping",
-      "prices inside the regime",
-      "Netlify Blobs"
-    ],
-    "triangulation": {
-      "date": "2026-09-08",
-      "reviewers": [
-        "DeepSeek",
-        "Gemini",
-        "CodeWord",
-        "Qwen"
-      ],
-      "perplexity": "returned a summary, not a review — to be re-run",
-      "verdict": "4/4 VALIDADO CON CHANGES; applied in v0.2 (see TRIANGULACION_GBP_matriz.md)"
+  "ons_api": {
+   "base_url": "https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/{code}/pusf/data",
+   "auth": "none",
+   "format": "JSON (months[])",
+   "verified": "2026-09-08",
+   "release": "monthly ~20th-22nd 07:00 London; last 2026-08-20, next 2026-09-22"
+  },
+  "dmo": {
+   "base_url": "https://www.dmo.gov.uk/data/",
+   "status": "Phase 3",
+   "operations_calendar": {
+    "gilt_auctions": "typically Tue/Thu 09:00–10:00 London; sizes announced Thursday for the following week",
+    "tbill_tenders": "weekly Friday",
+    "apf_sales_note": "BoE APF sales Mondays — DMO and APF supply both drain reserves on settlement"
+   },
+   "note": "per-event results (nominal, bid-to-cover, tail, avg yield, settlement); NEP daily cash is NOT public in machine form (Perplexity note 2026-09-08 agrees)"
+  },
+  "boe_rss": {
+   "feeds": [
+    {
+     "name": "boe_news",
+     "url": "https://www.bankofengland.co.uk/rss/news",
+     "blocks": [
+      "header"
+     ]
     }
+   ],
+   "status": "pending"
   },
-  "sources": {
-    "boe_iadb": {
-      "base_url": "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp",
-      "auth": "none",
-      "format": "CSV (application/csv)",
-      "query": "?csv.x=yes&Datefrom=DD/Mon/YYYY&Dateto=DD/Mon/YYYY&SeriesCodes=A,B,C&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N",
-      "date_format": "%d %b %Y",
-      "verified": "2026-09-08 via in-app browser",
-      "rate_limit_rule": "Akamai bot manager: ONE request per lane with all codes batched, identifiable User-Agent, >=2 s between requests, never parallel; an unknown code fails the whole request",
-      "robots_note": "boeapps is disallowed for generic crawlers; the IADB is the BoE's own programmatic export — use a named User-Agent and low frequency",
-      "batches": {
-        "weekly_verified": "RPWB56A,RPWB55A,RPWB72A,RPWB67A,RPWB69A,RPWZ4TJ,RPWZ4TK,RPWZ4TL,RPWZ4TM,RPWZOQ4,RPWZ4TN,RPWB59A,YWMB84C,YWMB85C",
-        "daily_verified": "IUDBEDR,IUDSOIA,IUDSNPY,IUDMNPY,IUDLNPY,XUDLUSS,XUDLERS",
-        "monthly_verified": "RPMB53Q,RPMB54Q,RPMB57Q,RPMB58Q,LPMBZ2A,LPMBZ2C,LPMVTVJ,LPMVTVX,LPMB3PS,LPMBC57,LPMVWNQ,LPMVVHR,LPMAUYN",
-        "rule": "one request per batch, CSVF=TT for descriptions on backfill, TN thereafter; ≥2 s between batches; an invalid code returns HTML (text/html) for the whole batch → mark degraded and bisect"
-      },
-      "max_codes_per_request": "unknown (DeepSeek claims 300, unverified); use 20–30 and test incrementally; 75 parallel triggered Akamai",
-      "hardening": [
-        "save raw CSV snapshot per request",
-        "check Content-Type: HTML instead of CSV → status degraded, do not parse",
-        "exponential backoff with jitter, never parallel",
-        "on failure keep last good JSON as stale, never synthesize",
-        "dead-man switch after 2 consecutive lane failures",
-        "GitHub Actions runner IPs may be blocked harder than a home IP → identifiable UA + manual escape hatch"
-      ],
-      "fallback": "FRED IUDSOIA/Bank Rate/gilt yields as degraded fallback for RATES ONLY (never for reserves/APF)",
-      "code_map_source": "https://www.bankofengland.co.uk/statistics/tables — full Bankstats code map (hrefs carry full codes incl. LPM/RPM/RPW prefixes)"
+  "fred_fallback": {
+   "series": {
+    "IUDSOIA": "SONIA",
+    "IRLTLT01GBM156N": "10Y (monthly, OECD)"
+   },
+   "status": "degraded-only",
+   "note": "used only if IADB lane fails twice"
+  },
+  "boe_operations_xlsx": {
+   "page": "https://www.bankofengland.co.uk/markets/bank-of-england-market-operations-guide/results-and-usage-data",
+   "status": "verified 2026-09-08 (HEAD 200) — Phase 3 parser (openpyxl)",
+   "files": {
+    "str_by_operation": {
+     "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/other-market-operations/short-term-repo-omos-by-operation.xlsx",
+     "freq": "weekly (updated Thursday ~14:15 London after the op; last-modified 2026-09-03)",
+     "fields": "date, amount allotted, number of bidders/participants",
+     "feeds": "str_auction_result (cover, participation)"
     },
-    "ons_api": {
-      "base_url": "https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/{code}/pusf/data",
-      "auth": "none",
-      "format": "JSON (months[])",
-      "verified": "2026-09-08",
-      "release": "monthly ~20th-22nd 07:00 London; last 2026-08-20, next 2026-09-22"
+    "iltr_by_operation": {
+     "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/sterling-monetary-framework/indexed-long-term-repo-omos-by-operation.xlsx",
+     "freq": "monthly per op",
+     "feeds": "iltr_auction_result (allotted, clearing spread, cover)"
     },
-    "dmo": {
-      "base_url": "https://www.dmo.gov.uk/data/",
-      "status": "Phase 3",
-      "operations_calendar": {
-        "gilt_auctions": "typically Tue/Thu 09:00–10:00 London; sizes announced Thursday for the following week",
-        "tbill_tenders": "weekly Friday",
-        "apf_sales_note": "BoE APF sales Mondays — DMO and APF supply both drain reserves on settlement"
-      },
-      "note": "per-event results (nominal, bid-to-cover, tail, avg yield, settlement); NEP daily cash is NOT public in machine form (Perplexity note 2026-09-08 agrees)"
+    "ctrf_results": {
+     "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/sterling-monetary-framework/contingent-term-repo-operations-results.xlsx",
+     "freq": "event",
+     "feeds": "ctrf usage detail"
     },
-    "boe_rss": {
-      "feeds": [
-        {
-          "name": "boe_news",
-          "url": "https://www.bankofengland.co.uk/rss/news",
-          "blocks": [
-            "header"
-          ]
-        }
-      ],
-      "status": "pending"
+    "apf_gilt_sales": {
+     "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/asset-purchase-facility/gilt-sales-time-series.xlsx",
+     "freq": "weekly (sales Mondays 14:15–14:45 London; short/medium/long buckets)",
+     "feeds": "apf_gilt_sales_by_bucket → QT_ACCELERATION with the executed pace, not only Δ APF loan"
     },
-    "fred_fallback": {
-      "series": {
-        "IUDSOIA": "SONIA",
-        "IRLTLT01GBM156N": "10Y (monthly, OECD)"
-      },
-      "status": "degraded-only",
-      "note": "used only if IADB lane fails twice"
+    "apf_maturity_profile": {
+     "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/asset-purchase-facility/table-for-website.xlsx",
+     "freq": "monthly",
+     "feeds": "scheduled redemptions (passive QT) by month"
     },
-    "boe_operations_xlsx": {
-      "page": "https://www.bankofengland.co.uk/markets/bank-of-england-market-operations-guide/results-and-usage-data",
-      "status": "verified 2026-09-08 (HEAD 200) — Phase 3 parser (openpyxl)",
-      "files": {
-        "str_by_operation": {
-          "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/other-market-operations/short-term-repo-omos-by-operation.xlsx",
-          "freq": "weekly (updated Thursday ~14:15 London after the op; last-modified 2026-09-03)",
-          "fields": "date, amount allotted, number of bidders/participants",
-          "feeds": "str_auction_result (cover, participation)"
-        },
-        "iltr_by_operation": {
-          "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/sterling-monetary-framework/indexed-long-term-repo-omos-by-operation.xlsx",
-          "freq": "monthly per op",
-          "feeds": "iltr_auction_result (allotted, clearing spread, cover)"
-        },
-        "ctrf_results": {
-          "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/sterling-monetary-framework/contingent-term-repo-operations-results.xlsx",
-          "freq": "event",
-          "feeds": "ctrf usage detail"
-        },
-        "apf_gilt_sales": {
-          "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/asset-purchase-facility/gilt-sales-time-series.xlsx",
-          "freq": "weekly (sales Mondays 14:15–14:45 London; short/medium/long buckets)",
-          "feeds": "apf_gilt_sales_by_bucket → QT_ACCELERATION with the executed pace, not only Δ APF loan"
-        },
-        "apf_maturity_profile": {
-          "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/asset-purchase-facility/table-for-website.xlsx",
-          "freq": "monthly",
-          "feeds": "scheduled redemptions (passive QT) by month"
-        },
-        "tfsme_detail": {
-          "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/term-funding-scheme-sme/tfsme-data.xlsx",
-          "freq": "quarterly"
-        }
-      },
-      "rule": "same courtesy rule as the IADB: sequential, ≥ 2.5 s apart, identifiable User-Agent; keep raw copies in logs/gbp/raw"
+    "tfsme_detail": {
+     "url": "https://www.bankofengland.co.uk/-/media/boe/files/markets/term-funding-scheme-sme/tfsme-data.xlsx",
+     "freq": "quarterly"
     }
-  },
-  "blocks": {
-    "central_bank": {
-      "source": "boe_iadb",
-      "frequency": "weekly",
-      "as_of_weekday": "wednesday",
-      "release": {
-        "weekday": "thursday",
-        "time_local": "09:30",
-        "tz": "Europe/London",
-        "iadb_update": "monday",
-        "verify_on_first_run": true
-      },
-      "equivalence_quality": "high",
-      "series": {
-        "reserves": {
-          "id": "RPWB56A",
-          "label": "Reserve balances (sterling reserve balance liabilities)",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "usd_analog": "WRESBAL"
-        },
-        "notes_in_circulation": {
-          "id": "RPWB55A",
-          "label": "Notes in circulation",
-          "usd_analog": "WCURCIR",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "status": "verified"
-        },
-        "ways_and_means": {
-          "id": "RPWB72A",
-          "label": "Ways and Means advances to HM Government",
-          "usd_analog": null,
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "display_only": true,
-          "status": "verified"
-        },
-        "str_lending": {
-          "id": "RPWB67A",
-          "label": "Short-term repo (STR) — one-week reverse repos",
-          "usd_analog": "Fed repo operations",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "status_expected": "proxy_until_label_verified",
-          "status": "verified"
-        },
-        "ltr_lending": {
-          "id": "RPWB69A",
-          "label": "Long-term operations total (ILTR + CTRF)",
-          "usd_analog": null,
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "status_expected": "proxy_until_label_verified",
-          "status": "verified"
-        },
-        "apf_loan": {
-          "id": "RPWZ4TM",
-          "label": "Loan to Asset Purchase Facility",
-          "usd_analog": "TREAST (SOMA)",
-          "status": "verified",
-          "note": "code to locate in IADB tree Assets; Apr-2026 value 553158",
-          "verified": "2026-09-08 IADB CSVF=TT description + value"
-        },
-        "tfsme": {
-          "id": "RPWZOQ4",
-          "label": "TFSME aggregate drawings (financed by reserve creation)",
-          "usd_analog": null,
-          "status": "verified",
-          "note": "Apr-2026 41894",
-          "verified": "2026-09-08 IADB CSVF=TT description + value"
-        },
-        "sterling_bonds": {
-          "id": "RPWZ4TL",
-          "label": "Sterling-denominated bond holdings",
-          "usd_analog": null,
-          "status": "verified",
-          "note": "Apr-2026 12845",
-          "verified": "2026-09-08 IADB CSVF=TT description + value"
-        },
-        "government_account": {
-          "id": null,
-          "label": "HMG deposits at BoE — NOT published as a separate Weekly Report line",
-          "usd_analog": "WTREGEN",
-          "status": "unavailable",
-          "equivalence_note": "fiscal account is read in the fiscal block (ONS), not here",
-          "search_terms": [
-            "Central government deposits",
-            "Government deposits",
-            "National Loans Fund",
-            "Consolidated Fund",
-            "public sector deposits",
-            "Other liabilities"
-          ],
-          "note": "search IADB Liabilities tree; if found, restores the TGA term and Net Liquidity can be reinstated",
-          "weekly_report_confirmed_absent": "B1.1.2 columns (Bankstats tables page, 2026-09-08): liabilities = STR? no — reserves, notes, FX public securities; no HMG deposits line. Monthly candidate: table B2.2 (central bank contribution to MFI balance sheet, public sector deposits) — Phase 3"
-        },
-        "osf_lending_usage": {
-          "id": "YWMB84C",
-          "label": "Operational Standing Facility — lending, average outstanding by maintenance period",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT; Nov-2025 MP = 29, Feb-2026 MP = 71 (repo-spike episodes)",
-          "freq": "event",
-          "unit": "GBP_mn",
-          "role": "functional discount window; > 0 in a maintenance period = a firm paid Bank Rate + 25bp",
-          "note": "published per MPC maintenance period (~6-weekly), lagged — event flag, not a weekly gauge",
-          "alert": "OSF_LENDING_USED if > 0"
-        },
-        "dwf_usage": {
-          "id": null,
-          "label": "Discount Window Facility usage",
-          "status": "pending",
-          "note": "DWF usage is published with a long lag (quarterly, 5-quarter delay) — event flag only"
-        },
-        "str_auction_result": {
-          "id": null,
-          "label": "STR operation: offered / allotted / bidders (cover)",
-          "status": "pending",
-          "source": "BoE Market Operations results",
-          "freq": "weekly"
-        },
-        "iltr_auction_result": {
-          "id": null,
-          "label": "ILTR: allotted / cover / clearing spread",
-          "status": "pending",
-          "source": "BoE Market Operations results",
-          "freq": "monthly"
-        },
-        "apf_gilt_sales_by_bucket": {
-          "id": null,
-          "label": "APF gilt sales short/medium/long + stock",
-          "status": "pending",
-          "source": "APF Market Notice / results",
-          "freq": "weekly"
-        },
-        "iltr": {
-          "id": "RPWZ4TJ",
-          "label": "Indexed long-term repo (ILTR)",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "weekly",
-          "unit": "GBP_mn",
-          "role": "component of ltr_lending",
-          "last": "83874 (2026-09-02)"
-        },
-        "ctrf": {
-          "id": "RPWZ4TK",
-          "label": "Contingent Term Repo Facility (CTRF)",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "weekly",
-          "unit": "GBP_mn",
-          "role": "emergency/episodic backstop — any value > 0 is an event flag",
-          "last": "0 (2026-09-02)",
-          "alert": "CTRF_ACTIVE if > 0"
-        },
-        "fx_reserve_assets": {
-          "id": "RPWZ4TN",
-          "label": "Foreign currency reserve assets (sterling equivalent)",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "weekly",
-          "unit": "GBP_mn",
-          "display_only": true
-        },
-        "fx_public_securities": {
-          "id": "RPWB59A",
-          "label": "Foreign currency public securities issued (liability)",
-          "usd_analog": null,
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "display_only": true,
-          "status": "verified",
-          "excluded_from": [
-            "policy_assets",
-            "regime",
-            "alerts"
-          ],
-          "note": "BoE's own FX bonds; not sterling liquidity"
-        },
-        "osf_deposit_usage": {
-          "id": "YWMB85C",
-          "label": "Operational Standing Facility — deposit, average outstanding by maintenance period",
-          "status": "verified",
-          "verified": "2026-09-08",
-          "freq": "event",
-          "unit": "GBP_mn",
-          "display_only": true
-        }
-      },
-      "derived": {
-        "policy_assets": {
-          "formula": "str_lending + ltr_lending + tfsme + apf_loan + sterling_bonds",
-          "usd_analog": "WALCL policy portfolio",
-          "origin": "v4.3 netLiq",
-          "verified_2026_09_02": "124825 + 83874 + 41763 + 521819 + 12779 = 785060"
-        },
-        "reserves_wow_pct": {
-          "formula": "pct_change(reserves,1)"
-        },
-        "repo_offset": {
-          "formula": "str_lending + ltr_lending",
-          "origin": "v4.3 repoTotal",
-          "note": "demand-driven: level is not a policy signal; watch abrupt changes"
-        },
-        "qt_pace": {
-          "formula": "diff(apf_loan,1)",
-          "note": "negative = QT (sales + maturities)"
-        },
-        "currency_drain": {
-          "formula": "-diff(notes_in_circulation,1)"
-        },
-        "balance_sheet_phase": {
-          "formula": "QT if qt_pace < 0 else NORMALIZATION/STEADY"
-        },
-        "policy_balance_sheet": {
-          "formula": "policy_assets",
-          "label": "Policy Balance Sheet (assets)",
-          "note": "NOT 'Net Liquidity': the Weekly Report has no HMG deposits line, so the USD WALCL−TGA−RRP construct is not buildable weekly. Primary weekly liquidity reading = reserves (RPWB56A) + price (SONIA − Bank Rate).",
-          "renamed_from": "net_liquidity (v0.1)"
-        },
-        "policy_balance_sheet_wow_pct": {
-          "formula": "pct_change(policy_balance_sheet,1)"
-        },
-        "repo_dependence_ratio": {
-          "formula": "repo_offset / reserves",
-          "note": "share of reserves supplied by repo (BoE: ~1/4 in Mar 2026). Informational while SONIA − Bank Rate < 0; escalates only with price confirmation"
-        },
-        "reserves_vs_pmrr_ceiling": {
-          "formula": "reserves - 515000",
-          "unit": "GBP_mn",
-          "note": "distance to PMRR ceiling; the clock to watch during QT"
-        }
-      },
-      "thresholds": {
-        "reserves": {
-          "method": "absolute_primary",
-          "direction": "low_is_risk",
-          "primary_absolute": {
-            "boc_target_range": [
-              365000,
-              515000
-            ],
-            "range_name": "PMRR (BoE preferred minimum range of reserves)",
-            "source": "BoE Bank Insights 'Resilience and readiness across the SMF', 27 Mar 2026: latest survey £365–515bn (previous £375–540bn, Saporta Nov 2025; £385–540bn Q1-2025 survey)",
-            "below_range_watch": 365000,
-            "stress_below": 330000,
-            "crisis_below": 300000,
-            "above_range_note": ">515000 = ample (reserves ~644bn Sep 2026 → ~125bn above the ceiling)",
-            "in_range_note": "inside PMRR = transition zone (informational WATCH, never stress by itself); scarcity requires PRICE confirmation (SONIA − Bank Rate ≥ 0 persistent)",
-            "review_rule": "re-check PMRR each BoE survey / Market Notice; store history of range revisions"
-          },
-          "secondary_absolute_v43": {
-            "green_above": 700000,
-            "amber_between": [
-              600000,
-              700000
-            ],
-            "red_below": 600000,
-            "origin": "GBP-ICC v4.3 methodology 2.1 — reference only, pre-PMRR"
-          },
-          "percentile_note": "NO rolling percentile on the reserves LEVEL (non-stationary under QT). Percentiles only on stationary transforms: reserves_wow_pct, spreads."
-        },
-        "net_liquidity_wow_pct": {
-          "method": "percentile",
-          "window": "156w",
-          "risk_on_above": "p85",
-          "risk_off_below": "p15",
-          "hysteresis": {
-            "exit_on": "p75/p25"
-          },
-          "secondary_absolute": {
-            "risk_on": 1.0,
-            "risk_off": -2.0,
-            "origin": "v4.3 netLiq Δ: <1% green, 1–2% amber, >2% red (as absolute change)"
-          }
-        },
-        "reserves_wow_pct": {
-          "method": "percentile",
-          "window": "156w",
-          "direction": "low_is_risk",
-          "watch_below": "p20",
-          "stress_below": "p10",
-          "crisis_below": "p3",
-          "hysteresis": {
-            "exit_on": "p30/p20/p10"
-          }
-        },
-        "repo_offset": {
-          "method": "percentile",
-          "window": "156w",
-          "secondary_absolute": {
-            "comfort_above": 150000,
-            "caution_between": [
-              80000,
-              150000
-            ],
-            "low_below": 80000,
-            "origin": "v4.3 repoTotal 150/80bn",
-            "note": "informational in a demand-driven framework"
-          }
-        },
-        "qt_pace": {
-          "method": "absolute",
-          "direction": "low_is_risk",
-          "watch_below": -1700,
-          "stress_below": -2400,
-          "origin": "v0.2.1: 26-week average weekly Δ APF vs announced £70bn/yr (≈ −1,346/w); WATCH ×1.25, STRESS ×1.75"
-        },
-        "repo_dependence_ratio": {
-          "method": "percentile",
-          "window": "156w",
-          "watch_above": "p80",
-          "stress_above": "p90",
-          "escalation_requires": "rates.overnight_minus_policy_bps >= 0 persistent",
-          "note": "quantity alone never escalates in a demand-driven framework"
-        }
-      }
+   },
+   "rule": "same courtesy rule as the IADB: sequential, ≥ 2.5 s apart, identifiable User-Agent; keep raw copies in logs/gbp/raw"
+  }
+ },
+ "blocks": {
+  "central_bank": {
+   "source": "boe_iadb",
+   "frequency": "weekly",
+   "as_of_weekday": "wednesday",
+   "release": {
+    "weekday": "thursday",
+    "time_local": "09:30",
+    "tz": "Europe/London",
+    "iadb_update": "monday",
+    "verify_on_first_run": true
+   },
+   "equivalence_quality": "high",
+   "series": {
+    "reserves": {
+     "id": "RPWB56A",
+     "label": "Reserve balances (sterling reserve balance liabilities)",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "usd_analog": "WRESBAL"
     },
-    "fiscal": {
-      "source": "ons_api",
-      "frequency": "monthly",
-      "equivalence_quality": "medium",
-      "equivalence_note": "No daily/weekly Exchequer account is published in machine-readable form (DMO daily cash flow is PDF). ONS Public Sector Finances give central government cash requirement, expenditure and receipts monthly (~3-week lag). Gilt/T-bill issuance from DMO by event (pending).",
-      "series": {
-        "cgncr": {
-          "id": "RUUW",
-          "label": "CG: Net cash requirement £m CPNSA",
-          "usd_analog": "−(Net Treasury Flow) monthly",
-          "verified": "2026-09-08, last 2026-07 = 2723"
-        },
-        "cg_expenditure": {
-          "id": "MF6U",
-          "label": "CG: Total expenditure £m CPNSA",
-          "usd_analog": "DTS withdrawals",
-          "verified": "last 2026-07 = 115570"
-        },
-        "cg_receipts": {
-          "id": "ANBV",
-          "label": "CG: Total current receipts £m CPNSA",
-          "usd_analog": "DTS deposits",
-          "verified": "last 2026-07 = 104343"
-        },
-        "psnb_ex": {
-          "id": "J5II",
-          "label": "PS: Net borrowing excl. PS banks £m CPNSA",
-          "usd_analog": "deficit",
-          "verified": "last 2026-07 = -1800"
-        },
-        "interest_paid_private": {
-          "id": "JW2P",
-          "label": "PS: interest & dividends paid to private sector & RoW £m",
-          "usd_analog": "interest outlays",
-          "verified": "last 2026-07 = 10268"
-        },
-        "psnd": {
-          "id": null,
-          "label": "Public sector net debt (PSND ex) £bn",
-          "status": "pending",
-          "note": "JW2P is interest paid, NOT debt — do not relabel"
-        },
-        "dmo_gilt_auction": {
-          "id": null,
-          "label": "DMO gilt auction: nominal, bid-to-cover, tail (bp), avg yield, settlement date",
-          "status": "pending",
-          "source": "dmo.gov.uk per-event CSV/HTML",
-          "freq": "event"
-        },
-        "dmo_tbill_tender": {
-          "id": null,
-          "label": "DMO T-bill tender: cover / yield",
-          "status": "pending",
-          "freq": "weekly"
-        }
-      },
-      "derived": {
-        "net_spending": {
-          "formula": "cg_expenditure - cg_receipts",
-          "status": "native",
-          "sign": "positive = net creation of NFA proxy (before issuance)"
-        },
-        "net_spending_yoy": {
-          "formula": "net_spending - lag(net_spending,12)",
-          "note": "seasonality: Jan/Jul receipts, Apr spending"
-        },
-        "cgncr_zscore": {
-          "formula": "zscore(cgncr, window=24)"
-        },
-        "fiscal_flow_3m_cum": {
-          "formula": "rolling_sum(net_spending,3)"
-        },
-        "fiscal_regime": {
-          "formula": "regime(net_spending_yoy, cgncr_zscore)",
-          "values": [
-            "INJECTION",
-            "DRAIN",
-            "NEUTRAL"
-          ]
-        },
-        "mmt_note": "Spending creates NFA; taxes destroy NFA; gilt issuance (CGNCR financing) drains reserves without changing NFA. Monthly resolution only — do not read intra-month.",
-        "cgncr_role": {
-          "note": "CGNCR = cash requirement (issuance drain proxy), NOT MMT net spending. net_spending = cg_expenditure − cg_receipts stays the NFA flow. Keep both separate; store vintages (ONS revises)."
-        }
-      },
-      "thresholds": {
-        "cgncr_zscore": {
-          "method": "absolute",
-          "normal_within": 1.0,
-          "extraordinary_above": 2.0
-        },
-        "net_spending_yoy": {
-          "method": "percentile",
-          "window": "60m",
-          "injection_above": "p80",
-          "drain_below": "p20",
-          "hysteresis": {
-            "exit_on": "p70/p30"
-          }
-        }
-      },
-      "release": {
-        "ons": {
-          "day": "~20-22",
-          "time_local": "07:00",
-          "tz": "Europe/London"
-        }
-      },
-      "next_release_secondary": {
-        "name": "DMO gilt auctions / T-bill tenders",
-        "status": "pending"
-      },
-      "influence_cap": {
-        "note": "fiscal layer cannot flip regime alone (monthly, 3-week lag): contribution capped at ±0.5 of block score",
-        "cap": 0.5
-      }
+    "notes_in_circulation": {
+     "id": "RPWB55A",
+     "label": "Notes in circulation",
+     "usd_analog": "WCURCIR",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "status": "verified"
     },
-    "banking": {
-      "source": "boe_iadb",
-      "frequency": "monthly",
-      "publication_lag_days_approx": 31,
-      "equivalence_quality": "medium",
-      "equivalence_note": "BoE Money & Credit / Bankstats monthly (~1 month lag) — better than Canada's 75 days. Codes below are the usual IADB codes and are PENDING verification in one batched request.",
-      "series": {
-        "m4_ex": {
-          "id": "RPMB53Q",
-          "label": "M4 excluding intermediate OFCs — amounts outstanding SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A2.2.3"
-        },
-        "m4_ex_change": {
-          "id": "RPMB54Q",
-          "label": "M4ex — monthly change SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A2.2.3"
-        },
-        "m4_lending_ex": {
-          "id": "RPMB57Q",
-          "label": "M4 lending excluding intermediate OFCs (M4Lex) — amounts outstanding SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A2.2.3"
-        },
-        "m4_lending_ex_change": {
-          "id": "RPMB58Q",
-          "label": "M4Lex — monthly change SA (loans create deposits: primary MMT transmission flow)",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A2.2.3",
-          "role": "primary"
-        },
-        "lending_to_individuals": {
-          "id": "LPMBZ2A",
-          "label": "Net lending to individuals ex SLC — amounts outstanding SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A5.2"
-        },
-        "lending_to_individuals_change": {
-          "id": "LPMBZ2C",
-          "label": "Net lending to individuals — monthly change SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A5.2"
-        },
-        "secured_lending_change": {
-          "id": "LPMVTVJ",
-          "label": "Net secured lending on dwellings — monthly change SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A5.3"
-        },
-        "mortgage_approvals": {
-          "id": "LPMVTVX",
-          "label": "Mortgage approvals for house purchase — number SA (leading indicator)",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "count",
-          "table": "A5.4"
-        },
-        "consumer_credit_change": {
-          "id": "LPMB3PS",
-          "label": "Consumer credit ex SLC — monthly net change SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A5.6"
-        },
-        "pnfc_lending": {
-          "id": "LPMBC57",
-          "label": "MFI sterling net lending to PNFCs — amounts outstanding SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A4.3"
-        },
-        "pnfc_lending_change": {
-          "id": "LPMVWNQ",
-          "label": "Net lending to PNFCs — monthly change SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A4.3"
-        },
-        "household_m4": {
-          "id": "LPMVVHR",
-          "label": "Household sector M4 holdings (deposits) — amounts outstanding SA",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A4.1"
-        },
-        "m4_total": {
-          "id": "LPMAUYN",
-          "label": "M4 total — amounts outstanding SA (context)",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "freq": "monthly",
-          "unit": "GBP_mn",
-          "table": "A2.2.1"
-        },
-        "new_lending_effective_rate": {
-          "id": null,
-          "label": "Effective rate on new lending (IUM/CFM family)",
-          "status": "pending"
-        }
-      },
-      "derived": {
-        "mom_pct": {
-          "applies_to": [
-            "m4",
-            "m4_lending",
-            "lending_to_individuals",
-            "household_deposits",
-            "pnfc_lending"
-          ]
-        },
-        "heatmap_zscore": {
-          "window": 26,
-          "lookahead": false
-        },
-        "transmission_signal": {
-          "rule": "green if >=3 of {m4_lending up, pnfc_lending up, household_deposits up, sonia_dispersion stable}; red if >=3 opposite; NO SIGNAL if valid_series < 3"
-        }
-      },
-      "thresholds": {
-        "mom_pct": {
-          "method": "zscore",
-          "notable_above": 1.0,
-          "extraordinary_above": 2.0
-        }
-      },
-      "signal_rule": {
-        "use": "flows MoM/YoY z-scores, never levels",
-        "min_series_valid": 3,
-        "else": "NO SIGNAL",
-        "role": "confirmation layer, never scarcity trigger"
-      },
-      "v01_codes_rejected": {
-        "LPMVWYL": "was M2 EMU changes, not M4 lending",
-        "LPMBI2P": "unsecured NSA duplicate",
-        "LPMVWYS": "sight deposits all sectors, not household",
-        "LPMB4VH": "invalid code"
-      }
+    "ways_and_means": {
+     "id": "RPWB72A",
+     "label": "Ways and Means advances to HM Government",
+     "usd_analog": null,
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "display_only": true,
+     "status": "verified"
     },
-    "rates": {
-      "source": "boe_iadb",
-      "frequency": "daily",
-      "equivalence_quality": "high",
-      "series": {
-        "policy_rate": {
-          "id": "IUDBEDR",
-          "label": "Official Bank Rate",
-          "usd_analog": "IORB (rate paid on reserves)",
-          "verified": "2026-09-04 = 3.75"
-        },
-        "overnight_rate": {
-          "id": "IUDSOIA",
-          "label": "SONIA",
-          "usd_analog": "SOFR",
-          "verified": "2026-09-03 = 3.7301"
-        },
-        "deposit_rate": {
-          "id": null,
-          "derived_from": "IUDBEDR",
-          "formula": "policy_rate",
-          "label": "Rate paid on reserves = Bank Rate (no separate deposit rate)",
-          "usd_analog": "IORB"
-        },
-        "bond_10y": {
-          "id": "IUDMNPY",
-          "label": "10Y nominal par yield",
-          "usd_analog": "DGS10",
-          "verified": "2026-09-03 = 5.0843"
-        },
-        "bond_5y": {
-          "id": "IUDSNPY",
-          "label": "5Y nominal par yield",
-          "usd_analog": "DGS5",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "last": "4.6085 (2026-09-03)"
-        },
-        "bond_20y": {
-          "id": "IUDLNPY",
-          "label": "20Y nominal par yield",
-          "usd_analog": "DGS20",
-          "status": "verified",
-          "verified": "2026-09-08 IADB CSVF=TT description + value",
-          "last": "5.5699 (2026-09-03)"
-        },
-        "bond_2y": {
-          "id": null,
-          "label": "2Y par yield — NOT in IADB par-yield family (5/10/20 only)",
-          "status": "unavailable",
-          "fallback": "curve slope uses 10Y − 5Y and 5Y − Bank Rate"
-        },
-        "bond_30y": {
-          "id": null,
-          "label": "30Y par yield — not in IADB",
-          "status": "unavailable"
-        },
-        "gilt_gc_repo": {
-          "id": null,
-          "label": "Sterling GC repo rate (overnight)",
-          "status": "pending",
-          "source": "no free official series known; BoE/vendor — mark unavailable rather than estimate",
-          "role": "funding stress: GC − Bank Rate"
-        },
-        "sonia_volume": {
-          "id": null,
-          "label": "SONIA volume / dispersion",
-          "status": "pending",
-          "source": "IADB / SONIA release"
-        },
-        "osf_ceiling": {
-          "id": null,
-          "label": "OSF lending rate = Bank Rate + 25bp",
-          "status": "derived",
-          "formula": "policy_rate + 0.25",
-          "role": "reference ceiling: SONIA or GC above OSF = real stress"
-        }
-      },
-      "derived": {
-        "overnight_minus_policy_bps": {
-          "formula": "(overnight_rate - policy_rate)*100",
-          "usd_analog": "SOFR − IORB",
-          "role": "PRIMARY stress spread (Bank Rate is paid on all reserves = floor)",
-          "note": "normally negative (SONIA a few bp below Bank Rate); stress = closing toward 0 or crossing above"
-        },
-        "curve_10y_2y_bps": {
-          "formula": "(bond_10y - bond_2y_or_5y)*100"
-        },
-        "policy_minus_2y_bps": {
-          "formula": "(policy_rate - bond_2y_or_5y)*100",
-          "note": "positive = market prices cuts"
-        }
-      },
-      "thresholds": {
-        "overnight_minus_policy_bps": {
-          "method": "percentile",
-          "window": "750d",
-          "watch_above": "p80",
-          "stress_above": "p90",
-          "crisis_above": "p97",
-          "hysteresis": {
-            "exit_on": "p70/p80/p90"
-          },
-          "secondary_absolute": {
-            "watch": -1,
-            "stress": 3,
-            "crisis": 10,
-            "origin": "BoE floor framework; asymmetric (SONIA normally −3/−5bp). v4.3 |x| 5/15 symmetric was wrong. Reviewers: −1bp too sensitive as trigger → early flag only; ≥0 persistent = friction",
-            "persistence": {
-              "watch": "informational early flag (single print)",
-              "stress_and_above": "3 consecutive sessions OR weekly mean",
-              "exclude_dates": [
-                "quarter_end",
-                "tax_receipt_days",
-                "large_gilt_settlement"
-              ]
-            }
-          }
-        },
-        "gc_minus_policy_bps": {
-          "method": "absolute",
-          "watch": 10,
-          "stress": 20,
-          "crisis": 30,
-          "origin": "Nov-2025 gilt repo spike ~+30bp handled with record STR (Saporta); status pending until a GC source exists"
-        },
-        "curve_10y_5y_bps": {
-          "method": "absolute",
-          "deep_inversion_below": -50,
-          "inverted_below": 0,
-          "flat_below": 25
-        },
-        "policy_minus_5y_bps": {
-          "method": "absolute",
-          "normal_below": 10,
-          "elevated_below": 30,
-          "tight_above": 30
-        }
-      },
-      "release": {
-        "iadb_daily": "next business day ~09:30 London",
-        "mpc_decisions_per_year": 8,
-        "decision_time_local": "12:00"
-      }
+    "str_lending": {
+     "id": "RPWB67A",
+     "label": "Short-term repo (STR) — one-week reverse repos",
+     "usd_analog": "Fed repo operations",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "status_expected": "proxy_until_label_verified",
+     "status": "verified"
+    },
+    "ltr_lending": {
+     "id": "RPWB69A",
+     "label": "Long-term operations total (ILTR + CTRF)",
+     "usd_analog": null,
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "status_expected": "proxy_until_label_verified",
+     "status": "verified"
+    },
+    "apf_loan": {
+     "id": "RPWZ4TM",
+     "label": "Loan to Asset Purchase Facility",
+     "usd_analog": "TREAST (SOMA)",
+     "status": "verified",
+     "note": "code to locate in IADB tree Assets; Apr-2026 value 553158",
+     "verified": "2026-09-08 IADB CSVF=TT description + value"
+    },
+    "tfsme": {
+     "id": "RPWZOQ4",
+     "label": "TFSME aggregate drawings (financed by reserve creation)",
+     "usd_analog": null,
+     "status": "verified",
+     "note": "Apr-2026 41894",
+     "verified": "2026-09-08 IADB CSVF=TT description + value"
+    },
+    "sterling_bonds": {
+     "id": "RPWZ4TL",
+     "label": "Sterling-denominated bond holdings",
+     "usd_analog": null,
+     "status": "verified",
+     "note": "Apr-2026 12845",
+     "verified": "2026-09-08 IADB CSVF=TT description + value"
+    },
+    "government_account": {
+     "id": null,
+     "label": "HMG deposits at BoE — NOT published as a separate Weekly Report line",
+     "usd_analog": "WTREGEN",
+     "status": "unavailable",
+     "equivalence_note": "fiscal account is read in the fiscal block (ONS), not here",
+     "search_terms": [
+      "Central government deposits",
+      "Government deposits",
+      "National Loans Fund",
+      "Consolidated Fund",
+      "public sector deposits",
+      "Other liabilities"
+     ],
+     "note": "search IADB Liabilities tree; if found, restores the TGA term and Net Liquidity can be reinstated",
+     "weekly_report_confirmed_absent": "B1.1.2 columns (Bankstats tables page, 2026-09-08): liabilities = STR? no — reserves, notes, FX public securities; no HMG deposits line. Monthly candidate: table B2.2 (central bank contribution to MFI balance sheet, public sector deposits) — Phase 3"
+    },
+    "osf_lending_usage": {
+     "id": "YWMB84C",
+     "label": "Operational Standing Facility — lending, average outstanding by maintenance period",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT; Nov-2025 MP = 29, Feb-2026 MP = 71 (repo-spike episodes)",
+     "freq": "event",
+     "unit": "GBP_mn",
+     "role": "functional discount window; > 0 in a maintenance period = a firm paid Bank Rate + 25bp",
+     "note": "published per MPC maintenance period (~6-weekly), lagged — event flag, not a weekly gauge",
+     "alert": "OSF_LENDING_USED if > 0"
+    },
+    "dwf_usage": {
+     "id": null,
+     "label": "Discount Window Facility usage",
+     "status": "pending",
+     "note": "DWF usage is published with a long lag (quarterly, 5-quarter delay) — event flag only"
+    },
+    "str_auction_result": {
+     "id": null,
+     "label": "STR operation: offered / allotted / bidders (cover)",
+     "status": "pending",
+     "source": "BoE Market Operations results",
+     "freq": "weekly"
+    },
+    "iltr_auction_result": {
+     "id": null,
+     "label": "ILTR: allotted / cover / clearing spread",
+     "status": "pending",
+     "source": "BoE Market Operations results",
+     "freq": "monthly"
+    },
+    "apf_gilt_sales_by_bucket": {
+     "id": null,
+     "label": "APF gilt sales short/medium/long + stock",
+     "status": "pending",
+     "source": "APF Market Notice / results",
+     "freq": "weekly"
+    },
+    "iltr": {
+     "id": "RPWZ4TJ",
+     "label": "Indexed long-term repo (ILTR)",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "weekly",
+     "unit": "GBP_mn",
+     "role": "component of ltr_lending",
+     "last": "83874 (2026-09-02)"
+    },
+    "ctrf": {
+     "id": "RPWZ4TK",
+     "label": "Contingent Term Repo Facility (CTRF)",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "weekly",
+     "unit": "GBP_mn",
+     "role": "emergency/episodic backstop — any value > 0 is an event flag",
+     "last": "0 (2026-09-02)",
+     "alert": "CTRF_ACTIVE if > 0"
+    },
+    "fx_reserve_assets": {
+     "id": "RPWZ4TN",
+     "label": "Foreign currency reserve assets (sterling equivalent)",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "weekly",
+     "unit": "GBP_mn",
+     "display_only": true
+    },
+    "fx_public_securities": {
+     "id": "RPWB59A",
+     "label": "Foreign currency public securities issued (liability)",
+     "usd_analog": null,
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "display_only": true,
+     "status": "verified",
+     "excluded_from": [
+      "policy_assets",
+      "regime",
+      "alerts"
+     ],
+     "note": "BoE's own FX bonds; not sterling liquidity"
+    },
+    "osf_deposit_usage": {
+     "id": "YWMB85C",
+     "label": "Operational Standing Facility — deposit, average outstanding by maintenance period",
+     "status": "verified",
+     "verified": "2026-09-08",
+     "freq": "event",
+     "unit": "GBP_mn",
+     "display_only": true
     }
-  },
-  "regime": {
-    "weights": {
-      "central_bank": 0.45,
-      "rates": 0.35,
-      "fiscal": 0.1,
-      "banking": 0.1
+   },
+   "derived": {
+    "policy_assets": {
+     "formula": "str_lending + ltr_lending + tfsme + apf_loan + sterling_bonds",
+     "usd_analog": "WALCL policy portfolio",
+     "origin": "v4.3 netLiq",
+     "verified_2026_09_02": "124825 + 83874 + 41763 + 521819 + 12779 = 785060"
     },
-    "weights_note": "v0.2 approved by Sander 2026-09-08: CB 0.45 / rates 0.35 / fiscal 0.10 / banking 0.10 (SMF: reserves quantity endogenous, price is the scarcity proof). To be recalibrated later with live history (see regime.calibration).",
-    "values": [
-      "LIQUIDITY_INJECTION",
-      "LIQUIDITY_DRAIN",
-      "LIQUIDITY_SCARCITY",
-      "FLOOR_FRICTION",
+    "reserves_wow_pct": {
+     "formula": "pct_change(reserves,1)"
+    },
+    "repo_offset": {
+     "formula": "str_lending + ltr_lending",
+     "origin": "v4.3 repoTotal",
+     "note": "demand-driven: level is not a policy signal; watch abrupt changes"
+    },
+    "qt_pace": {
+     "formula": "diff(apf_loan,1)",
+     "note": "negative = QT (sales + maturities)"
+    },
+    "currency_drain": {
+     "formula": "-diff(notes_in_circulation,1)"
+    },
+    "balance_sheet_phase": {
+     "formula": "QT if qt_pace < 0 else NORMALIZATION/STEADY"
+    },
+    "policy_balance_sheet": {
+     "formula": "policy_assets",
+     "label": "Policy Balance Sheet (assets)",
+     "note": "NOT 'Net Liquidity': the Weekly Report has no HMG deposits line, so the USD WALCL−TGA−RRP construct is not buildable weekly. Primary weekly liquidity reading = reserves (RPWB56A) + price (SONIA − Bank Rate).",
+     "renamed_from": "net_liquidity (v0.1)"
+    },
+    "policy_balance_sheet_wow_pct": {
+     "formula": "pct_change(policy_balance_sheet,1)"
+    },
+    "repo_dependence_ratio": {
+     "formula": "repo_offset / reserves",
+     "note": "share of reserves supplied by repo (BoE: ~1/4 in Mar 2026). Informational while SONIA − Bank Rate < 0; escalates only with price confirmation"
+    },
+    "reserves_vs_pmrr_ceiling": {
+     "formula": "reserves - 515000",
+     "unit": "GBP_mn",
+     "note": "distance to PMRR ceiling; the clock to watch during QT"
+    }
+   },
+   "thresholds": {
+    "reserves": {
+     "method": "absolute_primary",
+     "direction": "low_is_risk",
+     "primary_absolute": {
+      "boc_target_range": [
+       365000,
+       515000
+      ],
+      "range_name": "PMRR (BoE preferred minimum range of reserves)",
+      "source": "BoE Bank Insights 'Resilience and readiness across the SMF', 27 Mar 2026: latest survey £365–515bn (previous £375–540bn, Saporta Nov 2025; £385–540bn Q1-2025 survey)",
+      "below_range_watch": 365000,
+      "stress_below": 330000,
+      "crisis_below": 300000,
+      "above_range_note": ">515000 = ample (reserves ~644bn Sep 2026 → ~125bn above the ceiling)",
+      "in_range_note": "inside PMRR = transition zone (informational WATCH, never stress by itself); scarcity requires PRICE confirmation (SONIA − Bank Rate ≥ 0 persistent)",
+      "review_rule": "re-check PMRR each BoE survey / Market Notice; store history of range revisions"
+     },
+     "secondary_absolute_v43": {
+      "green_above": 700000,
+      "amber_between": [
+       600000,
+       700000
+      ],
+      "red_below": 600000,
+      "origin": "GBP-ICC v4.3 methodology 2.1 — reference only, pre-PMRR"
+     },
+     "percentile_note": "NO rolling percentile on the reserves LEVEL (non-stationary under QT). Percentiles only on stationary transforms: reserves_wow_pct, spreads."
+    },
+    "net_liquidity_wow_pct": {
+     "method": "percentile",
+     "window": "156w",
+     "risk_on_above": "p85",
+     "risk_off_below": "p15",
+     "hysteresis": {
+      "exit_on": "p75/p25"
+     },
+     "secondary_absolute": {
+      "risk_on": 1.0,
+      "risk_off": -2.0,
+      "origin": "v4.3 netLiq Δ: <1% green, 1–2% amber, >2% red (as absolute change)"
+     }
+    },
+    "reserves_wow_pct": {
+     "method": "percentile",
+     "window": "156w",
+     "direction": "low_is_risk",
+     "watch_below": "p20",
+     "stress_below": "p10",
+     "crisis_below": "p3",
+     "hysteresis": {
+      "exit_on": "p30/p20/p10"
+     }
+    },
+    "repo_offset": {
+     "method": "percentile",
+     "window": "156w",
+     "secondary_absolute": {
+      "comfort_above": 150000,
+      "caution_between": [
+       80000,
+       150000
+      ],
+      "low_below": 80000,
+      "origin": "v4.3 repoTotal 150/80bn",
+      "note": "informational in a demand-driven framework"
+     }
+    },
+    "qt_pace": {
+     "method": "absolute",
+     "direction": "low_is_risk",
+     "watch_below": -1700,
+     "stress_below": -2400,
+     "origin": "v0.2.1: 26-week average weekly Δ APF vs announced £70bn/yr (≈ −1,346/w); WATCH ×1.25, STRESS ×1.75"
+    },
+    "repo_dependence_ratio": {
+     "method": "percentile",
+     "window": "156w",
+     "watch_above": "p80",
+     "stress_above": "p90",
+     "escalation_requires": "rates.overnight_minus_policy_bps >= 0 persistent",
+     "note": "quantity alone never escalates in a demand-driven framework"
+    }
+   }
+  },
+  "fiscal": {
+   "source": "ons_api",
+   "frequency": "monthly",
+   "equivalence_quality": "medium",
+   "equivalence_note": "No daily/weekly Exchequer account is published in machine-readable form (DMO daily cash flow is PDF). ONS Public Sector Finances give central government cash requirement, expenditure and receipts monthly (~3-week lag). Gilt/T-bill issuance from DMO by event (pending).",
+   "series": {
+    "cgncr": {
+     "id": "RUUW",
+     "label": "CG: Net cash requirement £m CPNSA",
+     "usd_analog": "−(Net Treasury Flow) monthly",
+     "verified": "2026-09-08, last 2026-07 = 2723"
+    },
+    "cg_expenditure": {
+     "id": "MF6U",
+     "label": "CG: Total expenditure £m CPNSA",
+     "usd_analog": "DTS withdrawals",
+     "verified": "last 2026-07 = 115570"
+    },
+    "cg_receipts": {
+     "id": "ANBV",
+     "label": "CG: Total current receipts £m CPNSA",
+     "usd_analog": "DTS deposits",
+     "verified": "last 2026-07 = 104343"
+    },
+    "psnb_ex": {
+     "id": "J5II",
+     "label": "PS: Net borrowing excl. PS banks £m CPNSA",
+     "usd_analog": "deficit",
+     "verified": "last 2026-07 = -1800"
+    },
+    "interest_paid_private": {
+     "id": "JW2P",
+     "label": "PS: interest & dividends paid to private sector & RoW £m",
+     "usd_analog": "interest outlays",
+     "verified": "last 2026-07 = 10268"
+    },
+    "psnd": {
+     "id": null,
+     "label": "Public sector net debt (PSND ex) £bn",
+     "status": "pending",
+     "note": "JW2P is interest paid, NOT debt — do not relabel"
+    },
+    "dmo_gilt_auction": {
+     "id": null,
+     "label": "DMO gilt auction: nominal, bid-to-cover, tail (bp), avg yield, settlement date",
+     "status": "pending",
+     "source": "dmo.gov.uk per-event CSV/HTML",
+     "freq": "event"
+    },
+    "dmo_tbill_tender": {
+     "id": null,
+     "label": "DMO T-bill tender: cover / yield",
+     "status": "pending",
+     "freq": "weekly"
+    }
+   },
+   "derived": {
+    "net_spending": {
+     "formula": "cg_expenditure - cg_receipts",
+     "status": "native",
+     "sign": "positive = net creation of NFA proxy (before issuance)"
+    },
+    "net_spending_yoy": {
+     "formula": "net_spending - lag(net_spending,12)",
+     "note": "seasonality: Jan/Jul receipts, Apr spending"
+    },
+    "cgncr_zscore": {
+     "formula": "zscore(cgncr, window=24)"
+    },
+    "fiscal_flow_3m_cum": {
+     "formula": "rolling_sum(net_spending,3)"
+    },
+    "fiscal_regime": {
+     "formula": "regime(net_spending_yoy, cgncr_zscore)",
+     "values": [
+      "INJECTION",
+      "DRAIN",
       "NEUTRAL"
-    ],
-    "rules": {
-      "LIQUIDITY_SCARCITY": "reserves BELOW PMRR floor (365bn) AND overnight_minus_policy_bps >= 0 persistent (3 sessions or weekly mean)",
-      "FLOOR_FRICTION": "reserves within/above PMRR AND overnight_minus_policy_bps >= 0 persistent (SONIA pinned at/above Bank Rate while reserves ample); −1bp single print = early flag only, not a regime",
-      "LIQUIDITY_DRAIN": "weighted score <= -0.5",
-      "LIQUIDITY_INJECTION": "weighted score >= +0.5",
-      "NEUTRAL": "otherwise"
+     ]
     },
-    "orthogonal_flags": {
-      "TRANSMISSION_FAILURE": "banking.transmission_signal == RED while reserves within/above PMRR",
-      "BALANCE_SHEET_PHASE": "QT while qt_pace < 0",
-      "QT_ACCELERATION": "abs(qt_pace) > announced APF reduction pace (annual remit / 52) × 1.25; needs apf_loan verified",
-      "REPO_DEPENDENCE_HEALTHY": "repo_dependence_ratio >= WATCH AND overnight_minus_policy_bps < 0",
-      "REPO_DEPENDENCE_STRESS": "repo_dependence_ratio >= WATCH AND (overnight_minus_policy_bps >= 0 persistent OR gc_minus_policy_bps >= STRESS OR osf_lending_usage > 0)",
-      "GILT_SUPPLY_STRESS": "DMO auction tail >= p90 (156 events) OR bid-to-cover < 1.5 (pending DMO source)",
-      "FISCAL_BIG_MONTH": "abs(net_spending z-score 24m) >= 2 (sign matters more than weight)"
-    },
-    "min_blocks_for_signal": 2,
-    "calibration": {
-      "status": "planned",
-      "method": "after >=26 weeks of live data: grid over weights, score by agreement with price-confirmed stress episodes (SONIA−Bank Rate ≥ 0, GC spikes) and false-positive rate; changes logged in regime changelog",
-      "owner": "operator + agent"
-    },
-    "stress_spread_metric": "rates.overnight_minus_policy_bps",
-    "qt_announced_pace_per_week": -1346,
-    "qt_announced_pace_note": "£70bn/yr APF reduction (Sep-2025 MPC) / 52 ≈ £1.35bn/w; re-set after the Sep-2026 MPC decision"
-  },
-  "status_rules": {
-    "fresh_multiplier": 1.5,
-    "stale_multiplier": 3.0,
-    "nominal_period_days": {
-      "daily": 4,
-      "weekly": 7,
-      "monthly": 31
-    },
-    "monthly_lag_allowance_days": 75,
-    "lag_allowance_days": {
-      "receiver_general": 7
-    },
-    "note": "daily=4 covers weekends/holidays and the CORRA next-day publication"
-  },
-  "refresh_lanes": {
-    "weekly": {
-      "cron_utc": "30 15 * * 4",
-      "note": "Thursday 16:30 WAT, after the Weekly Report (15:00 London = 14:00 UTC in BST)",
-      "blocks": [
-        "central_bank",
-        "rates"
-      ],
-      "run_agent": true
-    },
-    "daily": {
-      "cron_utc": "30 10 * * 1-5",
-      "note": "11:30 WAT after IADB daily rates (SONIA published 09:00 London next day)",
-      "blocks": [
-        "rates"
-      ],
-      "run_agent": false
-    },
-    "monthly": {
-      "cron_utc": "0 9 22 * *",
-      "note": "ONS PSF ~22nd 07:00 London + Money & Credit (already out on the 1st)",
-      "blocks": [
-        "fiscal",
-        "banking"
-      ],
-      "run_agent": true
-    },
-    "event": {
-      "trigger": "mpc_decision_dates",
-      "blocks": [
-        "rates"
-      ],
-      "run_agent": true
-    },
-    "monthly_mc": {
-      "cron_utc": "0 11 2 * *",
-      "note": "Money & Credit refresh on the 2nd",
-      "blocks": [
-        "banking"
-      ],
-      "run_agent": false
+    "mmt_note": "Spending creates NFA; taxes destroy NFA; gilt issuance (CGNCR financing) drains reserves without changing NFA. Monthly resolution only — do not read intra-month.",
+    "cgncr_role": {
+     "note": "CGNCR = cash requirement (issuance drain proxy), NOT MMT net spending. net_spending = cg_expenditure − cg_receipts stays the NFA flow. Keep both separate; store vintages (ONS revises)."
     }
-  },
-  "calendar": {
-    "mpc_decision_dates_2026": [
-      "2026-02-05",
-      "2026-03-19",
-      "2026-04-30",
-      "2026-06-18",
-      "2026-07-30",
-      "2026-09-17",
-      "2026-11-05",
-      "2026-12-17"
-    ],
-    "uk_bank_holidays_2026": [
-      "2026-01-01",
-      "2026-04-03",
-      "2026-04-06",
-      "2026-05-04",
-      "2026-05-25",
-      "2026-08-31",
-      "2026-12-25",
-      "2026-12-28"
-    ],
-    "decision_time": "12:00 Europe/London",
-    "fiscal_seasonality": {
-      "note": "flag quarter-end, PAYE/VAT receipt days, DWP payment days, large gilt settlements — exclude from spread persistence and annotate fiscal prints",
-      "status": "pending"
+   },
+   "thresholds": {
+    "cgncr_zscore": {
+     "method": "absolute",
+     "normal_within": 1.0,
+     "extraordinary_above": 2.0
     },
-    "mpc_mpr_dates_2026": [
-      "2026-02-05",
-      "2026-04-30",
-      "2026-07-30",
-      "2026-11-05"
-    ],
-    "mpc_decision_dates_2027_provisional": [
-      "2027-02-04",
-      "2027-03-18",
-      "2027-04-29",
-      "2027-06-17",
-      "2027-07-29",
-      "2027-09-16",
-      "2027-11-04",
-      "2027-12-16"
-    ],
-    "mpc_source": "bankofengland.co.uk/monetary-policy/upcoming-mpc-dates (verified 2026-09-08)",
-    "weekly_report_release": "Thursday 15:00 London (data as of Wednesday); IADB updated same day",
-    "ons_psf_release": "~20th–22nd each month 07:00 London",
-    "money_credit_release": "~1st business day of the month 09:30 London (data for month-2)"
+    "net_spending_yoy": {
+     "method": "percentile",
+     "window": "60m",
+     "injection_above": "p80",
+     "drain_below": "p20",
+     "hysteresis": {
+      "exit_on": "p70/p30"
+     }
+    }
+   },
+   "release": {
+    "ons": {
+     "day": "~20-22",
+     "time_local": "07:00",
+     "tz": "Europe/London"
+    }
+   },
+   "next_release_secondary": {
+    "name": "DMO gilt auctions / T-bill tenders",
+    "status": "pending"
+   },
+   "influence_cap": {
+    "note": "fiscal layer cannot flip regime alone (monthly, 3-week lag): contribution capped at ±0.5 of block score",
+    "cap": 0.5
+   }
   },
-  "quality": {
-    "origin": "v2.0 quality.mjs, ported to Python",
-    "dedup": "last value wins per date, duplicates counted",
-    "outliers": {
-      "method": "modified_zscore_MAD",
-      "rolling_window": 20,
-      "min_points": 5,
-      "z_threshold": {
-        "default": 3.5,
-        "overnight_rate": 4.0,
-        "policy_rate": 5.0,
-        "bank_rate": 5.0,
-        "corra_total_volume": 4.5
+  "banking": {
+   "source": "boe_iadb",
+   "frequency": "monthly",
+   "publication_lag_days_approx": 31,
+   "equivalence_quality": "medium",
+   "equivalence_note": "BoE Money & Credit / Bankstats monthly (~1 month lag) — better than Canada's 75 days. Codes below are the usual IADB codes and are PENDING verification in one batched request.",
+   "series": {
+    "m4_ex": {
+     "id": "RPMB53Q",
+     "label": "M4 excluding intermediate OFCs — amounts outstanding SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A2.2.3"
+    },
+    "m4_ex_change": {
+     "id": "RPMB54Q",
+     "label": "M4ex — monthly change SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A2.2.3"
+    },
+    "m4_lending_ex": {
+     "id": "RPMB57Q",
+     "label": "M4 lending excluding intermediate OFCs (M4Lex) — amounts outstanding SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A2.2.3"
+    },
+    "m4_lending_ex_change": {
+     "id": "RPMB58Q",
+     "label": "M4Lex — monthly change SA (loans create deposits: primary MMT transmission flow)",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A2.2.3",
+     "role": "primary"
+    },
+    "lending_to_individuals": {
+     "id": "LPMBZ2A",
+     "label": "Net lending to individuals ex SLC — amounts outstanding SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A5.2"
+    },
+    "lending_to_individuals_change": {
+     "id": "LPMBZ2C",
+     "label": "Net lending to individuals — monthly change SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A5.2"
+    },
+    "secured_lending_change": {
+     "id": "LPMVTVJ",
+     "label": "Net secured lending on dwellings — monthly change SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A5.3"
+    },
+    "mortgage_approvals": {
+     "id": "LPMVTVX",
+     "label": "Mortgage approvals for house purchase — number SA (leading indicator)",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "count",
+     "table": "A5.4"
+    },
+    "consumer_credit_change": {
+     "id": "LPMB3PS",
+     "label": "Consumer credit ex SLC — monthly net change SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A5.6"
+    },
+    "pnfc_lending": {
+     "id": "LPMBC57",
+     "label": "MFI sterling net lending to PNFCs — amounts outstanding SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A4.3"
+    },
+    "pnfc_lending_change": {
+     "id": "LPMVWNQ",
+     "label": "Net lending to PNFCs — monthly change SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A4.3"
+    },
+    "household_m4": {
+     "id": "LPMVVHR",
+     "label": "Household sector M4 holdings (deposits) — amounts outstanding SA",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A4.1"
+    },
+    "m4_total": {
+     "id": "LPMAUYN",
+     "label": "M4 total — amounts outstanding SA (context)",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "freq": "monthly",
+     "unit": "GBP_mn",
+     "table": "A2.2.1"
+    },
+    "new_lending_effective_rate": {
+     "id": null,
+     "label": "Effective rate on new lending (IUM/CFM family)",
+     "status": "pending"
+    }
+   },
+   "derived": {
+    "mom_pct": {
+     "applies_to": [
+      "m4",
+      "m4_lending",
+      "lending_to_individuals",
+      "household_deposits",
+      "pnfc_lending"
+     ]
+    },
+    "heatmap_zscore": {
+     "window": 26,
+     "lookahead": false
+    },
+    "transmission_signal": {
+     "rule": "green if >=3 of {m4_lending up, pnfc_lending up, household_deposits up, sonia_dispersion stable}; red if >=3 opposite; NO SIGNAL if valid_series < 3"
+    }
+   },
+   "thresholds": {
+    "mom_pct": {
+     "method": "zscore",
+     "notable_above": 1.0,
+     "extraordinary_above": 2.0
+    }
+   },
+   "signal_rule": {
+    "use": "flows MoM/YoY z-scores, never levels",
+    "min_series_valid": 3,
+    "else": "NO SIGNAL",
+    "role": "confirmation layer, never scarcity trigger"
+   },
+   "v01_codes_rejected": {
+    "LPMVWYL": "was M2 EMU changes, not M4 lending",
+    "LPMBI2P": "unsecured NSA duplicate",
+    "LPMVWYS": "sight deposits all sectors, not household",
+    "LPMB4VH": "invalid code"
+   }
+  },
+  "rates": {
+   "source": "boe_iadb",
+   "frequency": "daily",
+   "equivalence_quality": "high",
+   "series": {
+    "policy_rate": {
+     "id": "IUDBEDR",
+     "label": "Official Bank Rate",
+     "usd_analog": "IORB (rate paid on reserves)",
+     "verified": "2026-09-04 = 3.75"
+    },
+    "overnight_rate": {
+     "id": "IUDSOIA",
+     "label": "SONIA",
+     "usd_analog": "SOFR",
+     "verified": "2026-09-03 = 3.7301"
+    },
+    "deposit_rate": {
+     "id": null,
+     "derived_from": "IUDBEDR",
+     "formula": "policy_rate",
+     "label": "Rate paid on reserves = Bank Rate (no separate deposit rate)",
+     "usd_analog": "IORB"
+    },
+    "bond_10y": {
+     "id": "IUDMNPY",
+     "label": "10Y nominal par yield",
+     "usd_analog": "DGS10",
+     "verified": "2026-09-03 = 5.0843"
+    },
+    "bond_5y": {
+     "id": "IUDSNPY",
+     "label": "5Y nominal par yield",
+     "usd_analog": "DGS5",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "last": "4.6085 (2026-09-03)"
+    },
+    "bond_20y": {
+     "id": "IUDLNPY",
+     "label": "20Y nominal par yield",
+     "usd_analog": "DGS20",
+     "status": "verified",
+     "verified": "2026-09-08 IADB CSVF=TT description + value",
+     "last": "5.5699 (2026-09-03)"
+    },
+    "bond_2y": {
+     "id": null,
+     "label": "2Y par yield — NOT in IADB par-yield family (5/10/20 only)",
+     "status": "unavailable",
+     "fallback": "curve slope uses 10Y − 5Y and 5Y − Bank Rate"
+    },
+    "bond_30y": {
+     "id": null,
+     "label": "30Y par yield — not in IADB",
+     "status": "unavailable"
+    },
+    "gilt_gc_repo": {
+     "id": null,
+     "label": "Sterling GC repo rate (overnight)",
+     "status": "pending",
+     "source": "no free official series known; BoE/vendor — mark unavailable rather than estimate",
+     "role": "funding stress: GC − Bank Rate"
+    },
+    "sonia_volume": {
+     "id": null,
+     "label": "SONIA volume / dispersion",
+     "status": "pending",
+     "source": "IADB / SONIA release"
+    },
+    "osf_ceiling": {
+     "id": null,
+     "label": "OSF lending rate = Bank Rate + 25bp",
+     "status": "derived",
+     "formula": "policy_rate + 0.25",
+     "role": "reference ceiling: SONIA or GC above OSF = real stress"
+    }
+   },
+   "derived": {
+    "overnight_minus_policy_bps": {
+     "formula": "(overnight_rate - policy_rate)*100",
+     "usd_analog": "SOFR − IORB",
+     "role": "PRIMARY stress spread (Bank Rate is paid on all reserves = floor)",
+     "note": "normally negative (SONIA a few bp below Bank Rate); stress = closing toward 0 or crossing above"
+    },
+    "curve_10y_2y_bps": {
+     "formula": "(bond_10y - bond_2y_or_5y)*100"
+    },
+    "policy_minus_2y_bps": {
+     "formula": "(policy_rate - bond_2y_or_5y)*100",
+     "note": "positive = market prices cuts"
+    }
+   },
+   "thresholds": {
+    "overnight_minus_policy_bps": {
+     "method": "percentile",
+     "window": "750d",
+     "watch_above": "p80",
+     "stress_above": "p90",
+     "crisis_above": "p97",
+     "hysteresis": {
+      "exit_on": "p70/p80/p90"
+     },
+     "secondary_absolute": {
+      "watch": -1,
+      "stress": 3,
+      "crisis": 10,
+      "origin": "BoE floor framework; asymmetric (SONIA normally −3/−5bp). v4.3 |x| 5/15 symmetric was wrong. Reviewers: −1bp too sensitive as trigger → early flag only; ≥0 persistent = friction",
+      "persistence": {
+       "watch": "informational early flag (single print)",
+       "stress_and_above": "3 consecutive sessions OR weekly mean",
+       "exclude_dates": [
+        "quarter_end",
+        "tax_receipt_days",
+        "large_gilt_settlement"
+       ]
       }
+     }
     },
-    "freshness_hours": {
-      "weekly_series": 192,
-      "daily_series": 72,
-      "policy_rate": 1440,
-      "monthly_series": 1800
+    "gc_minus_policy_bps": {
+     "method": "absolute",
+     "watch": 10,
+     "stress": 20,
+     "crisis": 30,
+     "origin": "Nov-2025 gilt repo spike ~+30bp handled with record STR (Saporta); status pending until a GC source exists"
     },
-    "holiday_aware": true,
-    "null_streaks": "unexpected nulls only (weekends/holidays excluded)",
-    "confidence": {
-      "start": 100,
-      "penalties": {
-        "stale": "min(30, 30*(hours_over/threshold))",
-        "nulls_last30": "40*share",
-        "ongoing_streak": "min(25, 5*len)",
-        "latest_outlier": "8 or 15 if |mz|>5",
-        "duplicates": "min(10, 3*n)"
-      },
-      "tiers": {
-        "HIGH": 90,
-        "MEDIUM": 70,
-        "LOW": 50,
-        "CRITICAL": 0
-      }
+    "curve_10y_5y_bps": {
+     "method": "absolute",
+     "deep_inversion_below": -50,
+     "inverted_below": 0,
+     "flat_below": 25
     },
-    "null_policy": "null is NEVER neutral/amber: series -> unavailable, block signal suppressed below min coverage"
+    "policy_minus_5y_bps": {
+     "method": "absolute",
+     "normal_below": 10,
+     "elevated_below": 30,
+     "tight_above": 30
+    }
+   },
+   "release": {
+    "iadb_daily": "next business day ~09:30 London",
+    "mpc_decisions_per_year": 8,
+    "decision_time_local": "12:00"
+   }
+  }
+ },
+ "regime": {
+  "weights": {
+   "central_bank": 0.45,
+   "rates": 0.35,
+   "fiscal": 0.1,
+   "banking": 0.1
   },
-  "revisions": {
-    "origin": "CAD revisions module",
-    "series": [
-      "reserves",
-      "notes_in_circulation",
-      "str_lending",
-      "ltr_lending",
-      "apf_loan",
-      "overnight_rate",
-      "bond_10y",
-      "cgncr"
-    ],
-    "keep_last": 50
+  "weights_note": "v0.2 approved by Sander 2026-09-08: CB 0.45 / rates 0.35 / fiscal 0.10 / banking 0.10 (SMF: reserves quantity endogenous, price is the scarcity proof). To be recalibrated later with live history (see regime.calibration).",
+  "values": [
+   "LIQUIDITY_INJECTION",
+   "LIQUIDITY_DRAIN",
+   "LIQUIDITY_SCARCITY",
+   "FLOOR_FRICTION",
+   "NEUTRAL"
+  ],
+  "rules": {
+   "LIQUIDITY_SCARCITY": "reserves BELOW PMRR floor (365bn) AND overnight_minus_policy_bps >= 0 persistent (3 sessions or weekly mean)",
+   "FLOOR_FRICTION": "reserves within/above PMRR AND overnight_minus_policy_bps >= 0 persistent (SONIA pinned at/above Bank Rate while reserves ample); −1bp single print = early flag only, not a regime",
+   "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+   "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+   "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
   },
-  "alerts": {
-    "origin": "CAD alert state machine",
-    "lifecycle": [
-      "active",
-      "resolved"
-    ],
-    "keep_last": 100,
-    "rules": [
-      {
-        "id": "reserves_below_pmrr",
-        "metric": "central_bank.reserves",
-        "when": "level >= WATCH",
-        "severity": "WARNING",
-        "category": "reserves"
-      },
-      {
-        "id": "reserves_stress",
-        "metric": "central_bank.reserves",
-        "when": "level >= STRESS",
-        "severity": "CRITICAL",
-        "category": "reserves"
-      },
-      {
-        "id": "sonia_at_floor",
-        "metric": "rates.overnight_minus_policy_bps",
-        "when": "level == WATCH",
-        "severity": "WARNING",
-        "category": "funding"
-      },
-      {
-        "id": "sonia_stress",
-        "metric": "rates.overnight_minus_policy_bps",
-        "when": "level >= STRESS",
-        "severity": "CRITICAL",
-        "category": "funding"
-      },
-      {
-        "id": "net_liq_drain",
-        "metric": "central_bank.net_liquidity_wow_pct",
-        "when": "<= risk_off",
-        "severity": "WARNING",
-        "category": "liquidity"
-      },
-      {
-        "id": "qt_fast",
-        "metric": "central_bank.qt_pace",
-        "when": "level >= STRESS",
-        "severity": "WARNING",
-        "category": "qt"
-      },
-      {
-        "id": "fiscal_drain",
-        "metric": "fiscal.net_spending_yoy",
-        "when": "<= drain",
-        "severity": "WARNING",
-        "category": "fiscal"
-      },
-      {
-        "id": "curve_inversion",
-        "metric": "rates.curve_10y_5y_bps",
-        "when": "< -50",
-        "severity": "WARNING",
-        "category": "curve"
-      },
-      {
-        "id": "transmission_break",
-        "metric": "banking.transmission_signal",
-        "when": "== RED",
-        "severity": "WARNING",
-        "category": "transmission"
-      },
-      {
-        "id": "data_degraded",
-        "metric": "quality.system.blw70",
-        "when": "> 0",
-        "severity": "INFO",
-        "category": "data"
-      },
-      {
-        "id": "ctrf_active",
-        "metric": "central_bank.ctrf",
-        "when": "> 0",
-        "severity": "CRITICAL",
-        "category": "emergency"
-      },
-      {
-        "id": "sonia_above_osf",
-        "metric": "rates.overnight_minus_osf_bps",
-        "when": ">= 0",
-        "severity": "CRITICAL",
-        "category": "funding"
-      },
-      {
-        "id": "osf_lending_used",
-        "metric": "central_bank.osf_lending_usage",
-        "when": "> 0",
-        "severity": "WARNING",
-        "category": "emergency"
-      }
-    ]
+  "orthogonal_flags": {
+   "TRANSMISSION_FAILURE": "banking.transmission_signal == RED while reserves within/above PMRR",
+   "BALANCE_SHEET_PHASE": "QT while qt_pace < 0",
+   "QT_ACCELERATION": "abs(qt_pace) > announced APF reduction pace (annual remit / 52) × 1.25; needs apf_loan verified",
+   "REPO_DEPENDENCE_HEALTHY": "repo_dependence_ratio >= WATCH AND overnight_minus_policy_bps < 0",
+   "REPO_DEPENDENCE_STRESS": "repo_dependence_ratio >= WATCH AND (overnight_minus_policy_bps >= 0 persistent OR gc_minus_policy_bps >= STRESS OR osf_lending_usage > 0)",
+   "GILT_SUPPLY_STRESS": "DMO auction tail >= p90 (156 events) OR bid-to-cover < 1.5 (pending DMO source)",
+   "FISCAL_BIG_MONTH": "abs(net_spending z-score 24m) >= 2 (sign matters more than weight)"
   },
-  "scenarios": {
-    "origin": "CAD scenario engine; GBP liquidity-only set",
-    "items": [
-      {
-        "id": "L1",
-        "name": "GBP Reserve Scarcity Approach",
-        "bias": "DEFENSIVE",
-        "min": 2,
-        "conditions": [
-          "central_bank.reserves level >= WATCH",
-          "rates.overnight_minus_policy_bps level >= WATCH",
-          "central_bank.reserves_wow_pct <= p20"
-        ]
-      },
-      {
-        "id": "L2",
-        "name": "Repo-led Absorption",
-        "bias": "NEUTRAL",
-        "min": 2,
-        "conditions": [
-          "central_bank.repo_offset >= p80",
-          "rates.overnight_minus_policy_bps level == SAFE",
-          "central_bank.reserves level == SAFE"
-        ]
-      },
-      {
-        "id": "L3",
-        "name": "QT Drag Intensifying",
-        "bias": "RISK-OFF",
-        "min": 2,
-        "conditions": [
-          "central_bank.qt_pace level >= WATCH",
-          "central_bank.net_liquidity_wow_pct <= risk_off",
-          "central_bank.currency_drain <= p20"
-        ]
-      },
-      {
-        "id": "L4",
-        "name": "Funding Stress",
-        "bias": "EMERGENCY",
-        "min": 2,
-        "conditions": [
-          "rates.overnight_minus_policy_bps level >= STRESS",
-          "central_bank.reserves level >= STRESS",
-          "central_bank.ltr_lending >= p97"
-        ]
-      },
-      {
-        "id": "L5",
-        "name": "Fiscal Injection",
-        "bias": "CONSTRUCTIVE",
-        "min": 2,
-        "conditions": [
-          "fiscal.net_spending_yoy >= injection",
-          "fiscal.cgncr_zscore >= 1",
-          "central_bank.reserves_wow_pct >= p80"
-        ]
-      },
-      {
-        "id": "L6",
-        "name": "Transmission Break",
-        "bias": "CAUTION",
-        "min": 2,
-        "conditions": [
-          "banking.transmission_signal == RED",
-          "banking.pnfc_lending mom_pct zscore <= -1",
-          "banking.household_deposits mom_pct zscore <= -1"
-        ]
-      }
-    ]
+  "min_blocks_for_signal": 2,
+  "calibration": {
+   "status": "planned",
+   "method": "after >=26 weeks of live data: grid over weights, score by agreement with price-confirmed stress episodes (SONIA−Bank Rate ≥ 0, GC spikes) and false-positive rate; changes logged in regime changelog",
+   "owner": "operator + agent"
   },
-  "desk_exports": {
-    "gbpusd": {
-      "id": "XUDLUSS",
-      "label": "Spot USD per GBP (BoE 16:00)",
-      "status": "verified",
-      "verified": "2026-09-08 IADB CSVF=TT description + value",
-      "freq": "daily"
-    },
-    "eurgbp_inv": {
-      "id": "XUDLERS",
-      "label": "Spot EUR per GBP (BoE 16:00)",
-      "status": "verified",
-      "verified": "2026-09-08 IADB CSVF=TT description + value",
-      "freq": "daily"
-    },
-    "note": "prices go to the Desk, not to the GBP liquidity regime"
+  "stress_spread_metric": "rates.overnight_minus_policy_bps",
+  "qt_announced_pace_per_week": -1346,
+  "qt_announced_pace_note": "£70bn/yr APF reduction (Sep-2025 MPC) / 52 ≈ £1.35bn/w; re-set after the Sep-2026 MPC decision",
+  "dual": {
+   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   }
   },
-  "agent": {
-    "name": "GBP Currency Agent",
-    "reads": [
-      "data/gbp/central_bank.json",
-      "data/gbp/fiscal.json",
-      "data/gbp/banking.json",
-      "data/gbp/rates.json",
-      "data/gbp/calendar.json"
-    ],
-    "writes": "agents/gbp.json",
-    "vocabulary": "MMT/Mosler; BoE repo-led demand-driven framework; PMRR",
-    "alert_types": [
-      "LIQUIDITY_GAIN",
-      "LIQUIDITY_LOSS",
-      "LIQUIDITY_SCARCITY",
-      "TRANSMISSION_BREAK",
-      "DATA_DEGRADED"
-    ],
-    "never": [
-      "trade execution",
-      "position sizing",
-      "technical analysis"
-    ]
+  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)"
+ },
+ "status_rules": {
+  "fresh_multiplier": 1.5,
+  "stale_multiplier": 3.0,
+  "nominal_period_days": {
+   "daily": 4,
+   "weekly": 7,
+   "monthly": 31
   },
-  "pending_before_phase2": [
-    "Phase 3: parsers for BoE operations XLSX (STR/ILTR/CTRF/APF sales) and DMO per-event results",
-    "Phase 3: B2.2 monthly public sector deposits as government_account proxy; PSND ONS code",
-    "Sep-2026 MPC (17 Sep): re-set qt_announced_pace_per_week from the new APF remit"
+  "monthly_lag_allowance_days": 75,
+  "lag_allowance_days": {
+   "receiver_general": 7
+  },
+  "note": "daily=4 covers weekends/holidays and the CORRA next-day publication"
+ },
+ "refresh_lanes": {
+  "weekly": {
+   "cron_utc": "30 15 * * 4",
+   "note": "Thursday 16:30 WAT, after the Weekly Report (15:00 London = 14:00 UTC in BST)",
+   "blocks": [
+    "central_bank",
+    "rates"
+   ],
+   "run_agent": true
+  },
+  "daily": {
+   "cron_utc": "30 10 * * 1-5",
+   "note": "11:30 WAT after IADB daily rates (SONIA published 09:00 London next day)",
+   "blocks": [
+    "rates"
+   ],
+   "run_agent": false
+  },
+  "monthly": {
+   "cron_utc": "0 9 22 * *",
+   "note": "ONS PSF ~22nd 07:00 London + Money & Credit (already out on the 1st)",
+   "blocks": [
+    "fiscal",
+    "banking"
+   ],
+   "run_agent": true
+  },
+  "event": {
+   "trigger": "mpc_decision_dates",
+   "blocks": [
+    "rates"
+   ],
+   "run_agent": true
+  },
+  "monthly_mc": {
+   "cron_utc": "0 11 2 * *",
+   "note": "Money & Credit refresh on the 2nd",
+   "blocks": [
+    "banking"
+   ],
+   "run_agent": false
+  }
+ },
+ "calendar": {
+  "mpc_decision_dates_2026": [
+   "2026-02-05",
+   "2026-03-19",
+   "2026-04-30",
+   "2026-06-18",
+   "2026-07-30",
+   "2026-09-17",
+   "2026-11-05",
+   "2026-12-17"
+  ],
+  "uk_bank_holidays_2026": [
+   "2026-01-01",
+   "2026-04-03",
+   "2026-04-06",
+   "2026-05-04",
+   "2026-05-25",
+   "2026-08-31",
+   "2026-12-25",
+   "2026-12-28"
+  ],
+  "decision_time": "12:00 Europe/London",
+  "fiscal_seasonality": {
+   "note": "flag quarter-end, PAYE/VAT receipt days, DWP payment days, large gilt settlements — exclude from spread persistence and annotate fiscal prints",
+   "status": "pending"
+  },
+  "mpc_mpr_dates_2026": [
+   "2026-02-05",
+   "2026-04-30",
+   "2026-07-30",
+   "2026-11-05"
+  ],
+  "mpc_decision_dates_2027_provisional": [
+   "2027-02-04",
+   "2027-03-18",
+   "2027-04-29",
+   "2027-06-17",
+   "2027-07-29",
+   "2027-09-16",
+   "2027-11-04",
+   "2027-12-16"
+  ],
+  "mpc_source": "bankofengland.co.uk/monetary-policy/upcoming-mpc-dates (verified 2026-09-08)",
+  "weekly_report_release": "Thursday 15:00 London (data as of Wednesday); IADB updated same day",
+  "ons_psf_release": "~20th–22nd each month 07:00 London",
+  "money_credit_release": "~1st business day of the month 09:30 London (data for month-2)"
+ },
+ "quality": {
+  "origin": "v2.0 quality.mjs, ported to Python",
+  "dedup": "last value wins per date, duplicates counted",
+  "outliers": {
+   "method": "modified_zscore_MAD",
+   "rolling_window": 20,
+   "min_points": 5,
+   "z_threshold": {
+    "default": 3.5,
+    "overnight_rate": 4.0,
+    "policy_rate": 5.0,
+    "bank_rate": 5.0,
+    "corra_total_volume": 4.5
+   }
+  },
+  "freshness_hours": {
+   "weekly_series": 192,
+   "daily_series": 72,
+   "policy_rate": 1440,
+   "monthly_series": 1800
+  },
+  "holiday_aware": true,
+  "null_streaks": "unexpected nulls only (weekends/holidays excluded)",
+  "confidence": {
+   "start": 100,
+   "penalties": {
+    "stale": "min(30, 30*(hours_over/threshold))",
+    "nulls_last30": "40*share",
+    "ongoing_streak": "min(25, 5*len)",
+    "latest_outlier": "8 or 15 if |mz|>5",
+    "duplicates": "min(10, 3*n)"
+   },
+   "tiers": {
+    "HIGH": 90,
+    "MEDIUM": 70,
+    "LOW": 50,
+    "CRITICAL": 0
+   }
+  },
+  "null_policy": "null is NEVER neutral/amber: series -> unavailable, block signal suppressed below min coverage"
+ },
+ "revisions": {
+  "origin": "CAD revisions module",
+  "series": [
+   "reserves",
+   "notes_in_circulation",
+   "str_lending",
+   "ltr_lending",
+   "apf_loan",
+   "overnight_rate",
+   "bond_10y",
+   "cgncr"
+  ],
+  "keep_last": 50
+ },
+ "alerts": {
+  "origin": "CAD alert state machine",
+  "lifecycle": [
+   "active",
+   "resolved"
+  ],
+  "keep_last": 100,
+  "rules": [
+   {
+    "id": "reserves_below_pmrr",
+    "metric": "central_bank.reserves",
+    "when": "level >= WATCH",
+    "severity": "WARNING",
+    "category": "reserves"
+   },
+   {
+    "id": "reserves_stress",
+    "metric": "central_bank.reserves",
+    "when": "level >= STRESS",
+    "severity": "CRITICAL",
+    "category": "reserves"
+   },
+   {
+    "id": "sonia_at_floor",
+    "metric": "rates.overnight_minus_policy_bps",
+    "when": "level == WATCH",
+    "severity": "WARNING",
+    "category": "funding"
+   },
+   {
+    "id": "sonia_stress",
+    "metric": "rates.overnight_minus_policy_bps",
+    "when": "level >= STRESS",
+    "severity": "CRITICAL",
+    "category": "funding"
+   },
+   {
+    "id": "net_liq_drain",
+    "metric": "central_bank.net_liquidity_wow_pct",
+    "when": "<= risk_off",
+    "severity": "WARNING",
+    "category": "liquidity"
+   },
+   {
+    "id": "qt_fast",
+    "metric": "central_bank.qt_pace",
+    "when": "level >= STRESS",
+    "severity": "WARNING",
+    "category": "qt"
+   },
+   {
+    "id": "fiscal_drain",
+    "metric": "fiscal.net_spending_yoy",
+    "when": "<= drain",
+    "severity": "WARNING",
+    "category": "fiscal"
+   },
+   {
+    "id": "curve_inversion",
+    "metric": "rates.curve_10y_5y_bps",
+    "when": "< -50",
+    "severity": "WARNING",
+    "category": "curve"
+   },
+   {
+    "id": "transmission_break",
+    "metric": "banking.transmission_signal",
+    "when": "== RED",
+    "severity": "WARNING",
+    "category": "transmission"
+   },
+   {
+    "id": "data_degraded",
+    "metric": "quality.system.blw70",
+    "when": "> 0",
+    "severity": "INFO",
+    "category": "data"
+   },
+   {
+    "id": "ctrf_active",
+    "metric": "central_bank.ctrf",
+    "when": "> 0",
+    "severity": "CRITICAL",
+    "category": "emergency"
+   },
+   {
+    "id": "sonia_above_osf",
+    "metric": "rates.overnight_minus_osf_bps",
+    "when": ">= 0",
+    "severity": "CRITICAL",
+    "category": "funding"
+   },
+   {
+    "id": "osf_lending_used",
+    "metric": "central_bank.osf_lending_usage",
+    "when": "> 0",
+    "severity": "WARNING",
+    "category": "emergency"
+   }
   ]
+ },
+ "scenarios": {
+  "origin": "CAD scenario engine; GBP liquidity-only set",
+  "items": [
+   {
+    "id": "L1",
+    "name": "GBP Reserve Scarcity Approach",
+    "bias": "DEFENSIVE",
+    "min": 2,
+    "conditions": [
+     "central_bank.reserves level >= WATCH",
+     "rates.overnight_minus_policy_bps level >= WATCH",
+     "central_bank.reserves_wow_pct <= p20"
+    ]
+   },
+   {
+    "id": "L2",
+    "name": "Repo-led Absorption",
+    "bias": "NEUTRAL",
+    "min": 2,
+    "conditions": [
+     "central_bank.repo_offset >= p80",
+     "rates.overnight_minus_policy_bps level == SAFE",
+     "central_bank.reserves level == SAFE"
+    ]
+   },
+   {
+    "id": "L3",
+    "name": "QT Drag Intensifying",
+    "bias": "RISK-OFF",
+    "min": 2,
+    "conditions": [
+     "central_bank.qt_pace level >= WATCH",
+     "central_bank.net_liquidity_wow_pct <= risk_off",
+     "central_bank.currency_drain <= p20"
+    ]
+   },
+   {
+    "id": "L4",
+    "name": "Funding Stress",
+    "bias": "EMERGENCY",
+    "min": 2,
+    "conditions": [
+     "rates.overnight_minus_policy_bps level >= STRESS",
+     "central_bank.reserves level >= STRESS",
+     "central_bank.ltr_lending >= p97"
+    ]
+   },
+   {
+    "id": "L5",
+    "name": "Fiscal Injection",
+    "bias": "CONSTRUCTIVE",
+    "min": 2,
+    "conditions": [
+     "fiscal.net_spending_yoy >= injection",
+     "fiscal.cgncr_zscore >= 1",
+     "central_bank.reserves_wow_pct >= p80"
+    ]
+   },
+   {
+    "id": "L6",
+    "name": "Transmission Break",
+    "bias": "CAUTION",
+    "min": 2,
+    "conditions": [
+     "banking.transmission_signal == RED",
+     "banking.pnfc_lending mom_pct zscore <= -1",
+     "banking.household_deposits mom_pct zscore <= -1"
+    ]
+   }
+  ]
+ },
+ "desk_exports": {
+  "gbpusd": {
+   "id": "XUDLUSS",
+   "label": "Spot USD per GBP (BoE 16:00)",
+   "status": "verified",
+   "verified": "2026-09-08 IADB CSVF=TT description + value",
+   "freq": "daily"
+  },
+  "eurgbp_inv": {
+   "id": "XUDLERS",
+   "label": "Spot EUR per GBP (BoE 16:00)",
+   "status": "verified",
+   "verified": "2026-09-08 IADB CSVF=TT description + value",
+   "freq": "daily"
+  },
+  "note": "prices go to the Desk, not to the GBP liquidity regime"
+ },
+ "agent": {
+  "name": "GBP Currency Agent",
+  "reads": [
+   "data/gbp/central_bank.json",
+   "data/gbp/fiscal.json",
+   "data/gbp/banking.json",
+   "data/gbp/rates.json",
+   "data/gbp/calendar.json"
+  ],
+  "writes": "agents/gbp.json",
+  "vocabulary": "MMT/Mosler; BoE repo-led demand-driven framework; PMRR",
+  "alert_types": [
+   "LIQUIDITY_GAIN",
+   "LIQUIDITY_LOSS",
+   "LIQUIDITY_SCARCITY",
+   "TRANSMISSION_BREAK",
+   "DATA_DEGRADED"
+  ],
+  "never": [
+   "trade execution",
+   "position sizing",
+   "technical analysis"
+  ]
+ },
+ "pending_before_phase2": [
+  "Phase 3: parsers for BoE operations XLSX (STR/ILTR/CTRF/APF sales) and DMO per-event results",
+  "Phase 3: B2.2 monthly public sector deposits as government_account proxy; PSND ONS code",
+  "Sep-2026 MPC (17 Sep): re-set qt_announced_pace_per_week from the new APF remit"
+ ]
 }
