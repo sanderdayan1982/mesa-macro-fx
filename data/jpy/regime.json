@@ -1,15 +1,15 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-08T13:30:12+00:00",
- "as_of": "2026-09-07",
+ "generated_at": "2026-09-09T07:30:51+00:00",
+ "as_of": "2026-09-08",
  "config_version": "0.2.3",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.485,
+ "weighted_score": 0.398,
  "block_scores": {
   "central_bank": 0.5,
   "rates": 0.75,
-  "fiscal": 0.24,
+  "fiscal": -0.2,
   "banking": 0.0
  },
  "weights": {
@@ -19,6 +19,44 @@
   "banking": 0.1
  },
  "blocks_used": 4,
+ "regimes": {
+  "central_bank": {
+   "regime": "INJECTION",
+   "score": 0.5,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-08",
+   "detail": "CAB 4151800.0 · excess/required 27.46x (SAFE) · ΔCAB d/d -9400.0 · 20d -39600.0 (SAFE) · JGB purchases vs plan -0.021 · CLF 0.0"
+  },
+  "fiscal": {
+   "regime": "NEUTRAL",
+   "score": -0.2,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-09-09",
+   "detail": "flow -11000.0 (Z -0.26) · 5d -44200.0 · 20d -66100.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.788"
+  },
+  "general": {
+   "regime": "NEUTRAL",
+   "score": 0.22,
+   "rule": "partial (INJECTION vs NEUTRAL): dual score +0.22 vs thresholds +0.50/-0.50",
+   "price_gate": null,
+   "dual_weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "calibration": "provisional — per-currency thresholds pending (desk rule 2026-09-09)"
+  }
+ },
+ "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_QT",
   "FX_INTERVENTION_SUSPECT"
@@ -38,9 +76,9 @@
  "rules": {
   "LIQUIDITY_SCARCITY": "PRICE-GATED ONLY: tona_minus_ioer_bps ≥ STRESS persistent AND (clf_loans_daily > 0 two sessions OR gc_minus_ioer_bps ≥ STRESS); quantity anchors are dead-man switches — kept in the enum for cross-currency comparability (CodeWord/Perplexity)",
   "FLOOR_FRICTION": "reserves ample AND friction_confirmed (TONA at/above IOER 3 sessions, or high ≥ IOER+5 3 sessions)",
-  "LIQUIDITY_DRAIN": "weighted score <= −0.5",
-  "LIQUIDITY_INJECTION": "weighted score >= +0.5",
-  "NEUTRAL": "otherwise"
+  "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+  "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+  "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
  },
  "scenarios": [
   {
@@ -199,7 +237,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
