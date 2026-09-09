@@ -289,9 +289,16 @@ class RbnzD3Provider(RbnzTableProvider):
             return {"rr": rr, "rr_old": old, "lsap": ls, "repurchases": rp, "bmls": bmls}
         sheets = xlsx_sheets(self._blob(self.PATH, "D3"))
 
-        def rows(name: str):
-            sh = sheets.get(name)
+        def rows(name: str, *alts: str, optional: bool = False):
+            # RBNZ renamed 'LSAP bond sales' -> 'LSAP bond sales - NZGBs' (+ new 'LSAP bond sales - LGFAs') on 2026-09-09
+            sh = None
+            for n in (name,) + alts:
+                sh = sheets.get(n)
+                if sh is not None:
+                    break
             if sh is None:
+                if optional:
+                    return []
                 raise ProviderError("D3: sheet '%s' missing (sheets: %s)" % (name, list(sheets)))
             rr_ = _rows_of(sh)
             return [rr_[r] for r in sorted(rr_)]
@@ -308,12 +315,19 @@ class RbnzD3Provider(RbnzTableProvider):
             if d and m and d >= since and a:
                 old.append({"date_held": d, "maturity": m, "allocated": a, "wavg": _num(o.get("J"))})
         ls = []
-        for o in rows("LSAP bond sales"):
-            d = _serial(o.get("A"))
-            fv = _num(o.get("D"))
-            if d and fv:
-                ls.append({"date": d, "settlement": _serial(o.get("B")), "bond_maturity": _serial(o.get("C")) or str(o.get("C")), "face_m": fv / 1e6,
-                           "yield": (_num(o.get("E")) or 0) * 100, "total_m": (_num(o.get("F")) or 0) / 1e6})
+        # NZGB sales to NZDM (the LSAP unwind); LGFA sales are read only when the sheet carries the same layout (Face Value in column D)
+        lsap_src = [("NZGB", rows("LSAP bond sales", "LSAP bond sales - NZGBs"))]
+        lg = rows("LSAP bond sales - LGFAs", optional=True)
+        if lg and any("face" in str(o.get("D", "")).lower() for o in lg[:6]):
+            lsap_src.append(("LGFA", lg))
+        for issuer, src in lsap_src:
+            for o in src:
+                d = _serial(o.get("A"))
+                fv = _num(o.get("D"))
+                if d and fv:
+                    ls.append({"date": d, "settlement": _serial(o.get("B")), "bond_maturity": _serial(o.get("C")) or str(o.get("C")), "face_m": fv / 1e6,
+                               "yield": (_num(o.get("E")) or 0) * 100, "total_m": (_num(o.get("F")) or 0) / 1e6, "issuer": issuer})
+        ls.sort(key=lambda x: (x["date"], x["issuer"]))
         rp = []
         for o in rows("Govt Bond Repurchases"):
             d = _serial(o.get("A"))

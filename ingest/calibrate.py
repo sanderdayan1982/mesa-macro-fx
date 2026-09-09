@@ -545,7 +545,7 @@ def replay_nzd(cfg: dict, fx_dir: str, start: str) -> dict:
         D: Dict[str, Series] = {}
         d12, _ = _P(S_["d12"]).fetch_d12("1999-01-01")
         D.update(d12)
-        d3 = _P(dict(S_["d3"], **{"LSAP bond sales": S_["d3"]["LSAP bond sales - NZGBs"]})).fetch_d3("2015-01-01")
+        d3 = _P(S_["d3"]).fetch_d3("2015-01-01")
         d10 = _P(S_["d10"]).fetch_d10("1999-01-01")
         D.update(d10)
         for tbl in ("r1", "r3", "b2", "b1"):
