@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2",
- "generated_at": "2026-09-09T10:07:40+00:00",
+ "generated_at": "2026-09-09T12:19:21+00:00",
  "as_of": "2026-09-04",
  "equivalence_quality": "high",
  "equivalence_note": "Sight deposits of domestic banks = reserves (weekly, Monday). Threshold system: 0% up to factor × minimum reserves, −0.25% above. SNB absorbs ~155 bn with Bills and 1-week repos at policy − 5 bp — that is the market anchor, not the policy rate.",
@@ -2111,7 +2111,7 @@
    "change_abs": -493.0,
    "change_pct": -8.4708,
    "zscore": -1.4399,
-   "percentile": 11.92,
+   "percentile": 13.59,
    "window": null,
    "level": "SAFE",
    "sparkline": [
@@ -2181,13 +2181,13 @@
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 4769.5,
-     "WATCH_low": -7248.1,
-     "STRESS_high": 10051.04,
-     "STRESS_low": -12358.58
+     "WATCH_high": 5783.5,
+     "WATCH_low": -7482.5,
+     "STRESS_high": 10473.0,
+     "STRESS_low": -13128.7
     },
     "window": "260w",
-    "n": 260
+    "n": 206
    }
   },
   "sight_deposits_4w_change": {
@@ -2357,8 +2357,8 @@
     "risk_off_pct": 30.0,
     "abs": {},
     "resolved": {
-     "risk_on": 0.82279,
-     "risk_off": -2.7657
+     "risk_on": 0.4417,
+     "risk_off": -3.13275
     }
    }
   },
@@ -2714,7 +2714,7 @@
    "change_abs": 0.0211,
    "change_pct": 8.5081,
    "zscore": 0.971,
-   "percentile": 80.0,
+   "percentile": 73.91,
    "window": "60m",
    "level": "SAFE",
    "sparkline": [
@@ -2783,14 +2783,16 @@
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 0.271985,
-     "STRESS": 0.282085,
+     "WATCH": 0.274875,
+     "STRESS": 0.287475,
      "WATCH_abs": 0.35,
      "STRESS_abs": 0.45,
      "CRISIS_abs": 9.0
     },
     "window": "60m",
-    "n": 60
+    "n": 46,
+    "era_anchor": "2022-09-22",
+    "era_thin": false
    },
    "secondary_level": "SAFE",
    "percentile_level": "SAFE"
@@ -3115,7 +3117,7 @@
    "change_abs": -1261.7,
    "change_pct": -21.6787,
    "zscore": -1.6256,
-   "percentile": 10.77,
+   "percentile": 12.14,
    "window": null,
    "level": "SAFE",
    "sparkline": [
@@ -3185,13 +3187,13 @@
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 4769.5,
-     "WATCH_low": -7248.1,
-     "STRESS_high": 10051.04,
-     "STRESS_low": -12358.58
+     "WATCH_high": 5783.5,
+     "WATCH_low": -7482.5,
+     "STRESS_high": 10473.0,
+     "STRESS_low": -13128.7
     },
     "window": "260w",
-    "n": 260
+    "n": 206
    }
   },
   "fx_intervention_suspect": {
@@ -3219,7 +3221,7 @@
    "change_abs": 2046.0,
    "change_pct": 418.4049,
    "zscore": 0.2924,
-   "percentile": 80.0,
+   "percentile": 83.5,
    "window": null,
    "level": "SAFE",
    "sparkline": [
@@ -3289,13 +3291,13 @@
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 3313.5,
-     "WATCH_low": -3686.0,
-     "STRESS_high": 6653.81,
+     "WATCH_high": 2980.0,
+     "WATCH_low": -4012.0,
+     "STRESS_high": 6071.15,
      "STRESS_low": null
     },
     "window": "260w",
-    "n": 260
+    "n": 206
    }
   },
   "bills_yield_minus_saron_bps": {
@@ -3393,6 +3395,23 @@
   "score": 0.0,
   "label": "NEUTRAL",
   "flags": [],
+  "components": {
+   "mode": "sum",
+   "level_weight": 1.0,
+   "flow": {
+    "sight_deposits_13w_band": 0.0
+   },
+   "level": {
+    "absorption_share_level": 0.0
+   },
+   "weights": {},
+   "range": [
+    -1.5,
+    1.5
+   ],
+   "score_v02": 0.0,
+   "score_flows_only": 0.0
+  },
   "detail": "GI 424977.0 (wow -6313.0, 13w -1.8923%, NEUTRAL) · absorption 154950.9195 (26.9%) · ratio 8.67x · factor 13.5 · phase STEADY",
   "alerts": [
    {
@@ -3400,10 +3419,10 @@
     "level": "SAFE",
     "value": -6313.0,
     "threshold": {
-     "WATCH_high": 4769.5,
-     "WATCH_low": -7248.1,
-     "STRESS_high": 10051.04,
-     "STRESS_low": -12358.58
+     "WATCH_high": 5783.5,
+     "WATCH_low": -7482.5,
+     "STRESS_high": 10473.0,
+     "STRESS_low": -13128.7
     },
     "status": "fresh",
     "action_hint": "weekly reserve jump / drop (FX purchases, absorption, Confederation)"
@@ -3425,8 +3444,8 @@
     "level": "SAFE",
     "value": 0.2691,
     "threshold": {
-     "WATCH": 0.271985,
-     "STRESS": 0.282085,
+     "WATCH": 0.274875,
+     "STRESS": 0.287475,
      "WATCH_abs": 0.35,
      "STRESS_abs": 0.45,
      "CRISIS_abs": 9.0
@@ -3439,9 +3458,9 @@
     "level": "SAFE",
     "value": 1557.0,
     "threshold": {
-     "WATCH_high": 3313.5,
-     "WATCH_low": -3686.0,
-     "STRESS_high": 6653.81,
+     "WATCH_high": 2980.0,
+     "WATCH_low": -4012.0,
+     "STRESS_high": 6071.15,
      "STRESS_low": null
     },
     "status": "fresh",
@@ -4693,6 +4712,11 @@
    }
   ],
   "signal_log": [
+   {
+    "date": "2026-09-04",
+    "label": "NEUTRAL",
+    "score": 0.0
+   },
    {
     "date": "2026-09-04",
     "label": "NEUTRAL",
