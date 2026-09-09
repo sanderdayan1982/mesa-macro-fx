@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.1",
- "generated_at": "2026-09-09T10:54:32+00:00",
+ "generated_at": "2026-09-09T12:26:49+00:00",
  "as_of": "2026-09-08",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -1395,7 +1395,7 @@
    "change_abs": -1477.0,
    "change_pct": -87.1386,
    "zscore": -0.0511,
-   "percentile": 55.0,
+   "percentile": 52.08,
    "window": null,
    "level": "SAFE",
    "sparkline": [
@@ -1465,13 +1465,13 @@
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 3702.4,
-     "WATCH_low": -3025.6,
+     "WATCH_high": 3745.2,
+     "WATCH_low": -2687.8,
      "STRESS_high": null,
      "STRESS_low": null
     },
     "window": "60m",
-    "n": 60
+    "n": 48
    }
   },
   "govt_cash_influence": {
@@ -1488,7 +1488,7 @@
    "change_abs": 6598.1,
    "change_pct": 2660.5242,
    "zscore": 1.399,
-   "percentile": 95.0,
+   "percentile": 95.83,
    "window": null,
    "level": "WATCH",
    "sparkline": [
@@ -1558,13 +1558,13 @@
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 4428.22,
-     "WATCH_low": -892.42,
+     "WATCH_high": 4305.02,
+     "WATCH_low": -1068.66,
      "STRESS_high": null,
      "STRESS_low": null
     },
     "window": "60m",
-    "n": 60
+    "n": 48
    },
    "side": "high"
   },
@@ -2291,6 +2291,21 @@
   "score": 0.5,
   "label": "INJECTION",
   "flags": [],
+  "components": {
+   "mode": "sum",
+   "level_weight": 1.0,
+   "flow": {
+    "govt_cash_influence_band": 0.5
+   },
+   "level": {},
+   "weights": {},
+   "range": [
+    -0.5,
+    0.5
+   ],
+   "score_v02": 0.5,
+   "score_flows_only": 0.5
+  },
   "detail": "CSA 29080.0 (mom 218.0) · D10 govt cash 6846.1 · T-bill 3.04x at 2.8775% · bond 4.182x tail 0.8 bp · settlements next 5d 450.0 · non-resident 57.4%",
   "alerts": [
    {
@@ -2298,8 +2313,8 @@
     "level": "WATCH",
     "value": 6846.1,
     "threshold": {
-     "WATCH_high": 4428.22,
-     "WATCH_low": -892.42,
+     "WATCH_high": 4305.02,
+     "WATCH_low": -1068.66,
      "STRESS_high": null,
      "STRESS_low": null
     },
@@ -2311,8 +2326,8 @@
     "level": "SAFE",
     "value": 218.0,
     "threshold": {
-     "WATCH_high": 3702.4,
-     "WATCH_low": -3025.6,
+     "WATCH_high": 3745.2,
+     "WATCH_low": -2687.8,
      "STRESS_high": null,
      "STRESS_low": null
     },
@@ -3359,93 +3374,88 @@
    },
    {
     "tender_date": "2026-09-03",
-    "settlement_date": "2026-09-08",
-    "tender_no": "1007",
-    "kind": "bond",
     "maturity": "2030-05-15",
     "coupon": 0.045,
     "offered": 275.0,
-    "accepted": 275.0,
-    "bid": 1115.0,
     "bids_n": 48.0,
     "success_n": 18.0,
+    "bid": 1115.0,
+    "accepted": 275.0,
     "coverage": 4.0545,
     "low_acc": 4.015,
     "high_acc": 4.0275,
     "wavg": 4.0227,
-    "source": "html"
+    "tender_no": "1007",
+    "kind": "bond",
+    "source": "xlsx"
    },
    {
     "tender_date": "2026-09-03",
-    "settlement_date": "2026-09-08",
-    "tender_no": "1007",
-    "kind": "bond",
     "maturity": "2037-04-15",
     "coupon": 0.0275,
     "offered": 175.0,
-    "accepted": 175.0,
-    "bid": 767.0,
     "bids_n": 50.0,
     "success_n": 13.0,
+    "bid": 767.0,
+    "accepted": 175.0,
     "coverage": 4.3829,
     "low_acc": 4.8725,
     "high_acc": 4.8875,
     "wavg": 4.8797,
-    "source": "html"
+    "tender_no": "1007",
+    "kind": "bond",
+    "source": "xlsx"
    },
    {
     "tender_date": "2026-09-08",
-    "settlement_date": "2026-09-09",
-    "tender_no": "1887",
-    "kind": "tbill",
     "maturity": "2026-11-18",
     "coupon": null,
     "offered": 100.0,
-    "accepted": 100.0,
-    "bid": 255.0,
     "bids_n": 8.0,
     "success_n": 3.0,
+    "bid": 255.0,
+    "accepted": 100.0,
     "coverage": 2.55,
     "low_acc": 2.875,
     "high_acc": 2.88,
     "wavg": 2.8775,
-    "source": "html"
+    "tender_no": "1887",
+    "kind": "tbill",
+    "source": "xlsx"
    },
    {
     "tender_date": "2026-09-08",
-    "settlement_date": "2026-09-09",
-    "tender_no": "1887",
-    "kind": "tbill",
     "maturity": "2027-03-10",
     "coupon": null,
     "offered": 100.0,
-    "accepted": 100.0,
-    "bid": 365.0,
     "bids_n": 16.0,
     "success_n": 2.0,
+    "bid": 365.0,
+    "accepted": 100.0,
     "coverage": 3.65,
     "low_acc": 3.065,
     "high_acc": 3.07,
     "wavg": 3.0675,
-    "source": "html"
+    "tender_no": "1887",
+    "kind": "tbill",
+    "source": "xlsx"
    },
    {
     "tender_date": "2026-09-08",
-    "settlement_date": "2026-09-09",
-    "tender_no": "1887",
-    "kind": "tbill",
     "maturity": "2027-08-25",
     "coupon": null,
     "offered": 50.0,
-    "accepted": 25.0,
-    "bid": 140.0,
     "bids_n": 8.0,
     "success_n": 1.0,
+    "bid": 140.0,
+    "accepted": 25.0,
     "coverage": 2.8,
     "low_acc": 3.3675,
     "high_acc": 3.3675,
     "wavg": 3.3675,
-    "source": "html"
+    "tender_no": "1887",
+    "kind": "tbill",
+    "source": "xlsx"
    }
   ],
   "upcoming": [
@@ -3505,6 +3515,11 @@
    }
   ],
   "signal_log": [
+   {
+    "date": "2026-07-31",
+    "label": "INJECTION",
+    "score": 0.5
+   },
    {
     "date": "2026-07-31",
     "label": "INJECTION",

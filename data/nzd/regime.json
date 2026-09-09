@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-09T10:54:32+00:00",
+ "generated_at": "2026-09-09T12:26:50+00:00",
  "as_of": "2026-09-08",
  "config_version": "0.2.1",
  "regime": "NEUTRAL",
@@ -26,7 +26,53 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-08",
-   "detail": "settlement cash 24428.0 (5d -2391.0, 20d -3019.0, SAFE) · OMO stock 8358.0 (34.2%) · ORRF 0.0 · phase LSAP_UNWIND"
+   "detail": "settlement cash 24428.0 (5d -2391.0, 20d -3019.0, SAFE) · OMO stock 8358.0 (34.2%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "raw_regime": "DRAIN",
+   "cuts": {
+    "injection_enter": 0.375,
+    "injection_exit": 0.25,
+    "drain_enter": -0.375,
+    "drain_exit": -0.25
+   },
+   "evidence": {
+    "injection": "frecuencia_de_era",
+    "drain": "frecuencia_de_era"
+   },
+   "state": {
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -0.5,
+    "candidate": null,
+    "candidate_since": null,
+    "as_of": "2026-09-08",
+    "recent": [
+     [
+      "2026-09-08",
+      -0.5
+     ]
+    ],
+    "pending_days": null
+   },
+   "components": {
+    "mode": "sum",
+    "level_weight": 1.0,
+    "flow": {
+     "settlement_cash_wow": 0.0,
+     "settlement_cash_20d": -0.25,
+     "orrf_used": 0.0
+    },
+    "level": {
+     "settlement_cash_level": 0.0,
+     "omo_reliance_level": -0.25
+    },
+    "weights": {},
+    "range": [
+     -1.5,
+     1.5
+    ],
+    "score_v02": -0.5,
+    "score_flows_only": -0.25
+   }
   },
   "fiscal": {
    "regime": "INJECTION",
@@ -34,12 +80,53 @@
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-09-08",
-   "detail": "CSA 29080.0 (mom 218.0) · D10 govt cash 6846.1 · T-bill 3.04x at 2.8775% · bond 4.182x tail 0.8 bp · settlements next 5d 450.0 · non-resident 57.4%"
+   "detail": "CSA 29080.0 (mom 218.0) · D10 govt cash 6846.1 · T-bill 3.04x at 2.8775% · bond 4.182x tail 0.8 bp · settlements next 5d 450.0 · non-resident 57.4%",
+   "raw_regime": "INJECTION",
+   "cuts": {
+    "injection_enter": 0.25,
+    "injection_exit": 0.25,
+    "drain_enter": -0.5,
+    "drain_exit": -0.5
+   },
+   "evidence": {
+    "injection": "banda_por_diseño",
+    "drain": "banda_por_diseño"
+   },
+   "state": {
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.5,
+    "candidate": null,
+    "candidate_since": null,
+    "as_of": "2026-09-08",
+    "recent": [
+     [
+      "2026-09-08",
+      0.5
+     ]
+    ],
+    "pending_days": null
+   },
+   "components": {
+    "mode": "sum",
+    "level_weight": 1.0,
+    "flow": {
+     "govt_cash_influence_band": 0.5
+    },
+    "level": {},
+    "weights": {},
+    "range": [
+     -0.5,
+     0.5
+    ],
+    "score_v02": 0.5,
+    "score_flows_only": 0.5
+   }
   },
   "general": {
    "regime": "NEUTRAL",
    "score": -0.1,
-   "rule": "conflict (DRAIN vs INJECTION) resolved by dual weights 0.6/0.4 and thresholds +0.50/-0.50 — provisional, to calibrate per currency",
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.10 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -50,10 +137,30 @@
     "drain": -0.5
    },
    "block_thresholds": {
-    "injection": 0.5,
-    "drain": -0.5
+    "central_bank": {
+     "injection_enter": 0.375,
+     "injection_exit": 0.25,
+     "drain_enter": -0.375,
+     "drain_exit": -0.25
+    },
+    "fiscal": {
+     "injection_enter": 0.25,
+     "injection_exit": 0.25,
+     "drain_enter": -0.5,
+     "drain_exit": -0.5
+    }
    },
-   "calibration": "provisional — per-currency thresholds pending (desk rule 2026-09-09)"
+   "engine": "0.3",
+   "agreement_only": true,
+   "era_start": "2022-07-01",
+   "era_weeks": 218,
+   "persistence": {
+    "entry_days": 7,
+    "exit_days": 0,
+    "mode": "mean"
+   },
+   "level_weight": 1.0,
+   "calibration": "calibrated by replay 2026-09-09 (engine v0.3, era 2022-07-01, 210 weeks)"
   }
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
@@ -215,7 +322,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "all",
   "backfill": false,
   "errors": []
  }

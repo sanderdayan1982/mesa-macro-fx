@@ -3,7 +3,7 @@
  "block": "banking",
  "schema_version": "0.3.0",
  "config_version": "0.2.1",
- "generated_at": "2026-09-09T10:54:32+00:00",
+ "generated_at": "2026-09-09T12:26:50+00:00",
  "as_of": "2026-07-31",
  "equivalence_quality": "medium",
  "equivalence_note": "Monthly, released on the last day of the following month (C5/C50) and ~3rd (L2). Housing credit is the domestic money-creation engine (V3.1 idea kept); core funding ratio = structural funding health (minimum 75%) | v0.2: the slowest block of the desk (no weekly credit since 2021) — accepted, not disguised with proxies (N8)",
@@ -852,7 +852,7 @@
    "change_abs": 0.0038,
    "change_pct": 0.0674,
    "zscore": 0.0887,
-   "percentile": 48.72,
+   "percentile": 79.17,
    "window": null,
    "level": "SAFE",
    "sparkline": [
@@ -922,13 +922,13 @@
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 10.66267,
-     "WATCH_low": 3.10028,
+     "WATCH_high": 5.80233,
+     "WATCH_low": 3.04874,
      "STRESS_high": null,
      "STRESS_low": null
     },
     "window": "120m",
-    "n": 78
+    "n": 48
    }
   },
   "business_agri_yoy_pct": {
@@ -1026,7 +1026,7 @@
    "change_abs": -0.5555,
    "change_pct": -11.3646,
    "zscore": -0.6531,
-   "percentile": 41.03,
+   "percentile": 64.58,
    "window": "120m",
    "level": "SAFE",
    "sparkline": [
@@ -1095,11 +1095,13 @@
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 2.94912,
-     "STRESS": 1.988135
+     "WATCH": 2.15441,
+     "STRESS": 1.72889
     },
     "window": "120m",
-    "n": 78
+    "n": 48,
+    "era_anchor": "2022-07-01",
+    "era_thin": false
    }
   },
   "private_credit_yoy_pct": {
@@ -1461,8 +1463,8 @@
     "level": "SAFE",
     "value": 5.6377,
     "threshold": {
-     "WATCH_high": 10.66267,
-     "WATCH_low": 3.10028,
+     "WATCH_high": 5.80233,
+     "WATCH_low": 3.04874,
      "STRESS_high": null,
      "STRESS_low": null
     },
@@ -1474,8 +1476,8 @@
     "level": "SAFE",
     "value": 4.3325,
     "threshold": {
-     "WATCH": 2.94912,
-     "STRESS": 1.988135
+     "WATCH": 2.15441,
+     "STRESS": 1.72889
     },
     "status": "fresh",
     "action_hint": "broad money growth (p10 WATCH / p5 STRESS)"
@@ -1763,6 +1765,11 @@
    ]
   },
   "signal_log": [
+   {
+    "date": "2026-07-31",
+    "label": "GREEN",
+    "score": 1.0
+   },
    {
     "date": "2026-07-31",
     "label": "GREEN",
