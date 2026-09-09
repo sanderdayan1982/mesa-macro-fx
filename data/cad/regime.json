@@ -1,6 +1,6 @@
 {
  "currency": "CAD",
- "generated_at": "2026-09-08T23:35:26+00:00",
+ "generated_at": "2026-09-09T12:20:07+00:00",
  "as_of": "2026-09-02",
  "config_version": "0.3.0",
  "regime": "FLOOR_FRICTION",
@@ -19,6 +19,149 @@
   "banking": 0.1
  },
  "blocks_used": 4,
+ "regimes": {
+  "central_bank": {
+   "regime": "DRAIN",
+   "score": -1.0,
+   "label": "DRAIN",
+   "traffic_light": "RED",
+   "as_of": "2026-09-02",
+   "detail": "NetLiq RISK_OFF · reserves SAFE (in range) · phase NORMALIZATION",
+   "raw_regime": "DRAIN",
+   "cuts": {
+    "injection_enter": 0.375,
+    "injection_exit": 0.05,
+    "drain_enter": -0.55,
+    "drain_exit": -0.325
+   },
+   "evidence": {
+    "injection": "frecuencia_de_era",
+    "drain": "frecuencia_de_era"
+   },
+   "state": {
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -1.0,
+    "candidate": null,
+    "candidate_since": null,
+    "as_of": "2026-09-02",
+    "recent": [
+     [
+      "2026-09-02",
+      -1.0
+     ]
+    ],
+    "pending_days": null
+   },
+   "components": {
+    "mode": "mean2",
+    "level_weight": 1.0,
+    "flow": {
+     "net_liquidity_band": -1.0,
+     "reserves_wow": -1.0
+    },
+    "level": {
+     "reserves_vs_range": 0.5
+    },
+    "weights": {},
+    "range": [
+     -2.0,
+     2.0
+    ],
+    "score_v02": -1.0,
+    "score_flows_only": -1.33
+   }
+  },
+  "fiscal": {
+   "regime": "INJECTION",
+   "score": 2.0,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-02",
+   "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check -1848.0",
+   "raw_regime": "INJECTION",
+   "cuts": {
+    "injection_enter": 0.55,
+    "injection_exit": 0.275,
+    "drain_enter": -0.67,
+    "drain_exit": -0.265
+   },
+   "evidence": {
+    "injection": "frecuencia_de_era",
+    "drain": "frecuencia_de_era"
+   },
+   "state": {
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 2.0,
+    "candidate": null,
+    "candidate_since": null,
+    "as_of": "2026-09-02",
+    "recent": [
+     [
+      "2026-09-02",
+      2.0
+     ]
+    ],
+    "pending_days": null
+   },
+   "components": {
+    "mode": "sum",
+    "level_weight": 1.0,
+    "flow": {
+     "fiscal_flow_z": 2.0
+    },
+    "level": {},
+    "weights": {},
+    "range": [
+     -2.0,
+     2.0
+    ],
+    "score_v02": 2.0,
+    "score_flows_only": 2.0
+   }
+  },
+  "general": {
+   "regime": "FLOOR_FRICTION",
+   "score": 0.2,
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
+   "price_gate": "price gate: reserves ample AND friction confirmed",
+   "dual_weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "central_bank": {
+     "injection_enter": 0.375,
+     "injection_exit": 0.05,
+     "drain_enter": -0.55,
+     "drain_exit": -0.325
+    },
+    "fiscal": {
+     "injection_enter": 0.55,
+     "injection_exit": 0.275,
+     "drain_enter": -0.67,
+     "drain_exit": -0.265
+    }
+   },
+   "engine": "0.3",
+   "agreement_only": true,
+   "era_start": "2020-03-23",
+   "era_weeks": 336,
+   "persistence": {
+    "entry_days": 7,
+    "exit_days": 0,
+    "mode": "mean"
+   },
+   "level_weight": 1.0,
+   "calibration": "calibrated by replay 2026-09-09 (engine v0.3, era 2020-03-23, 337 weeks)"
+  }
+ },
+ "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_NORMALIZATION"
  ],
@@ -26,7 +169,7 @@
  "inputs": {
   "reserves_level": "SAFE",
   "reserves_in_range": true,
-  "reserves_above_range": null,
+  "reserves_above_range": false,
   "spread_level": "STRESS",
   "spread_bps": 9.0,
   "friction_confirmed": true
@@ -34,9 +177,9 @@
  "rules": {
   "LIQUIDITY_SCARCITY": "reserves BELOW boc_target_range (absolute) AND overnight_minus_deposit_bps >= STRESS",
   "FLOOR_FRICTION": "reserves within boc_target_range AND overnight_minus_deposit_bps >= watch (CORRA above target while reserves are ample: distribution friction, not aggregate scarcity)",
-  "LIQUIDITY_DRAIN": "weighted score <= -0.5",
-  "LIQUIDITY_INJECTION": "weighted score >= +0.5",
-  "NEUTRAL": "otherwise"
+  "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+  "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+  "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
  },
  "scenarios": [
   {
@@ -173,7 +316,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "all",
   "backfill": false,
   "errors": []
  }
