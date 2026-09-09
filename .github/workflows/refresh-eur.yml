@@ -1,0 +1,73 @@
+# Mesa Macro FX — EUR refresh lanes (config/eur.json v0.2.x, Desk Standard v0.3; triangulated 2026-09-09)
+# ILM daily publishes T+1 ~09:30 CET → daily lane 10:45 CET = 08:45 UTC (CEST) / 09:45 UTC (CET) → two crons; retry 12:00 UTC.
+# WFS Tuesday 15:00 CET → weekly_tue 15:20 CET (+ Finanzagentur XLSX). APP/PEPP files Friday ~15:00 CET → weekly Fri 15:30 CET.
+# Monthly 12th (TGB TARGET, IRS) and 28th (BSI, MIR, EURIBOR monthly, BLS/GFS quarterly) at 09:00 UTC + full backfill revalidation.
+# Sources need no key: ECB Data Portal SDMX csvdata (data-api.ecb.europa.eu), ecb.europa.eu /mopo/pdf CSVs, deutsche-finanzagentur.de XLSX.
+name: refresh-eur
+on:
+  schedule:
+    - cron: "45 8 * * 1-5"     # daily lane (10:45 CEST)
+    - cron: "45 9 * * 1-5"     # daily lane (10:45 CET / 11:45 CEST — harmless second pass)
+    - cron: "0 12 * * 1-5"     # daily retry
+    - cron: "20 13 * * 2"      # weekly_tue — WFS + Finanzagentur (15:20 CEST)
+    - cron: "20 14 * * 2"      # weekly_tue — WFS + Finanzagentur (15:20 CET)
+    - cron: "30 13 * * 5"      # weekly — APP/PEPP (15:30 CEST)
+    - cron: "30 14 * * 5"      # weekly — APP/PEPP (15:30 CET)
+    - cron: "0 9 12,28 * *"    # monthly lane + backfill
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "daily | daily_retry | weekly_tue | weekly | monthly | all"
+        default: "all"
+      backfill:
+        description: "full history refetch (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: refresh-eur
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resolve lane
+        id: lane
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "lane=${{ github.event.inputs.lane }}" >> $GITHUB_OUTPUT
+            echo "backfill=${{ github.event.inputs.backfill }}" >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.schedule }}" in
+              "45 8 * * 1-5"|"45 9 * * 1-5")   echo "lane=daily"      >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 12 * * 1-5")                  echo "lane=daily"      >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "20 13 * * 2"|"20 14 * * 2")     echo "lane=weekly_tue" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "30 13 * * 5"|"30 14 * * 5")     echo "lane=weekly"     >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              *)                               echo "lane=all"        >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      - name: Diagnose source reachability (ECB Data Portal / ecb.europa.eu / Finanzagentur from this runner)
+        run: |
+          for u in "https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.EXLIQ.U2.EUR?format=csvdata&lastNObservations=1" "https://www.ecb.europa.eu/mopo/pdf/PEPP_breakdown_history.csv" "https://www.deutsche-finanzagentur.de/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionsergebnisse_aktuell_en.xlsx"; do
+            echo "== $u"; curl -sS -o /dev/null -D - -m 30 -A "MesaMacroFX/0.3 (+github.com/sanderdayan1982)" "$u" | head -12 || true
+          done
+      - name: Run ingestion (EUR)
+        run: |
+          if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
+          python -m ingest.run --ccy eur --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/eur/oplog.json) — last good JSON kept as stale"
+      - name: Validate JSON against schema
+        run: python -m ingest.validate --ccy eur
+      - name: Commit data
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/eur history/eur logs/eur
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "data(eur): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push
