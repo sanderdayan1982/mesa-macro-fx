@@ -1,6 +1,6 @@
 {
  "currency": "GBP",
- "generated_at": "2026-09-08T14:41:49+00:00",
+ "generated_at": "2026-09-09T12:24:08+00:00",
  "as_of": "2026-09-02",
  "config_version": "0.2.2",
  "regime": "NEUTRAL",
@@ -19,6 +19,149 @@
   "banking": 0.1
  },
  "blocks_used": 4,
+ "regimes": {
+  "central_bank": {
+   "regime": "NEUTRAL",
+   "score": 0.5,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-02",
+   "detail": "reserves SAFE (above PMRR) · PBS NEUTRAL · QT -1205.3/w · repo/reserves 0.3242",
+   "raw_regime": "NEUTRAL",
+   "cuts": {
+    "injection_enter": 0.665,
+    "injection_exit": 0.5,
+    "drain_enter": -0.165,
+    "drain_exit": 0.165
+   },
+   "evidence": {
+    "injection": "frecuencia_de_era",
+    "drain": "frecuencia_de_era"
+   },
+   "state": {
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": 0.5,
+    "candidate": null,
+    "candidate_since": null,
+    "as_of": "2026-09-02",
+    "recent": [
+     [
+      "2026-09-02",
+      0.5
+     ]
+    ],
+    "pending_days": null
+   },
+   "components": {
+    "mode": "mean2",
+    "level_weight": 1.0,
+    "flow": {
+     "balance_sheet_band": 0.0
+    },
+    "level": {
+     "reserves_vs_pmrr": 0.75,
+     "qt_pace_level": 0.0
+    },
+    "weights": {},
+    "range": [
+     -2.0,
+     2.0
+    ],
+    "score_v02": 0.5,
+    "score_flows_only": 0.0
+   }
+  },
+  "fiscal": {
+   "regime": "NEUTRAL",
+   "score": 0.0,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-07-31",
+   "detail": "net spending 11227.0 (y/y 2088.0, NEUTRAL) · CGNCR Z -0.7468 · monthly, ~3-week lag",
+   "raw_regime": "NEUTRAL",
+   "cuts": {
+    "injection_enter": 0.5,
+    "injection_exit": 0.5,
+    "drain_enter": -0.5,
+    "drain_exit": -0.5
+   },
+   "evidence": {
+    "injection": "banda_por_diseño",
+    "drain": "banda_por_diseño"
+   },
+   "state": {
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": 0.0,
+    "candidate": null,
+    "candidate_since": null,
+    "as_of": "2026-07-31",
+    "recent": [
+     [
+      "2026-07-31",
+      0.0
+     ]
+    ],
+    "pending_days": null
+   },
+   "components": {
+    "mode": "sum",
+    "level_weight": 1.0,
+    "flow": {
+     "net_spending_band_x_z": 0.0
+    },
+    "level": {},
+    "weights": {},
+    "range": [
+     -1.0,
+     1.0
+    ],
+    "score_v02": 0.0,
+    "score_flows_only": 0.0
+   }
+  },
+  "general": {
+   "regime": "NEUTRAL",
+   "score": 0.3,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.30 shown for context",
+   "price_gate": null,
+   "dual_weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "central_bank": {
+     "injection_enter": 0.665,
+     "injection_exit": 0.5,
+     "drain_enter": -0.165,
+     "drain_exit": 0.165
+    },
+    "fiscal": {
+     "injection_enter": 0.5,
+     "injection_exit": 0.5,
+     "drain_enter": -0.5,
+     "drain_exit": -0.5
+    }
+   },
+   "engine": "0.3",
+   "agreement_only": true,
+   "era_start": "2022-11-01",
+   "era_weeks": 200,
+   "persistence": {
+    "entry_days": 7,
+    "exit_days": 0,
+    "mode": "mean"
+   },
+   "level_weight": 1.0,
+   "calibration": "calibrated by replay 2026-09-09 (engine v0.3, era 2022-11-01, 201 weeks)"
+  }
+ },
+ "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_QT",
   "REPO_DEPENDENCE_HEALTHY"
@@ -29,15 +172,15 @@
   "reserves_in_range": false,
   "reserves_above_range": true,
   "spread_level": "SAFE",
-  "spread_bps": -1.97,
+  "spread_bps": -2.07,
   "friction_confirmed": false
  },
  "rules": {
   "LIQUIDITY_SCARCITY": "reserves BELOW PMRR floor (365bn) AND overnight_minus_policy_bps >= 0 persistent (3 sessions or weekly mean)",
   "FLOOR_FRICTION": "reserves within/above PMRR AND overnight_minus_policy_bps >= 0 persistent (SONIA pinned at/above Bank Rate while reserves ample); −1bp single print = early flag only, not a regime",
-  "LIQUIDITY_DRAIN": "weighted score <= -0.5",
-  "LIQUIDITY_INJECTION": "weighted score >= +0.5",
-  "NEUTRAL": "otherwise"
+  "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+  "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+  "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
  },
  "scenarios": [
   {
@@ -174,7 +317,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "all",
   "backfill": false,
   "errors": []
  }
