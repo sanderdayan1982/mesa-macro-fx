@@ -13,13 +13,75 @@ import os
 from datetime import date, timedelta
 from typing import Dict, List, Optional, Tuple
 
-import numpy as np
+import bisect
+import math
 
-from .conviction import _asof, _fridays, cross_section, CCYS
+CCYS = ["cad", "gbp", "aud", "jpy", "chf", "nzd", "usd", "eur"]
+MIN_XS = 5
+
+
+# pure-python copies of the conviction.py helpers (the GitHub runner has no numpy/scipy)
+def _fridays(start: str, end: str) -> List[str]:
+    d = date.fromisoformat(start)
+    while d.weekday() != 4:
+        d += timedelta(days=1)
+    out = []
+    while d.isoformat() <= end:
+        out.append(d.isoformat())
+        d += timedelta(days=7)
+    return out
+
+
+def _asof(series: List[Tuple[str, float]], d: str, max_gap: int = 10) -> Optional[float]:
+    if not series:
+        return None
+    ds = [x for x, _ in series]
+    i = bisect.bisect_right(ds, d) - 1
+    if i < 0 or (date.fromisoformat(d) - date.fromisoformat(ds[i])).days > max_gap:
+        return None
+    return series[i][1]
+
+
+def _sd(xs: List[float]) -> float:
+    n = len(xs)
+    m = sum(xs) / n
+    return math.sqrt(sum((x - m) ** 2 for x in xs) / (n - 1))
+
+
+def _percentile(xs: List[float], q: float) -> float:
+    """numpy default (linear interpolation) percentile."""
+    s = sorted(xs)
+    k = (len(s) - 1) * q / 100.0
+    f, c = math.floor(k), math.ceil(k)
+    return s[f] if f == c else s[f] + (s[c] - s[f]) * (k - f)
+
+
+def cross_section(n_by_ccy: Dict[str, Dict[str, Optional[float]]], grid: List[str]) -> Tuple[Dict[str, Dict[str, float]], Dict[str, dict]]:
+    """Identical to conviction.cross_section(scale='pooled', center='mean'): demean each week, scale by the as-of pooled σ."""
+    Z: Dict[str, Dict[str, float]] = {c: {} for c in n_by_ccy}
+    meta: Dict[str, dict] = {}
+    pooled: List[float] = []
+    for g in grid:
+        vals = {c: n_by_ccy[c].get(g) for c in n_by_ccy}
+        vals = {c: v for c, v in vals.items() if v is not None}
+        if len(vals) < MIN_XS:
+            meta[g] = {"n": len(vals)}
+            continue
+        ctr = sum(vals.values()) / len(vals)
+        dem = {c: v - ctr for c, v in vals.items()}
+        sd_week = _sd(list(dem.values()))
+        pooled.extend(dem.values())
+        sd_pool = _sd(pooled) if len(pooled) >= 30 else None
+        if not sd_pool:
+            meta[g] = {"n": len(vals), "sd_week": sd_week, "sd_pooled": sd_pool}
+            continue
+        for c, v in dem.items():
+            Z[c][g] = v / sd_pool
+        meta[g] = {"n": len(vals), "sd_week": sd_week, "sd_pooled": sd_pool}
+    return Z, meta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PANEL = os.path.join(ROOT, "calibration", "conviction", "reserves_panel.json")
-MIN_XS = 5
 MIN_SIGMA_HIST = 26
 LABEL = "basado sólo en reservas del banco central; Tesoro pendiente de prerregistro (T1–T3)"
 SIGNATURE = "firma ICL 1.0 (2026-09-09): IC(8) > 0, IC(13) > 0, IC(26) ≤ 0; IC 13 s +0,124 (q BH 0,006), tercil que más inyecta pierde 0,46 % por trimestre frente al que más drena (divisa por USD)"
@@ -94,7 +156,7 @@ def compute(as_of: Optional[str] = None, root: str = ROOT) -> dict:
     # dispersion label: this week's σ vs the as-of p20 of weekly σ over the era of the panel (weeks with a cross-section)
     sd_hist = [meta[g]["sd_week"] for g in grid[:gi] if meta.get(g, {}).get("sd_week") is not None and meta[g].get("n", 0) >= MIN_XS]
     sd_week = meta[use].get("sd_week")
-    p20 = float(np.percentile(sd_hist, 20)) if len(sd_hist) >= MIN_SIGMA_HIST else None
+    p20 = _percentile(sd_hist, 20) if len(sd_hist) >= MIN_SIGMA_HIST else None
     low = bool(p20 is not None and sd_week is not None and sd_week < p20)
     rows = []
     for i, c in enumerate(rk):
