@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2.1",
- "generated_at": "2026-09-09T10:09:57+00:00",
+ "generated_at": "2026-09-09T10:38:13+00:00",
  "as_of": "2026-09-08",
  "equivalence_quality": "high",
  "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
@@ -12,9 +12,7 @@
   "series_loaded": 24,
   "series_expected": 24,
   "last_fetch_ok": true,
-  "errors": [
-   "rbnz_d3: D3: sheet 'LSAP bond sales' missing (sheets: ['Module1', 'Reverse Repo - OMO', 'LSAP bond sales - NZGBs', 'LSAP bond sales - LGFAs', 'Govt Bond Repurchases', 'RB Bills - OMO&Tender', 'BMLS', 'LSAP - NZGBs', 'LSAP - LGFAs', 'TAF', 'Corporate - OMO', 'Repo - OMO', 'OMO up to 19 Sep 08', 'RR - OMO up to 01 Apr 26'])"
-  ],
+  "errors": [],
   "series_pending": 0
  },
  "series": {
@@ -681,9 +679,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 20.0,
-   "date": "2026-09-07",
+   "date": "2026-09-08",
    "prev_value": 20.0,
-   "prev_date": "2026-09-04",
+   "prev_date": "2026-09-07",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 0.0,
@@ -746,11 +744,11 @@
    ],
    "high_low": {
     "high": 20.0,
-    "high_date": "2026-06-25",
+    "high_date": "2026-06-26",
     "low": 20.0,
-    "low_date": "2026-06-25"
+    "low_date": "2026-06-26"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -5054,6 +5052,11 @@
     "date": "2026-09-07",
     "label": "NEUTRAL",
     "score": 0.0
+   },
+   {
+    "date": "2026-09-08",
+    "label": "NEUTRAL",
+    "score": -0.5
    },
    {
     "date": "2026-09-08",
