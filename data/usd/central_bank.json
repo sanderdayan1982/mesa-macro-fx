@@ -2,8 +2,8 @@
  "currency": "USD",
  "block": "central_bank",
  "schema_version": "0.3.0",
- "config_version": "0.1.0",
- "generated_at": "2026-09-08T23:42:41+00:00",
+ "config_version": "0.1.1",
+ "generated_at": "2026-09-09T12:27:51+00:00",
  "as_of": "2026-09-08",
  "equivalence_quality": "high",
  "equivalence_note": "H.4.1 Wednesday levels via FRED (Thu 16:30 ET = 22:30 WAT). Net Liquidity = WALCL − WTREGEN − RRPONTTLD (RRP = latest observation ≤ the H.4.1 date). All $M.",
@@ -93,7 +93,7 @@
     "low": 6535781.0,
     "low_date": "2025-12-03"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -174,7 +174,7 @@
     "low": 4188739.0,
     "low_date": "2025-12-03"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -255,7 +255,7 @@
     "low": 1913585.0,
     "low_date": "2026-08-26"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -336,7 +336,7 @@
     "low": 3498.0,
     "low_date": "2026-01-21"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "stress monitor: +20% w/w = PANIC"
@@ -418,7 +418,7 @@
     "low": 672274.0,
     "low_date": "2025-09-10"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -506,7 +506,7 @@
     "low": 30.0,
     "low_date": "2026-07-20"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -593,7 +593,7 @@
     "low": 2848021.0,
     "low_date": "2025-10-29"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -688,7 +688,7 @@
     "low": 5596100.0,
     "low_date": "2025-12-03"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "WALCL − WTREGEN − RRPONTTLD (RRP = latest daily ≤ H.4.1 date; weeks without TGA/RRP coverage are skipped, never zero-filled)"
@@ -770,7 +770,7 @@
     "low": -4.2526,
     "low_date": "2026-04-22"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "signal": "NEUTRAL",
@@ -898,7 +898,7 @@
     "low": -34.8603,
     "low_date": "2026-01-21"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -986,7 +986,7 @@
     "low": -67016.0,
     "low_date": "2026-01-07"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -996,7 +996,9 @@
      "STRESS": -45310.75
     },
     "window": "156w",
-    "n": 156
+    "n": 156,
+    "era_anchor": "2022-06-01",
+    "era_thin": false
    }
   },
   "drains_total": {
@@ -1076,7 +1078,7 @@
     "low": 701674.0,
     "low_date": "2025-09-10"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1157,7 +1159,7 @@
     "low": -72479.0,
     "low_date": "2025-10-01"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1177,6 +1179,26 @@
   "flags": [
    "TGA_HEAVY_DRAIN"
   ],
+  "components": {
+   "mode": "mean2",
+   "level_weight": 1.0,
+   "flow": {
+    "net_liquidity_band": 0.0,
+    "tga_status": -1.0
+   },
+   "level": {
+    "reserves_status": -1.0,
+    "rrp_status": 0.25,
+    "phase": 0.0
+   },
+   "weights": {},
+   "range": [
+    -2.0,
+    2.0
+   ],
+   "score_v02": -0.7,
+   "score_flows_only": -0.4
+  },
   "detail": "WRESBAL NERVOUS · NL Δ% -0.1857 (NEUTRAL) · TGA HEAVY DRAIN · RRP LOW · Primary credit LOW · phase STEADY",
   "alerts": [
    {
