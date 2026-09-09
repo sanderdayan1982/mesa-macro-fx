@@ -1,14 +1,14 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-09T13:50:17+00:00",
+ "generated_at": "2026-09-09T23:55:45+00:00",
  "as_of": "2026-09-08",
  "config_version": "0.2.3",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.222,
+ "weighted_score": 0.398,
  "block_scores": {
   "central_bank": 0.5,
-  "rates": 0.25,
+  "rates": 0.75,
   "fiscal": -0.2,
   "banking": 0.0
  },
@@ -219,7 +219,7 @@
    "details": [
     {
      "condition": "rates.gc_minus_ioer_bps level >= WATCH",
-     "met": null
+     "met": false
     },
     {
      "condition": "central_bank.slf_daily >= p95",
@@ -227,7 +227,7 @@
     },
     {
      "condition": "rates.curve_20y_10y_bps level >= WATCH",
-     "met": null
+     "met": false
     }
    ]
   },
@@ -285,7 +285,7 @@
    "details": [
     {
      "condition": "rates.jgb_10y_5d_change_bps level >= WATCH",
-     "met": null
+     "met": false
     },
     {
      "condition": "central_bank.balance_sheet_phase == NIMBLE_SUPPORT",
@@ -293,7 +293,7 @@
     },
     {
      "condition": "rates.curve_30y_10y_bps level >= WATCH",
-     "met": null
+     "met": false
     }
    ]
   },
@@ -343,7 +343,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily_provisional",
+  "lane": "all",
   "backfill": false,
   "errors": []
  }
