@@ -60,7 +60,7 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 ## Phase status
 - Phase 1 Desk Standard + CAD source map: sealed (v0.3, triangulated 2026-09-08).
 - Phase 2 CAD flagship: **this repo**. Pending: StatCan credit tables, auction net issuance, RG archive backfill on first live run.
-- Phase 3 GBP → AUD → JPY → CHF → NZD → USD (all live) → EUR. Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
+- Phase 3 GBP → AUD → JPY → CHF → NZD → USD → EUR (all eight live). Next: per-currency calibration of the dual thresholds (regime.dual). Phase 4 agents (`data/<ccy>/agent.json`). Phase 5 Desk / Cross-Market.
 
 ## GBP Command Center (config/gbp.json v0.2.1)
 
@@ -105,6 +105,16 @@ and change `CCY`. The engine, thresholds, quality, alerts and schema are shared.
 - Lanes: `.github/workflows/refresh-usd.yml` — daily 16:20 ET (two crons cover EDT/EST) + retry 18:00 ET, weekly_thu 16:40 ET (H.4.1), weekly Fri 16:25 ET (H.8), monthly 2nd + backfill.
 - Offline test: `python -m ingest.run --ccy usd --lane all --backfill --fixtures fixtures/usd --no-rss && python -m ingest.validate --ccy usd`
 - Netlify: same site, dashboard at `/usd/`. Units: files in USD millions, dashboard in $B / $T.
+
+## EUR Command Center (config/eur.json v0.2.1) — incomplete monetary sovereignty
+
+- Design: v5 dashboard audited (9 real series, rest simulated) → Fase 1 source map verified on the ECB Data Portal → triangulation 2026-09-09 (Perplexity, CodeWord, DeepSeek, Gemini, Qwen; matrix in `TRIANGULACION_EUR_matriz.md`, changes E1–E15) → Fase 2 build.
+- Sources (no key): ECB Data Portal SDMX `https://data-api.ecb.europa.eu/service/data/<FLOW>/<KEY>?format=csvdata&startPeriod=` (FLOW = text before the first dot; ≥ 1.5 s between requests; weekly periods mapped to the Friday, monthly to the 1st, quarterly to the quarter start with a 90-day lag allowance); ECB `/mopo/pdf/APP_*` and `PEPP_*` CSVs (holdings at amortised cost, redemptions); Deutsche Finanzagentur `emissionsergebnisse_aktuell_en.xlsx` (per-ISIN auction lines, aggregated per date).
+- Layers: 1 Eurosystem (ILM daily excess liquidity = DF + CA − MRR, autonomous factors, MRO+LTRO take-up 30/100/250 bn price-gated, MLF; WFS weekly MonPol securities → phase ±20 bn, APP+PEPP reconciliation, scheduled redemptions) → 2 Treasury equivalent (government deposits at the Eurosystem WFS L050100 → fiscal impulse 4w/13w; GFS quarterly deficit; Finanzagentur bid-to-cover / yield / retention / volume; TARGET Δ 3m) → 3 Banking (BSI M1/M3/loans + stocks → credit impulse €, MIR cost of credit, BLS standards) → 4 Rates (€STR − DFR compression spread with anchors by liquidity regime 0/5/10 → 5/10/15 below 1.5 tn, abundance signature ≤ −10; dispersion R75−R25; compounded 3m; corridor; AAA 10−2; periphery premium all-EA − AAA; BTP/OAT/Bonos − Bund monthly; EURIBOR 3M − DFR; EUR/USD).
+- Regime: weights CB 0.40 · rates 0.30 · fiscal 0.15 · banking 0.15; dual CB 0.7 / treasury 0.3 (provisional); reserves_metric excess liquidity (1.5–4.0 tn band, dead-man only), stress spread €STR − DFR with friction on 2 of 3 sessions.
+- Lanes: `.github/workflows/refresh-eur.yml` — daily 08:45 UTC (+09:45 for CET) + retry 12:00, Tuesday 13:20/14:20 UTC (WFS + Finanzagentur), Friday 13:30/14:30 UTC (APP/PEPP), 12th & 28th 09:00 UTC monthly + backfill. Diagnostic curl step for the three hosts.
+- Offline test: `python -m ingest.run --ccy eur --lane all --backfill --fixtures fixtures/eur --no-rss && python -m ingest.validate --ccy eur` (fixtures captured 2026-09-09 from the primary origins).
+- Pending (Phase 3): AFT / MEF / Tesoro ES / EU issuance parsers, Bundesbank BBSSY daily Bund yields, ECB daily money-market statistics, 2027 maintenance-period calendar.
 
 ## JPY Command Center (config/jpy.json v0.2.1)
 
