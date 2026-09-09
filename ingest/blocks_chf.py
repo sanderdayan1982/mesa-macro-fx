@@ -44,8 +44,17 @@ def _two_sided(name: str, ser: Series, spec: dict, freq: str, prev: Optional[str
     L = S.last(ser)
     if not L:
         return {"level": "NO DATA", "percentile": None, "thresholds": {}}
-    hi = classify(L[1], ser, dict(spec, direction="high_is_risk"), freq, prev)
+    # hysteresis 'pA/pB' in a two-sided spec = exit percentile of the HIGH side / of the LOW side (not WATCH/STRESS positions):
+    # replay bug 2026-09-09 — the shared parser read 'p80/p20' as WATCH-exit p80 / STRESS-exit p20, so a high-side STRESS never exited
+    # (still ≥ p20) and a low-side WATCH never exited (still ≤ p80): settlement_cash_wow sat at STRESS 100 % of the weeks.
+    ex = str((spec.get("hysteresis") or {}).get("exit_on", "") or "")
+    parts = [x.strip() for x in ex.split("/") if x.strip()]
+    hi_spec = dict(spec, direction="high_is_risk")
     lo_spec = dict(spec, direction="low_is_risk")
+    if len(parts) == 2:
+        hi_spec["hysteresis"] = {"exit_on": parts[0]}
+        lo_spec["hysteresis"] = {"exit_on": parts[1]}
+    hi = classify(L[1], ser, hi_spec, freq, prev)
     for k in ("watch", "stress", "crisis"):
         if spec.get(k + "_below"):
             lo_spec[k + "_below"] = spec[k + "_below"]

@@ -1,0 +1,7330 @@
+{
+ "currency": "NZD",
+ "generated_at": "2026-09-09T09:05:59Z",
+ "weeks": 385,
+ "first": "2019-01-03",
+ "last": "2026-09-03",
+ "split": "2025-01-01",
+ "truth": "NZD per USD (1 / RBNZ B1 NZD/USD daily) \u2014 + = NZD weaker",
+ "structural_breaks": [
+  {
+   "date": "2020-03-23",
+   "note": "LSAP starts: settlement cash from ~7 bn to > 40 bn; floor system (ODR = OCR)"
+  },
+  {
+   "date": "2022-07-01",
+   "note": "LSAP unwind: bond sales to NZDM begin (NZ$5 bn/yr), settlement cash declines toward the new steady state \u2014 calibration era"
+  },
+  {
+   "date": "2022-07-01",
+   "note": "era start set on the command line"
+  }
+ ],
+ "blocks": {
+  "central_bank": {
+   "n": 385,
+   "walk_forward": {
+    "5": [
+     {
+      "years": "2019\u20132020",
+      "n": 101,
+      "rho": -0.034,
+      "p": 0.732
+     },
+     {
+      "years": "2021\u20132022",
+      "n": 100,
+      "rho": 0.121,
+      "p": 0.23
+     },
+     {
+      "years": "2023\u20132024",
+      "n": 100,
+      "rho": 0.008,
+      "p": 0.938
+     },
+     {
+      "years": "2025\u20132026",
+      "n": 83,
+      "rho": 0.141,
+      "p": 0.203
+     }
+    ],
+    "10": [
+     {
+      "years": "2019\u20132020",
+      "n": 101,
+      "rho": -0.143,
+      "p": 0.154
+     },
+     {
+      "years": "2021\u20132022",
+      "n": 100,
+      "rho": 0.049,
+      "p": 0.625
+     },
+     {
+      "years": "2023\u20132024",
+      "n": 100,
+      "rho": 0.021,
+      "p": 0.835
+     },
+     {
+      "years": "2025\u20132026",
+      "n": 82,
+      "rho": 0.099,
+      "p": 0.375
+     }
+    ],
+    "20": [
+     {
+      "years": "2019\u20132020",
+      "n": 101,
+      "rho": -0.283,
+      "p": 0.004
+     },
+     {
+      "years": "2021\u20132022",
+      "n": 100,
+      "rho": -0.09,
+      "p": 0.375
+     },
+     {
+      "years": "2023\u20132024",
+      "n": 100,
+      "rho": 0.026,
+      "p": 0.797
+     },
+     {
+      "years": "2025\u20132026",
+      "n": 80,
+      "rho": -0.038,
+      "p": 0.741
+     }
+    ]
+   },
+   "thresholds": {
+    "5": {
+     "injection": null,
+     "drain": null,
+     "grid_injection": [
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 291,
+        "n_out": 10,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 291,
+        "n_out": 10,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.05,
+        "mean_out": 0.05,
+        "diff": 0.0,
+        "t": 0.0,
+        "p": 0.9994
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.05,
+        "mean_out": 0.05,
+        "diff": 0.0,
+        "t": 0.0,
+        "p": 0.9994
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.05,
+        "mean_out": 0.05,
+        "diff": 0.0,
+        "t": 0.0,
+        "p": 0.9994
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 257,
+        "n_out": 44,
+        "coverage": 0.854,
+        "mean_in": 0.057,
+        "mean_out": 0.01,
+        "diff": 0.047,
+        "t": 0.22,
+        "p": 0.8241
+       },
+       "test": {
+        "n_in": 79,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 257,
+        "n_out": 44,
+        "coverage": 0.854,
+        "mean_in": 0.057,
+        "mean_out": 0.01,
+        "diff": 0.047,
+        "t": 0.22,
+        "p": 0.8241
+       },
+       "test": {
+        "n_in": 79,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.072,
+        "mean_out": -0.022,
+        "diff": 0.094,
+        "t": 0.5,
+        "p": 0.6191
+       },
+       "test": {
+        "n_in": 79,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.072,
+        "mean_out": -0.022,
+        "diff": 0.094,
+        "t": 0.5,
+        "p": 0.6191
+       },
+       "test": {
+        "n_in": 79,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.072,
+        "mean_out": -0.022,
+        "diff": 0.094,
+        "t": 0.5,
+        "p": 0.6191
+       },
+       "test": {
+        "n_in": 79,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 199,
+        "n_out": 102,
+        "coverage": 0.661,
+        "mean_in": 0.009,
+        "mean_out": 0.131,
+        "diff": -0.122,
+        "t": -0.64,
+        "p": 0.5229
+       },
+       "test": {
+        "n_in": 51,
+        "n_out": 32,
+        "coverage": 0.614,
+        "mean_in": -0.029,
+        "mean_out": -0.099,
+        "diff": 0.07,
+        "t": 0.24,
+        "p": 0.8078
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 199,
+        "n_out": 102,
+        "coverage": 0.661,
+        "mean_in": 0.009,
+        "mean_out": 0.131,
+        "diff": -0.122,
+        "t": -0.64,
+        "p": 0.5229
+       },
+       "test": {
+        "n_in": 51,
+        "n_out": 32,
+        "coverage": 0.614,
+        "mean_in": -0.029,
+        "mean_out": -0.099,
+        "diff": 0.07,
+        "t": 0.24,
+        "p": 0.8078
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.087,
+        "mean_out": 0.004,
+        "diff": 0.083,
+        "t": 0.46,
+        "p": 0.6429
+       },
+       "test": {
+        "n_in": 50,
+        "n_out": 33,
+        "coverage": 0.602,
+        "mean_in": -0.034,
+        "mean_out": -0.088,
+        "diff": 0.054,
+        "t": 0.19,
+        "p": 0.8512
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.087,
+        "mean_out": 0.004,
+        "diff": 0.083,
+        "t": 0.46,
+        "p": 0.6429
+       },
+       "test": {
+        "n_in": 50,
+        "n_out": 33,
+        "coverage": 0.602,
+        "mean_in": -0.034,
+        "mean_out": -0.088,
+        "diff": 0.054,
+        "t": 0.19,
+        "p": 0.8512
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.087,
+        "mean_out": 0.004,
+        "diff": 0.083,
+        "t": 0.46,
+        "p": 0.6429
+       },
+       "test": {
+        "n_in": 50,
+        "n_out": 33,
+        "coverage": 0.602,
+        "mean_in": -0.034,
+        "mean_out": -0.088,
+        "diff": 0.054,
+        "t": 0.19,
+        "p": 0.8512
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 116,
+        "n_out": 185,
+        "coverage": 0.385,
+        "mean_in": 0.167,
+        "mean_out": -0.022,
+        "diff": 0.189,
+        "t": 1.08,
+        "p": 0.2814
+       },
+       "test": {
+        "n_in": 37,
+        "n_out": 46,
+        "coverage": 0.446,
+        "mean_in": -0.01,
+        "mean_out": -0.092,
+        "diff": 0.082,
+        "t": 0.27,
+        "p": 0.7879
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 116,
+        "n_out": 185,
+        "coverage": 0.385,
+        "mean_in": 0.167,
+        "mean_out": -0.022,
+        "diff": 0.189,
+        "t": 1.08,
+        "p": 0.2814
+       },
+       "test": {
+        "n_in": 37,
+        "n_out": 46,
+        "coverage": 0.446,
+        "mean_in": -0.01,
+        "mean_out": -0.092,
+        "diff": 0.082,
+        "t": 0.27,
+        "p": 0.7879
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": 0.136,
+        "mean_out": 0.024,
+        "diff": 0.112,
+        "t": 0.55,
+        "p": 0.5859
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 65,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": 0.136,
+        "mean_out": 0.024,
+        "diff": 0.112,
+        "t": 0.55,
+        "p": 0.5859
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 65,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": 0.136,
+        "mean_out": 0.024,
+        "diff": 0.112,
+        "t": 0.55,
+        "p": 0.5859
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 65,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 34,
+        "n_out": 267,
+        "coverage": 0.113,
+        "mean_in": 0.147,
+        "mean_out": 0.038,
+        "diff": 0.108,
+        "t": 0.36,
+        "p": 0.7192
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 65,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 34,
+        "n_out": 267,
+        "coverage": 0.113,
+        "mean_in": 0.147,
+        "mean_out": 0.038,
+        "diff": 0.108,
+        "t": 0.36,
+        "p": 0.7192
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 65,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      }
+     ],
+     "grid_drain": [
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 295,
+        "n_out": 6,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 1,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 295,
+        "n_out": 6,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 1,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.038,
+        "mean_out": 0.147,
+        "diff": -0.108,
+        "t": -0.36,
+        "p": 0.7192
+       },
+       "test": {
+        "n_in": 65,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.038,
+        "mean_out": 0.147,
+        "diff": -0.108,
+        "t": -0.36,
+        "p": 0.7192
+       },
+       "test": {
+        "n_in": 65,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.038,
+        "mean_out": 0.147,
+        "diff": -0.108,
+        "t": -0.36,
+        "p": 0.7192
+       },
+       "test": {
+        "n_in": 65,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 229,
+        "n_out": 72,
+        "coverage": 0.761,
+        "mean_in": 0.024,
+        "mean_out": 0.136,
+        "diff": -0.112,
+        "t": -0.55,
+        "p": 0.5859
+       },
+       "test": {
+        "n_in": 65,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 229,
+        "n_out": 72,
+        "coverage": 0.761,
+        "mean_in": 0.024,
+        "mean_out": 0.136,
+        "diff": -0.112,
+        "t": -0.55,
+        "p": 0.5859
+       },
+       "test": {
+        "n_in": 65,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": -0.022,
+        "mean_out": 0.167,
+        "diff": -0.189,
+        "t": -1.08,
+        "p": 0.2814
+       },
+       "test": {
+        "n_in": 46,
+        "n_out": 37,
+        "coverage": 0.554,
+        "mean_in": -0.092,
+        "mean_out": -0.01,
+        "diff": -0.082,
+        "t": -0.27,
+        "p": 0.7879
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": -0.022,
+        "mean_out": 0.167,
+        "diff": -0.189,
+        "t": -1.08,
+        "p": 0.2814
+       },
+       "test": {
+        "n_in": 46,
+        "n_out": 37,
+        "coverage": 0.554,
+        "mean_in": -0.092,
+        "mean_out": -0.01,
+        "diff": -0.082,
+        "t": -0.27,
+        "p": 0.7879
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": -0.022,
+        "mean_out": 0.167,
+        "diff": -0.189,
+        "t": -1.08,
+        "p": 0.2814
+       },
+       "test": {
+        "n_in": 46,
+        "n_out": 37,
+        "coverage": 0.554,
+        "mean_in": -0.092,
+        "mean_out": -0.01,
+        "diff": -0.082,
+        "t": -0.27,
+        "p": 0.7879
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 132,
+        "n_out": 169,
+        "coverage": 0.439,
+        "mean_in": 0.004,
+        "mean_out": 0.087,
+        "diff": -0.083,
+        "t": -0.46,
+        "p": 0.6429
+       },
+       "test": {
+        "n_in": 33,
+        "n_out": 50,
+        "coverage": 0.398,
+        "mean_in": -0.088,
+        "mean_out": -0.034,
+        "diff": -0.054,
+        "t": -0.19,
+        "p": 0.8512
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 132,
+        "n_out": 169,
+        "coverage": 0.439,
+        "mean_in": 0.004,
+        "mean_out": 0.087,
+        "diff": -0.083,
+        "t": -0.46,
+        "p": 0.6429
+       },
+       "test": {
+        "n_in": 33,
+        "n_out": 50,
+        "coverage": 0.398,
+        "mean_in": -0.088,
+        "mean_out": -0.034,
+        "diff": -0.054,
+        "t": -0.19,
+        "p": 0.8512
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.131,
+        "mean_out": 0.009,
+        "diff": 0.122,
+        "t": 0.64,
+        "p": 0.5229
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 51,
+        "coverage": 0.386,
+        "mean_in": -0.099,
+        "mean_out": -0.029,
+        "diff": -0.07,
+        "t": -0.24,
+        "p": 0.8078
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.131,
+        "mean_out": 0.009,
+        "diff": 0.122,
+        "t": 0.64,
+        "p": 0.5229
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 51,
+        "coverage": 0.386,
+        "mean_in": -0.099,
+        "mean_out": -0.029,
+        "diff": -0.07,
+        "t": -0.24,
+        "p": 0.8078
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.131,
+        "mean_out": 0.009,
+        "diff": 0.122,
+        "t": 0.64,
+        "p": 0.5229
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 51,
+        "coverage": 0.386,
+        "mean_in": -0.099,
+        "mean_out": -0.029,
+        "diff": -0.07,
+        "t": -0.24,
+        "p": 0.8078
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 69,
+        "n_out": 232,
+        "coverage": 0.229,
+        "mean_in": -0.022,
+        "mean_out": 0.072,
+        "diff": -0.094,
+        "t": -0.5,
+        "p": 0.6191
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 69,
+        "n_out": 232,
+        "coverage": 0.229,
+        "mean_in": -0.022,
+        "mean_out": 0.072,
+        "diff": -0.094,
+        "t": -0.5,
+        "p": 0.6191
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.01,
+        "mean_out": 0.057,
+        "diff": -0.047,
+        "t": -0.22,
+        "p": 0.8241
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.01,
+        "mean_out": 0.057,
+        "diff": -0.047,
+        "t": -0.22,
+        "p": 0.8241
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.01,
+        "mean_out": 0.057,
+        "diff": -0.047,
+        "t": -0.22,
+        "p": 0.8241
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 20,
+        "n_out": 281,
+        "coverage": 0.066,
+        "mean_in": 0.05,
+        "mean_out": 0.05,
+        "diff": -0.0,
+        "t": -0.0,
+        "p": 0.9994
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 20,
+        "n_out": 281,
+        "coverage": 0.066,
+        "mean_in": 0.05,
+        "mean_out": 0.05,
+        "diff": -0.0,
+        "t": -0.0,
+        "p": 0.9994
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      }
+     ]
+    },
+    "10": {
+     "injection": null,
+     "drain": null,
+     "grid_injection": [
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 291,
+        "n_out": 10,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 291,
+        "n_out": 10,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.128,
+        "mean_out": -0.024,
+        "diff": 0.153,
+        "t": 0.4,
+        "p": 0.6963
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.128,
+        "mean_out": -0.024,
+        "diff": 0.153,
+        "t": 0.4,
+        "p": 0.6963
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.128,
+        "mean_out": -0.024,
+        "diff": 0.153,
+        "t": 0.4,
+        "p": 0.6963
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 257,
+        "n_out": 44,
+        "coverage": 0.854,
+        "mean_in": 0.107,
+        "mean_out": 0.184,
+        "diff": -0.077,
+        "t": -0.23,
+        "p": 0.8188
+       },
+       "test": {
+        "n_in": 78,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 257,
+        "n_out": 44,
+        "coverage": 0.854,
+        "mean_in": 0.107,
+        "mean_out": 0.184,
+        "diff": -0.077,
+        "t": -0.23,
+        "p": 0.8188
+       },
+       "test": {
+        "n_in": 78,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.166,
+        "mean_out": -0.043,
+        "diff": 0.209,
+        "t": 0.76,
+        "p": 0.4494
+       },
+       "test": {
+        "n_in": 78,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.166,
+        "mean_out": -0.043,
+        "diff": 0.209,
+        "t": 0.76,
+        "p": 0.4494
+       },
+       "test": {
+        "n_in": 78,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.166,
+        "mean_out": -0.043,
+        "diff": 0.209,
+        "t": 0.76,
+        "p": 0.4494
+       },
+       "test": {
+        "n_in": 78,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 199,
+        "n_out": 102,
+        "coverage": 0.661,
+        "mean_in": 0.07,
+        "mean_out": 0.213,
+        "diff": -0.143,
+        "t": -0.56,
+        "p": 0.5775
+       },
+       "test": {
+        "n_in": 50,
+        "n_out": 32,
+        "coverage": 0.61,
+        "mean_in": -0.12,
+        "mean_out": -0.151,
+        "diff": 0.031,
+        "t": 0.08,
+        "p": 0.9339
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 199,
+        "n_out": 102,
+        "coverage": 0.661,
+        "mean_in": 0.07,
+        "mean_out": 0.213,
+        "diff": -0.143,
+        "t": -0.56,
+        "p": 0.5775
+       },
+       "test": {
+        "n_in": 50,
+        "n_out": 32,
+        "coverage": 0.61,
+        "mean_in": -0.12,
+        "mean_out": -0.151,
+        "diff": 0.031,
+        "t": 0.08,
+        "p": 0.9339
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.115,
+        "mean_out": 0.122,
+        "diff": -0.006,
+        "t": -0.03,
+        "p": 0.9789
+       },
+       "test": {
+        "n_in": 49,
+        "n_out": 33,
+        "coverage": 0.598,
+        "mean_in": -0.118,
+        "mean_out": -0.153,
+        "diff": 0.035,
+        "t": 0.1,
+        "p": 0.924
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.115,
+        "mean_out": 0.122,
+        "diff": -0.006,
+        "t": -0.03,
+        "p": 0.9789
+       },
+       "test": {
+        "n_in": 49,
+        "n_out": 33,
+        "coverage": 0.598,
+        "mean_in": -0.118,
+        "mean_out": -0.153,
+        "diff": 0.035,
+        "t": 0.1,
+        "p": 0.924
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.115,
+        "mean_out": 0.122,
+        "diff": -0.006,
+        "t": -0.03,
+        "p": 0.9789
+       },
+       "test": {
+        "n_in": 49,
+        "n_out": 33,
+        "coverage": 0.598,
+        "mean_in": -0.118,
+        "mean_out": -0.153,
+        "diff": 0.035,
+        "t": 0.1,
+        "p": 0.924
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 116,
+        "n_out": 185,
+        "coverage": 0.385,
+        "mean_in": 0.136,
+        "mean_out": 0.107,
+        "diff": 0.029,
+        "t": 0.12,
+        "p": 0.905
+       },
+       "test": {
+        "n_in": 36,
+        "n_out": 46,
+        "coverage": 0.439,
+        "mean_in": -0.136,
+        "mean_out": -0.129,
+        "diff": -0.006,
+        "t": -0.02,
+        "p": 0.988
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 116,
+        "n_out": 185,
+        "coverage": 0.385,
+        "mean_in": 0.136,
+        "mean_out": 0.107,
+        "diff": 0.029,
+        "t": 0.12,
+        "p": 0.905
+       },
+       "test": {
+        "n_in": 36,
+        "n_out": 46,
+        "coverage": 0.439,
+        "mean_in": -0.136,
+        "mean_out": -0.129,
+        "diff": -0.006,
+        "t": -0.02,
+        "p": 0.988
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": 0.005,
+        "mean_out": 0.154,
+        "diff": -0.149,
+        "t": -0.53,
+        "p": 0.5945
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 64,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": 0.005,
+        "mean_out": 0.154,
+        "diff": -0.149,
+        "t": -0.53,
+        "p": 0.5945
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 64,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": 0.005,
+        "mean_out": 0.154,
+        "diff": -0.149,
+        "t": -0.53,
+        "p": 0.5945
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 64,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 34,
+        "n_out": 267,
+        "coverage": 0.113,
+        "mean_in": 0.131,
+        "mean_out": 0.117,
+        "diff": 0.014,
+        "t": 0.04,
+        "p": 0.9714
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 64,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 34,
+        "n_out": 267,
+        "coverage": 0.113,
+        "mean_in": 0.131,
+        "mean_out": 0.117,
+        "diff": 0.014,
+        "t": 0.04,
+        "p": 0.9714
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 64,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 81,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 81,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 81,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      }
+     ],
+     "grid_drain": [
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 295,
+        "n_out": 6,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 81,
+        "n_out": 1,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 295,
+        "n_out": 6,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 81,
+        "n_out": 1,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.117,
+        "mean_out": 0.131,
+        "diff": -0.014,
+        "t": -0.04,
+        "p": 0.9714
+       },
+       "test": {
+        "n_in": 64,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.117,
+        "mean_out": 0.131,
+        "diff": -0.014,
+        "t": -0.04,
+        "p": 0.9714
+       },
+       "test": {
+        "n_in": 64,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.117,
+        "mean_out": 0.131,
+        "diff": -0.014,
+        "t": -0.04,
+        "p": 0.9714
+       },
+       "test": {
+        "n_in": 64,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 229,
+        "n_out": 72,
+        "coverage": 0.761,
+        "mean_in": 0.154,
+        "mean_out": 0.005,
+        "diff": 0.149,
+        "t": 0.53,
+        "p": 0.5945
+       },
+       "test": {
+        "n_in": 64,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 229,
+        "n_out": 72,
+        "coverage": 0.761,
+        "mean_in": 0.154,
+        "mean_out": 0.005,
+        "diff": 0.149,
+        "t": 0.53,
+        "p": 0.5945
+       },
+       "test": {
+        "n_in": 64,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": 0.107,
+        "mean_out": 0.136,
+        "diff": -0.029,
+        "t": -0.12,
+        "p": 0.905
+       },
+       "test": {
+        "n_in": 46,
+        "n_out": 36,
+        "coverage": 0.561,
+        "mean_in": -0.129,
+        "mean_out": -0.136,
+        "diff": 0.006,
+        "t": 0.02,
+        "p": 0.988
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": 0.107,
+        "mean_out": 0.136,
+        "diff": -0.029,
+        "t": -0.12,
+        "p": 0.905
+       },
+       "test": {
+        "n_in": 46,
+        "n_out": 36,
+        "coverage": 0.561,
+        "mean_in": -0.129,
+        "mean_out": -0.136,
+        "diff": 0.006,
+        "t": 0.02,
+        "p": 0.988
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": 0.107,
+        "mean_out": 0.136,
+        "diff": -0.029,
+        "t": -0.12,
+        "p": 0.905
+       },
+       "test": {
+        "n_in": 46,
+        "n_out": 36,
+        "coverage": 0.561,
+        "mean_in": -0.129,
+        "mean_out": -0.136,
+        "diff": 0.006,
+        "t": 0.02,
+        "p": 0.988
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 132,
+        "n_out": 169,
+        "coverage": 0.439,
+        "mean_in": 0.122,
+        "mean_out": 0.115,
+        "diff": 0.006,
+        "t": 0.03,
+        "p": 0.9789
+       },
+       "test": {
+        "n_in": 33,
+        "n_out": 49,
+        "coverage": 0.402,
+        "mean_in": -0.153,
+        "mean_out": -0.118,
+        "diff": -0.035,
+        "t": -0.1,
+        "p": 0.924
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 132,
+        "n_out": 169,
+        "coverage": 0.439,
+        "mean_in": 0.122,
+        "mean_out": 0.115,
+        "diff": 0.006,
+        "t": 0.03,
+        "p": 0.9789
+       },
+       "test": {
+        "n_in": 33,
+        "n_out": 49,
+        "coverage": 0.402,
+        "mean_in": -0.153,
+        "mean_out": -0.118,
+        "diff": -0.035,
+        "t": -0.1,
+        "p": 0.924
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.213,
+        "mean_out": 0.07,
+        "diff": 0.143,
+        "t": 0.56,
+        "p": 0.5775
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 50,
+        "coverage": 0.39,
+        "mean_in": -0.151,
+        "mean_out": -0.12,
+        "diff": -0.031,
+        "t": -0.08,
+        "p": 0.9339
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.213,
+        "mean_out": 0.07,
+        "diff": 0.143,
+        "t": 0.56,
+        "p": 0.5775
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 50,
+        "coverage": 0.39,
+        "mean_in": -0.151,
+        "mean_out": -0.12,
+        "diff": -0.031,
+        "t": -0.08,
+        "p": 0.9339
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.213,
+        "mean_out": 0.07,
+        "diff": 0.143,
+        "t": 0.56,
+        "p": 0.5775
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 50,
+        "coverage": 0.39,
+        "mean_in": -0.151,
+        "mean_out": -0.12,
+        "diff": -0.031,
+        "t": -0.08,
+        "p": 0.9339
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 69,
+        "n_out": 232,
+        "coverage": 0.229,
+        "mean_in": -0.043,
+        "mean_out": 0.166,
+        "diff": -0.209,
+        "t": -0.76,
+        "p": 0.4494
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 78,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 69,
+        "n_out": 232,
+        "coverage": 0.229,
+        "mean_in": -0.043,
+        "mean_out": 0.166,
+        "diff": -0.209,
+        "t": -0.76,
+        "p": 0.4494
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 78,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.184,
+        "mean_out": 0.107,
+        "diff": 0.077,
+        "t": 0.23,
+        "p": 0.8188
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 78,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.184,
+        "mean_out": 0.107,
+        "diff": 0.077,
+        "t": 0.23,
+        "p": 0.8188
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 78,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.184,
+        "mean_out": 0.107,
+        "diff": 0.077,
+        "t": 0.23,
+        "p": 0.8188
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 78,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 20,
+        "n_out": 281,
+        "coverage": 0.066,
+        "mean_in": -0.024,
+        "mean_out": 0.128,
+        "diff": -0.153,
+        "t": -0.4,
+        "p": 0.6963
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 20,
+        "n_out": 281,
+        "coverage": 0.066,
+        "mean_in": -0.024,
+        "mean_out": 0.128,
+        "diff": -0.153,
+        "t": -0.4,
+        "p": 0.6963
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      }
+     ]
+    },
+    "20": {
+     "injection": null,
+     "drain": null,
+     "grid_injection": [
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 291,
+        "n_out": 10,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 291,
+        "n_out": 10,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.22,
+        "mean_out": 0.356,
+        "diff": -0.136,
+        "t": -0.23,
+        "p": 0.8172
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.22,
+        "mean_out": 0.356,
+        "diff": -0.136,
+        "t": -0.23,
+        "p": 0.8172
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 281,
+        "n_out": 20,
+        "coverage": 0.934,
+        "mean_in": 0.22,
+        "mean_out": 0.356,
+        "diff": -0.136,
+        "t": -0.23,
+        "p": 0.8172
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 257,
+        "n_out": 44,
+        "coverage": 0.854,
+        "mean_in": 0.147,
+        "mean_out": 0.709,
+        "diff": -0.562,
+        "t": -1.21,
+        "p": 0.2296
+       },
+       "test": {
+        "n_in": 76,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 257,
+        "n_out": 44,
+        "coverage": 0.854,
+        "mean_in": 0.147,
+        "mean_out": 0.709,
+        "diff": -0.562,
+        "t": -1.21,
+        "p": 0.2296
+       },
+       "test": {
+        "n_in": 76,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.186,
+        "mean_out": 0.374,
+        "diff": -0.188,
+        "t": -0.48,
+        "p": 0.6312
+       },
+       "test": {
+        "n_in": 76,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.186,
+        "mean_out": 0.374,
+        "diff": -0.188,
+        "t": -0.48,
+        "p": 0.6312
+       },
+       "test": {
+        "n_in": 76,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 232,
+        "n_out": 69,
+        "coverage": 0.771,
+        "mean_in": 0.186,
+        "mean_out": 0.374,
+        "diff": -0.188,
+        "t": -0.48,
+        "p": 0.6312
+       },
+       "test": {
+        "n_in": 76,
+        "n_out": 4,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 199,
+        "n_out": 102,
+        "coverage": 0.661,
+        "mean_in": 0.135,
+        "mean_out": 0.412,
+        "diff": -0.276,
+        "t": -0.8,
+        "p": 0.4244
+       },
+       "test": {
+        "n_in": 49,
+        "n_out": 31,
+        "coverage": 0.613,
+        "mean_in": -0.428,
+        "mean_out": 0.051,
+        "diff": -0.48,
+        "t": -0.96,
+        "p": 0.3386
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 199,
+        "n_out": 102,
+        "coverage": 0.661,
+        "mean_in": 0.135,
+        "mean_out": 0.412,
+        "diff": -0.276,
+        "t": -0.8,
+        "p": 0.4244
+       },
+       "test": {
+        "n_in": 49,
+        "n_out": 31,
+        "coverage": 0.613,
+        "mean_in": -0.428,
+        "mean_out": 0.051,
+        "diff": -0.48,
+        "t": -0.96,
+        "p": 0.3386
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.148,
+        "mean_out": 0.333,
+        "diff": -0.186,
+        "t": -0.54,
+        "p": 0.5877
+       },
+       "test": {
+        "n_in": 48,
+        "n_out": 32,
+        "coverage": 0.6,
+        "mean_in": -0.403,
+        "mean_out": -0.002,
+        "diff": -0.401,
+        "t": -0.81,
+        "p": 0.4204
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.148,
+        "mean_out": 0.333,
+        "diff": -0.186,
+        "t": -0.54,
+        "p": 0.5877
+       },
+       "test": {
+        "n_in": 48,
+        "n_out": 32,
+        "coverage": 0.6,
+        "mean_in": -0.403,
+        "mean_out": -0.002,
+        "diff": -0.401,
+        "t": -0.81,
+        "p": 0.4204
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 169,
+        "n_out": 132,
+        "coverage": 0.561,
+        "mean_in": 0.148,
+        "mean_out": 0.333,
+        "diff": -0.186,
+        "t": -0.54,
+        "p": 0.5877
+       },
+       "test": {
+        "n_in": 48,
+        "n_out": 32,
+        "coverage": 0.6,
+        "mean_in": -0.403,
+        "mean_out": -0.002,
+        "diff": -0.401,
+        "t": -0.81,
+        "p": 0.4204
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 116,
+        "n_out": 185,
+        "coverage": 0.385,
+        "mean_in": -0.04,
+        "mean_out": 0.398,
+        "diff": -0.437,
+        "t": -1.24,
+        "p": 0.2176
+       },
+       "test": {
+        "n_in": 36,
+        "n_out": 44,
+        "coverage": 0.45,
+        "mean_in": -0.699,
+        "mean_out": 0.132,
+        "diff": -0.831,
+        "t": -1.69,
+        "p": 0.0947
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 116,
+        "n_out": 185,
+        "coverage": 0.385,
+        "mean_in": -0.04,
+        "mean_out": 0.398,
+        "diff": -0.437,
+        "t": -1.24,
+        "p": 0.2176
+       },
+       "test": {
+        "n_in": 36,
+        "n_out": 44,
+        "coverage": 0.45,
+        "mean_in": -0.699,
+        "mean_out": 0.132,
+        "diff": -0.831,
+        "t": -1.69,
+        "p": 0.0947
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": -0.181,
+        "mean_out": 0.358,
+        "diff": -0.539,
+        "t": -1.37,
+        "p": 0.1745
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 62,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": -0.181,
+        "mean_out": 0.358,
+        "diff": -0.539,
+        "t": -1.37,
+        "p": 0.1745
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 62,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 72,
+        "n_out": 229,
+        "coverage": 0.239,
+        "mean_in": -0.181,
+        "mean_out": 0.358,
+        "diff": -0.539,
+        "t": -1.37,
+        "p": 0.1745
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 62,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 34,
+        "n_out": 267,
+        "coverage": 0.113,
+        "mean_in": -0.25,
+        "mean_out": 0.29,
+        "diff": -0.54,
+        "t": -0.97,
+        "p": 0.3359
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 62,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 34,
+        "n_out": 267,
+        "coverage": 0.113,
+        "mean_in": -0.25,
+        "mean_out": 0.29,
+        "diff": -0.54,
+        "t": -0.97,
+        "p": 0.3359
+       },
+       "test": {
+        "n_in": 18,
+        "n_out": 62,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 6,
+        "n_out": 295,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 1,
+        "n_out": 79,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      }
+     ],
+     "grid_drain": [
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 295,
+        "n_out": 6,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 79,
+        "n_out": 1,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 295,
+        "n_out": 6,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 79,
+        "n_out": 1,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.29,
+        "mean_out": -0.25,
+        "diff": 0.54,
+        "t": 0.97,
+        "p": 0.3359
+       },
+       "test": {
+        "n_in": 62,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.29,
+        "mean_out": -0.25,
+        "diff": 0.54,
+        "t": 0.97,
+        "p": 0.3359
+       },
+       "test": {
+        "n_in": 62,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 267,
+        "n_out": 34,
+        "coverage": 0.887,
+        "mean_in": 0.29,
+        "mean_out": -0.25,
+        "diff": 0.54,
+        "t": 0.97,
+        "p": 0.3359
+       },
+       "test": {
+        "n_in": 62,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 229,
+        "n_out": 72,
+        "coverage": 0.761,
+        "mean_in": 0.358,
+        "mean_out": -0.181,
+        "diff": 0.539,
+        "t": 1.37,
+        "p": 0.1745
+       },
+       "test": {
+        "n_in": 62,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 229,
+        "n_out": 72,
+        "coverage": 0.761,
+        "mean_in": 0.358,
+        "mean_out": -0.181,
+        "diff": 0.539,
+        "t": 1.37,
+        "p": 0.1745
+       },
+       "test": {
+        "n_in": 62,
+        "n_out": 18,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": 0.398,
+        "mean_out": -0.04,
+        "diff": 0.437,
+        "t": 1.24,
+        "p": 0.2176
+       },
+       "test": {
+        "n_in": 44,
+        "n_out": 36,
+        "coverage": 0.55,
+        "mean_in": 0.132,
+        "mean_out": -0.699,
+        "diff": 0.831,
+        "t": 1.69,
+        "p": 0.0947
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": 0.398,
+        "mean_out": -0.04,
+        "diff": 0.437,
+        "t": 1.24,
+        "p": 0.2176
+       },
+       "test": {
+        "n_in": 44,
+        "n_out": 36,
+        "coverage": 0.55,
+        "mean_in": 0.132,
+        "mean_out": -0.699,
+        "diff": 0.831,
+        "t": 1.69,
+        "p": 0.0947
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 185,
+        "n_out": 116,
+        "coverage": 0.615,
+        "mean_in": 0.398,
+        "mean_out": -0.04,
+        "diff": 0.437,
+        "t": 1.24,
+        "p": 0.2176
+       },
+       "test": {
+        "n_in": 44,
+        "n_out": 36,
+        "coverage": 0.55,
+        "mean_in": 0.132,
+        "mean_out": -0.699,
+        "diff": 0.831,
+        "t": 1.69,
+        "p": 0.0947
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 132,
+        "n_out": 169,
+        "coverage": 0.439,
+        "mean_in": 0.333,
+        "mean_out": 0.148,
+        "diff": 0.186,
+        "t": 0.54,
+        "p": 0.5877
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 48,
+        "coverage": 0.4,
+        "mean_in": -0.002,
+        "mean_out": -0.403,
+        "diff": 0.401,
+        "t": 0.81,
+        "p": 0.4204
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 132,
+        "n_out": 169,
+        "coverage": 0.439,
+        "mean_in": 0.333,
+        "mean_out": 0.148,
+        "diff": 0.186,
+        "t": 0.54,
+        "p": 0.5877
+       },
+       "test": {
+        "n_in": 32,
+        "n_out": 48,
+        "coverage": 0.4,
+        "mean_in": -0.002,
+        "mean_out": -0.403,
+        "diff": 0.401,
+        "t": 0.81,
+        "p": 0.4204
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.412,
+        "mean_out": 0.135,
+        "diff": 0.276,
+        "t": 0.8,
+        "p": 0.4244
+       },
+       "test": {
+        "n_in": 31,
+        "n_out": 49,
+        "coverage": 0.388,
+        "mean_in": 0.051,
+        "mean_out": -0.428,
+        "diff": 0.48,
+        "t": 0.96,
+        "p": 0.3386
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.412,
+        "mean_out": 0.135,
+        "diff": 0.276,
+        "t": 0.8,
+        "p": 0.4244
+       },
+       "test": {
+        "n_in": 31,
+        "n_out": 49,
+        "coverage": 0.388,
+        "mean_in": 0.051,
+        "mean_out": -0.428,
+        "diff": 0.48,
+        "t": 0.96,
+        "p": 0.3386
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 102,
+        "n_out": 199,
+        "coverage": 0.339,
+        "mean_in": 0.412,
+        "mean_out": 0.135,
+        "diff": 0.276,
+        "t": 0.8,
+        "p": 0.4244
+       },
+       "test": {
+        "n_in": 31,
+        "n_out": 49,
+        "coverage": 0.388,
+        "mean_in": 0.051,
+        "mean_out": -0.428,
+        "diff": 0.48,
+        "t": 0.96,
+        "p": 0.3386
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 69,
+        "n_out": 232,
+        "coverage": 0.229,
+        "mean_in": 0.374,
+        "mean_out": 0.186,
+        "diff": 0.188,
+        "t": 0.48,
+        "p": 0.6312
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 76,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 69,
+        "n_out": 232,
+        "coverage": 0.229,
+        "mean_in": 0.374,
+        "mean_out": 0.186,
+        "diff": 0.188,
+        "t": 0.48,
+        "p": 0.6312
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 76,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.709,
+        "mean_out": 0.147,
+        "diff": 0.562,
+        "t": 1.21,
+        "p": 0.2296
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 76,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.709,
+        "mean_out": 0.147,
+        "diff": 0.562,
+        "t": 1.21,
+        "p": 0.2296
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 76,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 44,
+        "n_out": 257,
+        "coverage": 0.146,
+        "mean_in": 0.709,
+        "mean_out": 0.147,
+        "diff": 0.562,
+        "t": 1.21,
+        "p": 0.2296
+       },
+       "test": {
+        "n_in": 4,
+        "n_out": 76,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 20,
+        "n_out": 281,
+        "coverage": 0.066,
+        "mean_in": 0.356,
+        "mean_out": 0.22,
+        "diff": 0.136,
+        "t": 0.23,
+        "p": 0.8172
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 20,
+        "n_out": 281,
+        "coverage": 0.066,
+        "mean_in": 0.356,
+        "mean_out": 0.22,
+        "diff": 0.136,
+        "t": 0.23,
+        "p": 0.8172
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 10,
+        "n_out": 291,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      }
+     ]
+    }
+   },
+   "stress_secondary": {
+    "rho": 0.05738677507803227,
+    "p": 0.2748312519376379,
+    "n": 364
+   }
+  },
+  "fiscal": {
+   "n": 385,
+   "walk_forward": {
+    "5": [
+     {
+      "years": "2019\u20132020",
+      "n": 101,
+      "rho": -0.11,
+      "p": 0.272
+     },
+     {
+      "years": "2021\u20132022",
+      "n": 100,
+      "rho": 0.011,
+      "p": 0.914
+     },
+     {
+      "years": "2023\u20132024",
+      "n": 100,
+      "rho": 0.105,
+      "p": 0.299
+     },
+     {
+      "years": "2025\u20132026",
+      "n": 83,
+      "rho": -0.068,
+      "p": 0.541
+     }
+    ],
+    "10": [
+     {
+      "years": "2019\u20132020",
+      "n": 101,
+      "rho": -0.165,
+      "p": 0.1
+     },
+     {
+      "years": "2021\u20132022",
+      "n": 100,
+      "rho": 0.054,
+      "p": 0.594
+     },
+     {
+      "years": "2023\u20132024",
+      "n": 100,
+      "rho": 0.037,
+      "p": 0.713
+     },
+     {
+      "years": "2025\u20132026",
+      "n": 82,
+      "rho": -0.023,
+      "p": 0.838
+     }
+    ],
+    "20": [
+     {
+      "years": "2019\u20132020",
+      "n": 101,
+      "rho": -0.276,
+      "p": 0.005
+     },
+     {
+      "years": "2021\u20132022",
+      "n": 100,
+      "rho": 0.024,
+      "p": 0.81
+     },
+     {
+      "years": "2023\u20132024",
+      "n": 100,
+      "rho": 0.047,
+      "p": 0.644
+     },
+     {
+      "years": "2025\u20132026",
+      "n": 80,
+      "rho": 0.078,
+      "p": 0.491
+     }
+    ]
+   },
+   "thresholds": {
+    "5": {
+     "injection": null,
+     "drain": null,
+     "grid_injection": [
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.058,
+        "mean_out": 0.028,
+        "diff": 0.03,
+        "t": 0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 57,
+        "n_out": 26,
+        "coverage": 0.687,
+        "mean_in": -0.171,
+        "mean_out": 0.196,
+        "diff": -0.367,
+        "t": -1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.058,
+        "mean_out": 0.028,
+        "diff": 0.03,
+        "t": 0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 57,
+        "n_out": 26,
+        "coverage": 0.687,
+        "mean_in": -0.171,
+        "mean_out": 0.196,
+        "diff": -0.367,
+        "t": -1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.058,
+        "mean_out": 0.028,
+        "diff": 0.03,
+        "t": 0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 57,
+        "n_out": 26,
+        "coverage": 0.687,
+        "mean_in": -0.171,
+        "mean_out": 0.196,
+        "diff": -0.367,
+        "t": -1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.058,
+        "mean_out": 0.028,
+        "diff": 0.03,
+        "t": 0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 57,
+        "n_out": 26,
+        "coverage": 0.687,
+        "mean_in": -0.171,
+        "mean_out": 0.196,
+        "diff": -0.367,
+        "t": -1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.058,
+        "mean_out": 0.028,
+        "diff": 0.03,
+        "t": 0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 57,
+        "n_out": 26,
+        "coverage": 0.687,
+        "mean_in": -0.171,
+        "mean_out": 0.196,
+        "diff": -0.367,
+        "t": -1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.04,
+        "mean_out": 0.112,
+        "diff": -0.152,
+        "t": -0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 69,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.04,
+        "mean_out": 0.112,
+        "diff": -0.152,
+        "t": -0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 69,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.04,
+        "mean_out": 0.112,
+        "diff": -0.152,
+        "t": -0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 69,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.04,
+        "mean_out": 0.112,
+        "diff": -0.152,
+        "t": -0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 69,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.04,
+        "mean_out": 0.112,
+        "diff": -0.152,
+        "t": -0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 69,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      }
+     ],
+     "grid_drain": [
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 83,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.112,
+        "mean_out": -0.04,
+        "diff": 0.152,
+        "t": 0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 69,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.112,
+        "mean_out": -0.04,
+        "diff": 0.152,
+        "t": 0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 69,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.112,
+        "mean_out": -0.04,
+        "diff": 0.152,
+        "t": 0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 69,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.112,
+        "mean_out": -0.04,
+        "diff": 0.152,
+        "t": 0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 69,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.112,
+        "mean_out": -0.04,
+        "diff": 0.152,
+        "t": 0.85,
+        "p": 0.397
+       },
+       "test": {
+        "n_in": 69,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.028,
+        "mean_out": 0.058,
+        "diff": -0.03,
+        "t": -0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 57,
+        "coverage": 0.313,
+        "mean_in": 0.196,
+        "mean_out": -0.171,
+        "diff": 0.367,
+        "t": 1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.028,
+        "mean_out": 0.058,
+        "diff": -0.03,
+        "t": -0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 57,
+        "coverage": 0.313,
+        "mean_in": 0.196,
+        "mean_out": -0.171,
+        "diff": 0.367,
+        "t": 1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.028,
+        "mean_out": 0.058,
+        "diff": -0.03,
+        "t": -0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 57,
+        "coverage": 0.313,
+        "mean_in": 0.196,
+        "mean_out": -0.171,
+        "diff": 0.367,
+        "t": 1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.028,
+        "mean_out": 0.058,
+        "diff": -0.03,
+        "t": -0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 57,
+        "coverage": 0.313,
+        "mean_in": 0.196,
+        "mean_out": -0.171,
+        "diff": 0.367,
+        "t": 1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.028,
+        "mean_out": 0.058,
+        "diff": -0.03,
+        "t": -0.13,
+        "p": 0.8979
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 57,
+        "coverage": 0.313,
+        "mean_in": 0.196,
+        "mean_out": -0.171,
+        "diff": 0.367,
+        "t": 1.19,
+        "p": 0.2384
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 83,
+        "t": null,
+        "diff": null
+       }
+      }
+     ]
+    },
+    "10": {
+     "injection": null,
+     "drain": null,
+     "grid_injection": [
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.13,
+        "mean_out": 0.084,
+        "diff": 0.046,
+        "t": 0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 56,
+        "n_out": 26,
+        "coverage": 0.683,
+        "mean_in": -0.353,
+        "mean_out": 0.343,
+        "diff": -0.696,
+        "t": -1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.13,
+        "mean_out": 0.084,
+        "diff": 0.046,
+        "t": 0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 56,
+        "n_out": 26,
+        "coverage": 0.683,
+        "mean_in": -0.353,
+        "mean_out": 0.343,
+        "diff": -0.696,
+        "t": -1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.13,
+        "mean_out": 0.084,
+        "diff": 0.046,
+        "t": 0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 56,
+        "n_out": 26,
+        "coverage": 0.683,
+        "mean_in": -0.353,
+        "mean_out": 0.343,
+        "diff": -0.696,
+        "t": -1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.13,
+        "mean_out": 0.084,
+        "diff": 0.046,
+        "t": 0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 56,
+        "n_out": 26,
+        "coverage": 0.683,
+        "mean_in": -0.353,
+        "mean_out": 0.343,
+        "diff": -0.696,
+        "t": -1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.13,
+        "mean_out": 0.084,
+        "diff": 0.046,
+        "t": 0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 56,
+        "n_out": 26,
+        "coverage": 0.683,
+        "mean_in": -0.353,
+        "mean_out": 0.343,
+        "diff": -0.696,
+        "t": -1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.118,
+        "mean_out": 0.279,
+        "diff": -0.397,
+        "t": -1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 68,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.118,
+        "mean_out": 0.279,
+        "diff": -0.397,
+        "t": -1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 68,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.118,
+        "mean_out": 0.279,
+        "diff": -0.397,
+        "t": -1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 68,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.118,
+        "mean_out": 0.279,
+        "diff": -0.397,
+        "t": -1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 68,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.118,
+        "mean_out": 0.279,
+        "diff": -0.397,
+        "t": -1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 68,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      }
+     ],
+     "grid_drain": [
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 82,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.279,
+        "mean_out": -0.118,
+        "diff": 0.397,
+        "t": 1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 68,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.279,
+        "mean_out": -0.118,
+        "diff": 0.397,
+        "t": 1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 68,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.279,
+        "mean_out": -0.118,
+        "diff": 0.397,
+        "t": 1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 68,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.279,
+        "mean_out": -0.118,
+        "diff": 0.397,
+        "t": 1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 68,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.279,
+        "mean_out": -0.118,
+        "diff": 0.397,
+        "t": 1.64,
+        "p": 0.1024
+       },
+       "test": {
+        "n_in": 68,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.084,
+        "mean_out": 0.13,
+        "diff": -0.046,
+        "t": -0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 56,
+        "coverage": 0.317,
+        "mean_in": 0.343,
+        "mean_out": -0.353,
+        "diff": 0.696,
+        "t": 1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.084,
+        "mean_out": 0.13,
+        "diff": -0.046,
+        "t": -0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 56,
+        "coverage": 0.317,
+        "mean_in": 0.343,
+        "mean_out": -0.353,
+        "diff": 0.696,
+        "t": 1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.084,
+        "mean_out": 0.13,
+        "diff": -0.046,
+        "t": -0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 56,
+        "coverage": 0.317,
+        "mean_in": 0.343,
+        "mean_out": -0.353,
+        "diff": 0.696,
+        "t": 1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.084,
+        "mean_out": 0.13,
+        "diff": -0.046,
+        "t": -0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 56,
+        "coverage": 0.317,
+        "mean_in": 0.343,
+        "mean_out": -0.353,
+        "diff": 0.696,
+        "t": 1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.084,
+        "mean_out": 0.13,
+        "diff": -0.046,
+        "t": -0.15,
+        "p": 0.8775
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 56,
+        "coverage": 0.317,
+        "mean_in": 0.343,
+        "mean_out": -0.353,
+        "diff": 0.696,
+        "t": 1.84,
+        "p": 0.0715
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 82,
+        "t": null,
+        "diff": null
+       }
+      }
+     ]
+    },
+    "20": {
+     "injection": null,
+     "drain": null,
+     "grid_injection": [
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.203,
+        "mean_out": 0.305,
+        "diff": -0.103,
+        "t": -0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 54,
+        "n_out": 26,
+        "coverage": 0.675,
+        "mean_in": -0.439,
+        "mean_out": 0.166,
+        "diff": -0.605,
+        "t": -1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.203,
+        "mean_out": 0.305,
+        "diff": -0.103,
+        "t": -0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 54,
+        "n_out": 26,
+        "coverage": 0.675,
+        "mean_in": -0.439,
+        "mean_out": 0.166,
+        "diff": -0.605,
+        "t": -1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.203,
+        "mean_out": 0.305,
+        "diff": -0.103,
+        "t": -0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 54,
+        "n_out": 26,
+        "coverage": 0.675,
+        "mean_in": -0.439,
+        "mean_out": 0.166,
+        "diff": -0.605,
+        "t": -1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.203,
+        "mean_out": 0.305,
+        "diff": -0.103,
+        "t": -0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 54,
+        "n_out": 26,
+        "coverage": 0.675,
+        "mean_in": -0.439,
+        "mean_out": 0.166,
+        "diff": -0.605,
+        "t": -1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 223,
+        "n_out": 78,
+        "coverage": 0.741,
+        "mean_in": 0.203,
+        "mean_out": 0.305,
+        "diff": -0.103,
+        "t": -0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 54,
+        "n_out": 26,
+        "coverage": 0.675,
+        "mean_in": -0.439,
+        "mean_out": 0.166,
+        "diff": -0.605,
+        "t": -1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.076,
+        "mean_out": 0.437,
+        "diff": -0.513,
+        "t": -1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 66,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.076,
+        "mean_out": 0.437,
+        "diff": -0.513,
+        "t": -1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 66,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.076,
+        "mean_out": 0.437,
+        "diff": -0.513,
+        "t": -1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 66,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.076,
+        "mean_out": 0.437,
+        "diff": -0.513,
+        "t": -1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 66,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 122,
+        "n_out": 179,
+        "coverage": 0.405,
+        "mean_in": -0.076,
+        "mean_out": 0.437,
+        "diff": -0.513,
+        "t": -1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 14,
+        "n_out": 66,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      }
+     ],
+     "grid_drain": [
+      {
+       "cut": 1.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.4,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.3,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.2,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.1,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 1.0,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.9,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.8,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.7,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.6,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.5,
+       "train": {
+        "n_in": 301,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 80,
+        "n_out": 0,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.4,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.437,
+        "mean_out": -0.076,
+        "diff": 0.513,
+        "t": 1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 66,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.3,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.437,
+        "mean_out": -0.076,
+        "diff": 0.513,
+        "t": 1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 66,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.2,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.437,
+        "mean_out": -0.076,
+        "diff": 0.513,
+        "t": 1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 66,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.1,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.437,
+        "mean_out": -0.076,
+        "diff": 0.513,
+        "t": 1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 66,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": 0.0,
+       "train": {
+        "n_in": 179,
+        "n_out": 122,
+        "coverage": 0.595,
+        "mean_in": 0.437,
+        "mean_out": -0.076,
+        "diff": 0.513,
+        "t": 1.45,
+        "p": 0.1479
+       },
+       "test": {
+        "n_in": 66,
+        "n_out": 14,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.1,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.305,
+        "mean_out": 0.203,
+        "diff": 0.103,
+        "t": 0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 54,
+        "coverage": 0.325,
+        "mean_in": 0.166,
+        "mean_out": -0.439,
+        "diff": 0.605,
+        "t": 1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.2,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.305,
+        "mean_out": 0.203,
+        "diff": 0.103,
+        "t": 0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 54,
+        "coverage": 0.325,
+        "mean_in": 0.166,
+        "mean_out": -0.439,
+        "diff": 0.605,
+        "t": 1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.3,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.305,
+        "mean_out": 0.203,
+        "diff": 0.103,
+        "t": 0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 54,
+        "coverage": 0.325,
+        "mean_in": 0.166,
+        "mean_out": -0.439,
+        "diff": 0.605,
+        "t": 1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.4,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.305,
+        "mean_out": 0.203,
+        "diff": 0.103,
+        "t": 0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 54,
+        "coverage": 0.325,
+        "mean_in": 0.166,
+        "mean_out": -0.439,
+        "diff": 0.605,
+        "t": 1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.5,
+       "train": {
+        "n_in": 78,
+        "n_out": 223,
+        "coverage": 0.259,
+        "mean_in": 0.305,
+        "mean_out": 0.203,
+        "diff": 0.103,
+        "t": 0.26,
+        "p": 0.7958
+       },
+       "test": {
+        "n_in": 26,
+        "n_out": 54,
+        "coverage": 0.325,
+        "mean_in": 0.166,
+        "mean_out": -0.439,
+        "diff": 0.605,
+        "t": 1.13,
+        "p": 0.264
+       }
+      },
+      {
+       "cut": -0.6,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.7,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.8,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -0.9,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.0,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.1,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.2,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.3,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.4,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      },
+      {
+       "cut": -1.5,
+       "train": {
+        "n_in": 0,
+        "n_out": 301,
+        "t": null,
+        "diff": null
+       },
+       "test": {
+        "n_in": 0,
+        "n_out": 80,
+        "t": null,
+        "diff": null
+       }
+      }
+     ]
+    }
+   },
+   "stress_secondary": {
+    "rho": 0.05092954216102891,
+    "p": 0.33256484488585375,
+    "n": 364
+   }
+  }
+ },
+ "horizons": {
+  "5": {
+   "cb": {
+    "rho": 0.05812545750136817,
+    "p": 0.2558438859912385,
+    "n": 384
+   },
+   "fi": {
+    "rho": -0.01903744672950664,
+    "p": 0.709986850388681,
+    "n": 384
+   }
+  },
+  "10": {
+   "cb": {
+    "rho": 0.01819035636637176,
+    "p": 0.7226959356027789,
+    "n": 383
+   },
+   "fi": {
+    "rho": -0.024607974932695887,
+    "p": 0.6311661403060673,
+    "n": 383
+   }
+  },
+  "20": {
+   "cb": {
+    "rho": -0.0585329451665108,
+    "p": 0.2543942909612998,
+    "n": 381
+   },
+   "fi": {
+    "rho": -0.04070874597116784,
+    "p": 0.4281737626253171,
+    "n": 381
+   }
+  }
+ },
+ "dual": {
+  "5": {
+   "beta_cb": 0.0352,
+   "beta_fi": -0.0398,
+   "t_cb": 0.39,
+   "t_fi": -0.44,
+   "n_train": 301,
+   "n_test": 83,
+   "status": "neither block significant in the training window \u2014 keep the agreement rule, no dual weights"
+  },
+  "10": {
+   "beta_cb": 0.0033,
+   "beta_fi": -0.1084,
+   "t_cb": 0.03,
+   "t_fi": -0.89,
+   "n_train": 301,
+   "n_test": 82,
+   "status": "neither block significant in the training window \u2014 keep the agreement rule, no dual weights"
+  },
+  "20": {
+   "beta_cb": -0.192,
+   "beta_fi": -0.1709,
+   "t_cb": -1.11,
+   "t_fi": -0.99,
+   "n_train": 301,
+   "n_test": 80,
+   "status": "neither block significant in the training window \u2014 keep the agreement rule, no dual weights"
+  }
+ },
+ "post_break": {
+  "since": "2022-07-01",
+  "weeks": 210,
+  "horizons": {
+   "5": {
+    "cb": {
+     "rho": 0.028722121769694693,
+     "p": 0.6797342555312402,
+     "n": 209
+    },
+    "fi": {
+     "rho": 0.03034374161672942,
+     "p": 0.6627322981586982,
+     "n": 209
+    }
+   },
+   "10": {
+    "cb": {
+     "rho": -0.013127986425429675,
+     "p": 0.8507185895788245,
+     "n": 208
+    },
+    "fi": {
+     "rho": 0.04012707270470905,
+     "p": 0.564976737119263,
+     "n": 208
+    }
+   },
+   "20": {
+    "cb": {
+     "rho": -0.08155433143376317,
+     "p": 0.24387956849490897,
+     "n": 206
+    },
+    "fi": {
+     "rho": 0.04683624455828891,
+     "p": 0.5038125154407868,
+     "n": 206
+    }
+   }
+  }
+ },
+ "auctions": {
+  "tbills": {
+   "n": 4138,
+   "first": "1993-03-09",
+   "last": "2026-09-08",
+   "coverage": {
+    "p5": 1.25,
+    "p10": 1.6,
+    "p25": 2.267,
+    "median": 3.2,
+    "p75": 4.2,
+    "p90": 5.026,
+    "recent_3y": {
+     "n": 438,
+     "p10": 1.3,
+     "median": 2.75
+    }
+   },
+   "tail_bps": {
+    "p50": 0.8,
+    "p75": 1.5,
+    "p90": 2.75,
+    "p95": 3.988
+   },
+   "weak_vs_rest_fwd5": {
+    "n_in": 181,
+    "n_out": 817,
+    "coverage": 0.181,
+    "mean_in": 0.276,
+    "mean_out": 0.023,
+    "diff": 0.253,
+    "t": 2.24,
+    "p": 0.0261
+   },
+   "strong_vs_rest_fwd5": {
+    "n_in": 23,
+    "n_out": 975,
+    "coverage": 0.023,
+    "mean_in": -0.401,
+    "mean_out": 0.08,
+    "diff": -0.481,
+    "t": -2.57,
+    "p": 0.0167
+   },
+   "weak_vs_rest_fwd20": {
+    "n_in": 180,
+    "n_out": 809,
+    "coverage": 0.182,
+    "mean_in": 0.509,
+    "mean_out": 0.017,
+    "diff": 0.492,
+    "t": 2.15,
+    "p": 0.0326
+   },
+   "strong_vs_rest_fwd20": {
+    "n_in": 23,
+    "n_out": 966,
+    "coverage": 0.023,
+    "mean_in": -0.266,
+    "mean_out": 0.115,
+    "diff": -0.381,
+    "t": -1.15,
+    "p": 0.2597
+   },
+   "coverage_vs_fwd20": {
+    "rho": -0.028623975351055927,
+    "p": 0.3685337692707176,
+    "n": 989
+   }
+  },
+  "nzgb_nominal": {
+   "n": 2035,
+   "first": "1983-09-08",
+   "last": "2026-09-03",
+   "coverage": {
+    "p5": 1.299,
+    "p10": 1.589,
+    "p25": 2.16,
+    "median": 2.916,
+    "p75": 3.804,
+    "p90": 4.84,
+    "recent_3y": {
+     "n": 364,
+     "p10": 1.857,
+     "median": 3.33
+    }
+   },
+   "tail_bps": {
+    "p50": 0.85,
+    "p75": 1.54,
+    "p90": 2.976,
+    "p95": 5.124
+   },
+   "weak_vs_rest_fwd5": {
+    "n_in": 52,
+    "n_out": 821,
+    "coverage": 0.06,
+    "mean_in": 0.043,
+    "mean_out": 0.068,
+    "diff": -0.026,
+    "t": -0.12,
+    "p": 0.9038
+   },
+   "strong_vs_rest_fwd5": {
+    "n_in": 59,
+    "n_out": 814,
+    "coverage": 0.068,
+    "mean_in": 0.056,
+    "mean_out": 0.067,
+    "diff": -0.011,
+    "t": -0.06,
+    "p": 0.9512
+   },
+   "weak_vs_rest_fwd20": {
+    "n_in": 52,
+    "n_out": 814,
+    "coverage": 0.06,
+    "mean_in": 0.494,
+    "mean_out": 0.013,
+    "diff": 0.481,
+    "t": 1.09,
+    "p": 0.2785
+   },
+   "strong_vs_rest_fwd20": {
+    "n_in": 58,
+    "n_out": 808,
+    "coverage": 0.067,
+    "mean_in": -0.383,
+    "mean_out": 0.072,
+    "diff": -0.455,
+    "t": -1.24,
+    "p": 0.2178
+   },
+   "coverage_vs_fwd20": {
+    "rho": -0.07866011791251616,
+    "p": 0.020610482173446507,
+    "n": 866
+   }
+  }
+ },
+ "ab": {
+  "era_start": "2022-07-01",
+  "weeks": 210,
+  "percentile_convention": "numpy.percentile default = linear interpolation between order statistics (on a discrete score the p80 can fall between two attainable values; the nearest attainable value is reported alongside)",
+  "final_cuts": {
+   "central_bank": {
+    "injection_enter": 0.75,
+    "injection_exit": 0.25,
+    "drain_enter": -0.5,
+    "drain_exit": -0.25,
+    "rule": "natural gaps of the discrete score (INJ 20 %, DRAIN 35 % of the LSAP-unwind era)"
+   },
+   "fiscal": {
+    "injection_enter": 0.5,
+    "injection_exit": 0.5,
+    "drain_enter": -0.5,
+    "drain_exit": -0.5,
+    "rule": "ternary band by design (\u00b10.5)"
+   }
+  },
+  "A_frequency": {
+   "central_bank": {
+    "n": 210,
+    "p10": -1.0,
+    "p20": -0.5,
+    "p33": -0.5,
+    "p50": 0.0,
+    "p67": 0.25,
+    "p80": 0.35,
+    "p90": 0.75,
+    "attainable_values": [
+     -1.5,
+     -1.0,
+     -0.5,
+     -0.25,
+     0.0,
+     0.25,
+     0.75,
+     1.0
+    ],
+    "p80_nearest_attainable": 0.25,
+    "p20_nearest_attainable": -0.5,
+    "share_drain_at_minus_0_5": 0.35,
+    "share_inj_at_plus_0_5": 0.2,
+    "proposal_auto": {
+     "injection_enter": 0.35,
+     "injection_exit": 0.25,
+     "drain_enter": -0.5,
+     "drain_exit": -0.5,
+     "rule": "automatic p80/p20, exit p67/p33 \u2014 NOT the desk cut"
+    },
+    "by_year": {
+     "2022": {
+      "n": 26,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.25,
+      "share_drain_p20": 0.23,
+      "share_inj_p80": 0.15
+     },
+     "2023": {
+      "n": 50,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.35,
+      "share_drain_p20": 0.3,
+      "share_inj_p80": 0.2
+     },
+     "2024": {
+      "n": 50,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.35,
+      "share_drain_p20": 0.38,
+      "share_inj_p80": 0.2
+     },
+     "2025": {
+      "n": 50,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.75,
+      "share_drain_p20": 0.36,
+      "share_inj_p80": 0.22
+     },
+     "2026": {
+      "n": 34,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.45,
+      "share_drain_p20": 0.44,
+      "share_inj_p80": 0.21
+     }
+    },
+    "final_cut": {
+     "injection_enter": 0.75,
+     "injection_exit": 0.25,
+     "drain_enter": -0.5,
+     "drain_exit": -0.25,
+     "rule": "natural gaps of the discrete score (INJ 20 %, DRAIN 35 % of the LSAP-unwind era)",
+     "share_injection": 0.2,
+     "share_drain": 0.35
+    }
+   },
+   "fiscal": {
+    "n": 210,
+    "p10": -0.5,
+    "p20": -0.5,
+    "p33": 0.0,
+    "p50": 0.0,
+    "p67": 0.0,
+    "p80": 0.5,
+    "p90": 0.5,
+    "attainable_values": [
+     -0.5,
+     0.0,
+     0.5
+    ],
+    "p80_nearest_attainable": 0.5,
+    "p20_nearest_attainable": -0.5,
+    "share_drain_at_minus_0_5": 0.32,
+    "share_inj_at_plus_0_5": 0.23,
+    "proposal_auto": {
+     "injection_enter": 0.5,
+     "injection_exit": 0.0,
+     "drain_enter": -0.5,
+     "drain_exit": 0.0,
+     "rule": "automatic p80/p20, exit p67/p33 \u2014 NOT the desk cut"
+    },
+    "by_year": {
+     "2022": {
+      "n": 26,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.5,
+      "share_drain_p20": 0.31,
+      "share_inj_p80": 0.42
+     },
+     "2023": {
+      "n": 50,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.5,
+      "share_drain_p20": 0.28,
+      "share_inj_p80": 0.26
+     },
+     "2024": {
+      "n": 50,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.1,
+      "share_drain_p20": 0.38,
+      "share_inj_p80": 0.2
+     },
+     "2025": {
+      "n": 50,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.0,
+      "share_drain_p20": 0.22,
+      "share_inj_p80": 0.16
+     },
+     "2026": {
+      "n": 34,
+      "p20": -0.5,
+      "p50": 0.0,
+      "p80": 0.2,
+      "share_drain_p20": 0.44,
+      "share_inj_p80": 0.21
+     }
+    },
+    "final_cut": {
+     "injection_enter": 0.5,
+     "injection_exit": 0.5,
+     "drain_enter": -0.5,
+     "drain_exit": -0.5,
+     "rule": "ternary band by design (\u00b10.5)",
+     "share_injection": 0.23,
+     "share_drain": 0.32
+    }
+   }
+  },
+  "B_funding": {
+   "central_bank": {
+    "4": {
+     "rho": 0.07,
+     "p": 0.3176,
+     "n": 206,
+     "split": "2025-04-16",
+     "p_block_bootstrap": 0.3668,
+     "grid_tests": 62,
+     "injection": null,
+     "drain": null
+    },
+    "12": {
+     "rho": 0.058,
+     "p": 0.4134,
+     "n": 198,
+     "split": "2025-04-16",
+     "p_block_bootstrap": 0.4443,
+     "grid_tests": 62,
+     "injection": null,
+     "drain": null
+    }
+   },
+   "fiscal": {
+    "4": {
+     "rho": 0.098,
+     "p": 0.1625,
+     "n": 206,
+     "split": "2025-04-16",
+     "p_block_bootstrap": 0.2454,
+     "grid_tests": 62,
+     "injection": null,
+     "drain": null
+    },
+    "12": {
+     "rho": -0.024,
+     "p": 0.7359,
+     "n": 198,
+     "split": "2025-04-16",
+     "p_block_bootstrap": 0.8041,
+     "grid_tests": 62,
+     "injection": null,
+     "drain": null
+    }
+   }
+  }
+ }
+}

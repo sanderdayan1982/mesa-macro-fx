@@ -177,7 +177,10 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     D: Dict[str, dict] = {}
     ri = [(d, -v) for d, v in S.diff_series(cb)]
     D["reserve_impact_daily"] = entry("reserve_impact_daily", ri, "Reserve impact = −Δ RG balance at BoC", "daily", unit, cfg, usd_analog="−ΔTGA", status="proxy" if ri else "unavailable")
-    tot = S.add_series(cb, td) if td else cb
+    # term deposits: an empty cell in the RG file = no term deposits outstanding (Sep-2020 → Feb-2024 has none) → 0, never a hole
+    # (calibration replay 2026-09-09 found the common-date sum froze the fiscal flow for 3.5 years)
+    tdm = {d: v for d, v in td}
+    tot = [(d, v + tdm.get(d, 0.0)) for d, v in cb]
     ff = [(d, -v) for d, v in S.diff_series(tot)]
     D["fiscal_flow_proxy_daily"] = entry("fiscal_flow_proxy_daily", ff, "Fiscal flow proxy = −Δ(BoC balance + term deposits)", "daily", unit, cfg, usd_analog="Net Treasury Flow (Mosler)", status="proxy" if ff else "unavailable",
                                          equivalence_note="positive = net injection of NFA proxy; excludes BoC↔bank cash transfers")
