@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.1.1",
- "generated_at": "2026-09-09T23:24:55+00:00",
+ "generated_at": "2026-09-09T23:49:00+00:00",
  "as_of": "2026-09-08",
  "equivalence_quality": "high",
  "equivalence_note": "DTS via Fiscal Data API, ~16:00 ET (22:00 WAT), record_date = previous business day. Views Daily / MTD / FYTD kept as fields on every line item. Net Treasury Flow (MMT sign) = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues): + = net fiscal injection (NFA creation), − = drain. Reserve impact ≠ NFA: −ΔTGA.",
@@ -2867,7 +2867,7 @@
    "change_abs": 6101.0,
    "change_pct": 40.6598,
    "zscore": -0.2363,
-   "percentile": 35.6,
+   "percentile": 33.33,
    "window": "250d",
    "level": "SAFE",
    "sparkline": [
@@ -2936,11 +2936,11 @@
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 39425.9,
-     "STRESS": 63616.61
+     "WATCH": 41784.0,
+     "STRESS": 55135.8
     },
     "window": "250d",
-    "n": 250,
+    "n": 81,
     "era_anchor": "2022-06-01",
     "era_thin": false
    }
@@ -3614,7 +3614,7 @@
    "prev_date": "2026-09-04",
    "change_abs": -3474.0,
    "change_pct": -1.1037,
-   "zscore": 1.133,
+   "zscore": 1.2834,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -3695,39 +3695,11 @@
    "prev_date": "2026-09-04",
    "change_abs": 11593.0,
    "change_pct": 1.8011,
-   "zscore": 1.6768,
+   "zscore": 1.1577,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -12763.0,
-    2139.0,
-    -4959.0,
-    119238.0,
-    150969.0,
-    113170.0,
-    106256.0,
-    137302.0,
-    229500.0,
-    303344.0,
-    405993.0,
-    459404.0,
-    505257.0,
-    579557.0,
-    596227.0,
-    579409.0,
-    561245.0,
-    574477.0,
-    642417.0,
-    647658.0,
-    648106.0,
-    607552.0,
-    502623.0,
-    520871.0,
-    525218.0,
-    658533.0,
-    644164.0,
-    645641.0,
     657364.0,
     651698.0,
     618298.0,
@@ -3756,8 +3728,8 @@
    "high_low": {
     "high": 665866.0,
     "high_date": "2026-08-19",
-    "low": -12763.0,
-    "low_date": "2026-06-26"
+    "low": 502906.0,
+    "low_date": "2026-08-25"
    },
    "age_days": 1,
    "confidence": 100,
@@ -3765,28 +3737,28 @@
   },
   "ntf_fytd_vs_prior_fy": {
    "label": "NTF fiscal-year-to-date vs same point of the prior fiscal year",
-   "value": 4.08,
+   "value": null,
    "unit": "%",
-   "status": "fresh",
+   "status": "unavailable",
    "date": "2026-09-08",
-   "prior_fytd": 1696182.0,
+   "prior_fytd": null,
    "current_fytd": 1765373.0,
    "note": "DTS cumulative fields; +% = the deficit runs above last year's pace"
   },
   "fiscal_impulse": {
    "label": "Fiscal impulse score = 50% structural (NTF 60d sign × pace) + 50% daily surprise (Z 30d + 7d sign)",
-   "value": 0.78,
+   "value": 0.65,
    "unit": "score",
    "status": "fresh",
    "date": "2026-09-08",
-   "structural": 1.84,
+   "structural": 1.58,
    "surprise": -0.29,
    "inputs": {
     "ntf_20d": 311283.0,
-    "z20_vs_250": 1.133,
+    "z20_vs_250": 1.2834,
     "ntf_60d": 655239.0,
-    "z60_vs_250": 1.6768,
-    "fytd_vs_prior_pct": 4.08
+    "z60_vs_250": 1.1577,
+    "fytd_vs_prior_pct": null
    }
   },
   "fiscal_regime": {
@@ -3803,7 +3775,7 @@
  },
  "signals": {
   "traffic_light": "GREEN",
-  "score": 0.78,
+  "score": 0.65,
   "label": "INJECTION",
   "flags": [
    "STRUCTURAL_DEFICIT_INJECTION"
@@ -3815,7 +3787,7 @@
     "daily_surprise": -0.29
    },
    "level": {
-    "structural_ntf_60d": 1.84
+    "structural_ntf_60d": 1.58
    },
    "weights": {
     "structural_ntf_60d": 0.5,
@@ -3825,10 +3797,10 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.78,
+   "score_v02": 0.65,
    "score_flows_only": -0.14
   },
-  "detail": "NTF -17118.0 (notable drain) · Z -1.0536 · 7d 134312.0 · 60d 655239.0 (Z250 1.6768) · FYTD 1765373.0 vs prior FY 4.08% · structural 1.84 · surprise -0.29 · TGA close 880019.0 · −ΔTGA 8904.0",
+  "detail": "NTF -17118.0 (notable drain) · Z -1.0536 · 7d 134312.0 · 60d 655239.0 (Z250 1.1577) · FYTD 1765373.0 vs prior FY None% · structural 1.58 · surprise -0.29 · TGA close 880019.0 · −ΔTGA 8904.0",
   "alerts": [
    {
     "metric": "net_treasury_flow",
@@ -3857,8 +3829,8 @@
     "level": "SAFE",
     "value": -8904.0,
     "threshold": {
-     "WATCH": 39425.9,
-     "STRESS": 63616.61
+     "WATCH": 41784.0,
+     "STRESS": 55135.8
     },
     "status": "fresh",
     "action_hint": "large TGA build = reserve drain day"
@@ -4488,12 +4460,12 @@
     -17118.0
    ],
    "ntf_z": [
-    -2.7844,
-    -0.8907,
-    0.4967,
-    0.0359,
-    -0.6405,
-    -0.3577,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
     0.4836,
     0.2192,
     -0.1332,
@@ -4550,12 +4522,12 @@
     -1.0536
    ],
    "ntf_mean": [
-    6814.1,
-    6793.9,
-    7449.9,
-    7795.1,
-    6906.0,
-    6581.0,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
     7950.0,
     7980.9,
     6825.8,
@@ -4612,12 +4584,12 @@
     14992.6
    ],
    "ntf_sd": [
-    33863.2,
-    33881.0,
-    34023.8,
-    33985.4,
-    34220.7,
-    34292.4,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
     34159.1,
     34165.5,
     33748.7,
