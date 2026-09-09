@@ -1,0 +1,198 @@
+{
+ "currency": "EUR",
+ "generated_at": "2026-09-09T03:04:14+00:00",
+ "as_of": "2026-09-07",
+ "config_version": "0.2.1",
+ "regime": "NEUTRAL",
+ "traffic_light": "YELLOW",
+ "weighted_score": 0.397,
+ "block_scores": {
+  "central_bank": 0.4,
+  "rates": 0.2,
+  "fiscal": 0.18,
+  "banking": 1.0
+ },
+ "weights": {
+  "central_bank": 0.4,
+  "rates": 0.3,
+  "fiscal": 0.15,
+  "banking": 0.15
+ },
+ "blocks_used": 4,
+ "regimes": {
+  "central_bank": {
+   "regime": "NEUTRAL",
+   "score": 0.4,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-09-07",
+   "detail": "excess liquidity 2159791.0 M (SAFE) · Δ5s 17626.0 (p91.62) · TOMO 28171.0 M (ROUTINE) · MLF 5.0 M · €STR−DFR -6.2 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED"
+  },
+  "fiscal": {
+   "regime": "NEUTRAL",
+   "score": 0.18,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-09-08",
+   "detail": "govt deposits 89275.0 M (Δw -2222.0, p48.57) · impulse 4w 1955.0 (p37.5) · 13w 1844.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.938 (NORMAL, avg26 1.78) · TARGET Δ3m -36661.8 · rule NEUTRAL"
+  },
+  "general": {
+   "regime": "NEUTRAL",
+   "score": 0.334,
+   "rule": "partial (NEUTRAL vs NEUTRAL): dual score +0.33 vs thresholds +0.50/-0.50",
+   "price_gate": null,
+   "dual_weights": {
+    "central_bank": 0.7,
+    "fiscal": 0.3
+   },
+   "thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "calibration": "provisional — per-currency thresholds pending (desk rule 2026-09-09)"
+  }
+ },
+ "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
+ "flags": [
+  "PHASE_QT",
+  "STRUCTURAL_DEFICIT_INJECTION",
+  "COUNTRY_SPREAD_WATCH"
+ ],
+ "overlays": {},
+ "inputs": {
+  "reserves_level": "SAFE",
+  "reserves_in_range": true,
+  "reserves_above_range": false,
+  "spread_level": "SAFE",
+  "spread_bps": -6.2,
+  "friction_confirmed": false
+ },
+ "rules": {
+  "LIQUIDITY_SCARCITY": "excess liquidity below the dead-man band AND €STR − DFR ≥ STRESS (quantity + price; TOMO alone never triggers)",
+  "FLOOR_FRICTION": "excess liquidity ample AND €STR − DFR friction_confirmed",
+  "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+  "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold",
+  "NEUTRAL": "otherwise"
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "name": "Abundant floor, calm",
+   "bias": "NEUTRAL",
+   "active": true,
+   "conditions_met": 3,
+   "total": 3,
+   "details": [
+    {
+     "condition": "central_bank.excess_liquidity level == SAFE",
+     "met": true
+    },
+    {
+     "condition": "rates.estr_minus_dfr_bps level == SAFE",
+     "met": true
+    },
+    {
+     "condition": "central_bank.omo_takeup level == SAFE",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L2",
+   "name": "Scarcity building (€STR drifting to the DFR, MRO take-up rising)",
+   "bias": "EUR-BULLISH (funding)",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.estr_minus_dfr_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.omo_takeup level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.excess_liquidity_wow level >= WATCH",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "name": "Fragmentation stress",
+   "bias": "EUR-BEARISH",
+   "active": false,
+   "conditions_met": 0,
+   "total": 3,
+   "details": [
+    {
+     "condition": "rates.periphery_premium_bps level >= STRESS",
+     "met": false
+    },
+    {
+     "condition": "rates.btp_bund_bps level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "fiscal.target_fragmentation level >= WATCH",
+     "met": false
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "name": "Government cash drain",
+   "bias": "RISK-OFF",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_regime == DRAIN",
+     "met": null
+    },
+    {
+     "condition": "fiscal.govt_deposits_wow level >= WATCH",
+     "met": false
+    },
+    {
+     "condition": "central_bank.excess_liquidity_wow level >= WATCH",
+     "met": true
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "name": "Fiscal injection into excess liquidity",
+   "bias": "RISK-ON",
+   "active": false,
+   "conditions_met": 1,
+   "total": 3,
+   "details": [
+    {
+     "condition": "fiscal.fiscal_regime == INJECTION",
+     "met": null
+    },
+    {
+     "condition": "central_bank.excess_liquidity_wow level == SAFE",
+     "met": false
+    },
+    {
+     "condition": "banking.transmission_signal == GREEN",
+     "met": true
+    }
+   ]
+  }
+ ],
+ "heartbeat": {
+  "lane": "all",
+  "backfill": true,
+  "errors": []
+ }
+}
