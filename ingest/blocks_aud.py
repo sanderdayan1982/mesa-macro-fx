@@ -11,6 +11,7 @@ from typing import Dict, List, Optional
 from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
+from .scoring import Comps
 from .blocks import entry, _prev_levels, _alert, _health, _base as _base0
 from .blocks_gbp import _ser, _persistent_level
 
@@ -114,19 +115,20 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     # score: ES vs range, daily impulse, balance-sheet Δ, emergency
     lvl = E["es_balances_daily"]["level"]
     above = E["es_balances_daily"].get("above_range")
-    comps = [{"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0),
-             {"SAFE": 0.25, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["es_balances_dod"].get("level"), 0.0),
-             1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0]
+    C = Comps(cfg, "mean2")
+    C.level("es_vs_range", {"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
+    C.flow("es_dod_level", {"SAFE": 0.25, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["es_balances_dod"].get("level"), 0.0))
+    C.flow("balance_sheet_band", 1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0)
     if sfm > 0:
-        comps.append(-2.0)
-    score = round(max(-2.0, min(2.0, sum(comps) / len(comps) * 2)), 2)
+        C.event("standing_facility", -2.0)
+    score = C.score()
     alerts = [_alert("es_balances_daily", E["es_balances_daily"], "below the RBA demand range 70–100bn = scarcity zone (price must confirm)"),
               _alert("sf_repos_margin", E["sf_repos_margin"], "standing facility at +25 bp > 0 = a bank paid the ceiling"),
               _alert("es_balances_dod", D["es_balances_dod"], "daily ES drop below p10 = drain day (tax/issuance/AOFM)"),
               _alert("omo_share_of_es", D["omo_share_of_es"], "informational unless AONIA > target")]
     label = "NO SIGNAL" if not es else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not es else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": C.to_dict(),
                "detail": "ES %s (%s demand range) · ΔES d/d %s · BS liq %s · OMO/ES %s · SF+25 %s" % (lvl, "above" if above else "inside" if E["es_balances_daily"].get("in_range") else "below",
                                                                                                    D["es_balances_dod"]["value"], sb["signal"], D["omo_share_of_es"]["value"], sfm), "alerts": alerts}
     hd = [d for d, _ in S.tail(es, 90)]
@@ -166,6 +168,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
                             "status": "fresh" if fv is not None else "unavailable", "date": D["fiscal_flow_weekly"]["date"], "note": b["derived"]["fiscal_big_week"]["note"]}
     reg = "NO DATA" if not c4 else "INJECTION" if sb["signal"] == "RISK_ON" else "DRAIN" if sb["signal"] == "RISK_OFF" else "NEUTRAL"
     score = 0.0 if reg == "NO DATA" else round(max(-2.0, min(2.0, (zv or 0.0))), 2)
+    CF = Comps(cfg, "sum").flow("fiscal_flow_z", score)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": reg, "status": "fresh" if c4 else "unavailable", "date": D["fiscal_flow_weekly"]["date"]}
     D["fiscal_regime_score"] = {"label": "Fiscal regime score", "value": score, "range": [-2, 2], "status": "fresh", "date": D["fiscal_flow_weekly"]["date"]}
     D["net_issuance_event"] = {"label": "AOFM tenders net of maturities", "value": None, "status": "unavailable", "date": None, "note": "Phase 3: AOFM XLSX link discovery"}
@@ -174,7 +177,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
               {"metric": "fiscal_flow_4w_cum", "level": "WATCH" if reg == "DRAIN" else "SAFE" if reg != "NO DATA" else "NO DATA", "value": D["fiscal_flow_4w_cum"]["value"], "threshold": None,
                "status": D["fiscal_flow_4w_cum"]["status"], "action_hint": "4-week cumulative below p20 = fiscal drain"}]
     tl = "NONE" if reg == "NO DATA" else "GREEN" if reg == "INJECTION" else "RED" if reg == "DRAIN" else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": ["FISCAL_BIG_WEEK"] if big else [],
+    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": ["FISCAL_BIG_WEEK"] if big else [], "components": CF.to_dict(),
                "detail": "flow %s (Z %s) · 4w cum %s (%s) · gov deposits %s" % (fv, zv, D["fiscal_flow_4w_cum"]["value"], sb["signal"], E["government_account"]["value"]), "alerts": alerts}
     hd = [d for d, _ in S.tail(ga, 52)]
     history = {"dates": hd, "rows": {k: [dict(v).get(d) for d in hd] for k, v in (("government_account", ga), ("fiscal_flow_weekly", ff), ("fiscal_flow_4w_cum", c4), ("fiscal_flow_zscore", zc))},

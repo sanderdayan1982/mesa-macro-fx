@@ -15,6 +15,7 @@ from typing import Dict, List, Optional, Tuple
 from . import series as S
 from .series import Series
 from .thresholds import classify
+from .scoring import Comps
 from .blocks import entry, _prev_levels, _alert, _health, _base as _base0
 from .blocks_gbp import _ser
 from .blocks_usd import _freq, _latest_at_or_before, _clamp, _lvl
@@ -198,19 +199,20 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     if phase in ("QT", "QE"):
         flags.append("PHASE_" + phase)
     ex_lvl = _lvl(E["excess_liquidity"])
-    comps = [LEVEL_SCORE.get(ex_lvl, 0.0)]
+    C = Comps(cfg, "mean2")
+    C.level("excess_liquidity_level", LEVEL_SCORE.get(ex_lvl, 0.0))
     # flow components in absolute scale (percentiles stay informational: under QT the distribution of Δ is negative, so a small rise
     # would read as p90 'injection' — the desk reads the sign and size vs the stock instead): Δ5s vs 1 % of excess liquidity, Δ20s vs 2 %
     tv = D["excess_liquidity_trend_20s"]["value"]
     if wv is not None and exv:
-        comps.append(_clamp(wv / (0.01 * exv), -1.0, 1.0))
+        C.flow("excess_wow_vs_stock", _clamp(wv / (0.01 * exv), -1.0, 1.0))
     if tv is not None and exv:
-        comps.append(_clamp(tv / (0.02 * exv), -1.0, 1.0))
-    comps.append({"QT": -0.5, "QE": 0.75}.get(phase, 0.0))
-    comps.append(-1.0 if (tomo_lvl in ("STRESS", "CRISIS") and price_ok) else -0.25 if tomo_lvl != "SAFE" and E["omo_takeup"]["value"] is not None else 0.0)
+        C.flow("excess_20s_vs_stock", _clamp(tv / (0.02 * exv), -1.0, 1.0))
+    C.level("phase", {"QT": -0.5, "QE": 0.75}.get(phase, 0.0))
+    C.level("tomo_level", -1.0 if (tomo_lvl in ("STRESS", "CRISIS") and price_ok) else -0.25 if tomo_lvl != "SAFE" and E["omo_takeup"]["value"] is not None else 0.0)
     if "MLF_USED" in flags:
-        comps.append(-0.5)
-    score = _clamp(sum(comps) / len(comps) * 2) if ex else 0.0
+        C.event("mlf_used", -0.5)
+    score = C.score() if ex else 0.0
     if ex_lvl == "CRISIS":
         score = -2.0
     alerts = [_alert("excess_liquidity", E["excess_liquidity"], "dead-man anchors 1.5/1.0/0.75tn (no regime trigger) — scarcity needs €STR price confirmation"),
@@ -219,7 +221,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
               _alert("excess_liquidity_wow", D["excess_liquidity_wow"], "5-session Δ beyond p10/p90 = unusual drain/injection week")]
     label = "NO SIGNAL" if not ex else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not ex else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": C.to_dict(),
                "detail": "excess liquidity %s M (%s) · Δ5s %s (p%s) · TOMO %s M (%s) · MLF %s M · €STR−DFR %s bp (%s) · MonPol 13w %s · phase %s · APP+PEPP rec %s" % (
                    exv, ex_lvl, wv, wp, E["omo_takeup"]["value"], tomo_read, E["mlf_usage"]["value"], sp[-1][1] if sp else None, sp_lvl, c13, phase, D["app_pepp_reconciliation"]["badge"]),
                "alerts": alerts}
@@ -300,7 +302,8 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     imp_comp = 0.0 if (ip is None or thin) else _clamp((ip - 50) / 30, -1.0, 1.0)
     struct_comp = 0.0 if dv is None else _clamp(-dv / 3, -1.0, 1.0)      # −3% GDP deficit → +1
     auc_comp = 0.0 if bcv is None else (-1.0 if bcv < 1.2 else -0.5 if bcv < 1.5 else 0.25)
-    score = _clamp(0.5 * imp_comp + 0.35 * struct_comp + 0.15 * auc_comp)
+    CF = Comps(cfg, "weighted").flow("impulse_4w_percentile", imp_comp, 0.5).level("structural_deficit", struct_comp, 0.35).level("auction_health", auc_comp, 0.15)
+    score = CF.score()
     reg = "NO DATA" if not gd else "INJECTION" if (ip is not None and ip >= 80) else "DRAIN" if (ip is not None and ip <= 20) else "NEUTRAL"
     D["fiscal_regime"] = {"label": "Fiscal regime (weekly rule: impulse 4w ≥ p80 INJECTION · ≤ p20 DRAIN · else NEUTRAL)", "value": None, "regime": reg, "status": "fresh" if gd else "unavailable",
                           "date": E["govt_deposits"]["date"], "inputs": {"impulse_4w": i4["value"], "percentile": ip, "thin_history": thin, "deficit_gdp": dv, "bid_to_cover": bcv},
@@ -320,7 +323,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
               _alert("de_auction_bid_to_cover", E["de_auction_bid_to_cover"], "< 1.2 weak demand · < 1.0 uncovered")]
     label = "NO SIGNAL" if not gd else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not gd else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": CF.to_dict(),
                "detail": "govt deposits %s M (Δw %s, p%s) · impulse 4w %s (p%s%s) · 13w %s · deficit %s%% GDP (%s) · DE b/c %s (%s, avg26 %s) · TARGET Δ3m %s · rule %s" % (
                    E["govt_deposits"]["value"], gwv, gwp, i4["value"], ip, ", thin" if thin else "", D["fiscal_impulse_13w"]["value"], dv, stance, bcv, E["de_auction_bid_to_cover"]["badge"], bc_mean,
                    D["target_fragmentation"]["value"], reg),

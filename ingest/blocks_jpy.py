@@ -15,6 +15,7 @@ from typing import Dict, List, Optional, Tuple
 from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
+from .scoring import Comps
 from .blocks import entry, _prev_levels, _alert, _health, _base as _base0
 from .blocks_gbp import _persistent_level
 
@@ -241,13 +242,14 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
         flags.append("DATA_DEGRADED")
     lvl = D["excess_to_required_ratio"].get("level", "NO DATA")
     above = D["excess_to_required_ratio"].get("above_range")
-    comps = [{"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0),
-             {"SAFE": 0.25, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["cab_20d_change"].get("level"), 0.0),
-             {"SAFE": 0.0, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["cab_dod"].get("level"), 0.0),
-             1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0]
+    C = Comps(cfg, "mean2")
+    C.level("excess_to_required", {"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
+    C.flow("cab_20d_level", {"SAFE": 0.25, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["cab_20d_change"].get("level"), 0.0))
+    C.flow("cab_dod_level", {"SAFE": 0.0, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["cab_dod"].get("level"), 0.0))
+    C.flow("balance_sheet_band", 1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0)
     if clf > 0:
-        comps.append(-2.0)
-    score = round(max(-2.0, min(2.0, sum(comps) / len(comps) * 2)), 2)
+        C.event("clf", -2.0)
+    score = C.score()
     alerts = [_alert("excess_to_required_ratio", D["excess_to_required_ratio"], "dead-man switch: < 5x WATCH, < 2x STRESS (desk proposal; price must confirm)"),
               _alert("clf_loans_daily", E["clf_loans_daily"], "Complementary Lending Facility > 0 = a bank paid the ceiling"),
               _alert("cab_20d_change", D["cab_20d_change"], "20-session CAB drop below p15 = drain (QT + fiscal)"),
@@ -255,7 +257,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
               _alert("boj_credit_dependence", D["boj_credit_dependence"], "informational unless TONA at/above IOER")]
     label = "NO SIGNAL" if not cab else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not cab else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": C.to_dict(),
                "detail": "CAB %s · excess/required %sx (%s) · ΔCAB d/d %s · 20d %s (%s) · JGB purchases vs plan %s · CLF %s" % (
                    E["cab_daily"]["value"], rv, lvl, D["cab_dod"]["value"], D["cab_20d_change"]["value"], D["cab_20d_change"].get("level"), pct, clf), "alerts": alerts}
     hd = [d for d, _ in S.tail(cab, 120)]
@@ -360,6 +362,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     supply_ahead = E["auction_calendar"]["level"] == "WATCH"
     reg = "NO DATA" if not c20 else "INJECTION" if sb["signal"] == "RISK_ON" else "DRAIN" if sb["signal"] == "RISK_OFF" else "NEUTRAL"
     score = 0.0 if reg == "NO DATA" else round(max(-1.5, min(1.5, (zv or 0.0) * 0.75)), 2)
+    CF = Comps(cfg, "sum", -1.5, 1.5).flow("fiscal_flow_z", score)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": reg, "status": "fresh" if c20 else "unavailable", "date": D["fiscal_flow_daily"]["date"]}
     D["fiscal_regime_score"] = {"label": "Fiscal regime score (capped ±1.5)", "value": score, "range": [-1.5, 1.5], "status": "fresh", "date": D["fiscal_flow_daily"]["date"]}
     D["mmt_note"] = {"label": "MMT note", "value": None, "status": "fresh", "date": None,
@@ -374,7 +377,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     flags = (["FISCAL_BIG_DAY"] if big else []) + (["FX_INTERVENTION_SUSPECT"] if D["fx_intervention_suspect"]["value"] else []) \
         + (["SUPER_LONG_TAIL"] if D["auction_tail_superlong_bp"].get("level") in ("WATCH", "STRESS", "CRISIS") else []) + (["SUPER_LONG_SUPPLY_AHEAD"] if supply_ahead else [])
     tl = "NONE" if reg == "NO DATA" else "GREEN" if reg == "INJECTION" else "RED" if reg == "DRAIN" else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": flags, "components": CF.to_dict(),
                "detail": "flow %s (Z %s) · 5d %s · 20d %s (%s) · FEFSA/py %s · BTC super-long %s" % (fv, zv, D["fiscal_flow_5d_cum"]["value"], D["fiscal_flow_20d_cum"]["value"], sb["signal"],
                                                                                             D["fx_intervention_suspect"]["fefsa_receipts_vs_prior_year"], D["bid_to_cover_superlong"]["value"]), "alerts": alerts}
     hd = [d for d, _ in S.tail(tf, 120)]

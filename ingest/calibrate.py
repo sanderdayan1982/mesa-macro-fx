@@ -35,8 +35,20 @@ HORIZONS = (5, 10, 20)
 
 
 # ───────────────────────────── helpers ─────────────────────────────
+# ── engine v0.3 replay settings ──
+# era anchoring of percentile windows switches on when the as-of date enters the operating era (before it, rolling windows as in v0.2)
+ERA: Dict[str, Optional[str]] = {"start": None}
+ERA_DEFAULT = {"cad": "2020-03-23", "gbp": "2022-11-01", "aud": "2025-04-09", "jpy": "2024-07-31", "chf": "2022-09-22", "nzd": "2022-07-01", "usd": "2022-06-01", "eur": "2022-09-14"}
+LW_GRID = [1.0, 0.5, 0.25, 0.0]          # pre-registered level weights (1.0 = v0.2 arithmetic)
+PERSISTENCE = {"entry_days": 7, "exit_days": 0, "mode": "mean"}   # operating rule: 2-week mean beyond the enter cut (two weekly prints), one print past the exit cut to leave
+PERSISTENCE_VARIANTS = {"none": {"entry_days": 0, "exit_days": 0}, "consecutive_7_0": {"entry_days": 7, "exit_days": 0, "mode": "consecutive"}, "mean_7_0": PERSISTENCE,
+                        "mean_7_7": {"entry_days": 7, "exit_days": 7, "mode": "mean"}}
+
+
 def trunc(data: Dict[str, Series], d: str, lookback_days: int = 1500) -> Dict[str, Series]:
     """as-of view: nothing after d; nothing older than the longest rolling window the blocks use (156 weeks ≈ 1,100 days, margin to 1,500)."""
+    from . import thresholds as TH
+    TH.set_era_anchor(ERA["start"] if (ERA["start"] and d >= ERA["start"]) else None)
     lo = (date.fromisoformat(d) - timedelta(days=lookback_days)).isoformat()
     return {k: [(x, v) for x, v in s if lo <= x <= d] for k, s in data.items()}
 
@@ -191,7 +203,7 @@ def replay_cad(cfg: dict, fx_dir: str, start: str) -> dict:
         rt = B.build_rates(cfg, Vd, prev_rt)
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("overnight_minus_deposit_bps", {})
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["reserves"]["value"], "reserves_level": cb["series"]["reserves"]["level"],
                      "net_liq_wow": cb["derived"]["net_liquidity_wow_pct"]["value"], "govt_account": cb["series"]["government_account"]["value"],
@@ -247,7 +259,7 @@ def replay_gbp(cfg: dict, fx_dir: str, start: str) -> dict:
         rt = BG.build_rates(cfg, Vd, prev_rt)
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("overnight_minus_policy_bps", {})
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["reserves"]["value"], "reserves_level": cb["series"]["reserves"]["level"],
                      "net_liq_wow": (cb["derived"].get("net_liquidity_wow_pct") or {}).get("value"), "govt_account": None,
@@ -316,7 +328,7 @@ def replay_aud(cfg: dict, fx_dir: str, start: str) -> dict:
         rt = BA.build_rates(cfg, Vd, prev_rt)
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("overnight_minus_target_bps") or rt["derived"].get("overnight_minus_policy_bps") or {}
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["reserves"]["value"], "reserves_level": cb["series"]["reserves"]["level"],
                      "net_liq_wow": None, "govt_account": cb["series"]["government_account"]["value"],
@@ -362,7 +374,7 @@ def replay_jpy(cfg: dict, fx_dir: str, start: str) -> dict:
         rt = BJ.build_rates(cfg, Dd, prev_rt)
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("tona_minus_ioer_bps", {})
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["cab_daily"]["value"], "reserves_level": (cb["derived"].get("excess_to_required_ratio") or {}).get("level"),
                      "net_liq_wow": (cb["derived"].get("cab_20d_change") or {}).get("value"), "govt_account": (cb["series"].get("government_account") or {}).get("value"),
@@ -370,6 +382,19 @@ def replay_jpy(cfg: dict, fx_dir: str, start: str) -> dict:
                      "stress_bps": od.get("value"), "stress_level": od.get("level")})
     fx = load_series_csv(os.path.join(fx_dir, "fx_usdjpy.csv"), ["FXERD01"])["FXERD01"]   # yen per USD: + = JPY weaker (already the desk sign)
     stress = clean([(r["date"], r["stress_bps"]) for r in rows if r["stress_bps"] is not None])
+    # alternative funding truth (triangulation round 2): JSDA Tokyo repo rate, GC overnight (T+0) − IOER, bps — fixture history from 2025-06 only
+    io = D.get("ioer", [])
+
+    def _io(d):
+        v = None
+        for dd, x in io:
+            if dd <= d:
+                v = x
+            else:
+                break
+        return v
+    gc = [(d, round((v - _io(d)) * 100, 1)) for d, v in D.get("on_t0", []) if v is not None and _io(d) is not None]
+    stress_alt = _weekly_asof(clean(gc), [r["date"] for r in rows])
     auctions = {}
     p = os.path.join(fx_dir, "mof_jgb_auctions.csv")
     if os.path.exists(p):
@@ -383,6 +408,7 @@ def replay_jpy(cfg: dict, fx_dir: str, start: str) -> dict:
             rs = list(csv.DictReader(f))
         auctions["tbills"] = [{"date": r["date"], "coverage": float(r["bid_to_cover"]), "tail": float(r["tail_bp"]) if r["tail_bp"] else float("nan"), "amount": float(r["accepted_bn"]), "term": r["maturity"], "yield": float(r["avg_yield"]) if r["avg_yield"] else float("nan")} for r in rs]
     return {"rows": rows, "fx": fx, "fx_label": "USD/JPY 9:00 Tokyo (BoJ FM08 FXERD01) — + = JPY weaker", "stress": stress, "auctions": auctions,
+            "stress_label": "TONA − IOER (bps)", "stress_alt": stress_alt, "stress_alt_label": "JSDA Tokyo repo rate GC O/N T+0 − IOER (bps; fixture from 2025-06-02, %d weekly prints)" % len(stress_alt),
             "structural_breaks": [{"date": "2024-03-19", "note": "end of NIRP / YCC: policy rate 0–0.1 %, IOER floor; JGB purchase taper from 2024-07"},
                                   {"date": "2024-07-31", "note": "first hike to 0.25 % (basic loan rate 0.50) — positive-rate floor era (calibration era)"}]}
 
@@ -476,7 +502,7 @@ def replay_chf(cfg: dict, fx_dir: str, start: str) -> dict:
         rt = BC.build_rates(cfg, Dd, prev_rt)
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("saron_minus_absorption_rate_bps", {})
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["sight_deposits_domestic_weekly"]["value"], "reserves_level": (cb["derived"].get("excess_to_required_ratio") or {}).get("level"),
                      "net_liq_wow": (cb["derived"].get("sight_deposits_wow") or {}).get("value"), "govt_account": (fi["series"].get("amounts_due_to_confederation") or {}).get("value"),
@@ -592,7 +618,7 @@ def replay_nzd(cfg: dict, fx_dir: str, start: str) -> dict:
         rt = BN.build_rates(cfg, Dd, prev_rt)
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("bank_bill_30d_minus_ocr_bps", {})
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["settlement_cash_daily"]["value"], "reserves_level": cb["series"]["settlement_cash_daily"]["level"],
                      "net_liq_wow": (cb["derived"].get("settlement_cash_wow") or {}).get("value"), "govt_account": (fi["series"].get("crown_settlement_account") or {}).get("value"),
@@ -605,6 +631,10 @@ def replay_nzd(cfg: dict, fx_dir: str, start: str) -> dict:
     nzdusd = D.get("B1:EXR.DS11.D06", [])
     fx = clean([(d, round(1.0 / v, 5)) for d, v in nzdusd if v])
     stress = clean([(r["date"], r["stress_bps"]) for r in rows if r["stress_bps"] is not None])
+    # alternative funding truth (triangulation round 2): overnight interbank cash rate − OCR (RBNZ B2 INM.DN.NZK − INM.DP1.N), bps
+    ocr = dict(D.get("B2:INM.DP1.N", []))
+    ibk = [(d, round((v - ocr[d]) * 100, 1)) for d, v in D.get("B2:INM.DN.NZK", []) if d in ocr and v is not None and ocr[d] is not None]
+    stress_alt = _weekly_asof(clean(ibk), [r["date"] for r in rows])
     auctions = {}
     # per tender line (T-bills: three lines per tender; bonds: per line) — coverage = bid/offered, tail = highest accepted − wavg
     def _rows(rs, term_key):
@@ -618,6 +648,7 @@ def replay_nzd(cfg: dict, fx_dir: str, start: str) -> dict:
     auctions["tbills"] = _rows(tb, "maturity")
     auctions["nzgb_nominal"] = _rows(bd, "maturity")
     return {"rows": rows, "fx": fx, "fx_label": "NZD per USD (1 / RBNZ B1 NZD/USD daily) — + = NZD weaker", "stress": stress, "auctions": auctions,
+            "stress_label": "bank bill 30d − OCR (bps)", "stress_alt": stress_alt, "stress_alt_label": "overnight interbank cash rate − OCR (RBNZ B2 INM.DN.NZK − INM.DP1.N, bps; daily from 2018-01, sampled on the replay dates)",
             "structural_breaks": [{"date": "2020-03-23", "note": "LSAP starts: settlement cash from ~7 bn to > 40 bn; floor system (ODR = OCR)"},
                                   {"date": "2022-07-01", "note": "LSAP unwind: bond sales to NZDM begin (NZ$5 bn/yr), settlement cash declines toward the new steady state — calibration era"},
                                   {"date": "2026-04-02", "note": "new liquidity framework: weekly full-allotment reverse-repo OMO at OCR + 10 bp, no settlement-cash target (sub-era, 23 weeks)"}]}
@@ -700,7 +731,7 @@ def replay_usd(cfg: dict, fx_dir: str, start: str) -> dict:
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("sofr_minus_iorb_bps", {})
         fimp = fi["derived"].get("fiscal_impulse") or {}
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["reserves"]["value"], "reserves_level": (cb["derived"].get("reserves_status") or {}).get("badge"),
                      "net_liq_wow": (cb["derived"].get("net_liquidity_wow_pct") or {}).get("value"), "govt_account": cb["series"]["tga"]["value"],
@@ -794,7 +825,7 @@ def replay_eur(cfg: dict, fx_dir: str, start: str) -> dict:
         rt = BE.build_rates(cfg, Dd, prev_rt, cb)
         prev_cb, prev_fi, prev_rt = cb, fi, rt
         od = rt["derived"].get("estr_minus_dfr_bps", {})
-        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"],
+        rows.append({"date": d, "cb_score": cb["signals"]["score"] if cb["signals"]["traffic_light"] != "NONE" else None, "cb_label": cb["signals"]["label"], "cb_comp": cb["signals"].get("components"), "fi_comp": fi["signals"].get("components"),
                      "fi_score": fi["signals"]["score"] if fi["signals"]["traffic_light"] != "NONE" else None, "fi_label": fi["signals"]["label"],
                      "reserves": cb["series"]["excess_liquidity"]["value"], "reserves_level": cb["series"]["excess_liquidity"]["level"],
                      "net_liq_wow": (cb["derived"].get("excess_liquidity_wow") or {}).get("value"), "govt_account": fi["series"]["govt_deposits"]["value"],
@@ -802,7 +833,7 @@ def replay_eur(cfg: dict, fx_dir: str, start: str) -> dict:
                      "stress_bps": od.get("value"), "stress_level": od.get("level"),
                      "phase": (cb["derived"].get("balance_sheet_phase") or {}).get("phase"), "t20": (cb["derived"].get("excess_liquidity_trend_20s") or {}).get("value"),
                      "tomo_lvl": cb["series"]["omo_takeup"]["level"], "fi_rule": (fi["derived"].get("fiscal_regime") or {}).get("regime"),
-                     "fi_comp": (fi["derived"].get("fiscal_regime") or {}).get("components"), "deficit": (fi["derived"].get("fiscal_stance_structural") or {}).get("value")})
+                     "fi_comp_regime": (fi["derived"].get("fiscal_regime") or {}).get("components"), "deficit": (fi["derived"].get("fiscal_stance_structural") or {}).get("value")})
     eurusd = D.get("EXR.D.USD.EUR.SP00.A", [])
     fx = clean([(d, round(1.0 / v, 5)) for d, v in eurusd if v])
     stress = clean([(r["date"], r["stress_bps"]) for r in rows if r["stress_bps"] is not None])
@@ -821,6 +852,18 @@ def replay_eur(cfg: dict, fx_dir: str, start: str) -> dict:
             "structural_breaks": [{"date": "2015-03-09", "note": "APP starts (PSPP): excess liquidity from 0.1 to 4.7 tn by 2022; DFR −0.20 → −0.50"},
                                   {"date": "2022-09-14", "note": "DFR positive (0.75 %) after the July exit from negative rates; TLTRO repayments and APP/PEPP run-off → excess liquidity falls from 4.7 to 2.2 tn — floor-under-QT era (calibration era)"},
                                   {"date": "2025-06-11", "note": "DFR 2.00 after the cutting cycle; first hike 2026-06-17 to 2.25 (sub-era)"}]}
+
+
+def _weekly_asof(series: Series, dates: List[str]) -> Series:
+    """Sample a daily series on the replay dates (last print at or before each date) — the shape analyse_v03 expects for a truth."""
+    import bisect
+    sd = [d for d, _ in series]
+    out = []
+    for d in dates:
+        i = bisect.bisect_right(sd, d) - 1
+        if i >= 0:
+            out.append((d, series[i][1]))
+    return out
 
 
 def S_add(a: Series, b: Series) -> Series:
@@ -1101,13 +1144,287 @@ def report(res: dict, out_dir: str) -> str:
     return txt
 
 
+# ───────────────────────────── engine v0.3 calibration ─────────────────────────────
+def _welch(a: np.ndarray, b: np.ndarray) -> Tuple[Optional[float], Optional[float]]:
+    if len(a) < 5 or len(b) < 5:
+        return None, None
+    t, p = stats.ttest_ind(a, b, equal_var=False)
+    return float(t), float(p)
+
+
+def _regime_series(scores: List[Optional[float]], dates: List[str], cuts: dict, persistence: dict) -> List[str]:
+    from .engine import block_regime_step
+    st, out = {}, []
+    for sc, d in zip(scores, dates):
+        st = block_regime_step(sc, cuts, st, d, persistence)
+        out.append(st["confirmed"] if sc is not None else "NO SIGNAL")
+    return out
+
+
+def _spells(reg: List[str]) -> dict:
+    sw, cur, lens = 0, None, []
+    n = 0
+    for r in reg:
+        if r == cur:
+            n += 1
+        else:
+            if cur is not None:
+                lens.append(n); sw += 1
+            cur, n = r, 1
+    if cur is not None:
+        lens.append(n)
+    return {"switches": max(0, sw), "mean_spell_weeks": round(float(np.mean(lens)), 1) if lens else None, "min_spell_weeks": int(min(lens)) if lens else None}
+
+
+def _era_cuts(x: np.ndarray) -> dict:
+    """Pre-registered cuts on an era sample: enter = nearest attainable value to p80 / p20, strictly beyond the median (discrete
+    scales: the next attainable value past the median mass); exit = nearest attainable to p67 / p33, strictly beyond the median on
+    its side — otherwise no hysteresis (exit = enter), so a median mass can never be captured by a stale side."""
+    pct = lambda p: float(np.percentile(x, p))
+    med = pct(50)
+    u = np.unique(x)
+    above = [float(v) for v in u if v > med]
+    below = [float(v) for v in u if v < med]
+    inj = _nearest_attainable(x, pct(80))
+    if inj <= med:
+        inj = min(above) if above else float(u[-1])
+    drn = _nearest_attainable(x, pct(20))
+    if drn >= med:
+        drn = max(below) if below else float(u[0])
+    # mass guard (discrete scales): an enter cut may never capture more than 35 % of the era on its side — step outwards
+    for _ in range(3):
+        if float(np.mean(x >= inj)) > 0.35 and [v for v in above if v > inj]:
+            inj = min(v for v in above if v > inj)
+        else:
+            break
+    for _ in range(3):
+        if float(np.mean(x <= drn)) > 0.35 and [v for v in below if v < drn]:
+            drn = max(v for v in below if v < drn)
+        else:
+            break
+    inj_x = _nearest_attainable(x, pct(67))
+    if not (med < inj_x <= inj):
+        inj_x = inj
+    drn_x = _nearest_attainable(x, pct(33))
+    if not (drn <= drn_x < med):
+        drn_x = drn
+    return {"injection_enter": inj, "injection_exit": inj_x, "drain_enter": drn, "drain_exit": drn_x}
+
+
+def analyse_v03(res: dict, R: dict, era_start: str, out_dir: str) -> dict:
+    """Engine v0.3 calibration on the era replay (percentile windows anchored to the era from era_start):
+    (1) level-weight grid LW_GRID, re-scoring the published block components without a new replay;
+    (2) pre-registered cuts = era p80/p20 of the block score (exit p67/p33), nearest attainable value — no grid search;
+    (3) persistence 7/0 (two weekly prints in, one out) and the agreement rule for the general regime;
+    (4) B (funding truth) evaluated ONLY at those cuts: conditional mean Δ spread (4 / 12 weeks) DRAIN − NEUTRAL and INJECTION − NEUTRAL
+        with Welch t, Spearman + moving-block bootstrap p; alternative spreads (NZD / JPY) when the replay provides them;
+    (5) level-weight choice, pre-registered rule: the largest weight (closest to v0.2) whose era distribution is two-sided —
+        both INJECTION and DRAIN attainable in >= 10 % of the era weeks under persistence — and, among those, the one with the
+        highest balance min(share INJECTION, share DRAIN); B is reported as evidence, never used to pick the weight."""
+    from .scoring import Comps
+    rows = R["rows"]
+    dates = [r["date"] for r in rows]
+    idx = [i for i, d in enumerate(dates) if d >= era_start]
+    edates = [dates[i] for i in idx]
+    st = R["stress"]
+    sd_ = [x for x, _ in st]
+    import bisect
+
+    def fstress(series: Series, h_weeks: int) -> List[Optional[float]]:
+        sd = [x for x, _ in series]
+        out = []
+        for d in edates:
+            i = bisect.bisect_right(sd, d) - 1
+            j = i + h_weeks
+            out.append((series[j][1] - series[i][1]) if (i >= 0 and j < len(series)) else None)
+        return out
+    truths = {"stress": R["stress"]}
+    if R.get("stress_alt"):
+        truths["stress_alt"] = R["stress_alt"]
+    fs = {k: {4: fstress(v, 4), 12: fstress(v, 12)} for k, v in truths.items() if v}
+    v03 = {"era_start": era_start, "weeks": len(idx), "level_weights": LW_GRID, "persistence": PERSISTENCE, "truths": {k: R.get(k + "_label", k) for k in truths},
+           "blocks": {}, "general": {}, "selected_level_weight": None}
+    per_block_reg: Dict[str, Dict[float, List[str]]] = {}
+    for name, key in (("central_bank", "cb_comp"), ("fiscal", "fi_comp")):
+        comps = [rows[i].get(key) for i in idx]
+        base = [rows[i]["cb_score" if name == "central_bank" else "fi_score"] for i in idx]
+        blk = {"has_levels": any(c and c.get("level") for c in comps), "level_names": sorted({k for c in comps if c for k in c.get("level", {})}),
+               "flow_names": sorted({k for c in comps if c for k in c.get("flow", {})}), "by_level_weight": {}}
+        per_block_reg[name] = {}
+        for lw in LW_GRID:
+            sc = [None if (c is None and b is None) else (Comps.rescore(c, lw) if c else b) for c, b in zip(comps, base)]
+            # effective (operating) score under the persistence rule: mean of this print and the previous one when they are <= entry_days apart
+            eff: List[Optional[float]] = []
+            for k, v in enumerate(sc):
+                pv = sc[k - 1] if k > 0 else None
+                gap = (date.fromisoformat(edates[k]) - date.fromisoformat(edates[k - 1])).days if k > 0 else 99
+                eff.append(None if v is None else (round((v + pv) / 2, 3) if (PERSISTENCE.get("mode", "mean") == "mean" and pv is not None and gap <= PERSISTENCE["entry_days"]) else v))
+            x = np.array([v for v in eff if v is not None], dtype=float)
+            xr = np.array([v for v in sc if v is not None], dtype=float)
+            if len(x) < 30:
+                blk["by_level_weight"][lw] = {"status": "insufficient", "n": int(len(x))}
+                continue
+            cuts = _era_cuts(x)
+            cuts_raw = _era_cuts(xr)
+            reg = _regime_series(sc, edates, cuts, PERSISTENCE)
+            per_block_reg[name][lw] = reg
+            n = sum(1 for r in reg if r != "NO SIGNAL") or 1
+            share = {k: round(sum(1 for r in reg if r == k) / n, 3) for k in ("INJECTION", "NEUTRAL", "DRAIN")}
+            variants = {}
+            for vn, vp in PERSISTENCE_VARIANTS.items():
+                rv = _regime_series(sc, edates, cuts if vp.get("mode", "mean") == "mean" and vp.get("entry_days", 0) > 0 else cuts_raw, vp)
+                variants[vn] = {k: round(sum(1 for r in rv if r == k) / n, 3) for k in ("INJECTION", "NEUTRAL", "DRAIN")}
+                variants[vn]["switches"] = _spells(rv)["switches"]
+            by_year = {}
+            for y in sorted(set(d[:4] for d in edates)):
+                ry = [r for r, d in zip(reg, edates) if d[:4] == y and r != "NO SIGNAL"]
+                if len(ry) >= 10:
+                    by_year[y] = {k: round(sum(1 for r in ry if r == k) / len(ry), 2) for k in ("INJECTION", "DRAIN")}
+            # B at the pre-registered cuts, per truth, on the operating (effective) score
+            B = {}
+            for tk, fh in fs.items():
+                B[tk] = {}
+                for h in (4, 12):
+                    y = fh[h]
+                    r_, p_, n_ = spearman(eff, y)
+                    grp = {k: np.array([yy for rr, yy in zip(reg, y) if rr == k and yy is not None], dtype=float) for k in ("INJECTION", "NEUTRAL", "DRAIN")}
+                    td, pd_ = _welch(grp["DRAIN"], grp["NEUTRAL"])
+                    ti, pi_ = _welch(grp["INJECTION"], grp["NEUTRAL"])
+                    B[tk][h] = {"rho": None if r_ is None else round(r_, 3), "p": None if p_ is None else round(p_, 4), "n": n_,
+                                "p_block_bootstrap": block_bootstrap_p(eff, y),
+                                "mean_delta": {k: (round(float(g.mean()), 3) if len(g) else None) for k, g in grp.items()}, "n_by_regime": {k: int(len(g)) for k, g in grp.items()},
+                                "drain_vs_neutral": {"t": None if td is None else round(td, 2), "p": None if pd_ is None else round(pd_, 4), "sign_ok": (td is not None and td > 0)},
+                                "injection_vs_neutral": {"t": None if ti is None else round(ti, 2), "p": None if pi_ is None else round(pi_, 4), "sign_ok": (ti is not None and ti < 0)}}
+            pct = lambda p: float(np.percentile(x, p))
+            blk["by_level_weight"][lw] = {"n": int(len(x)), "p10": round(pct(10), 2), "p20": round(pct(20), 2), "p50": round(pct(50), 2), "p80": round(pct(80), 2), "p90": round(pct(90), 2),
+                                          "raw_p20": round(float(np.percentile(xr, 20)), 2), "raw_p50": round(float(np.percentile(xr, 50)), 2), "raw_p80": round(float(np.percentile(xr, 80)), 2),
+                                          "attainable_values": [float(v) for v in np.unique(x)][:25], "n_attainable": int(len(np.unique(x))), "n_attainable_raw": int(len(np.unique(xr))), "cuts": cuts, "cuts_raw_score": cuts_raw,
+                                          "shares": share, "balance": round(min(share["INJECTION"], share["DRAIN"]), 3),
+                                          "two_sided": share["INJECTION"] >= 0.10 and share["DRAIN"] >= 0.10, "spells": _spells(reg), "by_year": by_year, "B": B,
+                                          "shares_by_persistence": variants}
+        # level-weight choice (pre-registered rule, engine v0.3): with era-relative cuts the shares are fixed by construction, so
+        # the weight can only be judged by the funding truth. Rule: keep 1.0 (v0.2 arithmetic) unless a weight has a B test that
+        # survives the moving-block bootstrap (p <= 0.05) with the MMT sign on the primary truth at 12 weeks — then the weight with
+        # the strongest such |rho|; ties to the larger weight. Alternative truths are reported, never used to pick.
+        cands = [(lw, v) for lw, v in blk["by_level_weight"].items() if v.get("status") != "insufficient"]
+        if not blk["has_levels"]:
+            blk["selected_level_weight"], blk["selection_rule"] = 1.0, "no level components in this block — weight irrelevant"
+        elif cands:
+            def _b12(v):
+                b = ((v.get("B") or {}).get("stress") or {}).get(12) or {}
+                pb, r = b.get("p_block_bootstrap"), b.get("rho")
+                return (r, pb) if (pb is not None and pb <= 0.05 and r is not None and r < 0) else None
+            ok = [(lw, v, _b12(v)) for lw, v in cands if _b12(v)]
+            if ok:
+                best = max(ok, key=lambda t: (abs(t[2][0]), t[0]))
+                blk["selected_level_weight"] = best[0]
+                blk["selection_rule"] = "funding truth: strongest bootstrap-significant B at 12 weeks (rho %s, p %s); ties to the larger weight" % (best[2][0], best[2][1])
+            else:
+                blk["selected_level_weight"] = 1.0 if any(lw == 1.0 for lw, _ in cands) else cands[0][0]
+                blk["selection_rule"] = "no weight has a bootstrap-significant B at 12 weeks — v0.2 arithmetic kept (1.0); shares are era-relative whatever the weight"
+            blk["one_sided"] = not any(v["two_sided"] for _, v in cands)
+        v03["blocks"][name] = blk
+    # general regime by the agreement rule at the selected weights
+    lw_cb = v03["blocks"].get("central_bank", {}).get("selected_level_weight")
+    lw_fi = v03["blocks"].get("fiscal", {}).get("selected_level_weight")
+    if lw_cb is not None and lw_fi is not None and per_block_reg.get("central_bank", {}).get(lw_cb) and per_block_reg.get("fiscal", {}).get(lw_fi):
+        rc, rf = per_block_reg["central_bank"][lw_cb], per_block_reg["fiscal"][lw_fi]
+        gen = []
+        for a, b in zip(rc, rf):
+            if a == "INJECTION" and b == "INJECTION":
+                gen.append("LIQUIDITY_INJECTION")
+            elif a == "DRAIN" and b == "DRAIN":
+                gen.append("LIQUIDITY_DRAIN")
+            elif "NO SIGNAL" in (a, b):
+                gen.append("NO SIGNAL")
+            elif "NEUTRAL" in (a, b):
+                gen.append("NEUTRAL_PARTIAL")
+            else:
+                gen.append("NEUTRAL_CONFLICT")
+        n = sum(1 for g in gen if g != "NO SIGNAL") or 1
+        v03["general"] = {"level_weights": {"central_bank": lw_cb, "fiscal": lw_fi},
+                          "shares": {k: round(sum(1 for g in gen if g == k) / n, 3) for k in ("LIQUIDITY_INJECTION", "NEUTRAL_PARTIAL", "NEUTRAL_CONFLICT", "LIQUIDITY_DRAIN")},
+                          "spells": _spells(gen), "rule": "agreement only: both inject / both drain; partial and conflict = NEUTRAL (labelled)"}
+        v03["selected_level_weight"] = lw_cb
+        # persist per-week series
+        with open(os.path.join(out_dir, "v03_regimes.csv"), "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["date", "cb_score_lw", "cb_regime", "fi_score_lw", "fi_regime", "general"])
+            for k, i in enumerate(idx):
+                cc, fc = rows[i].get("cb_comp"), rows[i].get("fi_comp")
+                w.writerow([dates[i], Comps.rescore(cc, lw_cb) if cc else rows[i]["cb_score"], rc[k], Comps.rescore(fc, lw_fi) if fc else rows[i]["fi_score"], rf[k], gen[k]])
+    # config patch (regime.dual, engine v0.3) — evidence labels filled after the joint FDR (fdr_all --v03)
+    patch = {"version": "0.3", "status": "calibrated by replay %s (engine v0.3, era %s, %d weeks)" % (res["generated_at"][:10], era_start, len(idx)),
+             "era_start": era_start, "anchor_percentiles": True, "level_weight": lw_cb, "persistence": PERSISTENCE,
+             "agreement_only": True, "agreement_only_until_weeks": 150, "weights": {"central_bank": 0.6, "fiscal": 0.4}, "general_thresholds": {"injection": 0.5, "drain": -0.5},
+             "block_thresholds": {}}
+    for name in ("central_bank", "fiscal"):
+        blk = v03["blocks"].get(name) or {}
+        lw = blk.get("selected_level_weight")
+        v = (blk.get("by_level_weight") or {}).get(lw) if lw is not None else None
+        if not v or v.get("status") == "insufficient":
+            continue
+        short = len(idx) < 150
+        by_design = v.get("n_attainable_raw", v.get("n_attainable", len(v["attainable_values"]))) <= 3
+        ev = "provisional_era_corta" if short else ("banda_por_diseño" if by_design else "frecuencia_de_era")
+        patch["block_thresholds"][name] = dict(v["cuts"], level_weight=lw, evidence={"injection": ev, "drain": ev},
+                                               rule="era p80/p20 (exit p67/p33) of the %s-day mean score, nearest attainable, exit after %d days inside" % (PERSISTENCE["entry_days"], PERSISTENCE["exit_days"]))
+        if blk.get("one_sided"):
+            patch["block_thresholds"][name]["evidence"]["note"] = "one_sided: no level weight makes both tails attainable — the missing side needs a flow redesign"
+    v03["config_patch"] = patch
+    res["v03"] = v03
+    return v03
+
+
+def report_v03(res: dict) -> str:
+    v = res.get("v03") or {}
+    L = ["# %s — engine v0.3 (era %s, %d semanas; ventanas ancladas a la era; persistencia %d/%d días; regla de acuerdo)\n" % (res["currency"], v.get("era_start"), v.get("weeks", 0), PERSISTENCE["entry_days"], PERSISTENCE["exit_days"])]
+    for name, blk in (v.get("blocks") or {}).items():
+        L.append("\n## %s — niveles: %s · flujos: %s\n" % (name, ", ".join(blk.get("level_names") or []) or "ninguno", ", ".join(blk.get("flow_names") or [])))
+        L.append("| peso nivel | p20 / p50 / p80 (puntuación operativa = media 2 s; bruta) | cortes INJ ≥ (salida) / DRAIN ≤ (salida) | INJ / NEUTRAL / DRAIN | balance | cambios · racha media | B 12s: ρ (p boot) · DRAIN−N t · INJ−N t |")
+        L.append("|---|---|---|---|---|---|---|")
+        for lw, r in blk["by_level_weight"].items():
+            if r.get("status") == "insufficient":
+                L.append("| %s | insuficiente (n %d) | | | | | |" % (lw, r["n"]))
+                continue
+            c, s, sp = r["cuts"], r["shares"], r["spells"]
+            b = (r["B"].get("stress") or {}).get(12, {})
+            L.append("| %s%s | %.2f / %.2f / %.2f (%.2f / %.2f / %.2f) | %+.2f (%+.2f) / %+.2f (%+.2f) | %d / %d / %d %% | %.2f%s | %d · %s | %s (%s) · %s · %s |" % (
+                lw, " ★" if lw == blk.get("selected_level_weight") else "", r["p20"], r["p50"], r["p80"], r.get("raw_p20", 0), r.get("raw_p50", 0), r.get("raw_p80", 0), c["injection_enter"], c["injection_exit"], c["drain_enter"], c["drain_exit"],
+                round(s["INJECTION"] * 100), round(s["NEUTRAL"] * 100), round(s["DRAIN"] * 100), r["balance"], "" if r["two_sided"] else " (un lado)", sp["switches"], sp["mean_spell_weeks"],
+                _f(b.get("rho")), _f(b.get("p_block_bootstrap")), _f((b.get("drain_vs_neutral") or {}).get("t"), 2), _f((b.get("injection_vs_neutral") or {}).get("t"), 2)))
+        L.append("\nPeso seleccionado: **%s** — %s" % (blk.get("selected_level_weight"), blk.get("selection_rule")))
+        rs = blk["by_level_weight"].get(blk.get("selected_level_weight")) or {}
+        if rs.get("shares_by_persistence"):
+            L.append("Persistencia (peso seleccionado): " + " · ".join("%s → INJ %d %% / DRAIN %d %% / cambios %d" % (k, round(v["INJECTION"] * 100), round(v["DRAIN"] * 100), v["switches"]) for k, v in rs["shares_by_persistence"].items()))
+        if "stress_alt" in (v.get("truths") or {}):
+            lw = blk.get("selected_level_weight")
+            r = blk["by_level_weight"].get(lw) or {}
+            for tk in ("stress", "stress_alt"):
+                for h in (4, 12):
+                    b = (r.get("B") or {}).get(tk, {}).get(h)
+                    if b:
+                        L.append("- B %s %ds: ρ %s (p %s, boot %s, n %s) · Δ medio DRAIN %s / NEUTRAL %s / INJ %s · t DRAIN−N %s · t INJ−N %s" % (
+                            tk, h, _f(b["rho"]), _f(b["p"]), _f(b["p_block_bootstrap"]), b["n"], _f(b["mean_delta"]["DRAIN"], 2), _f(b["mean_delta"]["NEUTRAL"], 2), _f(b["mean_delta"]["INJECTION"], 2),
+                            _f(b["drain_vs_neutral"]["t"], 2), _f(b["injection_vs_neutral"]["t"], 2)))
+    g = v.get("general") or {}
+    if g:
+        s = g["shares"]
+        L.append("\n## Régimen general (regla de acuerdo, pesos %s)\n" % g["level_weights"])
+        L.append("INYECCIÓN %d %% · NEUTRAL parcial %d %% · NEUTRAL conflicto %d %% · DRENAJE %d %% · cambios %s · racha media %s semanas" % (
+            round(s["LIQUIDITY_INJECTION"] * 100), round(s["NEUTRAL_PARTIAL"] * 100), round(s["NEUTRAL_CONFLICT"] * 100), round(s["LIQUIDITY_DRAIN"] * 100), g["spells"]["switches"], g["spells"]["mean_spell_weeks"]))
+    L.append("\n## Parche de config (regime.dual)\n\n```json\n%s\n```" % json.dumps(v.get("config_patch"), indent=1, ensure_ascii=False))
+    return "\n".join(L)
+
+
+
 def fdr_all(out_root: str) -> dict:
     """Benjamini–Hochberg FDR across every B test of every currency (2 blocks × 2 horizons × 8 currencies) on the raw and the
     block-bootstrap p-values (triangulation 2026-09-09: Perplexity, Kimi). Writes calibration/B_fdr.json and prints the table."""
     tests = []
     for ccy in sorted(os.listdir(out_root)):
         p = os.path.join(out_root, ccy, "calibration.json")
-        if not os.path.exists(p):
+        if not os.path.exists(p) or ccy.endswith("_v03"):
             continue
         j = json.load(open(p))
         for name, b in (j.get("ab", {}).get("B_funding") or {}).items():
@@ -1143,27 +1460,121 @@ def fdr_all(out_root: str) -> dict:
     return out
 
 
+def _bh(ps: np.ndarray) -> np.ndarray:
+    m = len(ps)
+    order = np.argsort(ps)
+    q = np.empty(m)
+    prev = 1.0
+    for rank, i in enumerate(order[::-1], start=0):
+        k = m - rank
+        val = min(prev, ps[i] * m / k)
+        q[i] = val
+        prev = val
+    return q
+
+
+def fdr_v03(out_root: str) -> dict:
+    """Joint Benjamini–Hochberg over the v0.3 pre-registered B tests (selected level weight, era p80/p20 cuts, persistence): one
+    Spearman per block × horizon × truth (primary + alternative where the replay provides one), p from the moving-block bootstrap.
+    Writes calibration/B_fdr_v03.{json,md} and stamps the evidence labels into each calibration_v03 config patch:
+    funding_validado  = q ≤ 0.05 on the bootstrap p, ρ < 0 (MMT sign) and the conditional mean on that side has the expected sign;
+    frecuencia_de_era / banda_por_diseño / provisional_era_corta otherwise (as set by analyse_v03)."""
+    tests, files = [], {}
+    for d in sorted(os.listdir(out_root)):
+        p = os.path.join(out_root, d, "calibration.json")
+        if not d.endswith("_v03") or not os.path.exists(p):
+            continue
+        j = json.load(open(p))
+        files[d] = j
+        v = j.get("v03") or {}
+        for name, blk in (v.get("blocks") or {}).items():
+            lw = blk.get("selected_level_weight")
+            r = (blk.get("by_level_weight") or {}).get(str(lw)) or (blk.get("by_level_weight") or {}).get(lw)
+            if not r or r.get("status") == "insufficient":
+                continue
+            for tk, hh in (r.get("B") or {}).items():
+                for h, b in hh.items():
+                    if b.get("p") is None:
+                        continue
+                    tests.append({"ccy": d[:3], "block": name, "truth": tk, "h": int(h), "rho": b["rho"], "p": b["p"], "p_bb": b.get("p_block_bootstrap"), "n": b["n"],
+                                  "drain_sign_ok": (b.get("drain_vs_neutral") or {}).get("sign_ok"), "injection_sign_ok": (b.get("injection_vs_neutral") or {}).get("sign_ok"),
+                                  "t_drain": (b.get("drain_vs_neutral") or {}).get("t"), "t_injection": (b.get("injection_vs_neutral") or {}).get("t")})
+    if tests:
+        q = _bh(np.array([t["p"] for t in tests]))
+        qb = _bh(np.array([t["p_bb"] if t["p_bb"] is not None else 1.0 for t in tests]))
+        for t, a, b in zip(tests, q, qb):
+            t["q_fdr"] = round(float(a), 4)
+            t["q_fdr_block_bootstrap"] = round(float(b), 4)
+            t["survives_5pct"] = bool(b <= 0.05 and (t["rho"] or 0) < 0)
+    # stamp evidence labels
+    for d, j in files.items():
+        patch = ((j.get("v03") or {}).get("config_patch") or {})
+        for name, bt in (patch.get("block_thresholds") or {}).items():
+            ev = bt.get("evidence") or {}
+            for side, key in (("drain", "drain_sign_ok"), ("injection", "injection_sign_ok")):
+                hits = [t for t in tests if t["ccy"] == d[:3] and t["block"] == name and t.get("survives_5pct") and t.get(key)]
+                if hits:
+                    ev[side] = "funding_validado"
+                    ev[side + "_test"] = "%s %dw ρ %s q %s" % (hits[0]["truth"], hits[0]["h"], hits[0]["rho"], hits[0]["q_fdr_block_bootstrap"])
+            bt["evidence"] = ev
+        json.dump(j, open(os.path.join(out_root, d, "calibration.json"), "w"), indent=1, default=str)
+    out = {"generated_at": datetime.utcnow().replace(microsecond=0).isoformat() + "Z", "n_tests": len(tests),
+           "method": "pre-registered cuts (era p80/p20, persistence 7/0 mean) at the selected level weight; Benjamini–Hochberg on the moving-block bootstrap p (block 8 weeks); survives = q ≤ 0.05 and ρ < 0", "tests": tests}
+    json.dump(out, open(os.path.join(out_root, "B_fdr_v03.json"), "w"), indent=1)
+    lines = ["| divisa | bloque | verdad | h | ρ | p boot | q FDR boot | t DRAIN−N | t INJ−N | sobrevive |", "|---|---|---|---|---|---|---|---|---|---|"]
+    for t in sorted(tests, key=lambda t: (t["p_bb"] if t["p_bb"] is not None else 1.0)):
+        lines.append("| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (t["ccy"].upper(), t["block"], t["truth"], t["h"], t["rho"], t["p_bb"], t.get("q_fdr_block_bootstrap"), t["t_drain"], t["t_injection"], "SÍ" if t.get("survives_5pct") else "no"))
+    txt = "\n".join(lines)
+    open(os.path.join(out_root, "B_fdr_v03.md"), "w").write("# B v0.3 — pruebas prerregistradas, corrección conjunta (las ocho divisas)\n\n%d pruebas · %s\n\n" % (len(tests), out["method"]) + txt + "\n")
+    print(txt)
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fdr", action="store_true", help="only: Benjamini–Hochberg across every currency's B tests (reads calibration/*/calibration.json)")
+    ap.add_argument("--fdr-v03", action="store_true", help="only: joint FDR over the v0.3 pre-registered tests (reads calibration/*_v03/calibration.json) and stamps evidence labels")
     ap.add_argument("--ccy", default="cad")
     ap.add_argument("--start", default="2008-01-01")
     ap.add_argument("--era", default=None, help="operating-era start for the frequency thresholds (default: last structural break)")
     ap.add_argument("--split", default="2021-01-01", help="train < split <= test")
     ap.add_argument("--fixtures", default=None)
+    ap.add_argument("--cache", default=None, help="pickle path: reuse the replay result if it exists, else save it there")
+    ap.add_argument("--v03", action="store_true", help="engine v0.3 replay: era-anchored percentile windows, level-weight grid, pre-registered cuts, persistence 7/0, agreement rule")
     a = ap.parse_args(argv)
     if a.fdr:
         fdr_all(os.path.join(ROOT, "calibration"))
         return 0
+    if a.fdr_v03:
+        fdr_v03(os.path.join(ROOT, "calibration"))
+        return 0
     ccy = a.ccy.lower()
     cfg = json.load(open(os.path.join(ROOT, "config", "%s.json" % ccy), encoding="utf-8"))
     fx_dir = a.fixtures or os.path.join(ROOT, "fixtures", ccy)
-    R = REPLAY[ccy](cfg, fx_dir, a.start)
-    out_dir = os.path.join(ROOT, "calibration", ccy)
+    era = a.era or ERA_DEFAULT.get(ccy)
+    if a.v03:
+        ERA["start"] = era
+        a.era = era
+    if a.cache and os.path.exists(a.cache):
+        import pickle
+        R = pickle.load(open(a.cache, "rb"))
+    else:
+        R = REPLAY[ccy](cfg, fx_dir, a.start)
+        if a.cache:
+            import pickle
+            pickle.dump(R, open(a.cache, "wb"))
+    out_dir = os.path.join(ROOT, "calibration", ccy + ("_v03" if a.v03 else ""))
     if a.era:
         R["structural_breaks"] = [b for b in R.get("structural_breaks", []) if b["date"] <= a.era] + [{"date": a.era, "note": "era start set on the command line"}]
     res = analyse(ccy, cfg, R, a.split, out_dir)
-    print(report(res, out_dir))
+    if a.v03:
+        analyse_v03(res, R, era, out_dir)
+        json.dump(res, open(os.path.join(out_dir, "calibration.json"), "w"), indent=1, default=str)
+        txt = report_v03(res)
+        open(os.path.join(out_dir, "report.md"), "w").write(txt + "\n")
+        print(txt)
+    else:
+        print(report(res, out_dir))
     return 0
 
 

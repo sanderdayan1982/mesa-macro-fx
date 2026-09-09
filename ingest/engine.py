@@ -22,6 +22,56 @@ def _get(blocks: Dict[str, dict], path: str):
     return (b.get("series", {}).get(key) or b.get("derived", {}).get(key) or {})
 
 
+def effective_score(score, recent, persistence):
+    """Persistence mode 'mean': the score the cuts are applied to is the mean of the block's prints over the last entry_days
+    (a weekly block: this print and the previous one; a daily block: the last week of prints). Fewer than two prints = the print itself."""
+    pers = persistence or {}
+    if score is None:
+        return None
+    if pers.get("mode", "mean") == "mean" and pers.get("entry_days", 0) > 0 and len(recent) >= 2:
+        return round(sum(v for _, v in recent) / len(recent), 3)
+    return score
+
+
+def block_regime_step(score: Optional[float], cuts: dict, prev_state: Optional[dict], as_of: Optional[str], persistence: Optional[dict]) -> dict:
+    """One as-of step of the per-block regime: Schmitt cuts (enter / exit) on the effective score, plus persistence.
+    mode 'mean' (default, engine v0.3): effective score = mean of the prints over the last entry_days (two weekly prints /
+    one week of daily prints); the cuts are era percentiles of that same smoothed score, so entry and exit are consistent.
+    mode 'consecutive': the raw print must sit beyond the enter cut on every print over entry_days before the side is confirmed.
+    exit_days: prints inside the exit cut needed before leaving a side (0 = the first one). Measured on the block's as-of dates."""
+    prev_state = prev_state or {}
+    confirmed = prev_state.get("confirmed") or "NEUTRAL"
+    pers = persistence or {}
+    entry_days, exit_days, mode = pers.get("entry_days", 0), pers.get("exit_days", 0), pers.get("mode", "mean")
+    recent = [tuple(x) for x in (prev_state.get("recent") or [])]
+    if score is None:
+        return {"confirmed": confirmed, "raw": "NO SIGNAL", "effective_score": None, "candidate": None, "candidate_since": None, "as_of": as_of, "recent": recent[-12:]}
+    if as_of:
+        recent = [(d, v) for d, v in recent if d < as_of] + [(as_of, float(score))]
+        lo = (datetime.fromisoformat(as_of[:10]) - timedelta(days=max(entry_days, 0))).date().isoformat()
+        recent = [(d, v) for d, v in recent if d >= lo][-12:]
+    s = effective_score(score, recent, pers)
+    # raw reading with hysteresis relative to the confirmed regime
+    if confirmed == "INJECTION":
+        raw = "INJECTION" if s >= cuts["injection_exit"] else ("DRAIN" if s <= cuts["drain_enter"] else "NEUTRAL")
+    elif confirmed == "DRAIN":
+        raw = "DRAIN" if s <= cuts["drain_exit"] else ("INJECTION" if s >= cuts["injection_enter"] else "NEUTRAL")
+    else:
+        raw = "INJECTION" if s >= cuts["injection_enter"] else "DRAIN" if s <= cuts["drain_enter"] else "NEUTRAL"
+    cand, since = prev_state.get("candidate"), prev_state.get("candidate_since")
+    if raw == confirmed:
+        cand, since = None, None
+    else:
+        if cand != raw or not since:
+            cand, since = raw, as_of
+        held = (datetime.fromisoformat(as_of[:10]) - datetime.fromisoformat(since[:10])).days if (as_of and since) else 0
+        need = exit_days if raw == "NEUTRAL" else (entry_days if mode == "consecutive" else 0)
+        if held >= need:
+            confirmed, cand, since = raw, None, None
+    return {"confirmed": confirmed, "raw": raw, "effective_score": s, "candidate": cand, "candidate_since": since, "as_of": as_of, "recent": recent,
+            "pending_days": ((datetime.fromisoformat(as_of[:10]) - datetime.fromisoformat(since[:10])).days if (as_of and since) else None)}
+
+
 def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[dict] = None) -> dict:
     rc = cfg["regime"]
     w = rc["weights"]
@@ -41,22 +91,47 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     # friction needs price confirmation; blocks may supply a persistence-based flag (GBP), else level >= WATCH (CAD)
     friction = spr.get("friction_confirmed") if "friction_confirmed" in spr else LEVEL_RANK[s_lvl] >= LEVEL_RANK["WATCH"]
     # ── three regimes (desk rule 2026-09-09): central bank, treasury/equivalent, general ──
-    # block regime from the block score (uniform across currencies); general = agreement rule, conflicts resolved by
-    # per-currency dual weights/thresholds (config regime.dual, provisional until calibrated); price gates on top.
+    # v0.2: block regime from the block score at flat ±0.5; general = agreement, conflicts resolved by dual weights.
+    # v0.3 (triangulation round 2, 2026-09-09): per-block entry/exit cuts calibrated on the operating era, persistence
+    # (entry_days / exit_days on the block's as-of dates), general regime = agreement rule only (conflict / partial = NEUTRAL,
+    # labelled), dual weights kept as context, evidence label per cut, agreement-only forced while the era is younger than
+    # agreement_only_until_weeks. Everything defaults to the v0.2 behaviour when the keys are absent.
     dual = rc.get("dual") or {}
-    bth = dual.get("block_thresholds") or {"injection": 0.5, "drain": -0.5}
+    v03 = str(dual.get("version", "")).startswith("0.3") or "persistence" in dual or isinstance((dual.get("block_thresholds") or {}).get("central_bank"), dict)
+    prev_regs = (prev_regime or {}).get("regimes") or {}
+
+    def _cuts(name: str) -> dict:
+        bt = dual.get("block_thresholds") or {}
+        c = bt.get(name) if isinstance(bt.get(name), dict) else bt
+        inj, drn = c.get("injection_enter", c.get("injection", 0.5)), c.get("drain_enter", c.get("drain", -0.5))
+        return {"injection_enter": inj, "injection_exit": c.get("injection_exit", inj), "drain_enter": drn, "drain_exit": c.get("drain_exit", drn),
+                "evidence": c.get("evidence") or {}, "rule": c.get("rule")}
 
     def _blk(name: str) -> dict:
         b = blocks.get(name)
         if not b or b["signals"]["traffic_light"] == "NONE":
             return {"regime": "NO SIGNAL", "score": None, "label": None, "traffic_light": "NONE", "as_of": None}
         sc = b["signals"]["score"]
-        r = "INJECTION" if sc >= bth["injection"] else "DRAIN" if sc <= bth["drain"] else "NEUTRAL"
-        return {"regime": r, "score": sc, "label": b["signals"]["label"], "traffic_light": b["signals"]["traffic_light"], "as_of": b.get("as_of"), "detail": b["signals"].get("detail", "")}
+        cuts = _cuts(name)
+        prev_state = (prev_regs.get(name) or {}).get("state") or {}
+        st = block_regime_step(sc, cuts, prev_state, b.get("as_of"), dual.get("persistence"))
+        out = {"regime": st["confirmed"], "score": sc, "label": b["signals"]["label"], "traffic_light": b["signals"]["traffic_light"], "as_of": b.get("as_of"),
+               "detail": b["signals"].get("detail", ""), "raw_regime": st["raw"], "cuts": {k: cuts[k] for k in ("injection_enter", "injection_exit", "drain_enter", "drain_exit")},
+               "evidence": cuts["evidence"], "state": st, "components": b["signals"].get("components")}
+        return out
 
     cbr, fir = _blk("central_bank"), _blk("fiscal")
     dw = dual.get("weights") or {"central_bank": 0.6, "fiscal": 0.4}
     gth = dual.get("general_thresholds") or {"injection": 0.5, "drain": -0.5}
+    era_start = dual.get("era_start")
+    era_weeks = None
+    if era_start:
+        asof = max([x for x in (cbr.get("as_of"), fir.get("as_of")) if x] or [now_iso()[:10]])
+        era_weeks = max(0, (datetime.fromisoformat(asof[:10]) - datetime.fromisoformat(era_start)).days // 7)
+    agree_only = bool(dual.get("agreement_only", v03))
+    until = dual.get("agreement_only_until_weeks")
+    if until and era_weeks is not None and era_weeks < until:
+        agree_only = True
     avail = {k: v for k, v in (("central_bank", cbr), ("fiscal", fir)) if v["score"] is not None}
     if not avail:
         g_reg, g_score, rule = "NO SIGNAL", None, "no block available"
@@ -70,6 +145,11 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
             g_reg, rule = "LIQUIDITY_INJECTION", "agreement: both inject"
         elif cbr["regime"] == "DRAIN" and fir["regime"] == "DRAIN":
             g_reg, rule = "LIQUIDITY_DRAIN", "agreement: both drain"
+        elif agree_only:
+            g_reg = "NEUTRAL"
+            kind = "conflict" if "NEUTRAL" not in (cbr["regime"], fir["regime"]) else "partial"
+            rule = "%s (%s vs %s) → NEUTRAL by the agreement rule (v0.3: no dual weights%s); dual score %+.2f shown for context" % (
+                kind, cbr["regime"], fir["regime"], (", era %d weeks < %d" % (era_weeks, until)) if (until and era_weeks is not None and era_weeks < until) else "", g_score)
         else:
             g_reg = "LIQUIDITY_INJECTION" if g_score >= gth["injection"] else "LIQUIDITY_DRAIN" if g_score <= gth["drain"] else "NEUTRAL"
             rule = ("conflict (%s vs %s) resolved by dual weights %s/%s and thresholds %+.2f/%+.2f — provisional, to calibrate per currency"
@@ -85,7 +165,10 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     else:
         regime = g_reg
     regimes = {"central_bank": cbr, "fiscal": fir,
-               "general": {"regime": regime, "score": g_score, "rule": rule, "price_gate": gate, "dual_weights": dw, "thresholds": gth, "block_thresholds": bth,
+               "general": {"regime": regime, "score": g_score, "rule": rule, "price_gate": gate, "dual_weights": dw, "thresholds": gth,
+                           "block_thresholds": {"central_bank": cbr.get("cuts"), "fiscal": fir.get("cuts")} if v03 else (dual.get("block_thresholds") or {"injection": 0.5, "drain": -0.5}),
+                           "engine": "0.3" if v03 else "0.2", "agreement_only": agree_only, "era_start": era_start, "era_weeks": era_weeks,
+                           "persistence": dual.get("persistence"), "level_weight": dual.get("level_weight"),
                            "calibration": dual.get("status", "provisional — per-currency thresholds pending")}}
     flags = []
     tsig = _get(blocks, "banking.transmission_signal").get("signal")

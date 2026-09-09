@@ -859,6 +859,16 @@ def _merge_hist_named(hist_dir: str, got: Dict[str, Series], names: List[str]) -
     return out
 
 
+def apply_engine_settings(cfg: dict) -> None:
+    """Engine v0.3 session settings from config regime.dual: era-anchored percentile windows and the level weight.
+    Absent keys = v0.2 behaviour (rolling windows, level weight 1.0)."""
+    from . import thresholds as TH
+    from . import scoring as SC
+    dual = (cfg.get("regime") or {}).get("dual") or {}
+    TH.set_era_anchor(dual.get("era_start") if dual.get("anchor_percentiles", bool(dual.get("era_start"))) else None)
+    SC.set_level_weight(dual.get("level_weight"))
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ccy", default="cad")
@@ -870,6 +880,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     ccy = a.ccy.lower()
     cfg = json.load(open(os.path.join(ROOT, "config", "%s.json" % ccy), encoding="utf-8"))
+    apply_engine_settings(cfg)
     data_dir = os.path.join(ROOT, "data", ccy)
     hist_dir = os.path.join(ROOT, "history", ccy)
     log_dir = os.path.join(ROOT, "logs", ccy)

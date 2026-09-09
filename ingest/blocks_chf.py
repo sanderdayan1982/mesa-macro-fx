@@ -13,6 +13,7 @@ from typing import Dict, List, Optional, Tuple
 from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
+from .scoring import Comps
 from .blocks import entry, _prev_levels, _alert, _health
 from .blocks_jpy import _entries, _base, _ffill, _spec, _cap_watch
 from .blocks_gbp import _persistent_level
@@ -232,18 +233,15 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
         flags.append("REPO_ABSORPTION_CHANGE")
     if (byms and abs(byms[-1][1]) > 3) or (bb and bb[-1][1] < 1.0):
         flags.append("SNB_BILLS_AUCTION_ANOMALY")
-    score = 0.0
-    if sb["signal"] == "RISK_ON":
-        score += 1.0
-    elif sb["signal"] == "RISK_OFF":
-        score -= 1.0
+    C = Comps(cfg, "sum", -1.5, 1.5)
+    C.flow("sight_deposits_13w_band", 1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0)
     lv = D["absorption_share"].get("level")
-    score += -0.5 if lv == "WATCH" else -1.0 if lv in ("STRESS", "CRISIS") else 0.0
+    C.level("absorption_share_level", -0.5 if lv == "WATCH" else -1.0 if lv in ("STRESS", "CRISIS") else 0.0)
     if "SNB_SUPPLYING" in flags:
-        score -= 1.0
+        C.event("snb_supplying", -1.0)
     if fx_suspect:
-        score += 0.5
-    score = round(max(-1.5, min(1.5, score)), 2)
+        C.flow("fx_intervention_suspect", 0.5)
+    score = C.score()
     reg = "NO DATA" if not gi else "INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL"
     alerts = [_alert("sight_deposits_wow", D["sight_deposits_wow"], "weekly reserve jump / drop (FX purchases, absorption, Confederation)"),
               _alert("excess_to_required_ratio", D["excess_to_required_ratio"], "dead-man switch: 8.7x today"),
@@ -252,7 +250,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
               {"metric": "supplying_repos", "level": "STRESS" if "SNB_SUPPLYING" in flags else "SAFE", "value": raw["supplying_repos"][-1][1] if raw["supplying_repos"] else 0.0, "threshold": {"watch": 0},
                "status": E["supplying_repos"]["status"], "action_hint": "any liquidity-supplying operation at 0% policy = scarcity signal"}]
     tl = "GREEN" if reg == "INJECTION" else "RED" if reg == "DRAIN" else "YELLOW" if reg == "NEUTRAL" else "NONE"
-    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": flags, "components": C.to_dict(),
                "detail": "GI %s (wow %s, 13w %s%%, %s) · absorption %s (%s%%) · ratio %sx · factor %s · phase %s" % (
                    gi[-1][1] if gi else None, wow[-1][1] if wow else None, p13[-1][1] if p13 else None, sb["signal"], stock[-1][1] if stock else None,
                    round(share[-1][1] * 100, 1) if share else None, ratio[-1][1] if ratio else None, fac[-1][1] if fac else None, phase), "alerts": alerts}
@@ -321,6 +319,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     ni = S.clean([(last_d[k], round(v, 1)) for k, v in mon.items()])  # dated at the last auction of the month (never a future month-end)
     D["net_issuance_month"] = entry("net_issuance_month", ni, "Gross Confederation issuance in the month (MMDRC + bonds; redemptions Phase 3)", "monthly", unit, cfg, z_window=12)
     score = 0.0 if fr in ("NO DATA", "NEUTRAL") else (-0.5 if fr == "DRAIN" else 0.5)
+    CF = Comps(cfg, "sum", -0.5, 0.5).flow("confed_balances_mom_band", score)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": fr, "status": "fresh" if mom else "unavailable", "date": mom[-1][0] if mom else None}
     D["fiscal_regime_score"] = {"label": "Fiscal regime score (capped ±0.5)", "value": score, "range": [-0.5, 0.5], "status": "fresh", "date": mom[-1][0] if mom else None}
     D["mmt_note"] = {"label": "MMT note", "value": None, "status": "fresh", "date": None,
@@ -336,7 +335,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
               _alert("mmdrc_bid_to_cover", D["mmdrc_bid_to_cover"], "< 2.0x WATCH, < 1.5x STRESS (C7)"),
               _alert("mmdrc_yield_minus_saron_bps", D["mmdrc_yield_minus_saron_bps"], "weak demand = yield at/above SARON (C7 sign fix)")]
     tl = "GREEN" if fr == "INJECTION" else "RED" if fr == "DRAIN" else "YELLOW" if fr == "NEUTRAL" else "NONE"
-    signals = {"traffic_light": tl, "score": score, "label": fr, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": fr, "flags": flags, "components": CF.to_dict(),
                "detail": "Confederation %s (mom %s) · MMDRC %sx at %s%% (%s bp vs SARON) · bonds %sx" % (vb[-1][1] if vb else None, mom[-1][1] if mom else None, btc[-1][1] if btc else None, my[-1][1] if my else None,
                                                                                                         mys[-1][1] if mys else None, bbtc[-1][1] if bbtc else None), "alerts": alerts}
     hd = [d for d, _ in S.tail(vb, 36)]

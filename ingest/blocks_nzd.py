@@ -14,6 +14,7 @@ from typing import Dict, List, Optional, Tuple
 from . import series as S
 from .series import Series
 from .thresholds import classify
+from .scoring import Comps
 from .blocks import entry, _prev_levels, _alert, _health
 from .blocks_jpy import _entries, _base, _ffill, _spec, _cap_watch
 from .blocks_chf import _two_sided, _apply
@@ -209,14 +210,14 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     lvl_r = E["settlement_cash_daily"]["level"]
     lvl_s = D["omo_reliance_share"]["level"]
     lvl_o = D["orrf_used"]["level"]
-    score = 0.0
+    C = Comps(cfg, "sum", -1.5, 1.5)
     if sc:
-        score += 0.5 if D["settlement_cash_wow"]["level"] == "SAFE" and (wow[-1][1] if wow else 0) > 0 else (-0.5 if D["settlement_cash_wow"].get("side") == "low" else 0.0)
-        score += 0.5 if D["settlement_cash_20d_change"]["value"] and D["settlement_cash_20d_change"]["value"] > 0 else -0.25
-        score -= {"SAFE": 0, "WATCH": 0.5, "STRESS": 1.0, "CRISIS": 1.5}.get(lvl_r, 0)
-        score -= {"SAFE": 0, "WATCH": 0.25, "STRESS": 0.5}.get(lvl_s, 0)
-        score -= {"SAFE": 0, "WATCH": 0.5, "STRESS": 1.0}.get(lvl_o, 0)
-    score = round(max(-1.5, min(1.5, score)), 2)
+        C.flow("settlement_cash_wow", 0.5 if D["settlement_cash_wow"]["level"] == "SAFE" and (wow[-1][1] if wow else 0) > 0 else (-0.5 if D["settlement_cash_wow"].get("side") == "low" else 0.0))
+        C.flow("settlement_cash_20d", 0.5 if D["settlement_cash_20d_change"]["value"] and D["settlement_cash_20d_change"]["value"] > 0 else -0.25)
+        C.level("settlement_cash_level", -{"SAFE": 0, "WATCH": 0.5, "STRESS": 1.0, "CRISIS": 1.5}.get(lvl_r, 0))
+        C.level("omo_reliance_level", -{"SAFE": 0, "WATCH": 0.25, "STRESS": 0.5}.get(lvl_s, 0))
+        C.event("orrf_used", -{"SAFE": 0, "WATCH": 0.5, "STRESS": 1.0}.get(lvl_o, 0))
+    score = C.score()
     label = "NO DATA" if not sc else "INJECTION" if score >= 0.75 else "DRAIN" if score <= -0.75 else "NEUTRAL"
     flags = []
     if orrf and orrf[-1][1] >= 100:
@@ -240,7 +241,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
               _alert("orrf_used", D["orrf_used"], "ceiling facility at OCR + 50: ≥ 100 m WATCH, ≥ 500 m STRESS"),
               _alert("fx_swap_active", D["fx_swap_active"], "RBNZ FX swaps as a liquidity tool")]
     tl = "GREEN" if score >= 0.75 else "RED" if score <= -0.75 else "YELLOW"
-    signals = {"traffic_light": tl if sc else "NONE", "score": score, "label": label, "flags": flags,
+    signals = {"traffic_light": tl if sc else "NONE", "score": score, "label": label, "flags": flags, "components": C.to_dict(),
                "detail": "settlement cash %s (5d %s, 20d %s, %s) · OMO stock %s (%s%%) · ORRF %s · phase %s" % (
                    sc[-1][1] if sc else None, wow[-1][1] if wow else None, d20[-1][1] if d20 else None, lvl_r, omo_out[-1][1] if omo_out else None,
                    round(shr * 100, 1) if shr is not None else None, orrf[-1][1] if orrf else None, phase), "alerts": alerts}
@@ -362,6 +363,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     elif r20.get("value") is not None and band is not None and abs(r20["value"]) > 0 and band * 20 <= 0.3 * abs(r20["value"]):
         fr = "INJECTION" if r20["value"] > 0 else "DRAIN"
     score = 0.5 if fr == "INJECTION" else -0.5 if fr == "DRAIN" else 0.0
+    CF = Comps(cfg, "sum", -0.5, 0.5).flow("govt_cash_influence_band", score)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": fr, "status": "fresh" if gci else "unavailable", "date": gci[-1][0] if gci else None, "note": b["derived"]["fiscal_regime"]["formula"]}
     D["fiscal_regime_score"] = {"label": "Fiscal regime score (capped ±0.5)", "value": score, "range": [-0.5, 0.5], "status": "fresh", "date": gci[-1][0] if gci else None}
     D["mmt_note"] = {"label": "MMT note", "value": None, "status": "fresh", "date": None, "text": b["derived"]["mmt_note"]["text"]}
@@ -384,7 +386,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
               _alert("tbill_allocation", D["tbill_allocation"], "allocated / offered — NZDM rejecting yields (< 0.9 WATCH)"),
               _alert("tbill_yield_minus_ocr_bps", D["tbill_yield_minus_ocr_bps"], "3m bill at the Crown's cost vs OCR (hike pricing / demand)")]
     tl = "GREEN" if fr == "INJECTION" else "RED" if fr == "DRAIN" else "YELLOW" if gci else "NONE"
-    signals = {"traffic_light": tl, "score": score, "label": fr, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": fr, "flags": flags, "components": CF.to_dict(),
                "detail": "CSA %s (mom %s) · D10 govt cash %s · T-bill %sx at %s%% · bond %sx tail %s bp · settlements next 5d %s · non-resident %s%%" % (
                    csa[-1][1] if csa else None, mom[-1][1] if mom else None, gci[-1][1] if gci else None, raw["tbill_tender_btc"][-1][1] if raw["tbill_tender_btc"] else None,
                    ty[-1][1] if ty else None, raw["bond_tender_coverage"][-1][1] if raw["bond_tender_coverage"] else None, raw["bond_tender_tail_bp"][-1][1] if raw["bond_tender_tail_bp"] else None,

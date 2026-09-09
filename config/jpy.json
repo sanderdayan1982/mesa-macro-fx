@@ -1387,6 +1387,56 @@
    }
   },
   "dual": {
+   "version": "0.3",
+   "status": "calibrated by replay 2026-09-09 (engine v0.3, era 2024-07-31, 102 weeks)",
+   "era_start": "2024-07-31",
+   "anchor_percentiles": true,
+   "level_weight": 1.0,
+   "persistence": {
+    "entry_days": 7,
+    "exit_days": 0,
+    "mode": "mean"
+   },
+   "agreement_only": true,
+   "agreement_only_until_weeks": 150,
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "central_bank": {
+     "injection_enter": 0.75,
+     "injection_exit": 0.75,
+     "drain_enter": 0.25,
+     "drain_exit": 0.25,
+     "level_weight": 1.0,
+     "evidence": {
+      "injection": "provisional_era_corta",
+      "drain": "provisional_era_corta"
+     },
+     "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+    },
+    "fiscal": {
+     "injection_enter": 0.24,
+     "injection_exit": 0.13,
+     "drain_enter": -0.32,
+     "drain_exit": -0.14,
+     "level_weight": 1.0,
+     "evidence": {
+      "injection": "provisional_era_corta",
+      "drain": "provisional_era_corta"
+     },
+     "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+    }
+   },
+   "rule": "three regimes per currency (engine v0.3): central_bank and fiscal from their block score with era-calibrated entry/exit cuts on the 7-day mean score; general = agreement only (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN, partial or conflict → NEUTRAL labelled); percentile windows anchored to era_start; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime"
+  },
+  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)",
+  "dual_v02": {
    "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
    "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
    "block_thresholds": {
@@ -1401,8 +1451,7 @@
     "injection": 0.5,
     "drain": -0.5
    }
-  },
-  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)"
+  }
  },
  "status_rules": {
   "fresh_multiplier": 1.5,

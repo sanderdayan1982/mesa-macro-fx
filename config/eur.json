@@ -814,11 +814,18 @@
       "NEUTRAL": "otherwise"
     },
     "dual": {
-      "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
-      "block_thresholds": {
-        "injection": 0.5,
-        "drain": -0.5
+      "version": "0.3",
+      "status": "calibrated by replay 2026-09-09 (engine v0.3, era 2022-09-14, 208 weeks)",
+      "era_start": "2022-09-14",
+      "anchor_percentiles": true,
+      "level_weight": 1.0,
+      "persistence": {
+        "entry_days": 7,
+        "exit_days": 0,
+        "mode": "mean"
       },
+      "agreement_only": true,
+      "agreement_only_until_weeks": 150,
       "weights": {
         "central_bank": 0.7,
         "fiscal": 0.3
@@ -827,7 +834,36 @@
         "injection": 0.5,
         "drain": -0.5
       },
-      "note": "EUR: CB 0.7 / treasury 0.3 proposed (fiscal signal weaker than in sovereign currencies)"
+      "block_thresholds": {
+        "central_bank": {
+          "injection_enter": 0.02,
+          "injection_exit": -0.14,
+          "drain_enter": -0.525,
+          "drain_exit": -0.42,
+          "level_weight": 1.0,
+          "evidence": {
+            "injection": "funding_validado",
+            "drain": "funding_validado",
+            "drain_test": "stress 4w ρ -0.311 q 0.02",
+            "injection_test": "stress 4w ρ -0.311 q 0.02"
+          },
+          "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+        },
+        "fiscal": {
+          "injection_enter": 0.59,
+          "injection_exit": 0.46,
+          "drain_enter": -0.02,
+          "drain_exit": 0.1,
+          "level_weight": 1.0,
+          "evidence": {
+            "injection": "frecuencia_de_era",
+            "drain": "frecuencia_de_era"
+          },
+          "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+        }
+      },
+      "note": "EUR: CB 0.7 / treasury 0.3 proposed (fiscal signal weaker than in sovereign currencies)",
+      "rule": "three regimes per currency (engine v0.3): central_bank and fiscal from their block score with era-calibrated entry/exit cuts on the 7-day mean score; general = agreement only (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN, partial or conflict → NEUTRAL labelled); percentile windows anchored to era_start; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime"
     },
     "orthogonal_flags": {
       "MRO_RELIANCE": "omo_takeup ≥ WATCH (structural/informational under full allotment; STRESS needs price confirmation)",
@@ -843,6 +879,22 @@
     "min_blocks_for_signal": 2,
     "calibration": {
       "status": "planned"
+    },
+    "dual_v02": {
+      "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+      "block_thresholds": {
+        "injection": 0.5,
+        "drain": -0.5
+      },
+      "weights": {
+        "central_bank": 0.7,
+        "fiscal": 0.3
+      },
+      "general_thresholds": {
+        "injection": 0.5,
+        "drain": -0.5
+      },
+      "note": "EUR: CB 0.7 / treasury 0.3 proposed (fiscal signal weaker than in sovereign currencies)"
     }
   },
   "status_rules": {

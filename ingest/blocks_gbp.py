@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
+from .scoring import Comps
 from .blocks import entry, _prev_levels, _alert, _base as _base0, _health
 
 
@@ -110,23 +111,23 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     if rd_lvl in ("WATCH", "STRESS", "CRISIS"):
         flags.append("REPO_DEPENDENCE_ELEVATED")  # engine upgrades to *_STRESS only with price confirmation
     # score: reserves vs PMRR (absolute), balance-sheet Δ, QT pace, emergency
-    comps = []
+    C = Comps(cfg, "mean2")
     lvl = E["reserves"]["level"]
     above = E["reserves"].get("above_range")
-    comps.append({"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
+    C.level("reserves_vs_pmrr", {"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
     sig = D["policy_balance_sheet_wow_pct"]["signal"]
-    comps.append(1.0 if sig == "RISK_ON" else -1.0 if sig == "RISK_OFF" else 0.0)
-    comps.append({"SAFE": 0.0, "WATCH": -0.5, "STRESS": -1.0}.get(D["qt_pace"].get("level"), 0.0))
+    C.flow("balance_sheet_band", 1.0 if sig == "RISK_ON" else -1.0 if sig == "RISK_OFF" else 0.0)
+    C.level("qt_pace_level", {"SAFE": 0.0, "WATCH": -0.5, "STRESS": -1.0}.get(D["qt_pace"].get("level"), 0.0))
     if ctrf and ctrf > 0:
-        comps.append(-2.0)
-    score = round(max(-2.0, min(2.0, sum(comps) / len(comps) * 2)), 2)
+        C.event("ctrf", -2.0)
+    score = C.score()
     alerts = [_alert("reserves", E["reserves"], "below PMRR floor 365bn = scarcity zone (price must confirm)"),
               _alert("ctrf", E.get("ctrf", {"level": "NO DATA"}), "any CTRF > 0 = contingent facility in use"),
               _alert("qt_pace", D["qt_pace"], "APF run-off faster than -10bn/w = STRESS"),
               _alert("repo_dependence_ratio", D["repo_dependence_ratio"], "informational unless SONIA ≥ Bank Rate")]
     label = "NO SIGNAL" if not res else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not res else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags,
+    signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": C.to_dict(),
                "detail": "reserves %s (%s PMRR) · PBS %s · QT %s/w · repo/reserves %s" % (lvl, "above" if above else "inside" if E["reserves"].get("in_range") else "below",
                                                                                           sig, qv, D["repo_dependence_ratio"]["value"]), "alerts": alerts}
     hd = [d for d, _ in S.tail(res, 52)]
@@ -175,6 +176,7 @@ def build_fiscal(cfg: dict, ons: Dict[str, Series], prev: Optional[dict] = None)
     cap = b.get("influence_cap", {}).get("cap", 0.5)
     raw_score = 0.0 if reg == "NO DATA" else (1.0 if reg == "INJECTION" else -1.0 if reg == "DRAIN" else 0.0) * (1.0 + min(1.0, abs(nz or 0) / 2))
     score = round(max(-cap * 2, min(cap * 2, raw_score)), 2)  # capped: monthly layer cannot flip the regime alone
+    CF = Comps(cfg, "sum", -cap * 2, cap * 2).flow("net_spending_band_x_z", score)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": reg, "status": "fresh" if yoy else "unavailable", "date": D["net_spending"]["date"]}
     D["fiscal_regime_score"] = {"label": "Fiscal regime score (capped ±%s)" % cap, "value": score, "range": [-2, 2], "status": "fresh", "date": D["net_spending"]["date"]}
     D["dmo_gilt_auction"] = {"label": "DMO gilt auctions (cover / tail)", "value": None, "status": "unavailable", "date": None, "note": "Phase 3: per-event parser"}
@@ -183,7 +185,7 @@ def build_fiscal(cfg: dict, ons: Dict[str, Series], prev: Optional[dict] = None)
               {"metric": "net_spending_yoy", "level": "WATCH" if reg == "DRAIN" else "SAFE" if reg != "NO DATA" else "NO DATA", "value": D["net_spending_yoy"]["value"],
                "threshold": None, "status": D["net_spending_yoy"]["status"], "action_hint": "y/y net spending below p20 = fiscal drain"}]
     tl = "NONE" if reg == "NO DATA" else "GREEN" if reg == "INJECTION" else "RED" if reg == "DRAIN" else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": ["FISCAL_BIG_MONTH"] if big else [],
+    signals = {"traffic_light": tl, "score": score, "label": reg, "flags": ["FISCAL_BIG_MONTH"] if big else [], "components": CF.to_dict(),
                "detail": "net spending %s (y/y %s, %s) · CGNCR Z %s · monthly, ~3-week lag" % (D["net_spending"]["value"], D["net_spending_yoy"]["value"], sb["signal"], zv), "alerts": alerts}
     hd = [d for d, _ in S.tail(ns, 36)]
     history = {"dates": hd, "rows": {k: [dict(v).get(d) for d in hd] for k, v in (("net_spending", ns), ("net_spending_yoy", yoy), ("cg_expenditure", exp_), ("cg_receipts", rec),

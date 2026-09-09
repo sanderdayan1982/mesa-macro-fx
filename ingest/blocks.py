@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
+from .scoring import Comps
 from .quality import evaluate_series, system_summary
 
 SCHEMA_VERSION = "0.3.0"
@@ -129,23 +130,23 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     D["balance_sheet_phase"] = {"label": "Balance-sheet phase", "value": None, "phase": phase, "status": "fresh", "date": E["total_assets"]["date"],
                                 "note": "informational; post-QT BoC offsets currency growth with term repo, bills (Q4 2025) and bonds (late 2026)"}
     # score & signals
-    comps = []
+    C = Comps(cfg, "mean2")
     sig = D["net_liquidity_wow_pct"]["signal"]
-    comps.append(1.0 if sig == "RISK_ON" else -1.0 if sig == "RISK_OFF" else 0.0)
+    C.flow("net_liquidity_band", 1.0 if sig == "RISK_ON" else -1.0 if sig == "RISK_OFF" else 0.0)
     lvl = E["reserves"]["level"]
-    comps.append({"SAFE": 0.5 if E["reserves"].get("in_range") else 0.0, "WATCH": -1.0, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
+    C.level("reserves_vs_range", {"SAFE": 0.5 if E["reserves"].get("in_range") else 0.0, "WATCH": -1.0, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
     if (E["emergency_lending"]["value"] or 0) > 0:
-        comps.append(-2.0)
+        C.event("emergency_lending", -2.0)
     rw_ = D["reserves_wow_pct"]["value"]
-    comps.append(max(-1.0, min(1.0, (rw_ or 0.0) / 10.0)))
-    score = round(max(-2.0, min(2.0, sum(comps) / len(comps) * 2)), 2)
+    C.flow("reserves_wow", max(-1.0, min(1.0, (rw_ or 0.0) / 10.0)))
+    score = C.score()
     alerts = [_alert("reserves", E["reserves"], "below BoC 50–70B range = scarcity zone"),
               _alert("emergency_lending", E["emergency_lending"], "any Advances > 0 = standing facility in use"),
               _alert("government_account", E["government_account"], "high/rising = fiscal drain"),
               _alert("sovereign_bonds_wow_pct", D["sovereign_bonds_wow_pct"], "QT drag")]
     label = "NO SIGNAL" if not nl else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not nl else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
-    signals = {"traffic_light": tl, "score": score, "label": label,
+    signals = {"traffic_light": tl, "score": score, "label": label, "components": C.to_dict(),
                "detail": "NetLiq %s · reserves %s (%s) · phase %s" % (sig, lvl, "in range" if E["reserves"].get("in_range") else "out of range", phase),
                "alerts": alerts}
     hist_dates = [d for d, _ in S.tail(nl, 52)]
@@ -203,6 +204,7 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
         reg = "INJECTION" if pcts["signal"] == "RISK_ON" or (pcts["percentile"] is None and cum > 0 and (zv or 0) > 0.5) else \
               "DRAIN" if pcts["signal"] == "RISK_OFF" or (pcts["percentile"] is None and cum < 0 and (zv or 0) < -0.5) else "NEUTRAL"
         score = round(max(-2.0, min(2.0, (zv or 0.0))), 2)
+    CF = Comps(cfg, "sum").flow("fiscal_flow_z", score)
     D["fiscal_flow_7d_cum"]["percentile"] = pcts.get("percentile")
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": reg, "status": "proxy", "date": E["rg_closing_balance"]["date"]}
     D["fiscal_regime_score"] = {"label": "Fiscal regime score", "value": score, "range": [-2, 2], "status": "proxy", "date": E["rg_closing_balance"]["date"]}
@@ -215,7 +217,7 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     if E["rg_closing_balance"]["status"] != "fresh":
         for k in ("reserve_impact_daily", "fiscal_flow_proxy_daily", "fiscal_flow_zscore", "fiscal_flow_7d_cum"):
             D[k]["status"] = "stale" if E["rg_closing_balance"]["status"] == "stale" else "unavailable"
-    signals = {"traffic_light": tl, "score": score, "label": reg, "detail": "7d cum %s · Z %s · weekly Valet cross-check %s" % (cum, zv, D["fiscal_flow_weekly_valet"]["value"]), "alerts": alerts}
+    signals = {"traffic_light": tl, "score": score, "label": reg, "components": CF.to_dict(), "detail": "7d cum %s · Z %s · weekly Valet cross-check %s" % (cum, zv, D["fiscal_flow_weekly_valet"]["value"]), "alerts": alerts}
     hd = [d for d, _ in S.tail(ff, 60)]
     history = {"dates": hd, "rows": {"fiscal_flow_proxy_daily": [dict(ff).get(d) for d in hd], "reserve_impact_daily": [dict(ri).get(d) for d in hd],
                                      "rg_closing_balance": [dict(cb).get(d) for d in hd], "rg_term_deposits": [dict(td).get(d) for d in hd],
