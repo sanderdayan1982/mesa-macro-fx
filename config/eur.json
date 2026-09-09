@@ -1,0 +1,1221 @@
+{
+  "$schema": "mesa-macro/config.schema.json",
+  "config_version": "0.2.1",
+  "currency": "EUR",
+  "name": "EUR Command Center — Eurosystem liquidity desk",
+  "jurisdiction": "Euro area (20)",
+  "central_bank": "European Central Bank / Eurosystem",
+  "treasury": "no single treasury — aggregate: central government deposits at the Eurosystem (WFS), national DMOs (DE/FR/IT/ES) + EU issuance, TARGET balances, Eurostat GST",
+  "monetary_sovereignty": "incomplete (currency users at national level; Eurosystem is the issuer) — fiscal block weighted low by construction",
+  "framework": "Floor system: excess liquidity (2.16tn, 2026-09-07) remunerated at the DFR; €STR trades below the DFR (−6 bp). March-2024 operational framework: MRO = DFR + 15 bp, MLF = DFR + 40 bp (since Sep-2024), fixed-rate full allotment → MRO/LTRO take-up (TOMO) is the quantity signal of scarcity, €STR vs DFR the price signal. DFR 2.25 / MRO 2.40 / MLF 2.65 since 2026-06-17 (first hike after the 2024–25 cutting cycle). APP no reinvestments since Jul-2023; PEPP run-off; TLTRO III repaid.",
+  "timezone_source": "Europe/Frankfurt",
+  "timezone_operator": "Africa/Lagos",
+  "units": {
+    "balance_sheet": "EUR millions",
+    "rates": "percent",
+    "spreads": "bps"
+  },
+  "lineage": {
+    "origin": "Sander's EUR Macro Command Center v5 (Netlify Functions + Blobs; 9 real ECB series, everything else simulated) — audited 2026-09-09, ideas kept: excess liquidity, DF/excess, autonomous factors, govt-deposit fiscal impulse, TARGET2, periphery spreads, €STR–EURIBOR, M1/M3, APP/PEPP",
+    "corrections": [
+      "€STR key in v5 (EU000A2QQF16) is wrong → EST.B.EU000A2X2A25.WT",
+      "ILM monthly government deposits (v5 GOVDEP) no longer exists → weekly WFS L050100",
+      "TARGET2, spreads, deficits, Bund yields, EURIBOR, credit, LCR were simulated in v5 → all replaced by verified series or marked pending"
+    ]
+  },
+  "sources": {
+    "ecb_data_portal": {
+      "base": "https://data-api.ecb.europa.eu/service/data/<FLOW>/<KEY>?format=csvdata&lastNObservations=<N> (or startPeriod=YYYY-MM-DD)",
+      "auth": "none",
+      "cors": "yes",
+      "columns": "KEY, TIME_PERIOD, OBS_VALUE, UNIT, UNIT_MULT (millions = 6)",
+      "verified": "2026-09-09",
+      "release": "ILM daily T+1 ~09:30 CET; WFS Tuesday 15:00 CET (Wednesday-of-previous-week position, W-frequency keys); €STR 08:00 CET T+1; YC daily ~17:00 CET; BSI monthly ~27th; TGB monthly ~10th; IRS monthly",
+      "rate_limit": "one request per key per lane, ≥ 1 s apart; runner reachability to be diagnosed in Fase 2",
+      "time_period_mapping": "daily YYYY-MM-DD as is; weekly YYYY-Wnn → Friday of the ISO week (WFS position date); monthly → 1st of month; quarterly → quarter end"
+    },
+    "ecb_app": {
+      "base": "https://www.ecb.europa.eu/mopo/implement/app/html/index.en.html",
+      "files": [
+        "/mopo/pdf/APP_breakdown_history.csv",
+        "/mopo/pdf/APP_redemptions_history.csv",
+        "/mopo/pdf/PSPP_breakdown_history.csv",
+        "/mopo/pdf/PEPP_breakdown_history.csv",
+        "/mopo/pdf/PEPP_redemptions_history.csv",
+        "/mopo/pdf/PEPP_purchase_history.csv",
+        "/mopo/pdf/PEPP_public_sector_securities_breakdown_history.csv"
+      ],
+      "verified": "2026-09-09: monthly holdings at amortised cost Jul-2026 2,093,295 (Jun 2,120,466); page also quotes 'stock of APP bonds 2,319bn end-Jul' (different measure)"
+    },
+    "ecb_omo": {
+      "base": "https://www.ecb.europa.eu/mopo/implement/omo/html/index.en.html",
+      "verified": "2026-09-09: MRO 20260077 13.87bn settled 2026-09-02; LTRO 3m 20260057 7.01bn"
+    },
+    "finanzagentur": {
+      "base": "https://www.deutsche-finanzagentur.de/en/federal-securities/issuances/issuance-results",
+      "files": {
+        "current_year_xlsx": "/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionsergebnisse_aktuell_en.xlsx",
+        "history_xlsx": "/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionshistorie_en.xlsx",
+        "columns": "No., Date, ISIN, Bond, Coupon, Maturity, segment, volume, Type (R/N), process (Auc/M-A/Syn/OH), Bids, competitive, non-competitive, allotted, lowest price, avg price, avg yield, retention, bid-to-cover"
+      },
+      "verified": "2026-09-09: Bund/g 2026-09-08 750m b/c 2.5 and 1.3; Bubill 2026-09-07 2,000m b/c 1.6 2.479%"
+    },
+    "aft": {
+      "base": "https://www.aft.gouv.fr/fr/dernieres-adjudications",
+      "files": "Excel histories at /fr/principaux-chiffres-oat and /fr/btf-principaux-chiffres",
+      "verified": "2026-09-09: OAT 2026-09-03 four lines, bid-to-cover 2.28–3.10 (e.g. OAT 3.70% 11/2036 6,862m 2.28 4.23%); BTF 2026-09-07 b/c 3.93–5.18 (E11)"
+    },
+    "eu_commission": {
+      "base": "https://commission.europa.eu/strategy-and-policy/eu-budget/eu-borrower-investor-relations/auctions_en",
+      "verified": "2026-09-09: EU-Bonds 6 auctions in H2-2026 (Mondays, 3-leg), EU-Bills twice a month (Wednesdays, 3/6/12m); results published as news items (E11)"
+    },
+    "bundesbank_api": {
+      "base": "https://api.statistiken.bundesbank.de/rest/data/BBSSY/D.REN.EUR.A630.000000WT1010.A",
+      "status": "reviewer-cited daily Bund 10Y key — NOT verified (CORS/download blocked from the browser); runner diagnostic in Fase 2 (E12)"
+    },
+    "pending": {
+      "mef_it": "dt.mef.gov.it/en/debito_pubblico/emissioni_titoli_di_stato_interni/risultati_aste/ (HTML per auction, b/c in the notice — reviewer, pending)",
+      "tesoro_es": "tesoro.es resultado-ultimas-subastas (HTML; no ratio published — compute requested/allotted — reviewer, pending)",
+      "aft_tec10": "TEC10 daily (AFT/Banque de France) — Phase 3",
+      "money_market_daily": "ECB daily money market statistics (secured/unsecured) — NOT on the SDMX portal (MMSR flow = survey; EMMS aggregated per maintenance period, 15 TARGET days after) — Phase 3",
+      "national_daily_yields": "YC.B.<CC>.EUR... keys do NOT exist (verified 404) — national daily 10Y only via Bundesbank / AFT / BdI / BdE — Phase 3",
+      "note": "GFS / BLS / MIR / PEPP resolved in v0.2 (E1–E4)"
+    }
+  },
+  "blocks": {
+    "central_bank": {
+      "title": "1 · Eurosystem — excess liquidity, deposit facility, autonomous factors, MRO/LTRO take-up, WFS balance sheet, APP/PEPP run-off",
+      "equivalence_quality": "high",
+      "equivalence_note": "ILM daily (T+1) = WRESBAL analog on a daily grid; WFS weekly Tuesday 15:00 CET. Floor system with full allotment: quantity taken at MRO/LTRO is the scarcity signal (like NZD OMO).",
+      "series": {
+        "excess_liquidity": {
+          "id": "ILM.D.U2.C.EXLIQ.U2.EUR",
+          "label": "Excess liquidity (DF + current accounts − minimum reserves)",
+          "freq": "daily",
+          "usd_analog": "WRESBAL",
+          "verified": "2026-09-07 = 2,159,791"
+        },
+        "deposit_facility": {
+          "id": "ILM.D.U2.C.L020200.U2.EUR",
+          "label": "Deposit facility",
+          "freq": "daily",
+          "verified": "2026-09-04 = 2,005,194"
+        },
+        "current_accounts": {
+          "id": "ILM.D.U2.C.L020100.U2.EUR",
+          "label": "Current accounts (minimum reserve system)",
+          "freq": "daily",
+          "verified": "2026-09-04 = 328,179"
+        },
+        "minimum_reserves": {
+          "id": "ILM.D.U2.C.MRR.U2.EUR",
+          "label": "Minimum reserve requirements",
+          "freq": "daily",
+          "verified": "2026-09-07 = 174,661"
+        },
+        "net_autonomous_factors": {
+          "id": "ILM.D.U2.C.NLIQ.U2.EUR",
+          "label": "Net liquidity effect of autonomous factors and MonPol portfolios",
+          "freq": "daily",
+          "verified": "2026-09-07 = −2,306,280"
+        },
+        "omo_takeup": {
+          "id": "ILM.D.U2.C.TOMO.U2.EUR",
+          "label": "Open market operations excl. MonPol portfolios (MRO + LTRO outstanding)",
+          "freq": "daily",
+          "usd_analog": "discount window (primary credit) — full-allotment refinancing",
+          "verified": "2026-09-07 = 28,171"
+        },
+        "mlf_usage": {
+          "id": "ILM.D.U2.C.A050500.U2.EUR",
+          "label": "Marginal lending facility usage",
+          "freq": "daily",
+          "usd_analog": "primary credit",
+          "verified": "2026-09-04 = 5"
+        },
+        "mro_weekly": {
+          "id": "ILM.W.U2.C.A050100.U2.EUR",
+          "label": "MRO outstanding (WFS)",
+          "freq": "weekly",
+          "verified": "2026-W36 = 13,866"
+        },
+        "ltro_weekly": {
+          "id": "ILM.W.U2.C.A050200.U2.EUR",
+          "label": "LTRO outstanding (WFS)",
+          "freq": "weekly",
+          "verified": "2026-W36 = 14,305"
+        },
+        "monpol_securities": {
+          "id": "ILM.W.U2.C.A070100.U2.EUR",
+          "label": "Securities held for monetary policy purposes (APP + PEPP, WFS)",
+          "freq": "weekly",
+          "usd_analog": "TREAST + MBS",
+          "verified": "2026-W36 = 3,360,736"
+        },
+        "other_securities": {
+          "id": "ILM.W.U2.C.A070200.U2.EUR",
+          "label": "Other securities (WFS)",
+          "freq": "weekly",
+          "display_only": true,
+          "verified": "2026-W36 = 362,960"
+        },
+        "mpo_liabilities": {
+          "id": "ILM.W.U2.C.L020000.U2.EUR",
+          "label": "Liabilities to credit institutions related to MPOs (WFS)",
+          "freq": "weekly",
+          "display_only": true,
+          "verified": "2026-W36 = 2,333,373"
+        },
+        "app_holdings": {
+          "id": "APP:holdings",
+          "label": "APP holdings at amortised cost (monthly table + weekly figure on the APP page)",
+          "freq": "monthly",
+          "source": "ecb_app",
+          "status": "parser live (Fase 2): APP_breakdown_history.csv, end-of-month holdings at amortised cost = ABSPP + CBPP3 + CSPP + PSPP",
+          "verified": "2026-08 = 2,077,889 (Jul 2,093,295; Jun 2,120,466) — 2026-09-09"
+        },
+        "pepp_holdings": {
+          "id": "PEPP:holdings",
+          "label": "PEPP holdings at amortised cost (weekly)",
+          "freq": "monthly",
+          "source": "ecb_pepp",
+          "status": "parser live (Fase 2): PEPP_breakdown_history.csv, end-of-month holdings at amortised cost (file Total)",
+          "verified": "2026-08 = 1,284,844 (Jul 1,294,658) — 2026-09-09; weekly page figure 28-Aug 1,284,914"
+        },
+        "app_pepp_redemptions": {
+          "id": "APP:redemptions",
+          "label": "APP scheduled redemptions (realised or estimated, monthly) — PEPP:redemptions merged in the block",
+          "freq": "monthly",
+          "source": "ecb_app",
+          "note": "APP_redemptions_history.csv + PEPP_redemptions_history.csv: 2026 months carry estimates (realised column filled through Dec-2025); block sums both for qt_scheduled_3m",
+          "display_only": true,
+          "schedule": true
+        }
+      },
+      "derived": {
+        "excess_liquidity_dod": {
+          "formula": "Δ excess liquidity d/d"
+        },
+        "excess_liquidity_wow": {
+          "formula": "Δ 5 sessions"
+        },
+        "df_share_of_excess": {
+          "formula": "deposit facility / excess liquidity"
+        },
+        "omo_reliance_share": {
+          "formula": "omo_takeup / excess liquidity",
+          "note": "CodeWord rule from NZD: read with the absolute stock (omo_takeup) beside it"
+        },
+        "monpol_runoff_13w": {
+          "formula": "Δ 13 weeks of monpol_securities (QT pace)"
+        },
+        "balance_sheet_phase": {
+          "rule": "13-week Δ monpol_securities < −20bn QT · > +20bn QE · else STEADY",
+          "note": "E4: A070100 = APP + PEPP combined at amortised cost (WFS 3,360.7bn ≈ APP Jul 2,093.3 + PEPP 28-Aug 1,284.9 after August run-off); QT expected vs realised from APP_redemptions_history + PEPP_redemptions_history (Fase 2)"
+        },
+        "app_pepp_reconciliation": {
+          "formula": "monpol_securities − (app_holdings + pepp_holdings)",
+          "note": "should stay within ±1% (E4)"
+        },
+        "residual_flow_daily": {
+          "formula": "Δ excess liquidity − Δ omo_takeup (autonomous factors incl. government deposits, coincident)"
+        },
+        "qt_scheduled_3m": {
+          "formula": "Σ APP + PEPP redemptions (realised or estimated) for the current and next two months"
+        },
+        "omo_escalation": {
+          "rule": "E7: omo_takeup level from 30/100/250bn; STRESS/CRISIS shown as WATCH ('STRUCTURAL') unless €STR − DFR ≥ WATCH (price gate)"
+        },
+        "exliq_identity_check": {
+          "formula": "excess_liquidity − (DF + CA − MRR), % (reconciliation rule)"
+        },
+        "excess_liquidity_trend_20s": {
+          "formula": "Δ excess liquidity 20 sessions (percentile 156w, same spec as excess_liquidity_wow)"
+        },
+        "block_score": {
+          "rule": "mean of components × 2, clamped ±2: excess-liquidity level (SAFE +0.5 · WATCH −0.5 · STRESS −1.5 · CRISIS −2) · Δ5s / (1 % of excess liquidity) clamped ±1 · Δ20s / (2 % of excess liquidity) clamped ±1 · phase (QT −0.5 · QE +0.75) · TOMO (price-confirmed STRESS/CRISIS −1 · structural watch −0.25) · MLF used −0.5; INJECTION ≥ +0.5 · DRAIN ≤ −0.5",
+          "note": "flow components are absolute on purpose: under QT the percentile distribution of Δ is negative and a small rise reads as p90 — percentiles remain visible as WATCH/STRESS levels on the derived entries"
+        }
+      },
+      "thresholds": {
+        "excess_liquidity": {
+          "method": "absolute_primary",
+          "direction": "low_is_risk",
+          "primary_absolute": {
+            "boc_target_range": [
+              1500000,
+              4000000
+            ],
+            "below_range_watch": true,
+            "stress_below": 1000000,
+            "crisis_below": 750000
+          },
+          "secondary_percentile": {
+            "window": "156w",
+            "watch_below": "p20",
+            "stress_below": "p10",
+            "crisis_below": "p5"
+          },
+          "regime_trigger": false,
+          "note": "E8: dead-man switches only (no ECB 'ample' level published); 1.5tn coincides with the Eurosystem excess-liquidity estimate for end-2027 cited by Perplexity from the Bundesbank monthly report of 17-Jun-2025 (article verified to exist; figure pending verbatim verification); DeepSeek's '~2.1tn ample floor' rejected (no primary source). Scarcity is price/quantity-gated"
+        },
+        "omo_takeup": {
+          "method": "absolute",
+          "watch_above": 30000,
+          "stress_above": 100000,
+          "crisis_above": 250000,
+          "note": "E7: WATCH 30bn (2025 average ~20–26bn per reviewers), STRESS 100bn, CRISIS 250bn (pre-2008 routine refinancing ~450bn). Quantity alone is STRUCTURAL under full allotment (the ECB expects higher MRO use as liquidity falls — reviewer citation, Bundesbank monthly report 17-Jun-2025, wording pending verification): the block escalates only with price confirmation (€STR − DFR ≥ WATCH); without it the level shows as MRO_RELIANCE (informational)"
+        },
+        "omo_reliance_share": {
+          "method": "percentile",
+          "window": "156w",
+          "watch_above": "p90",
+          "stress_above": "p97",
+          "min_n": 120
+        },
+        "mlf_usage": {
+          "method": "absolute",
+          "watch_above": 1000,
+          "stress_above": 5000,
+          "note": "DESK PROPOSAL: routine use is a few million"
+        },
+        "excess_liquidity_wow": {
+          "method": "percentile",
+          "window": "156w",
+          "watch_below": "p10",
+          "stress_below": "p3",
+          "two_sided": true,
+          "min_n": 120
+        }
+      }
+    },
+    "fiscal": {
+      "title": "2 · Treasury equivalent — central government deposits at the Eurosystem (WFS), national issuance (DE verified; FR/IT/ES/EU pending), TARGET balances, GST",
+      "equivalence_quality": "medium-low",
+      "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
+      "series": {
+        "govt_deposits": {
+          "id": "ILM.W.U2.C.L050100.U2.EUR",
+          "label": "Central government deposits at the Eurosystem (WFS)",
+          "freq": "weekly",
+          "usd_analog": "TGA (aggregate)",
+          "verified": "2026-W36 = 89,275"
+        },
+        "govt_debt_held": {
+          "id": "ILM.W.U2.C.A080000.U2.EUR",
+          "label": "General government debt denominated in euro (WFS asset)",
+          "freq": "weekly",
+          "display_only": true,
+          "verified": "2026-W36 = 19,703"
+        },
+        "target_de": {
+          "id": "TGB.M.DE.N.A094T.U2.EUR.E",
+          "label": "TARGET balance — Germany",
+          "freq": "monthly",
+          "verified": "2026-07 = +1,037,116"
+        },
+        "target_it": {
+          "id": "TGB.M.IT.N.A094T.U2.EUR.E",
+          "label": "TARGET balance — Italy",
+          "freq": "monthly",
+          "verified": "2026-07 = −331,169"
+        },
+        "target_es": {
+          "id": "TGB.M.ES.N.A094T.U2.EUR.E",
+          "label": "TARGET balance — Spain",
+          "freq": "monthly",
+          "verified": "2026-07 = −430,474"
+        },
+        "target_fr": {
+          "id": "TGB.M.FR.N.A094T.U2.EUR.E",
+          "label": "TARGET balance — France",
+          "freq": "monthly",
+          "verified": "2026-07 = −182,481"
+        },
+        "de_auction_bid_to_cover": {
+          "id": "DE:bid_to_cover",
+          "label": "Bund/Bobl/Schatz/Bubill auction bid-to-cover (Finanzagentur)",
+          "freq": "event",
+          "source": "finanzagentur",
+          "status": "parser live (Fase 2): emissionsergebnisse_aktuell_en.xlsx, allotted-weighted across the ISIN lines of one auction date; syndications excluded",
+          "verified": "2026-09-08 Green 10Y 2.5 / 15Y 1.3 → weighted 1.94; Bubill 2026-09-07 1.6 / 1.8 → 1.715"
+        },
+        "de_auction_avg_yield": {
+          "id": "DE:avg_yield",
+          "label": "Finanzagentur auction average yield",
+          "freq": "event",
+          "status": "parser live (Fase 2), allotted-weighted",
+          "source": "finanzagentur"
+        },
+        "de_auction_retention": {
+          "id": "DE:retention",
+          "label": "Finanzagentur retention (own account) share",
+          "freq": "event",
+          "status": "parser live (Fase 2), sum over the auction's lines (Bund retained for secondary-market operations)",
+          "source": "finanzagentur"
+        },
+        "fr_it_es_eu_issuance": {
+          "id": null,
+          "label": "AFT / MEF / Tesoro ES / EU auction results",
+          "freq": "event",
+          "status": "pending (Fase 2 format check)"
+        },
+        "ea_deficit_gdp": {
+          "id": "GFS.Q.N.I9.W0.S13.S1._Z.B.B9._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T",
+          "label": "Euro area government deficit(−)/surplus(+), % of GDP (GFS, quarterly)",
+          "freq": "quarterly",
+          "unit": "% GDP",
+          "verified": "2026-Q1 = −3.06 (E1: flow is GFS, not GST)"
+        },
+        "ea_primary_deficit_gdp": {
+          "id": "GFS.Q.N.I9.W0.S13.S1._Z.B.B9P._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T",
+          "label": "Euro area primary deficit(−)/surplus(+), % of GDP",
+          "freq": "quarterly",
+          "unit": "% GDP",
+          "verified": "2026-Q1 = −1.16"
+        },
+        "de_auction_volume": {
+          "id": "DE:volume",
+          "label": "Bund/Bubill issuance volume per auction date (Finanzagentur)",
+          "freq": "event",
+          "source": "finanzagentur",
+          "unit": "EUR millions",
+          "display_only": true
+        },
+        "other_ea_liabilities": {
+          "id": "ILM.W.U2.C.L050000.U2.EUR",
+          "label": "Liabilities to other euro area residents in euro (WFS L5 = government deposits + other) — long history context",
+          "freq": "weekly",
+          "note": "the government-deposit breakdown L050100 exists on the portal only since 2025-W45 (verified 2026-09-09); L050000 since 2015 gives the long-run scale (181,821 on 2026-W36 = 89,275 + 92,546)",
+          "verified": "2026-W36 = 181,821",
+          "display_only": true
+        }
+      },
+      "derived": {
+        "govt_deposits_wow": {
+          "formula": "Δ w/w of govt_deposits (+ = drain from excess liquidity)"
+        },
+        "fiscal_impulse_4w": {
+          "formula": "−Δ 4 weeks of govt_deposits (v5 idea: 'Fiscal Impulse 4W')"
+        },
+        "fiscal_impulse_13w": {
+          "formula": "−Δ 13 weeks"
+        },
+        "target_fragmentation": {
+          "formula": "|IT| + |ES| + |FR| TARGET liabilities, Δ 3 months"
+        },
+        "fiscal_regime": {
+          "rule": "INJECTION if fiscal_impulse_4w ≥ p80 (156w) · DRAIN if ≤ p20 · else NEUTRAL (display rule); block score = 0.5 × impulse percentile component + 0.35 × structural deficit (GFS balance / −3 % GDP, clamped ±1) + 0.15 × DE auction health (b/c < 1.2 −1 · < 1.5 −0.5 · else +0.25); label INJECTION ≥ +0.5 / DRAIN ≤ −0.5",
+          "note": "Fase 2: cap ±0.5 lifted now that the Finanzagentur parser is live; percentile component muted while govt-deposit history < min_n (26 weeks; series starts 2025-W45)"
+        },
+        "de_supply_4w": {
+          "formula": "Σ Finanzagentur issuance volume, rolling 28 days"
+        },
+        "fiscal_stance_structural": {
+          "formula": "GFS general government balance % GDP (negative = deficit = net financial assets injected)",
+          "badges": "≥ 0 SURPLUS · > −1.5 SMALL DEFICIT · > −3 DEFICIT · else LARGE DEFICIT"
+        }
+      },
+      "thresholds": {
+        "govt_deposits_wow": {
+          "method": "percentile",
+          "window": "156w",
+          "watch_above": "p90",
+          "stress_above": "p97",
+          "two_sided": true,
+          "min_n": 26
+        },
+        "fiscal_impulse_4w": {
+          "method": "percentile",
+          "window": "156w",
+          "watch_below": "p20",
+          "stress_below": "p10",
+          "two_sided": true,
+          "min_n": 26
+        },
+        "target_fragmentation": {
+          "method": "percentile",
+          "window": "60m",
+          "watch_above": "p85",
+          "stress_above": "p95",
+          "min_n": 24
+        }
+      }
+    },
+    "banking": {
+      "title": "3 · Banking transmission — M1/M3, adjusted loans to NFCs and households (BSI monthly)",
+      "equivalence_quality": "medium",
+      "equivalence_note": "BSI monthly (~27th of the following month). MIR bank rates and the quarterly BLS pending. Traffic light: growth of loans and money.",
+      "series": {
+        "m3_yoy": {
+          "id": "BSI.M.U2.Y.V.M30.X.I.U2.2300.Z01.A",
+          "label": "M3 annual growth",
+          "freq": "monthly",
+          "unit": "%",
+          "verified": "2026-07 = 3.38"
+        },
+        "m1_yoy": {
+          "id": "BSI.M.U2.Y.V.M10.X.I.U2.2300.Z01.A",
+          "label": "M1 annual growth",
+          "freq": "monthly",
+          "unit": "%",
+          "verified": "2026-07 = 3.15"
+        },
+        "loans_nfc_yoy": {
+          "id": "BSI.M.U2.Y.U.A20T.A.I.U2.2240.Z01.A",
+          "label": "Adjusted loans to NFCs, annual growth",
+          "freq": "monthly",
+          "unit": "%",
+          "verified": "2026-07 = 4.36"
+        },
+        "loans_hh_yoy": {
+          "id": "BSI.M.U2.Y.U.A20T.A.I.U2.2250.Z01.A",
+          "label": "Adjusted loans to households, annual growth",
+          "freq": "monthly",
+          "unit": "%",
+          "verified": "2026-07 = 3.06"
+        },
+        "loans_nfc_stock": {
+          "id": "BSI.M.U2.Y.U.A20T.A.1.U2.2240.Z01.E",
+          "label": "Adjusted loans to NFCs, stock",
+          "freq": "monthly",
+          "verified": "2026-07 = 5,489,668 (E10)"
+        },
+        "loans_hh_stock": {
+          "id": "BSI.M.U2.Y.U.A20T.A.1.U2.2250.Z01.E",
+          "label": "Adjusted loans to households, stock",
+          "freq": "monthly",
+          "verified": "2026-07 = 7,240,796 (E10)"
+        },
+        "mir_nfc_cost": {
+          "id": "MIR.M.U2.B.A2I.AM.R.A.2240.EUR.N",
+          "label": "Cost of borrowing for corporations (MIR composite)",
+          "freq": "monthly",
+          "unit": "percent",
+          "verified": "2026-07 = 3.80 (E3)"
+        },
+        "mir_hh_cost": {
+          "id": "MIR.M.U2.B.A2C.AM.R.A.2250.EUR.N",
+          "label": "Cost of borrowing for households for house purchase (MIR composite)",
+          "freq": "monthly",
+          "unit": "percent",
+          "verified": "2026-07 = 3.54 (E3)"
+        },
+        "bls_standards_nfc": {
+          "id": "BLS.Q.U2.ALL.O.E.Z.B3.ST.S.WFNET",
+          "label": "BLS credit standards, enterprises (net % tightening)",
+          "freq": "quarterly",
+          "unit": "net %",
+          "verified": "2026-Q3 = 7.3 (E2)"
+        },
+        "bls_standards_hh": {
+          "id": "BLS.Q.U2.ALL.Z.H.H.B3.ST.S.WFNET",
+          "label": "BLS credit standards, households (net %)",
+          "freq": "quarterly",
+          "unit": "net %",
+          "verified": "2026-Q3 = 8.8 (E2)"
+        }
+      },
+      "derived": {
+        "credit_impulse": {
+          "formula": "Δ 3m of (loans_nfc_stock + loans_hh_stock), EUR millions (E10)"
+        },
+        "mir_nfc_minus_dfr_bps": {
+          "formula": "(mir_nfc_cost − DFR) × 100 — pass-through of the policy rate to the cost of credit"
+        },
+        "transmission_signal": {
+          "rule": "GREEN if M3 > 3 and loans NFC > 2 and HH > 1 · RED if M3 < 1 or loans NFC < 0 · else YELLOW (v5 thresholds M3 > 3 green / > 1 yellow)"
+        },
+        "block_score": {
+          "rule": "mean × 2 of: transmission signal (GREEN +1 / RED −1) · credit impulse sign ±0.5 · BLS (tightening ≥ 10 −0.5 / easing ≤ −10 +0.25)"
+        }
+      },
+      "thresholds": {
+        "m3_yoy": {
+          "method": "absolute",
+          "watch_below": 1.0,
+          "stress_below": 0.0
+        },
+        "loans_nfc_yoy": {
+          "method": "absolute",
+          "watch_below": 1.0,
+          "stress_below": 0.0
+        },
+        "loans_hh_yoy": {
+          "method": "absolute",
+          "watch_below": 0.5,
+          "stress_below": 0.0
+        }
+      }
+    },
+    "rates": {
+      "title": "4 · Rates & money market — €STR vs DFR corridor, AAA curve, periphery premium, EURIBOR, country spreads",
+      "equivalence_quality": "high",
+      "equivalence_note": "€STR (08:00 CET T+1) is the floor test: trades 5–10 bp below the DFR with abundant excess liquidity and should drift toward the DFR as liquidity falls (ECB Mar-2024 framework). STRESS SPREAD = €STR − DFR. Daily periphery premium = all-euro-area 10Y − AAA 10Y (verified 42 bp); country spreads monthly (IRS) until daily national yields are wired (Phase 3).",
+      "series": {
+        "estr": {
+          "id": "EST.B.EU000A2X2A25.WT",
+          "label": "€STR",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-09-07 = 2.188"
+        },
+        "estr_volume": {
+          "id": "EST.B.EU000A2X2A25.TT",
+          "label": "€STR total volume",
+          "freq": "daily",
+          "verified": "2026-09-07 = 69,125"
+        },
+        "estr_r25": {
+          "id": "EST.B.EU000A2X2A25.R25",
+          "label": "€STR rate at 25th percentile of volume",
+          "freq": "daily",
+          "unit": "percent",
+          "display_only": true,
+          "verified": "2026-09-07 = 2.16"
+        },
+        "estr_r75": {
+          "id": "EST.B.EU000A2X2A25.R75",
+          "label": "€STR rate at 75th percentile of volume",
+          "freq": "daily",
+          "unit": "percent",
+          "display_only": true,
+          "verified": "2026-09-07 = 2.20"
+        },
+        "estr_banks": {
+          "id": "EST.B.EU000A2X2A25.NB",
+          "label": "€STR number of active banks",
+          "freq": "daily",
+          "display_only": true,
+          "verified": "2026-09-07 = 47"
+        },
+        "estr_3m_compounded": {
+          "id": "EST.B.EU000A2QQF32.CR",
+          "label": "Compounded €STR average, 3 months",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-09-07 = 2.166"
+        },
+        "dfr": {
+          "id": "FM.B.U2.EUR.4F.KR.DFR.LEV",
+          "label": "Deposit facility rate (date of changes → forward-filled)",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-06-17 = 2.25"
+        },
+        "mro_rate": {
+          "id": "FM.B.U2.EUR.4F.KR.MRR_FR.LEV",
+          "label": "MRO rate",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-06-17 = 2.40"
+        },
+        "mlf_rate": {
+          "id": "FM.B.U2.EUR.4F.KR.MLFR.LEV",
+          "label": "Marginal lending facility rate",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-06-17 = 2.65"
+        },
+        "aaa_2y": {
+          "id": "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_2Y",
+          "label": "AAA yield curve 2Y spot",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-09-07 = 2.913"
+        },
+        "aaa_10y": {
+          "id": "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y",
+          "label": "AAA yield curve 10Y spot",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-09-07 = 3.389"
+        },
+        "all_10y": {
+          "id": "YC.B.U2.EUR.4F.G_N_C.SV_C_YM.SR_10Y",
+          "label": "All euro area yield curve 10Y spot",
+          "freq": "daily",
+          "unit": "percent",
+          "verified": "2026-09-07 = 3.812"
+        },
+        "de_10y_m": {
+          "id": "IRS.M.DE.L.L40.CI.0000.EUR.N.Z",
+          "label": "Germany 10Y (convergence, monthly)",
+          "freq": "monthly",
+          "unit": "percent",
+          "verified": "2026-07 = 3.07"
+        },
+        "fr_10y_m": {
+          "id": "IRS.M.FR.L.L40.CI.0000.EUR.N.Z",
+          "label": "France 10Y (monthly)",
+          "freq": "monthly",
+          "unit": "percent",
+          "verified": "2026-07 = 3.85"
+        },
+        "it_10y_m": {
+          "id": "IRS.M.IT.L.L40.CI.0000.EUR.N.Z",
+          "label": "Italy 10Y (monthly)",
+          "freq": "monthly",
+          "unit": "percent",
+          "verified": "2026-07 = 3.881"
+        },
+        "es_10y_m": {
+          "id": "IRS.M.ES.L.L40.CI.0000.EUR.N.Z",
+          "label": "Spain 10Y (monthly)",
+          "freq": "monthly",
+          "unit": "percent",
+          "verified": "2026-07 = 3.53"
+        },
+        "euribor_3m_m": {
+          "id": "FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA",
+          "label": "EURIBOR 3M (monthly average)",
+          "freq": "monthly",
+          "unit": "percent",
+          "verified": "2026-08 = 2.513",
+          "note": "no public daily feed on the ECB portal (EMMI delayed) — Phase 3"
+        },
+        "eurusd": {
+          "id": "EXR.D.USD.EUR.SP00.A",
+          "label": "EUR/USD ECB reference",
+          "freq": "daily",
+          "unit": "USD",
+          "display_only": true,
+          "verified": "2026-09-08 = 1.1614"
+        }
+      },
+      "derived": {
+        "estr_minus_dfr_bps": {
+          "formula": "(€STR − DFR) × 100",
+          "role": "STRESS SPREAD = directional compression toward the DFR (E5). History since 2019-10 verified: min −12.0 bp (2023-09-29), max −1.1 bp (2019-11-20); 2022–24 −11/−12 at peak abundance, 2026 −6/−7 as excess liquidity falls. Anchors ≥ 0 WATCH, ≥ +5 STRESS, ≥ +10 CRISIS while excess liquidity > 1.5tn; below 1.5tn the framework expects €STR to migrate toward the MRO (DFR + 15): WATCH ≥ +5, STRESS ≥ +10, CRISIS ≥ +15 sustained (anchors_by_liquidity_regime). friction_confirmed = ≥ WATCH on 2 of 3 sessions. The old FLOOR_LEAK (≤ −15) is removed: a very negative spread is the abundance signature (MMFs not eligible for the DF), not a leak → informational ABUNDANCE_SIGNATURE ≤ −10"
+        },
+        "estr_dispersion_bps": {
+          "formula": "(€STR R75 − R25) × 100",
+          "note": "E6: daily microstructure from the EST flow (4 bp on 2026-09-07); widening = uneven distribution of liquidity"
+        },
+        "estr_3m_compounded_minus_dfr_bps": {
+          "formula": "(compounded €STR 3m − DFR) × 100",
+          "note": "E6: backward-looking 3m average (2.166 on 2026-09-07), context for the EURIBOR 3M monthly gap — NOT an OIS forward (none on the portal)"
+        },
+        "corridor_position": {
+          "formula": "(€STR − DFR) / (MLF − DFR)",
+          "note": "0 = floor, 1 = ceiling (40 bp corridor)"
+        },
+        "curve_10y_2y_bps": {
+          "formula": "(AAA 10Y − AAA 2Y) × 100"
+        },
+        "periphery_premium_bps": {
+          "formula": "(all-EA 10Y − AAA 10Y) × 100",
+          "note": "daily fragmentation gauge; 42 bp on 2026-09-07"
+        },
+        "btp_bund_bps": {
+          "formula": "(IT 10Y − DE 10Y) × 100, monthly"
+        },
+        "oat_bund_bps": {
+          "formula": "(FR − DE) × 100"
+        },
+        "bonos_bund_bps": {
+          "formula": "(ES − DE) × 100"
+        },
+        "euribor_minus_dfr_bps": {
+          "formula": "(EURIBOR 3M − DFR) × 100, monthly (hike/cut pricing + term premium)"
+        },
+        "aaa_10y_5d_change_bps": {
+          "formula": "Δ 5 sessions of AAA 10Y"
+        },
+        "block_score": {
+          "rule": "mean × 2 of: €STR−DFR level · periphery premium level · curve (inverted −0.5 / else +0.25) · BTP−Bund level · −0.5 per OAT/Bonos spread ≥ WATCH; CRISIS spread forces −2"
+        }
+      },
+      "thresholds": {
+        "estr_minus_dfr_bps": {
+          "method": "absolute",
+          "watch_above": 0,
+          "stress_above": 5,
+          "crisis_above": 10,
+          "note": "E5: anchors while excess_liquidity > 1,500,000; anchors_by_liquidity_regime below: 5/10/15",
+          "anchors_by_liquidity_regime": {
+            "excess_liquidity_below": 1500000,
+            "watch_above": 5,
+            "stress_above": 10,
+            "crisis_above": 15
+          }
+        },
+        "estr_dispersion_bps": {
+          "method": "percentile",
+          "window": "156w",
+          "watch_above": "p90",
+          "stress_above": "p97",
+          "min_n": 120
+        },
+        "periphery_premium_bps": {
+          "method": "percentile",
+          "window": "156w",
+          "watch_above": "p85",
+          "stress_above": "p95",
+          "min_n": 120,
+          "secondary_absolute": {
+            "watch_above": 60,
+            "stress_above": 90
+          }
+        },
+        "btp_bund_bps": {
+          "method": "absolute",
+          "watch_above": 150,
+          "stress_above": 180,
+          "crisis_above": 250,
+          "note": "v5 thresholds kept"
+        },
+        "oat_bund_bps": {
+          "method": "absolute",
+          "watch_above": 70,
+          "stress_above": 90
+        },
+        "bonos_bund_bps": {
+          "method": "absolute",
+          "watch_above": 80,
+          "stress_above": 100
+        },
+        "curve_10y_2y_bps": {
+          "method": "absolute",
+          "watch_below": 0,
+          "stress_below": -50
+        },
+        "aaa_10y_5d_change_bps": {
+          "method": "absolute",
+          "watch_above": 15,
+          "stress_above": 25,
+          "two_sided": true
+        }
+      }
+    }
+  },
+  "regime": {
+    "weights": {
+      "central_bank": 0.4,
+      "rates": 0.3,
+      "fiscal": 0.15,
+      "banking": 0.15
+    },
+    "weights_note": "DESK PROPOSAL: fiscal low by construction (incomplete sovereignty, no daily cash statement)",
+    "reserves_metric": "central_bank.excess_liquidity",
+    "stress_spread_metric": "rates.estr_minus_dfr_bps",
+    "values": [
+      "LIQUIDITY_INJECTION",
+      "LIQUIDITY_DRAIN",
+      "LIQUIDITY_SCARCITY",
+      "FLOOR_FRICTION",
+      "NEUTRAL"
+    ],
+    "rules": {
+      "LIQUIDITY_SCARCITY": "excess liquidity below the dead-man band AND €STR − DFR ≥ STRESS (quantity + price; TOMO alone never triggers)",
+      "FLOOR_FRICTION": "excess liquidity ample AND €STR − DFR friction_confirmed",
+      "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+      "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold",
+      "NEUTRAL": "otherwise"
+    },
+    "dual": {
+      "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+      "block_thresholds": {
+        "injection": 0.5,
+        "drain": -0.5
+      },
+      "weights": {
+        "central_bank": 0.7,
+        "fiscal": 0.3
+      },
+      "general_thresholds": {
+        "injection": 0.5,
+        "drain": -0.5
+      },
+      "note": "EUR: CB 0.7 / treasury 0.3 proposed (fiscal signal weaker than in sovereign currencies)"
+    },
+    "orthogonal_flags": {
+      "MRO_RELIANCE": "omo_takeup ≥ WATCH (structural/informational under full allotment; STRESS needs price confirmation)",
+      "ABUNDANCE_SIGNATURE": "€STR − DFR ≤ −10 bp (informational: MMF cash below the floor)",
+      "FRAMEWORK_REVIEW_2026": "event flag — Governing Council review of the operational framework parameters in 2026 (reviewer, pending source)",
+      "PERIPHERY_STRESS": "periphery_premium ≥ STRESS or btp_bund ≥ 150",
+      "TARGET_FRAGMENTATION": "target_fragmentation ≥ STRESS",
+      "MLF_USED": "mlf_usage ≥ WATCH",
+      "GOVT_DEPOSIT_JUMP": "|govt_deposits_wow| ≥ p97",
+      "PHASE_*": "balance-sheet phase",
+      "TRANSMISSION_FAILURE": "banking RED while liquidity ample"
+    },
+    "min_blocks_for_signal": 2,
+    "calibration": {
+      "status": "planned"
+    }
+  },
+  "status_rules": {
+    "fresh_multiplier": 1.5,
+    "stale_multiplier": 3.0,
+    "nominal_period_days": {
+      "daily": 4,
+      "weekly": 9,
+      "monthly": 45,
+      "quarterly": 120,
+      "event": 400
+    },
+    "monthly_lag_allowance_days": 60,
+    "note": "ILM daily T+1 ~09:30 CET; WFS Tuesday; TARGET holidays: 1 Jan, Good Friday, Easter Monday, 1 May, 25–26 Dec",
+    "quarterly_note": "portal quarter periods are dated at the quarter start with a 90-day lag allowance (GFS published ~T+100d; BLS round dated by survey quarter)"
+  },
+  "quality": {
+    "origin": "CAD quality module",
+    "dedup": "last value wins per date",
+    "outliers": {
+      "method": "modified_zscore_MAD",
+      "rolling_window": 20,
+      "min_points": 5,
+      "z_threshold": {
+        "default": 3.5,
+        "excess_liquidity": 4.0,
+        "mlf_usage": 6.0
+      }
+    },
+    "reconciliation": [
+      {
+        "rule": "excess_liquidity ≈ deposit_facility + current_accounts − minimum_reserves (±0.5%)",
+        "on_fail": "warn"
+      },
+      {
+        "rule": "ILM daily deposit facility (Wednesday) == WFS L020200 of the same week",
+        "on_fail": "warn"
+      }
+    ],
+    "null_policy": "null is NEVER neutral"
+  },
+  "revisions": {
+    "keep_last": 50,
+    "series": [
+      "excess_liquidity",
+      "omo_takeup",
+      "govt_deposits",
+      "monpol_securities"
+    ]
+  },
+  "alerts": {
+    "keep_last": 100,
+    "rules": [
+      {
+        "id": "excess_liquidity_low",
+        "metric": "central_bank.excess_liquidity",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "reserves"
+      },
+      {
+        "id": "mro_reliance",
+        "metric": "central_bank.omo_takeup",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "funding"
+      },
+      {
+        "id": "mlf_used",
+        "metric": "central_bank.mlf_usage",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "emergency"
+      },
+      {
+        "id": "estr_at_dfr",
+        "metric": "rates.estr_minus_dfr_bps",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "funding"
+      },
+      {
+        "id": "estr_stress",
+        "metric": "rates.estr_minus_dfr_bps",
+        "when": "level >= STRESS",
+        "severity": "CRITICAL",
+        "category": "funding"
+      },
+      {
+        "id": "periphery_stress",
+        "metric": "rates.periphery_premium_bps",
+        "when": "level >= STRESS",
+        "severity": "WARNING",
+        "category": "fragmentation"
+      },
+      {
+        "id": "btp_wide",
+        "metric": "rates.btp_bund_bps",
+        "when": "level >= WATCH",
+        "severity": "WARNING",
+        "category": "fragmentation"
+      },
+      {
+        "id": "govt_deposit_jump",
+        "metric": "fiscal.govt_deposits_wow",
+        "when": "level >= STRESS",
+        "severity": "WARNING",
+        "category": "fiscal"
+      },
+      {
+        "id": "fiscal_drain",
+        "metric": "fiscal.fiscal_regime",
+        "when": "<= drain",
+        "severity": "INFO",
+        "category": "fiscal"
+      },
+      {
+        "id": "h_transmission_red",
+        "metric": "banking.transmission_signal",
+        "when": "== RED",
+        "severity": "WARNING",
+        "category": "transmission"
+      },
+      {
+        "id": "data_degraded",
+        "metric": "quality.series_below_70",
+        "when": "> 0",
+        "severity": "INFO",
+        "category": "data"
+      }
+    ]
+  },
+  "scenarios": {
+    "origin": "liquidity-only set",
+    "items": [
+      {
+        "id": "L1",
+        "name": "Abundant floor, calm",
+        "bias": "NEUTRAL",
+        "min": 3,
+        "conditions": [
+          "central_bank.excess_liquidity level == SAFE",
+          "rates.estr_minus_dfr_bps level == SAFE",
+          "central_bank.omo_takeup level == SAFE"
+        ]
+      },
+      {
+        "id": "L2",
+        "name": "Scarcity building (€STR drifting to the DFR, MRO take-up rising)",
+        "bias": "EUR-BULLISH (funding)",
+        "min": 2,
+        "conditions": [
+          "rates.estr_minus_dfr_bps level >= WATCH",
+          "central_bank.omo_takeup level >= WATCH",
+          "central_bank.excess_liquidity_wow level >= WATCH"
+        ]
+      },
+      {
+        "id": "L3",
+        "name": "Fragmentation stress",
+        "bias": "EUR-BEARISH",
+        "min": 2,
+        "conditions": [
+          "rates.periphery_premium_bps level >= STRESS",
+          "rates.btp_bund_bps level >= WATCH",
+          "fiscal.target_fragmentation level >= WATCH"
+        ]
+      },
+      {
+        "id": "L4",
+        "name": "Government cash drain",
+        "bias": "RISK-OFF",
+        "min": 2,
+        "conditions": [
+          "fiscal.fiscal_regime == DRAIN",
+          "fiscal.govt_deposits_wow level >= WATCH",
+          "central_bank.excess_liquidity_wow level >= WATCH"
+        ]
+      },
+      {
+        "id": "L5",
+        "name": "Fiscal injection into excess liquidity",
+        "bias": "RISK-ON",
+        "min": 2,
+        "conditions": [
+          "fiscal.fiscal_regime == INJECTION",
+          "central_bank.excess_liquidity_wow level == SAFE",
+          "banking.transmission_signal == GREEN"
+        ]
+      }
+    ]
+  },
+  "calendar": {
+    "ecb_gc_monetary_policy_2026": [
+      "2026-09-10",
+      "2026-10-29",
+      "2026-12-17"
+    ],
+    "ecb_gc_monetary_policy_2027": [
+      "2027-02-04",
+      "2027-03-18",
+      "2027-04-29",
+      "2027-06-10",
+      "2027-07-22",
+      "2027-09-09",
+      "2027-10-28",
+      "2027-12-16"
+    ],
+    "gc_note": "verified 2026-09-09 on ecb.europa.eu/press/calendars/mgcgc; decision 14:15 CET, press conference 14:45 CET; 2026-09-10 in Berlin",
+    "wfs_release": "Tuesday 15:00 CET (position as of the previous Friday)",
+    "ilm_daily": "T+1 ~09:30 CET",
+    "estr_release": "08:00 CET T+1",
+    "app_release": "Friday ~15:00 CET (holdings as of previous Friday)",
+    "mro_tender": "Tuesday allotment, Wednesday settlement; 3m LTRO last Wednesday of the month",
+    "reserve_maintenance_periods_2026": [
+      [
+        "2026-02-11",
+        "2026-03-24"
+      ],
+      [
+        "2026-03-25",
+        "2026-05-05"
+      ],
+      [
+        "2026-05-06",
+        "2026-06-16"
+      ],
+      [
+        "2026-06-17",
+        "2026-07-28"
+      ],
+      [
+        "2026-07-29",
+        "2026-09-15"
+      ],
+      [
+        "2026-09-16",
+        "2026-11-03"
+      ],
+      [
+        "2026-11-04",
+        "2026-12-22"
+      ],
+      [
+        "2026-12-23",
+        "2027-02-09"
+      ]
+    ],
+    "mp_note": "E9: verified ECB press release 2025-04-24 (indicative operational calendars 2026); each MP starts the Wednesday after the monetary policy meeting (6-week periods); last MP day = €STR/volume volatility day (market pattern); 2027 calendar pending publication",
+    "target_holidays": [
+      "2026-01-01",
+      "2026-04-03",
+      "2026-04-06",
+      "2026-05-01",
+      "2026-12-25",
+      "2026-12-26",
+      "2027-01-01",
+      "2027-03-26",
+      "2027-03-29",
+      "2027-05-01",
+      "2027-12-25",
+      "2027-12-26"
+    ],
+    "decision_time": "14:15 Europe/Frankfurt"
+  },
+  "refresh_lanes": {
+    "daily": {
+      "cron_utc": "45 8 * * 1-5",
+      "note": "10:45 CET: ILM daily (T+1) + €STR + YC + EXR + key rates",
+      "blocks": [
+        "central_bank",
+        "rates",
+        "fiscal"
+      ],
+      "run_agent": false
+    },
+    "daily_retry": {
+      "cron_utc": "0 12 * * 1-5",
+      "note": "13:00 CET retry",
+      "blocks": [
+        "central_bank",
+        "rates"
+      ],
+      "run_agent": false
+    },
+    "weekly_tue": {
+      "cron_utc": "20 14 * * 2",
+      "note": "15:20 CET Tuesday: WFS weekly items (govt deposits, MonPol securities, MRO/LTRO) + DE auction results",
+      "blocks": [
+        "central_bank",
+        "fiscal"
+      ],
+      "run_agent": true
+    },
+    "weekly": {
+      "cron_utc": "30 14 * * 5",
+      "note": "Friday 15:30 CET: APP/PEPP files",
+      "blocks": [
+        "central_bank"
+      ],
+      "run_agent": true
+    },
+    "monthly": {
+      "cron_utc": "0 9 12,28 * *",
+      "note": "12th: TGB TARGET, IRS; 28th: BSI M1/M3/loans, EURIBOR monthly",
+      "blocks": [
+        "fiscal",
+        "banking",
+        "rates"
+      ],
+      "run_agent": false
+    }
+  },
+  "desk_exports": {
+    "eurusd": {
+      "id": "EXR.D.USD.EUR.SP00.A",
+      "label": "EUR/USD ECB reference",
+      "status": "verified"
+    }
+  },
+  "agent": {
+    "name": "EUR Currency Agent",
+    "reads": [
+      "data/eur/central_bank.json",
+      "data/eur/fiscal.json",
+      "data/eur/banking.json",
+      "data/eur/rates.json",
+      "data/eur/calendar.json"
+    ],
+    "writes": "agents/eur.json",
+    "vocabulary": "MMT/Mosler with incomplete sovereignty: the Eurosystem issues, governments are users; excess liquidity and the DFR floor; MRO/LTRO full allotment; fragmentation (TARGET, periphery spreads); fiscal aggregate weak by construction",
+    "alert_types": [
+      "LIQUIDITY_GAIN",
+      "LIQUIDITY_LOSS",
+      "LIQUIDITY_SCARCITY",
+      "FRAGMENTATION",
+      "TRANSMISSION_BREAK",
+      "DATA_DEGRADED"
+    ],
+    "never": [
+      "trade execution",
+      "position sizing",
+      "technical analysis"
+    ]
+  },
+  "pending_before_phase2": [
+    "runner reachability to data-api.ecb.europa.eu / ecb.europa.eu / deutsche-finanzagentur.de — diagnostic step in refresh-eur.yml (first live run)",
+    "MEF / Tesoro ES formats (reviewer-described, verify)",
+    "Bundesbank monthly report 17-Jun-2025 wording on 1.5tn end-2027 and MRO usage",
+    "Bundesbank BBSSY daily Bund 10Y + AFT TEC10 — Phase 3",
+    "ECB daily money market statistics — Phase 3",
+    "2027 maintenance-period calendar"
+  ],
+  "triangulation": {
+    "round": "2026-09-09",
+    "reviews": [
+      "Gemini",
+      "DeepSeek",
+      "Qwen",
+      "Perplexity (2 pastes)",
+      "CodeWord"
+    ],
+    "ranking": [
+      "Perplexity",
+      "CodeWord",
+      "DeepSeek",
+      "Gemini",
+      "Qwen"
+    ],
+    "matrix": "TRIANGULACION_EUR_matriz.md"
+  },
+  "phase": {
+    "status": "Fase 2 built 2026-09-09 (providers_eur, blocks_eur, run.fetch_eur, engine calendar, eur/index.html, refresh-eur.yml); fixtures captured from the primary origins the same day",
+    "next": "per-currency dual thresholds calibration (regime.dual) once EUR is live; AFT/MEF/Tesoro/EU issuance parsers; Bundesbank BBSSY"
+  }
+}
