@@ -14,8 +14,8 @@ Peso seleccionado: **1.0** — no weight has a bootstrap-significant B at 12 wee
 Persistencia (peso seleccionado): none → INJ 10 % / DRAIN 16 % / cambios 33 · consecutive_7_0 → INJ 2 % / DRAIN 7 % / cambios 14 · mean_7_0 → INJ 14 % / DRAIN 19 % / cambios 30 · mean_7_7 → INJ 18 % / DRAIN 28 % / cambios 29
 - B stress 4s: ρ 0.012 (p 0.905, boot 0.914, n 98) · Δ medio DRAIN -0.01 / NEUTRAL 0.00 / INJ -0.01 · t DRAIN−N -0.25 · t INJ−N -0.23
 - B stress 12s: ρ 0.068 (p 0.525, boot 0.559, n 90) · Δ medio DRAIN -0.03 / NEUTRAL 0.01 / INJ -0.01 · t DRAIN−N -1.49 · t INJ−N -0.36
-- B stress_alt 4s: ρ -0.332 (p 0.011, boot 0.032, n 58) · Δ medio DRAIN 0.54 / NEUTRAL -0.01 / INJ -0.04 · t DRAIN−N 2.66 · t INJ−N -0.22
-- B stress_alt 12s: ρ -0.097 (p 0.504, boot 0.579, n 50) · Δ medio DRAIN 0.56 / NEUTRAL 0.20 / INJ 0.28 · t DRAIN−N 1.11 · t INJ−N 0.49
+- B stress_alt 4s: ρ -0.125 (p 0.220, boot 0.265, n 98) · Δ medio DRAIN -2.01 / NEUTRAL 0.84 / INJ 0.04 · t DRAIN−N -1.17 · t INJ−N -1.23
+- B stress_alt 12s: ρ 0.040 (p 0.711, boot 0.746, n 90) · Δ medio DRAIN 0.30 / NEUTRAL 0.35 / INJ 0.44 · t DRAIN−N -0.05 · t INJ−N 0.08
 
 ## fiscal — niveles: ninguno · flujos: fiscal_flow_z
 
@@ -30,8 +30,8 @@ Peso seleccionado: **1.0** — no level components in this block — weight irre
 Persistencia (peso seleccionado): none → INJ 24 % / DRAIN 22 % / cambios 53 · consecutive_7_0 → INJ 7 % / DRAIN 5 % / cambios 13 · mean_7_0 → INJ 24 % / DRAIN 24 % / cambios 36 · mean_7_7 → INJ 28 % / DRAIN 34 % / cambios 30
 - B stress 4s: ρ -0.040 (p 0.698, boot 0.714, n 98) · Δ medio DRAIN 0.04 / NEUTRAL -0.02 / INJ 0.01 · t DRAIN−N 2.11 · t INJ−N 1.39
 - B stress 12s: ρ -0.009 (p 0.931, boot 0.927, n 90) · Δ medio DRAIN 0.06 / NEUTRAL -0.03 / INJ 0.02 · t DRAIN−N 2.44 · t INJ−N 2.28
-- B stress_alt 4s: ρ 0.073 (p 0.584, boot 0.650, n 58) · Δ medio DRAIN -0.14 / NEUTRAL 0.20 / INJ 0.11 · t DRAIN−N -2.06 · t INJ−N -0.53
-- B stress_alt 12s: ρ 0.115 (p 0.426, boot 0.486, n 50) · Δ medio DRAIN 0.06 / NEUTRAL 0.37 / INJ 0.29 · t DRAIN−N -1.44 · t INJ−N -0.37
+- B stress_alt 4s: ρ 0.030 (p 0.769, boot 0.794, n 98) · Δ medio DRAIN 0.06 / NEUTRAL -0.73 / INJ 2.46 · t DRAIN−N 0.99 · t INJ−N 1.65
+- B stress_alt 12s: ρ 0.012 (p 0.911, boot 0.910, n 90) · Δ medio DRAIN 0.14 / NEUTRAL -0.59 / INJ 2.81 · t DRAIN−N 0.86 · t INJ−N 1.50
 
 ## Régimen general (regla de acuerdo, pesos {'central_bank': 1.0, 'fiscal': 1.0})
 
