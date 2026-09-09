@@ -251,7 +251,44 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
         D["net_deposits_" + suf] = entry("net_deposits_" + suf, nd2, "Net Deposits — %s" % lab, "daily", unit, cfg, status="fresh" if nd2 else "unavailable", z_window=30)
     last_d = ntf[-1][0] if ntf else None
     D["seasonal_flag"] = {"label": "Seasonal flag (DTS Tracker)", "value": None, "flag": _seasonal_flag(last_d) if last_d else "", "status": "fresh" if last_d else "unavailable", "date": last_d}
+    # ── v0.1.1 structural fiscal impulse (desk addition, Sander 2026-09-09): the LEVEL of the injection, not the daily surprise ──
+    ntf20, ntf60 = S.rolling_sum(ntf, 20), S.rolling_sum(ntf, 60)
+    D["ntf_20d"] = entry("ntf_20d", ntf20, "NTF 20-session cumulative (structural impulse, Z vs 250 sessions)", "daily", unit, cfg, status="fresh" if ntf20 else "unavailable", z_window=250)
+    D["ntf_60d"] = entry("ntf_60d", ntf60, "NTF 60-session cumulative (structural impulse, Z vs 250 sessions)", "daily", unit, cfg, status="fresh" if ntf60 else "unavailable", z_window=250)
+    # FYTD vs the same point of the previous fiscal year (DTS cumulative fields; needs ≥ 13 months of history)
+    fy_now = D["net_treasury_flow_fytd"]
+    fyser = S.clean(S.merge_series(S.merge_series(S.clean(data.get("DTS:tot_wd_tx|fytd", [])), S.clean(data.get("DTS:debt_redemptions|fytd", [])), lambda w, r: abs(w) - abs(r)),
+                                   S.merge_series(S.clean(data.get("DTS:tot_dep_tx|fytd", [])), S.clean(data.get("DTS:debt_issues|fytd", [])), lambda d_, i: abs(d_) - abs(i)), lambda a, c: a - c))
+    prior = None
+    if last_d and fyser:
+        y, rest = int(last_d[:4]) - 1, last_d[4:]
+        target = "%d%s" % (y, rest)
+        prior = _latest_at_or_before(fyser, target)
+        # guard: the prior-year value must belong to the same fiscal year window (Oct–Sep), i.e. dated after the previous Oct-1
+        fy_start_prev = "%d-10-01" % (y - 1 if int(last_d[5:7]) < 10 else y)
+        pd = max([d for d, _ in fyser if d <= target], default=None)
+        if pd is None or pd < fy_start_prev:
+            prior = None
+    yoy = None if (prior in (None, 0) or fy_now["value"] is None) else round((fy_now["value"] - prior) / abs(prior) * 100, 2)
+    D["ntf_fytd_vs_prior_fy"] = {"label": "NTF fiscal-year-to-date vs same point of the prior fiscal year", "value": yoy, "unit": "%", "status": "fresh" if yoy is not None else "unavailable", "date": last_d,
+                                 "prior_fytd": prior, "current_fytd": fy_now["value"], "note": "DTS cumulative fields; +% = the deficit runs above last year's pace"}
+    z20, z60 = D["ntf_20d"]["zscore"], D["ntf_60d"]["zscore"]
+    v20, v60 = D["ntf_20d"]["value"], D["ntf_60d"]["value"]
+    # structural score: sign of the 60-session sum sets the direction; magnitude from the Z of the 20/60 sums vs their own 250-session history
+    if v60 is None:
+        struct = None
+    else:
+        sgn = 1.0 if v60 > 0 else -1.0 if v60 < 0 else 0.0
+        mag = 1.0  # a sustained deficit is an injection by construction (MMT sign): base magnitude 1 (= INJECTION on its own)
+        if z60 is not None:
+            mag = max(0.5, min(2.0, 1.0 + 0.5 * z60 * sgn))  # faster than its own history → up to 2, slower → down to 0.5
+        if yoy is not None:
+            mag = max(0.5, min(2.0, mag + (0.25 if yoy > 10 else -0.25 if yoy < -10 else 0.0)))
+        struct = round(sgn * mag, 2)
     s7 = D["net_treasury_flow_7d"]["value"]
+    surprise = None if z is None else _clamp(0.75 * max(-2.0, min(2.0, z)) + (0.5 if (s7 or 0) > 0 else -0.5 if (s7 or 0) < 0 else 0.0))
+    D["fiscal_impulse"] = {"label": "Fiscal impulse score = 50% structural (NTF 60d sign × pace) + 50% daily surprise (Z 30d + 7d sign)", "value": None, "unit": "score", "status": "fresh" if struct is not None else "unavailable", "date": last_d,
+                           "structural": struct, "surprise": surprise, "inputs": {"ntf_20d": v20, "z20_vs_250": z20, "ntf_60d": v60, "z60_vs_250": z60, "fytd_vs_prior_pct": yoy}}
     if z is None or s7 is None:
         reg = "NO DATA"
     elif (s7 > 0 and z >= 0) or z >= 1:
@@ -260,19 +297,26 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
         reg = "DRAIN"
     else:
         reg = "NEUTRAL"
-    D["fiscal_regime"] = {"label": "Fiscal regime (NTF 7-day sum + Z)", "value": None, "regime": reg, "status": "fresh" if reg != "NO DATA" else "unavailable", "date": last_d, "inputs": {"ntf_7d": s7, "z": z}}
+    D["fiscal_regime"] = {"label": "Fiscal regime (daily surprise rule — DTS Tracker)", "value": None, "regime": reg, "status": "fresh" if reg != "NO DATA" else "unavailable", "date": last_d, "inputs": {"ntf_7d": s7, "z": z}}
     flags: List[str] = []
     if z is not None and abs(z) >= 2:
         flags.append("NTF_EXTRAORDINARY")
-    score = 0.0 if z is None else _clamp(0.75 * max(-2.0, min(2.0, z)) + (0.5 if (s7 or 0) > 0 else -0.5 if (s7 or 0) < 0 else 0.0))
+    if struct is not None and struct >= 1.0:
+        flags.append("STRUCTURAL_DEFICIT_INJECTION")
+    if struct is None:
+        score = 0.0 if surprise is None else surprise
+    else:
+        score = _clamp(0.5 * struct + 0.5 * (surprise if surprise is not None else 0.0))
+    D["fiscal_impulse"]["value"] = score
     alerts = [_alert("net_treasury_flow", D["net_treasury_flow"], "|Z| ≥ 2 = extraordinary daily flow (check the seasonal flag)"),
               _alert("tga_closing", E["tga_closing"], "≥ 750B / 900B: TGA rebuild drains reserves"),
               _alert("tga_dod", D["tga_dod"], "large TGA build = reserve drain day")]
-    label = "NO SIGNAL" if not ntf else reg
+    label = "NO SIGNAL" if not ntf else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not ntf else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
     signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags,
-               "detail": "NTF %s (%s) · Z %s · 7d %s · TGA close %s · −ΔTGA %s%s" % (D["net_treasury_flow"]["value"], D["net_treasury_flow"]["badge"], z, s7, E["tga_closing"]["value"],
-                                                                                D["tga_reserve_impact"]["value"], (" · " + D["seasonal_flag"]["flag"]) if D["seasonal_flag"]["flag"] else ""),
+               "detail": "NTF %s (%s) · Z %s · 7d %s · 60d %s (Z250 %s) · FYTD %s vs prior FY %s%% · structural %s · surprise %s · TGA close %s · −ΔTGA %s%s" % (
+                   D["net_treasury_flow"]["value"], D["net_treasury_flow"]["badge"], z, s7, v60, z60, fy_now["value"], yoy, struct, surprise, E["tga_closing"]["value"],
+                   D["tga_reserve_impact"]["value"], (" · " + D["seasonal_flag"]["flag"]) if D["seasonal_flag"]["flag"] else ""),
                "alerts": alerts}
     dates = [d for d, _ in tga][-60:]
     def col(ser: Series) -> List[Optional[float]]:

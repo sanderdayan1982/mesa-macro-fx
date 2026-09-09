@@ -40,18 +40,53 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     ample = bool(in_range or res.get("above_range"))
     # friction needs price confirmation; blocks may supply a persistence-based flag (GBP), else level >= WATCH (CAD)
     friction = spr.get("friction_confirmed") if "friction_confirmed" in spr else LEVEL_RANK[s_lvl] >= LEVEL_RANK["WATCH"]
+    # ── three regimes (desk rule 2026-09-09): central bank, treasury/equivalent, general ──
+    # block regime from the block score (uniform across currencies); general = agreement rule, conflicts resolved by
+    # per-currency dual weights/thresholds (config regime.dual, provisional until calibrated); price gates on top.
+    dual = rc.get("dual") or {}
+    bth = dual.get("block_thresholds") or {"injection": 0.5, "drain": -0.5}
+
+    def _blk(name: str) -> dict:
+        b = blocks.get(name)
+        if not b or b["signals"]["traffic_light"] == "NONE":
+            return {"regime": "NO SIGNAL", "score": None, "label": None, "traffic_light": "NONE", "as_of": None}
+        sc = b["signals"]["score"]
+        r = "INJECTION" if sc >= bth["injection"] else "DRAIN" if sc <= bth["drain"] else "NEUTRAL"
+        return {"regime": r, "score": sc, "label": b["signals"]["label"], "traffic_light": b["signals"]["traffic_light"], "as_of": b.get("as_of"), "detail": b["signals"].get("detail", "")}
+
+    cbr, fir = _blk("central_bank"), _blk("fiscal")
+    dw = dual.get("weights") or {"central_bank": 0.6, "fiscal": 0.4}
+    gth = dual.get("general_thresholds") or {"injection": 0.5, "drain": -0.5}
+    avail = {k: v for k, v in (("central_bank", cbr), ("fiscal", fir)) if v["score"] is not None}
+    if not avail:
+        g_reg, g_score, rule = "NO SIGNAL", None, "no block available"
+    else:
+        tw = sum(dw[k] for k in avail) or 1.0
+        g_score = round(sum(dw[k] * v["score"] for k, v in avail.items()) / tw, 3)
+        if len(avail) == 1:
+            k = next(iter(avail))
+            g_reg, rule = {"INJECTION": "LIQUIDITY_INJECTION", "DRAIN": "LIQUIDITY_DRAIN", "NEUTRAL": "NEUTRAL"}[avail[k]["regime"]], "single block (%s) — the other has no signal" % k
+        elif cbr["regime"] == "INJECTION" and fir["regime"] == "INJECTION":
+            g_reg, rule = "LIQUIDITY_INJECTION", "agreement: both inject"
+        elif cbr["regime"] == "DRAIN" and fir["regime"] == "DRAIN":
+            g_reg, rule = "LIQUIDITY_DRAIN", "agreement: both drain"
+        else:
+            g_reg = "LIQUIDITY_INJECTION" if g_score >= gth["injection"] else "LIQUIDITY_DRAIN" if g_score <= gth["drain"] else "NEUTRAL"
+            rule = ("conflict (%s vs %s) resolved by dual weights %s/%s and thresholds %+.2f/%+.2f — provisional, to calibrate per currency"
+                    % (cbr["regime"], fir["regime"], dw["central_bank"], dw["fiscal"], gth["injection"], gth["drain"])) if "NEUTRAL" not in (cbr["regime"], fir["regime"]) \
+                else "partial (%s vs %s): dual score %+.2f vs thresholds %+.2f/%+.2f" % (cbr["regime"], fir["regime"], g_score, gth["injection"], gth["drain"])
+    gate = None
     if used < rc.get("min_blocks_for_signal", 2):
         regime = "NO SIGNAL"
     elif in_range is False and not res.get("above_range") and r_lvl in ("WATCH", "STRESS", "CRISIS") and LEVEL_RANK[s_lvl] >= LEVEL_RANK["STRESS"]:
-        regime = "LIQUIDITY_SCARCITY"
+        regime, gate = "LIQUIDITY_SCARCITY", "price gate: reserves below range AND stress spread >= STRESS"
     elif ample and friction:
-        regime = "FLOOR_FRICTION" if weighted > -0.5 else "LIQUIDITY_DRAIN"
-    elif weighted <= -0.5:
-        regime = "LIQUIDITY_DRAIN"
-    elif weighted >= 0.5:
-        regime = "LIQUIDITY_INJECTION"
+        regime, gate = ("FLOOR_FRICTION" if g_reg != "LIQUIDITY_DRAIN" else "LIQUIDITY_DRAIN"), "price gate: reserves ample AND friction confirmed"
     else:
-        regime = "NEUTRAL"
+        regime = g_reg
+    regimes = {"central_bank": cbr, "fiscal": fir,
+               "general": {"regime": regime, "score": g_score, "rule": rule, "price_gate": gate, "dual_weights": dw, "thresholds": gth, "block_thresholds": bth,
+                           "calibration": dual.get("status", "provisional — per-currency thresholds pending")}}
     flags = []
     tsig = _get(blocks, "banking.transmission_signal").get("signal")
     if tsig == "RED" and (in_range or res.get("above_range")):
@@ -81,6 +116,7 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
             flags.append(ov)
     tl = {"LIQUIDITY_INJECTION": "GREEN", "NEUTRAL": "YELLOW", "FLOOR_FRICTION": "YELLOW", "LIQUIDITY_DRAIN": "RED", "LIQUIDITY_SCARCITY": "RED", "NO SIGNAL": "NONE"}[regime]
     return {"regime": regime, "traffic_light": tl, "weighted_score": weighted, "block_scores": scores, "weights": w, "blocks_used": used,
+            "regimes": regimes, "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
             "flags": flags, "overlays": overlays, "inputs": {"reserves_level": r_lvl, "reserves_in_range": in_range, "reserves_above_range": res.get("above_range"), "spread_level": s_lvl, "spread_bps": spr.get("value"), "friction_confirmed": friction},
             "rules": rc.get("rules", {})}
 
