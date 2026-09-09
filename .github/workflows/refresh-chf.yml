@@ -57,11 +57,13 @@ jobs:
           python -m ingest.run --ccy chf --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/chf/oplog.json) — last good JSON kept as stale"
       - name: Validate JSON against schema
         run: python -m ingest.validate --ccy chf
+      - name: Anti-invention gate (daily_log)
+        run: python -m ingest.gate --ccy chf || echo "::warning::daily_log withheld by the anti-invention gate (see data/chf/agent.json)"
       - name: Commit data
         run: |
           git config user.name "mesa-macro-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add data/chf history/chf logs/chf
+          git add data/chf history/chf logs/chf data/mesa
           if git diff --cached --quiet; then echo "no changes"; exit 0; fi
           git commit -m "data(chf): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
           git pull --rebase origin ${{ github.ref_name }} || true
