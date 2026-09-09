@@ -1,14 +1,14 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-08T09:20:29+00:00",
- "as_of": "2026-09-07",
+ "generated_at": "2026-09-09T07:32:14+00:00",
+ "as_of": "2026-09-08",
  "config_version": "0.2.2",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.233,
+ "weighted_score": 0.171,
  "block_scores": {
   "central_bank": 0.67,
-  "rates": 0.25,
+  "rates": 0.0,
   "fiscal": -0.39,
   "banking": 0.0
  },
@@ -19,10 +19,49 @@
   "banking": 0.1
  },
  "blocks_used": 4,
+ "regimes": {
+  "central_bank": {
+   "regime": "INJECTION",
+   "score": 0.67,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-08",
+   "detail": "ES SAFE (above demand range) · ΔES d/d 3494.0 · BS liq NEUTRAL · OMO/ES 0.2519 · SF+25 0.0"
+  },
+  "fiscal": {
+   "regime": "NEUTRAL",
+   "score": -0.39,
+   "label": "DRAIN",
+   "traffic_light": "RED",
+   "as_of": "2026-09-02",
+   "detail": "flow -3633.0 (Z -0.3872) · 4w cum -27777.0 (RISK_OFF) · gov deposits 80294.0"
+  },
+  "general": {
+   "regime": "NEUTRAL",
+   "score": 0.246,
+   "rule": "partial (INJECTION vs NEUTRAL): dual score +0.25 vs thresholds +0.50/-0.50",
+   "price_gate": null,
+   "dual_weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "calibration": "provisional — per-currency thresholds pending (desk rule 2026-09-09)"
+  }
+ },
+ "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_STEADY",
   "REPO_DEPENDENCE_HEALTHY"
  ],
+ "overlays": {},
  "inputs": {
   "reserves_level": "SAFE",
   "reserves_in_range": false,
@@ -34,9 +73,9 @@
  "rules": {
   "LIQUIDITY_SCARCITY": "surplus ES balances at/below p10 (156w) AND overnight_minus_target_bps ≥ STRESS persistent (or sf_repos_margin > 0)",
   "FLOOR_FRICTION": "ES ample AND overnight_minus_target_bps ≥ WATCH persistent",
-  "LIQUIDITY_DRAIN": "weighted score ≤ −0.5",
-  "LIQUIDITY_INJECTION": "weighted score ≥ +0.5",
-  "NEUTRAL": "otherwise"
+  "LIQUIDITY_DRAIN": "general regime: central bank AND treasury both DRAIN, or dual-weighted score ≤ drain threshold (regime.dual)",
+  "LIQUIDITY_INJECTION": "general regime: both INJECTION, or dual-weighted score ≥ injection threshold (regime.dual)",
+  "NEUTRAL": "otherwise (including unresolved conflicts inside the thresholds)"
  },
  "scenarios": [
   {
@@ -173,7 +212,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
