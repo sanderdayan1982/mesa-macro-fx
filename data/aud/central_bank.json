@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2.2",
- "generated_at": "2026-09-09T07:32:14+00:00",
+ "generated_at": "2026-09-09T12:18:14+00:00",
  "as_of": "2026-09-08",
  "equivalence_quality": "high",
  "equivalence_note": "Weekly A1 balance sheet + DAILY ES balances (A3): the AUD has a daily reserves series, closer to the Fed's H.4.1/daily data than CAD or GBP.",
@@ -1396,7 +1396,7 @@
    "change_abs": 8.629,
    "change_pct": 83.8663,
    "zscore": -0.4253,
-   "percentile": 30.77,
+   "percentile": 35.62,
    "window": null,
    "level": "SAFE",
    "sparkline": [
@@ -1468,8 +1468,8 @@
     "risk_off_pct": 15.0,
     "abs": {},
     "resolved": {
-     "risk_on": 2.361125,
-     "risk_off": -3.19655
+     "risk_on": 3.099,
+     "risk_off": -3.2887
     }
    }
   },
@@ -1487,7 +1487,7 @@
    "change_abs": 13.4628,
    "change_pct": 86.3493,
    "zscore": -0.3678,
-   "percentile": 31.41,
+   "percentile": 32.88,
    "window": "156w",
    "level": "SAFE",
    "sparkline": [
@@ -1556,12 +1556,14 @@
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": -4.1322,
-     "STRESS": -5.46235,
-     "CRISIS": -7.278995
+     "WATCH": -4.5949,
+     "STRESS": -5.66866,
+     "CRISIS": -7.612184
     },
     "window": "156w",
-    "n": 156
+    "n": 73,
+    "era_anchor": "2025-04-09",
+    "era_thin": false
    }
   },
   "es_balances_dod": {
@@ -1578,7 +1580,7 @@
    "change_abs": 1556.0,
    "change_pct": 80.289,
    "zscore": 1.1158,
-   "percentile": 90.62,
+   "percentile": 88.55,
    "window": "since 2025-02-01 (regime window) or 750d, whichever shorter",
    "level": "SAFE",
    "sparkline": [
@@ -1648,7 +1650,9 @@
     "method": "percentile",
     "levels": {},
     "window": "since 2025-02-01 (regime window) or 750d, whichever shorter",
-    "n": 757
+    "n": 358,
+    "era_anchor": "2025-04-09",
+    "era_thin": false
    }
   },
   "es_surplus_share": {
@@ -1828,7 +1832,7 @@
    "change_abs": -0.0052,
    "change_pct": -2.0226,
    "zscore": 0.8492,
-   "percentile": 98.42,
+   "percentile": 96.65,
    "window": "156w",
    "level": "STRESS",
    "sparkline": [
@@ -1898,11 +1902,13 @@
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 0.17842,
-     "STRESS": 0.20063
+     "WATCH": 0.19924,
+     "STRESS": 0.22468
     },
     "window": "156w",
-    "n": 758
+    "n": 358,
+    "era_anchor": "2025-04-09",
+    "era_thin": false
    }
   },
   "omo_takeup_weekly": {
@@ -2175,6 +2181,24 @@
   "flags": [
    "REPO_DEPENDENCE_ELEVATED"
   ],
+  "components": {
+   "mode": "mean2",
+   "level_weight": 1.0,
+   "flow": {
+    "es_dod_level": 0.25,
+    "balance_sheet_band": 0.0
+   },
+   "level": {
+    "es_vs_range": 0.75
+   },
+   "weights": {},
+   "range": [
+    -2.0,
+    2.0
+   ],
+   "score_v02": 0.67,
+   "score_flows_only": 0.17
+  },
   "detail": "ES SAFE (above demand range) · ΔES d/d 3494.0 · BS liq NEUTRAL · OMO/ES 0.2519 · SF+25 0.0",
   "alerts": [
    {
@@ -2215,8 +2239,8 @@
     "level": "STRESS",
     "value": 0.2519,
     "threshold": {
-     "WATCH": 0.17842,
-     "STRESS": 0.20063
+     "WATCH": 0.19924,
+     "STRESS": 0.22468
     },
     "status": "fresh",
     "action_hint": "informational unless AONIA > target"
