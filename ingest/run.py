@@ -23,6 +23,8 @@ from . import blocks_nzd as BN
 from . import providers_nzd as PN
 from . import blocks_usd as BU
 from . import providers_usd as PU
+from . import blocks_eur as BE
+from . import providers_eur as PE
 from .quality import evaluate_series, system_summary
 from .series import Series, clean
 
@@ -757,11 +759,97 @@ def fetch_usd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     return blocks
 
 
+def fetch_eur(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
+    """EUR lanes (ECB Data Portal csvdata, one key per request ≥ 1.5 s apart; ECB APP/PEPP CSVs; Finanzagentur XLSX):
+      daily / daily_retry  ILM daily (7 keys) + EST (€STR, volume, R25/R75, banks, compounded 3m) + FM key rates + YC + EXR  (T+1 ~09:30 CET)
+      weekly_tue           WFS weekly items (MRO, LTRO, MonPol/other securities, MPO liabilities, government deposits, govt debt, L5 total) + Finanzagentur results
+      weekly               APP / PEPP holdings + redemptions (Friday)
+      monthly              TGB TARGET, IRS, BSI, MIR, BLS, GFS, EURIBOR monthly, HICP + everything (revalidation)
+    Every lane rebuilds all four blocks from history CSVs."""
+    blocks: Dict[str, dict] = {k: v for k, v in prev.items() if v}
+    fx = a.fixtures
+    raw_dir = os.path.join(ROOT, "logs", "eur", "raw") if not fx else None
+    lanes = ["daily", "weekly_tue", "weekly", "monthly"] if a.lane == "all" else [{"daily_retry": "daily"}.get(a.lane, a.lane)]
+    from datetime import date, timedelta
+    today = date.today()
+
+    def _err(tag: str, e: Exception) -> None:
+        errors.append("%s: %s" % (tag, e))
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": tag, "error": str(e)})
+
+    def _since(days_backfill: int, days_incr: int) -> str:
+        return (today - timedelta(days=days_backfill if a.backfill else days_incr)).isoformat()
+
+    def _ids(block: str, freq_prefix: Optional[str] = None, flows: Optional[List[str]] = None) -> List[str]:
+        out = []
+        for s in cfg["blocks"][block]["series"].values():
+            sid = s.get("id")
+            if not sid or ":" in sid:
+                continue
+            if freq_prefix and not s.get("freq", "").startswith(freq_prefix):
+                continue
+            if flows is not None and sid.split(".")[0] not in flows:
+                continue
+            out.append(sid)
+        return out
+
+    ecb = PE.EcbProvider(fixtures_dir=fx, raw_dir=raw_dir)
+    data: Dict[str, Series] = {}
+
+    def _ecb(tag: str, ids: List[str], since: str) -> None:
+        ids = sorted(set(ids))
+        if not ids:
+            return
+        errs: List[str] = []
+        got = ecb.fetch(ids, since, errs)
+        for x in errs:
+            _err(tag, ProviderError(x))
+        if ecb.no_new:
+            E.log_event(oplog, "NO_NEW_OBSERVATIONS", "system", {"source": tag, "keys": list(ecb.no_new)})
+            ecb.no_new = []
+        got = {k: v for k, v in got.items() if v or fx}
+        data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+
+    all_blocks = ("central_bank", "fiscal", "banking", "rates")
+    if "daily" in lanes:
+        _ecb("ecb_daily", _ids("central_bank", "daily") + _ids("rates", "daily"), _since(8 * 365, 45))
+    if "weekly_tue" in lanes:
+        _ecb("ecb_weekly", _ids("central_bank", "weekly") + _ids("fiscal", "weekly"), _since(12 * 365, 120))
+        fa = PE.FinanzagenturProvider(fixtures_dir=fx, raw_dir=raw_dir)
+        try:
+            got = fa.fetch()
+            data.update(_merge_hist_named(hist_dir, got, list(got)) if not fx else got)
+            blocks["_de_rows"] = fa.rows  # auction lines for the fiscal history table (not written as a block)
+        except Exception as e:  # noqa
+            _err("finanzagentur", e)
+    if "weekly" in lanes:
+        ap = PE.AppPeppProvider(fixtures_dir=fx, raw_dir=raw_dir)
+        try:
+            got = ap.fetch()
+            data.update(_merge_hist_named(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("ecb_app_pepp", e)
+    if "monthly" in lanes:
+        _ecb("ecb_monthly", [i for b in all_blocks for i in _ids(b) if i.split(".")[1] in ("M", "Q")], _since(12 * 365, 400))
+    for i, ser in data.items():
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % i.replace("/", "_").replace("|", "_").replace(" ", "_").replace(":", "_")), i, ser)
+    if not fx:
+        need = [i for b in all_blocks for i in _ids(b) if i not in data]
+        need += [i for i in ("APP:holdings", "PEPP:holdings", "APP:redemptions", "PEPP:redemptions", "DE:bid_to_cover", "DE:avg_yield", "DE:retention", "DE:volume", "DE:bills_bid_to_cover", "DE:bonds_bid_to_cover") if i not in data]
+        data = _merge_hist_named(hist_dir, data, sorted(set(need)))
+    de_rows = blocks.pop("_de_rows", None)
+    blocks["central_bank"] = BE.build_central_bank(cfg, data, prev.get("central_bank"))
+    blocks["fiscal"] = BE.build_fiscal(cfg, data, prev.get("fiscal"), aux={"de_rows": de_rows or ((prev.get("fiscal") or {}).get("history") or {}).get("auction_lines")})
+    blocks["banking"] = BE.build_banking(cfg, data, prev.get("banking"))
+    blocks["rates"] = BE.build_rates(cfg, data, prev.get("rates"), blocks["central_bank"])
+    return blocks
+
+
 def _merge_hist_named(hist_dir: str, got: Dict[str, Series], names: List[str]) -> Dict[str, Series]:
     """history CSV lookup for series whose ids carry '|' or spaces (DTS line items): file name = sanitised id."""
     out = dict(got)
     for n in names:
-        p = os.path.join(hist_dir, "%s.csv" % n.replace("/", "_").replace("|", "_").replace(" ", "_"))
+        p = os.path.join(hist_dir, "%s.csv" % n.replace("/", "_").replace("|", "_").replace(" ", "_").replace(":", "_"))
         if os.path.exists(p):
             with open(p, encoding="utf-8") as f:
                 rows = list(csv.reader(f))
@@ -789,7 +877,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     errors: List[str] = []
 
     prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
-    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf, "nzd": fetch_nzd, "usd": fetch_usd}[ccy]
+    fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf, "nzd": fetch_nzd, "usd": fetch_usd, "eur": fetch_eur}[ccy]
     blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
 
     # ── quality (system-wide) ──

@@ -94,7 +94,7 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     if ample and friction and regime != "FLOOR_FRICTION":
         flags.append("FLOOR_FRICTION")
     phase = _get(blocks, "central_bank.balance_sheet_phase").get("phase")
-    if phase:
+    if phase and phase != "NO DATA":
         flags.append("PHASE_" + phase)
     # block-supplied orthogonal flags (GBP: CTRF_ACTIVE, REPO_DEPENDENCE_*, FISCAL_BIG_MONTH, QT_ACCELERATION)
     price_stress = LEVEL_RANK[s_lvl] >= LEVEL_RANK["STRESS"] or bool(spr.get("friction_confirmed"))
@@ -296,6 +296,8 @@ def build_calendar(cfg: dict, blocks: Dict[str, dict]) -> dict:
         return _calendar_nzd(cfg, cal, now)
     if cfg.get("currency") == "USD":
         return _calendar_usd(cfg, cal, now)
+    if cfg.get("currency") == "EUR":
+        return _calendar_eur(cfg, cal, now)
     for d in cal.get("boc_decision_dates_2026", []):
         items.append({"date": d, "title": "BoC rate decision" + (" + MPR" if d in cal.get("boc_mpr_dates_2026", []) else ""), "type": "central_bank", "impact": "HIGH", "time_local": cal.get("decision_time", "")})
     # next weekly B2 (Friday) and next daily/RG
@@ -542,4 +544,47 @@ def _calendar_usd(cfg: dict, cal: dict, now: datetime) -> dict:
             i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - d).days
     return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
             "wat_offset_note": "New York = WAT − 5h (EDT) / − 6h (EST)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
+            "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
+
+
+def _calendar_eur(cfg: dict, cal: dict, now: datetime) -> dict:
+    """EUR: Governing Council monetary-policy meetings (verified ecb.europa.eu 2026-09-09), WFS Tuesday 15:00 CET, ILM daily T+1, €STR 08:00 CET,
+    APP/PEPP Friday, MRO Tuesday allotment / Wednesday settlement, 3m LTRO last Wednesday of the month, reserve maintenance periods 2026
+    (press release 2025-04-24; last MP day = €STR volatility day), TARGET holidays."""
+    items = []
+    for d in cal.get("ecb_gc_monetary_policy_2026", []) + cal.get("ecb_gc_monetary_policy_2027", []):
+        items.append({"date": d, "title": "ECB Governing Council monetary policy decision (14:15 CET) + press conference (14:45 CET)" + (" — Berlin" if d == "2026-09-10" else ""),
+                      "type": "central_bank", "impact": "HIGH", "time_local": "14:15 CET (13:15 WAT)"})
+    d = now.date()
+    def nxt(wd, allow_today=False):
+        x = d if allow_today else d + timedelta(days=1)
+        while x.weekday() != wd:
+            x += timedelta(days=1)
+        return x
+    nb = d + timedelta(days=1)
+    while nb.weekday() >= 5:
+        nb += timedelta(days=1)
+    items.append({"date": nb.isoformat(), "title": "ILM daily liquidity (T+1 ~09:30 CET): excess liquidity, DF, current accounts, autonomous factors, MRO/LTRO, MLF · €STR 08:00 CET · AAA/all-EA curves ~17:00 CET · EUR/USD 16:00 CET",
+                  "type": "central_bank", "impact": "MEDIUM", "time_local": "09:30 CET (08:30 WAT)"})
+    items.append({"date": nxt(1).isoformat(), "title": "Eurosystem weekly financial statement (15:00 CET, position as at the previous Friday): MonPol securities, MRO/LTRO, government deposits · MRO allotment", "type": "central_bank", "impact": "HIGH", "time_local": "15:00 CET (14:00 WAT)"})
+    items.append({"date": nxt(2).isoformat(), "title": "MRO settlement (full allotment at the MRO rate)", "type": "central_bank", "impact": "LOW", "time_local": ""})
+    items.append({"date": nxt(4).isoformat(), "title": "APP / PEPP holdings update (~15:00 CET, holdings as at the previous Friday)", "type": "central_bank", "impact": "LOW", "time_local": "15:00 CET"})
+    for a, b in cal.get("reserve_maintenance_periods_2026", []):
+        items.append({"date": a, "title": "Reserve maintenance period starts (new DFR/MRO/MLF apply)", "type": "central_bank", "impact": "MEDIUM", "time_local": ""})
+        items.append({"date": b, "title": "Last day of the reserve maintenance period — €STR / volume volatility day", "type": "rates", "impact": "MEDIUM", "time_local": ""})
+    # Finanzagentur: auctions on Mondays (Bubill) / Tuesdays–Wednesdays (Bund, Bobl, Schatz) — the desk reads the results file the same afternoon
+    items.append({"date": nxt(0).isoformat(), "title": "Finanzagentur Bubill auction (results ~11:30 CET; XLSX same day)", "type": "fiscal", "impact": "LOW", "time_local": "11:30 CET"})
+    # monthly releases (approximate day; verified pattern on the portal)
+    import calendar as _c
+    for yy, mm in ((now.year, now.month), (now.year + (now.month // 12), now.month % 12 + 1)):
+        items.append({"date": "%d-%02d-10" % (yy, mm), "title": "TARGET balances (TGB monthly, ~10th) · IRS convergence yields", "type": "fiscal", "impact": "LOW", "time_local": ""})
+        items.append({"date": "%d-%02d-27" % (yy, mm), "title": "BSI monetary developments (M1/M3, loans, ~27th) · MIR cost of borrowing · EURIBOR monthly average", "type": "banking", "impact": "MEDIUM", "time_local": "10:00 CET"})
+    for h in cal.get("target_holidays", []):
+        items.append({"date": h, "title": "TARGET holiday (no ILM / €STR)", "type": "holiday", "impact": "LOW", "time_local": ""})
+    upcoming = sorted([i for i in items if (i["date"] or "9999") >= d.isoformat()], key=lambda x: x["date"] or "9999")
+    for i in upcoming:
+        if i["date"]:
+            i["days_until"] = (datetime.strptime(i["date"], "%Y-%m-%d").date() - d).days
+    return {"currency": cfg["currency"], "block": "calendar", "generated_at": now_iso(), "timezone_operator": cfg.get("timezone_operator"),
+            "wat_offset_note": "Frankfurt = WAT + 1h (CEST) / + 0h (CET)", "upcoming": upcoming[:40], "source_health": {"status": "fresh", "series_loaded": 1, "series_expected": 1, "last_fetch_ok": True, "errors": []},
             "series": {}, "derived": {}, "signals": {"traffic_light": "NONE", "score": 0, "label": "CALENDAR"}, "history": {}}
