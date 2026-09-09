@@ -961,6 +961,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     save_json(os.path.join(data_dir, "revisions.json"), {"generated_at": E.now_iso(), "revisions": all_revs})
     save_json(os.path.join(data_dir, "regime_history.json"), rh)
     E.log_event(oplog, "REFRESH_AUTO", "system", {"lane": a.lane, "backfill": a.backfill, "blocks": list(blocks), "errors": errors, "regime": regime["regime"], "new_revisions": len(revs)})
+    # ── daily_log (template 1.0) + jefe de mesa + anti-invention gate → data/<ccy>/agent.json, data/mesa/jefe.json ──
+    try:
+        from . import narrative as N
+        ag = N.run(ccy, ROOT)
+        E.log_event(oplog, "AGENT_DAILY_LOG", "system", {"gate": ag["gate"]["pass"], "failures": ag["gate"]["failures"], "hash": ag["hash"], "degraded": ag["degraded"], "streaks": ag["streaks"]})
+        print("daily_log gate=%s hash=%s degraded=%d" % ("PASS" if ag["gate"]["pass"] else "FAIL", ag["hash"], len(ag["degraded"])))
+    except Exception as e:  # the narrative never blocks the data refresh
+        E.log_event(oplog, "AGENT_DAILY_LOG_ERROR", "system", {"error": str(e)})
+        print("daily_log error: %s" % e)
     save_json(os.path.join(data_dir, "oplog.json"), load_json(oplog) or {"entries": []})
 
     print("regime=%s score=%s flags=%s blocks=%s errors=%s" % (regime["regime"], regime["weighted_score"], regime["flags"], list(blocks), errors))
