@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2.1",
- "generated_at": "2026-09-09T10:38:13+00:00",
+ "generated_at": "2026-09-09T10:54:32+00:00",
  "as_of": "2026-09-08",
  "equivalence_quality": "high",
  "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
@@ -2565,7 +2565,9 @@
    "confidence": 100,
    "latest_outlier": false,
    "note": "COINCIDENT, NOISY residual (N4, all reviewers): Crown cash + currency + LSAP sales/repurchases + RBNZ portfolio coupons + FX reserve transactions. Shown with a ± band = monthly reconciliation error vs D10; known non-fiscal days are tagged (COUPON_PAYMENT_DAY, BOND_MATURITY_DAY, LSAP_SALE_DAY from the D3/on-issue calendars) and excluded from FISCAL_BIG_DAY. Never a flag on its own",
-   "tagged_day": []
+   "tagged_day": [
+    "settlement"
+   ]
   },
   "residual_flow_5d_cum": {
    "source_id": null,
@@ -2754,7 +2756,9 @@
    "status": "fresh",
    "date": "2026-09-08",
    "direction": null,
-   "excluded_tags": []
+   "excluded_tags": [
+    "settlement"
+   ]
   },
   "settlement_cash_ex_omo": {
    "source_id": null,
@@ -5032,6 +5036,8 @@
     "2026-08-19"
    ],
    "settlement": [
+    "2026-09-08",
+    "2026-09-09",
     "2026-09-15",
     "2026-09-16",
     "2026-09-22",
@@ -5052,6 +5058,11 @@
     "date": "2026-09-07",
     "label": "NEUTRAL",
     "score": 0.0
+   },
+   {
+    "date": "2026-09-08",
+    "label": "NEUTRAL",
+    "score": -0.5
    },
    {
     "date": "2026-09-08",
