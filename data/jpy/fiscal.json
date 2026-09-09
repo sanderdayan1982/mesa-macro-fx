@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.3",
- "generated_at": "2026-09-09T08:21:33+00:00",
- "as_of": "2026-09-09",
+ "generated_at": "2026-09-09T12:25:44+00:00",
+ "as_of": "2026-09-10",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
  "source_health": {
@@ -104,27 +104,28 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -33600.0,
-   "date": "2026-09-09",
-   "prev_value": -5600.0,
-   "prev_date": "2026-09-08",
-   "change_abs": -28000.0,
-   "change_pct": -500.0,
+   "value": 2200.0,
+   "date": "2026-09-10",
+   "prev_value": -33600.0,
+   "prev_date": "2026-09-09",
+   "change_abs": 35800.0,
+   "change_pct": 106.5476,
    "zscore": null,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
     -5600.0,
-    -33600.0
+    -33600.0,
+    2200.0
    ],
    "high_low": {
-    "high": -5600.0,
-    "high_date": "2026-09-08",
+    "high": 2200.0,
+    "high_date": "2026-09-10",
     "low": -33600.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 0,
+   "age_days": -1,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "tomorrow's fiscal impulse — unique to JPY"
@@ -1667,7 +1668,9 @@
      "STRESS": 2.574
     },
     "window": "36w",
-    "n": 36
+    "n": 36,
+    "era_anchor": "2024-07-31",
+    "era_thin": false
    }
   },
   "auction_tail_superlong_bp": {
@@ -1710,7 +1713,9 @@
      "CRISIS_abs": 12
     },
     "window": "36w",
-    "n": 2
+    "n": 2,
+    "era_anchor": null,
+    "era_thin": false
    },
    "secondary_level": "SAFE",
    "percentile_level": "SAFE"
@@ -1778,6 +1783,21 @@
   "flags": [
    "FX_INTERVENTION_SUSPECT"
   ],
+  "components": {
+   "mode": "sum",
+   "level_weight": 1.0,
+   "flow": {
+    "fiscal_flow_z": -0.2
+   },
+   "level": {},
+   "weights": {},
+   "range": [
+    -1.5,
+    1.5
+   ],
+   "score_v02": -0.2,
+   "score_flows_only": -0.2
+  },
   "detail": "flow -11000.0 (Z -0.26) · 5d -44200.0 · 20d -66100.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.788",
   "alerts": [
    {
@@ -2870,6 +2890,11 @@
     "date": "2026-09-07",
     "label": "NEUTRAL",
     "score": 0.24
+   },
+   {
+    "date": "2026-09-08",
+    "label": "NEUTRAL",
+    "score": -0.2
    },
    {
     "date": "2026-09-08",

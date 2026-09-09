@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2.3",
- "generated_at": "2026-09-09T08:21:33+00:00",
+ "generated_at": "2026-09-09T12:25:44+00:00",
  "as_of": "2026-09-08",
  "equivalence_quality": "high",
  "equivalence_note": "DAILY current account balances, excess reserves, required reserves and market operations (T+1 final, same-day provisional) plus a full balance sheet every ten days. Closest G8 analogue to the Fed's daily data.",
@@ -913,7 +913,9 @@
      "STRESS": 2300.0
     },
     "window": "330d",
-    "n": 227
+    "n": 227,
+    "era_anchor": "2024-07-31",
+    "era_thin": false
    },
    "equivalence_note": "JGB collateral scarcity gauge (used operationally too → percentile, not > 0)"
   },
@@ -2368,7 +2370,9 @@
     "method": "percentile",
     "levels": {},
     "window": "750d",
-    "n": 227
+    "n": 227,
+    "era_anchor": "2024-07-31",
+    "era_thin": false
    }
   },
   "cab_20d_change": {
@@ -2455,7 +2459,9 @@
     "method": "percentile",
     "levels": {},
     "window": "750d",
-    "n": 208
+    "n": 208,
+    "era_anchor": "2024-07-31",
+    "era_thin": false
    }
   },
   "reconciliation_cab": {
@@ -2830,7 +2836,9 @@
      "STRESS": 0.19615
     },
     "window": "108w",
-    "n": 68
+    "n": 68,
+    "era_anchor": "2024-07-31",
+    "era_thin": false
    }
   },
   "currency_drain_daily": {
@@ -2928,6 +2936,25 @@
   "score": 0.5,
   "label": "INJECTION",
   "flags": [],
+  "components": {
+   "mode": "mean2",
+   "level_weight": 1.0,
+   "flow": {
+    "cab_20d_level": 0.25,
+    "cab_dod_level": 0.0,
+    "balance_sheet_band": 0.0
+   },
+   "level": {
+    "excess_to_required": 0.75
+   },
+   "weights": {},
+   "range": [
+    -2.0,
+    2.0
+   ],
+   "score_v02": 0.5,
+   "score_flows_only": 0.12
+  },
   "detail": "CAB 4151800.0 · excess/required 27.46x (SAFE) · ΔCAB d/d -9400.0 · 20d -39600.0 (SAFE) · JGB purchases vs plan -0.021 · CLF 0.0",
   "alerts": [
    {
