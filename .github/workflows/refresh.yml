@@ -57,6 +57,8 @@ jobs:
           python -m ingest.run --ccy ${{ matrix.ccy }} --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/${{ matrix.ccy }}/oplog.json)"
       - name: Validate JSON against schema
         run: python -m ingest.validate --ccy ${{ matrix.ccy }}
+      - name: v0.4 reconciliation checks (operations vs B2, signs, calendars)
+        run: python -m ingest.tests_v04 || echo "::warning::v0.4 self-checks failed (see step log)"
       - name: Anti-invention gate (daily_log)
         run: python -m ingest.gate --ccy ${{ matrix.ccy }} || echo "::warning::daily_log withheld by the anti-invention gate (see data/${{ matrix.ccy }}/agent.json)"
       - name: Commit data
