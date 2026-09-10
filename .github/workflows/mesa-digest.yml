@@ -1,0 +1,44 @@
+# Mesa Macro FX — resumen diario por Telegram (config/notify.json): 06:00 UTC = 07:00 WAT, lunes a sábado.
+# Sólo lee los JSON publicados (agent.json, regime.json, jefe.json); sin secretos → dry run (data/mesa/outbox.json).
+name: mesa-digest
+on:
+  schedule:
+    - cron: "0 6 * * 1-6"
+  workflow_dispatch:
+    inputs:
+      preview:
+        description: "sólo imprimir el resumen, sin enviar (true/false)"
+        default: "false"
+permissions:
+  contents: write
+concurrency:
+  group: mesa-digest
+  cancel-in-progress: false
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - name: Resumen diario
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ "${{ github.event.inputs.preview }}" = "true" ]; then
+            python -m ingest.notify --digest --preview
+          else
+            python -m ingest.notify --digest
+          fi
+      - name: Commit outbox
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/mesa
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "mesa: digest $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push

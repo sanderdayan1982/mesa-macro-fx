@@ -58,6 +58,9 @@ jobs:
             echo "== $u"; curl -sS -o /dev/null -D - -m 30 -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" "$u" | head -20 || true
           done
       - name: Run ingestion (NZD)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
           python -m ingest.run --ccy nzd --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/nzd/oplog.json) — last good JSON kept as stale"

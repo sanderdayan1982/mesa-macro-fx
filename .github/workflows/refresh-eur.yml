@@ -57,6 +57,9 @@ jobs:
             echo "== $u"; curl -sS -o /dev/null -D - -m 30 -A "MesaMacroFX/0.3 (+github.com/sanderdayan1982)" "$u" | head -12 || true
           done
       - name: Run ingestion (EUR)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
           python -m ingest.run --ccy eur --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/eur/oplog.json) — last good JSON kept as stale"

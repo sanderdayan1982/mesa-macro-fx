@@ -57,6 +57,8 @@ jobs:
           done
       - name: Run ingestion (USD)
         env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
           if [ "${{ steps.lane.outputs.backfill }}" = "true" ]; then BF="--backfill"; else BF=""; fi
