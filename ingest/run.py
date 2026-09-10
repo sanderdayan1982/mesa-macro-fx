@@ -185,7 +185,7 @@ def _cad_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
         ind = O.read_archive(ind_path)
     from datetime import date, timedelta
     today = date.today().isoformat()
-    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    days = O.business_days((date.today() - timedelta(days=int(os.environ.get("MESA_V04_YEARS", "3")) * 365)).isoformat(), today)
     ops: Dict[str, Series] = {}
     ops.update(O.term_repo_series(rows.get("term_repo", []), days))
     ops.update(O.or_orr_series(rows.get("or", []), rows.get("orr", [])))
@@ -202,6 +202,9 @@ def _cad_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
         try:
             netcal, nethist, hnote = _cad_holdings(cfg, a, gp, hist_dir, days, errors, oplog)
             V4.enrich_fiscal_net(blocks["fiscal"], cfg, iss, netcal, nethist, reserves_w)
+            for k in ("net_issuance_private_v2_daily", "bond_redemptions_net_daily", "bond_coupons_net_daily"):
+                if nethist.get(k):
+                    append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, [(d, v) for d, v in nethist[k] if v is not None])
             E.log_event(oplog, "CAD_HOLDINGS", "system", hnote)
         except Exception as e:  # noqa
             errors.append("boc_holdings: %s" % e)
@@ -419,7 +422,7 @@ def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "dmo_xml", "kind": kind, "error": str(e)})
     from datetime import date, timedelta
     today = date.today().isoformat()
-    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    days = O.business_days((date.today() - timedelta(days=int(os.environ.get("MESA_V04_YEARS", "3")) * 365)).isoformat(), today)
     ops = O.repo_series(rows.get("str", []), rows.get("iltr", []), rows.get("ctrf", []), days)
     apf = O.apf_series(rows.get("apf_sales", []), rows.get("apf_profile", []))
     apf_name = O.apf_holdings_by_name(rows.get("apf_profile", []))
@@ -538,7 +541,7 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
     from datetime import date, timedelta
     import time as _time
     today = date.today().isoformat()
-    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    days = O.business_days((date.today() - timedelta(days=int(os.environ.get("MESA_V04_YEARS", "3")) * 365)).isoformat(), today)
 
     def _get(url: str, binary: bool = False, timeout: int = 120):
         """RBA: plain requests. AOFM (Akamai): the Chrome-impersonating ladder from providers_nzd (curl_cffi → curl → requests), 2 tries, then the
@@ -674,6 +677,9 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
             netcal = H.net_tb_calendar(lines, rba_rows)
             nethist = H.net_daily_history(lines, rba_rows, days)
             V4.enrich_fiscal_net(blocks["fiscal"], cfg, iss, netcal, nethist, es_level)
+            for k in ("net_issuance_private_v2_daily", "tb_redemptions_net_daily", "tb_coupons_net_daily"):
+                if nethist.get(k):
+                    append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, [(d, v) for d, v in nethist[k] if v is not None])
             ha = netcal.get("tb_holdings_asof", [])
             E.log_event(oplog, "AUD_HOLDINGS", "system", {"a31_rows": len(rba_rows), "rba_asof": ha[-1][0] if ha else None, "unmatched": netcal.get("_unmatched", []),
                                                           "rba_share": (netcal.get("tb_rba_share") or [(None, None)])[-1][1]})
@@ -873,7 +879,7 @@ def _jpy_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
     import requests  # type: ignore
     src = cfg["sources"]
     today = date.today()
-    days = J.business_days((today - timedelta(days=3 * 365)).isoformat(), today.isoformat())
+    days = J.business_days((today - timedelta(days=int(os.environ.get("MESA_V04_YEARS", "3")) * 365)).isoformat(), today.isoformat())
     hx = os.path.join(ROOT, "fixtures", "jpy_hist")
     base = src["boj_daily_cab"]["url_final"].split("jd/")[0]  # …/juq/d_release/
     ope_base = base.replace("/juq/", "/ope/") + "ope/"
@@ -921,10 +927,21 @@ def _jpy_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
         daily_recs = J.merge_daily_archive(d_arch, recs) if recs else old
         note["daily_new"] = n
     daily = J.daily_records_to_wide(daily_recs)
-    # the v0.3 daily archive (final column only) fills the history behind the three-column archive
+    # the v0.3 daily archive (final column only) fills the history behind the three-column archive; in fixture mode the long
+    # jd archive (fixtures/jpy_hist/boj_daily_jd_hist_wide.csv, 2023-01→) is read too so the replay sees the whole era
+    seed: Dict[str, Series] = {}
+    if fx:
+        pth = os.path.join(hx, "boj_daily_jd_hist_wide.csv")
+        if os.path.exists(pth):
+            with open(pth, encoding="utf-8") as f:
+                for r in csv.DictReader(f):
+                    for k in ("treasury", "cab", "jgb_purch", "ops_ex_lsp", "banknotes", "net_change", "reserve_bal", "excess"):
+                        v = r.get(k)
+                        if v not in (None, ""):
+                            seed.setdefault(k, []).append((r["date"], float(v)))
     for k in ("treasury", "cab", "jgb_purch", "ops_ex_lsp", "banknotes", "net_change", "reserve_bal", "excess"):
         have = {d for d, _ in daily["final"].get(k, [])}
-        extra = [(d, v) for d, v in S.clean(data.get(k, [])) if d not in have]
+        extra = [(d, v) for d, v in S.clean(list(data.get(k, [])) + seed.get(k, [])) if d not in have]
         if extra:
             daily["final"][k] = S.clean(daily["final"].get(k, []) + extra)
     note["daily_files"] = len({r["date"] for r in daily_recs})
@@ -1185,7 +1202,7 @@ def _chf_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, ops_rows: list, 
     from datetime import date, timedelta
     import json as _json
     today = date.today().isoformat()
-    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    days = O.business_days((date.today() - timedelta(days=int(os.environ.get("MESA_V04_YEARS", "3")) * 365)).isoformat(), today)
     # 1 · SNB operations: the monthly lane fetches gmges; every other lane reads the archive (and fetches once if the archive is empty)
     arch = os.path.join(hist_dir, "snb_ops_rows.csv")
     if not fx and not ops_rows and not os.path.exists(arch):
@@ -1393,7 +1410,7 @@ def _nzd_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, d3_rows, hist_di
     from . import series as S
     from datetime import date, timedelta
     today = date.today().isoformat()
-    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    days = O.business_days((date.today() - timedelta(days=int(os.environ.get("MESA_V04_YEARS", "3")) * 365)).isoformat(), today)
     tf = O.tender_flows(data.get("_tender_rows") or [], data.get("_upcoming_tenders") or [])
     cal = O.bond_calendar(data.get("_bonds_on_issue") or [])
     ni = O.net_issuance_private(tf["tender_settled"], tf["bill_matured"], cal["coupons_market_paid"], days)
@@ -1660,7 +1677,7 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
     import re as _re
     import time as _time
     today = date.today().isoformat()
-    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    days = O.business_days((date.today() - timedelta(days=int(os.environ.get("MESA_V04_YEARS", "3")) * 365)).isoformat(), today)
     hx = os.path.join(ROOT, "fixtures", "eur_hist")
     arch = os.path.join(hist_dir, "issuance_records.csv")
     recs: List[dict] = []

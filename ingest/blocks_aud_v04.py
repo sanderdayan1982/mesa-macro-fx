@@ -138,6 +138,7 @@ def enrich_fiscal_net(block: dict, cfg: dict, iss: Dict[str, Series], netcal: Di
                     m[d] += v
         first = min((d for d, v in nethist["tb_redemptions_net_daily"] if v is not None), default=None)
         v2 = [(d, round(m[d], 3)) for d in sorted(m) if first and d >= first]
+        nethist["net_issuance_private_v2_daily"] = v2  # archived by run.py for the replay
         D["net_issuance_private_v2_daily"] = entry("net_issuance_private_v2_daily", v2, "Net issuance to the private sector v2 — + Treasury Bond redemptions and coupons NET of RBA holdings (daily; − = drain)",
                                                     "daily", unit, cfg, "derived", status="fresh" if v2 else "unavailable",
                                                     equivalence_note="round 2: RBA A3.1 by line (monthly since 2017-01) netted with the previous month-end; v0.4 series unchanged")

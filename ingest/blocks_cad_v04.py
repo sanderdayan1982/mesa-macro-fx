@@ -171,6 +171,7 @@ def enrich_fiscal_net(block: dict, cfg: dict, iss: Dict[str, Series], netcal: Di
                 m[d] += v or 0.0
         first = min((d for d, v in nethist["bond_redemptions_net_daily"] if v is not None), default=None)
         v2 = [(d, round(m[d], 3)) for d in sorted(m) if first and d >= first]
+        nethist["net_issuance_private_v2_daily"] = v2  # archived by run.py for the replay
         D["net_issuance_private_v2_daily"] = entry("net_issuance_private_v2_daily", v2, "Net issuance to the private sector v2 — coupons and redemptions NET of BoC holdings (daily; − = drain)", "daily", unit, cfg, "derived",
                                                     status="fresh" if v2 else "unavailable", equivalence_note="round 2: BoC holdings by ISIN since 2018-12; before that the v0.4 first pass applies")
         wk = S.rolling_sum(v2, 5)
