@@ -1,0 +1,36 @@
+# Mesa Macro FX — replay v0.4 (manual): which v0.4 shadow component enters each regime, on the repo's own archives
+# (calibration/<ccy>_v03/scores.csv + history/<ccy>/*.csv). Writes calibration/<ccy>_v04/ and calibration/REPLAY_V04.md. Decision support only:
+# nothing here touches config/ or the live regimes.
+name: replay-v04
+on:
+  workflow_dispatch:
+    inputs:
+      ccy:
+        description: "currency (cad gbp nzd chf aud eur jpy) or 'all'"
+        required: false
+        default: "all"
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt numpy scipy
+      - name: Replay v0.4
+        run: |
+          if [ "${{ github.event.inputs.ccy }}" = "all" ] || [ -z "${{ github.event.inputs.ccy }}" ]; then
+            python -m ingest.replay_v04
+          else
+            python -m ingest.replay_v04 ${{ github.event.inputs.ccy }}
+          fi
+      - name: Commit calibration
+        run: |
+          git config user.name "mesa-macro-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add calibration
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "calibration: replay v0.4 $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push
