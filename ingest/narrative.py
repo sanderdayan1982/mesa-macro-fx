@@ -88,7 +88,7 @@ SPEC: Dict[str, dict] = {
         "ops": [("central_bank", "derived", "bills_maturing_week", "SNB Bills que vencen en la semana", "flow")],
         "govt": ("fiscal", "series", "amounts_due_to_confederation", "los saldos de la Confederación en el SNB"),
         "fiscal": {"week": None, "month": ("fiscal", "derived", "confed_cash_mom", "−Δ saldo"), "q13": None, "label": "flujo fiscal (−Δ saldos de la Confederación)", "monthly_only": True, "month_sign": -1},
-        "issuance": {"gross": None, "redemptions": None, "freq": "monthly", "net": ("fiscal", "derived", "net_issuance_month")},
+        "issuance": {"gross": ("fiscal", "derived", "confed_issued_gross"), "redemptions": ("fiscal", "derived", "confed_redeemed_gross"), "freq": "daily", "net": ("fiscal", "derived", "net_issuance_month")},
         "auctions": [("fiscal", "derived", "mmdrc_bid_to_cover", "MMDRC: cobertura"), ("fiscal", "derived", "mmdrc_yield_minus_saron_bps", "rendimiento − SARON"), ("fiscal", "derived", "bond_bid_to_cover", "bono: cobertura")],
         "spread": ("rates", "derived", "saron_minus_policy_bps", "SARON − tipo SNB"), "friction": ("rates", "derived", "friction_confirmed"),
     },

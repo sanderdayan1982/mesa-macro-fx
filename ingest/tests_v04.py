@@ -84,7 +84,52 @@ def main_nzd() -> int:
     return 1 if fails else 0
 
 
+def main_chf() -> int:
+    """CHF: reconciliations of the per-operation stocks against the SNB balance sheet (snbbipo ES / VRGSF), sign conventions, cuts."""
+    from . import ops_chf as C
+    import calendar as _cal
+    import json
+    fails = []
+    fx = os.path.join(ROOT, "fixtures", "chf")
+    ops = [dict(r) for r in csv.DictReader(open(os.path.join(fx, "snb_ops_rows.csv"), encoding="utf-8"))]
+    days = C.business_days("2019-11-01", "2026-09-10")
+    rf, bf = C.repo_flows(ops, days), C.bills_flows(ops, days)
+    rows = list(csv.reader(open(os.path.join(fx, "snbbipo.csv"), encoding="utf-8")))
+    h = rows[0]
+    def me(ym):
+        y, m = map(int, ym.split("-"))
+        return "%s-%02d" % (ym, _cal.monthrange(y, m)[1])
+    es = C.clean([(me(r[0]), float(dict(zip(h, r))["snbbipo:ES"])) for r in rows[1:]])
+    vr = C.clean([(me(r[0]), float(dict(zip(h, r))["snbbipo:VRGSF"])) for r in rows[1:]])
+    re_es = dict(C.reconcile_month_end(bf["bills_stock_full"], es))
+    re_vr = dict(C.reconcile_month_end(rf["repo_ct_stock_full"], vr))
+    check(all(abs(re_es[d]) <= 10 for d in ("2026-03-31", "2026-04-30", "2026-05-31", "2026-06-30", "2026-07-31")), "Bills stock from gmges = balance-sheet ES within CHF 10 m at every month-end Mar–Jul 2026 (Jul: %.0f vs %.0f)" % (dict(bf["bills_stock_full"])["2026-07-31"], dict(es)["2026-07-31"]), fails)
+    check(all(re_vr[d] == 0.0 for d in ("2026-03-31", "2026-04-30", "2026-05-31", "2026-06-30", "2026-07-31")), "absorbing-repo stock from gmges = balance-sheet VRGSF exactly at every month-end Mar–Jul 2026", fails)
+    cut = rf["ops_cut"][0][0]
+    check(cut == "2026-07-31", "operations cut = last settlement ('from') date in the file (2026-07-31; last transaction 07-29 settles T+2)", fails)
+    check(all(d <= cut for d, _ in rf["repo_net_daily"]) and all(d > cut for d, _ in rf["repo_maturities_ahead"]), "repo flows stop at the cut; later maturities go to the calendar", fails)
+    check(dict(rf["repo_ct_settled"]).get("2026-07-31") == -17420.0 and dict(rf["repo_ct_matured"]).get("2026-07-31") == 15220.0 and dict(rf["repo_maturities_ahead"]).get("2026-08-03") == 13070.0, "repo 2026-07-31: settled −17 420, matured +15 220; 08-03 maturity 13 070 in the calendar", fails)
+    check(dict(rf["repo_ct_stock_daily"])["2026-07-31"] == dict(vr)["2026-07-31"], "displayed repo stock at the cut (2026-07-31) = VRGSF July exactly (%.0f)" % dict(vr)["2026-07-31"], fails)
+    check(dict(bf["bills_issued"]).get("2026-07-27") == -16225.0 and dict(bf["bills_repaid"]).get("2026-07-27") == 9592.0, "Bills 2026-07-27: placed −(15 645 + 580), repaid +(9 177 + 415) from the gmges rows", fails)
+    mm = C.efv_records_from_cells(json.load(open(os.path.join(ROOT, "fixtures", "chf_hist", "efv_mmdrc_cells.json"), encoding="utf-8")))
+    mf = C.mmdrc_flows(mm, days)
+    check(dict(mf["mmdrc_settled"]).get("2026-09-10") == -469.2 and dict(mf["mmdrc_matured"]).get("2026-09-10") == 400.0, "MMDRC 2026-09-10: settled −469.2 (Liberierung), matured +400 (Fälligkeit)", fails)
+    check(mf["mmdrc_settlements_announced"] == [("2026-09-17", 0.0)] and all(d <= "2026-09-10" for d, _ in mf["mmdrc_net_daily"]), "announced MMDRC auction (no amount) in the calendar, not in the flows", fails)
+    out, asof = C.read_outstanding_csv(os.path.join(fx, "efv_bonds_outstanding.csv"))
+    check(asof == "2026-08-31" and abs(sum(C._num(r["placed_market"]) for r in out) - 73655.65) < 0.5, "bonds outstanding list as of 31.08.2026, placed on the market Σ 73 655.65 (file total row)", fails)
+    cal = C.bond_calendar(out)
+    check(dict(cal["coupons_market_paid"]).get("2026-06-25") == round(3190.555 * 0.02, 3), "coupon 2026-06-25 = Eidg. 25.06.14/64 placed 3 190.555 × 2%", fails)
+    check(cal["bond_redemptions_market_ahead"] == [("2027-06-27", 2865.515)], "next market redemption Eidg. 27.06.07/27: 2 865.515 placed (own placed 385 included, own available 215 excluded)", fails)
+    gi = [("2026-07-10", 100.0), ("2026-07-17", 105.0), ("2026-07-24", 104.0)]
+    px = C.intervention_proxy(gi, [("2026-07-13", 2.0), ("2026-07-20", -1.0)], [("2026-07-15", -1.0)], "2026-07-20")
+    check(px["proxy_weekly"] == [("2026-07-17", 4.0)] and px["proxy_weekly_partial"] == [("2026-07-24", 0.0)], "proxy = ΔGI − ops − Confederation over (prev Friday, Friday]; weeks after the cut are partial", fails)
+    print("%d failures" % len(fails))
+    return 1 if fails else 0
+
+
 def main() -> int:
+    if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "chf":
+        return main_chf()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "gbp":
         return main_gbp()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "nzd":

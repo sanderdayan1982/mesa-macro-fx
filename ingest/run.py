@@ -617,6 +617,8 @@ def fetch_chf(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
 
     data: Dict[str, Series] = {}
     cube = PC.SnbCubeProvider(fixtures_dir=fx, raw_dir=raw_dir)
+    efv_records: Dict[str, list] = {}
+    ops_rows: list = []
 
     def _cube(tag: str, cube_id: str, dim_sel, since: str, warehouse: bool = False, fixture=None) -> None:
         try:
@@ -641,10 +643,12 @@ def fetch_chf(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     # ── weekly_thu: EFV auctions ──
     if "weekly_thu" in lanes or "weekly" in lanes or "daily" in lanes:
         try:
-            got, errs = PC.EfvAuctionsProvider(src["efv_mmdrc_auctions"]["url"], src["efv_bond_auctions"]["url"], fixtures_dir=fx, raw_dir=raw_dir).fetch()
+            efv = PC.EfvAuctionsProvider(src["efv_mmdrc_auctions"]["url"], src["efv_bond_auctions"]["url"], fixtures_dir=fx, raw_dir=raw_dir)
+            got, errs = efv.fetch()
             for x in errs:
                 _err("efv_auctions", Exception(x))
             data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+            efv_records = efv.records
         except Exception as e:  # noqa
             _err("efv_auctions", e)
     # ── monthly ──
@@ -661,6 +665,7 @@ def fetch_chf(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         try:
             got, ops = PC.SnbOpsProvider(src["snb_money_market_operations"]["url"], fixtures_dir=fx, raw_dir=raw_dir).fetch()
             data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
+            ops_rows = ops
         except Exception as e:  # noqa
             _err("snb_money_market_operations", e)
     # SNB Bills register: small list, needed by the daily ladder → every lane
@@ -700,7 +705,80 @@ def fetch_chf(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     blocks["central_bank"] = BC.build_central_bank(cfg, data, prev.get("central_bank"))
     blocks["fiscal"] = BC.build_fiscal(cfg, data, prev.get("fiscal"))
     blocks["banking"] = BC.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    if str(cfg.get("config_version", "")).startswith("0.4"):
+        try:
+            _chf_v04(cfg, a, blocks, data, ops_rows, efv_records, hist_dir, oplog, errors, fx, src, raw_dir)
+        except Exception as e:  # noqa
+            _err("chf_v04", e)
     return blocks
+
+
+def _chf_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, ops_rows: list, efv_records: dict, hist_dir: str, oplog: str, errors: List[str], fx, src: dict, raw_dir) -> None:
+    """CHF v0.4 (CAMBIOS S1–S3): absorption by operation date, Confederation issuance by settlement, coupons/redemptions, weekly proxy v0.4."""
+    from . import ops_chf as O
+    from . import blocks_chf_v04 as V4
+    from . import series as S
+    from datetime import date, timedelta
+    import json as _json
+    today = date.today().isoformat()
+    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    # 1 · SNB operations: the monthly lane fetches gmges; every other lane reads the archive (and fetches once if the archive is empty)
+    arch = os.path.join(hist_dir, "snb_ops_rows.csv")
+    if not fx and not ops_rows and not os.path.exists(arch):
+        try:
+            _, ops_rows = PC.SnbOpsProvider(src["snb_money_market_operations"]["url"], fixtures_dir=None, raw_dir=raw_dir).fetch()
+        except Exception as e:  # noqa
+            errors.append("snb_money_market_operations(v04): %s" % e)
+    ops = O.merge_ops_archive(arch, ops_rows) if not fx else ops_rows
+    rf = O.repo_flows(ops, days)
+    bf = O.bills_flows(ops, days)
+    ops_cut = rf["ops_cut"][0][0] if rf.get("ops_cut") else today
+    absorption = O.absorption_stock(bf["bills_stock_daily"], rf["repo_ct_stock_daily"])
+    es = S.clean(data.get("snbbipo:ES", []))
+    vr = S.clean(data.get("snbbipo:VRGSF", []))
+    recon_es = O.reconcile_month_end(bf["bills_stock_full"], es)
+    recon_vr = O.reconcile_month_end(rf["repo_ct_stock_full"], vr)
+    cal_b = O.bills_calendar(data.get("_bills_rows") or [], es[-1][1] if es else None)
+    # 2 · Confederation: EFV records (settlement/maturity), bonds outstanding (redemptions, coupons)
+    if fx and not efv_records.get("mmdrc"):
+        for tag in ("mmdrc", "bonds"):
+            pj = os.path.join(ROOT, "fixtures", "chf_hist", "efv_%s_cells.json" % tag)
+            if os.path.exists(pj):
+                efv_records[tag] = O.efv_records_from_cells(_json.load(open(pj, encoding="utf-8")))
+    mm = O.mmdrc_flows(efv_records.get("mmdrc") or [], days)
+    bfl = O.bond_flows(efv_records.get("bonds") or [], days)
+    out_path = os.path.join(hist_dir, "efv_bonds_outstanding.csv")
+    outstanding, asof = ([], None)
+    if fx:
+        outstanding, asof = O.read_outstanding_csv(os.path.join(fx, "efv_bonds_outstanding.csv"))
+    else:
+        try:
+            blob = PC._http(src.get("efv_bonds_outstanding", {}).get("url", O.OUTSTANDING_URL), binary=True, timeout=120)
+            PC._snapshot(raw_dir, "efv_outstanding.xlsx", blob)
+            outstanding, asof = O.parse_outstanding_xlsx(blob)
+            if outstanding:
+                O.write_outstanding_csv(out_path, outstanding, asof)
+        except Exception as e:  # noqa
+            errors.append("efv_bonds_outstanding: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "efv_bonds_outstanding", "error": str(e)})
+        if not outstanding:
+            outstanding, asof = O.read_outstanding_csv(out_path)
+    cal = O.bond_calendar(outstanding)
+    ni = O.net_issuance_private(mm, bfl, cal, days)
+    own_avail = round(sum(O._num(r.get("own_available")) or 0.0 for r in outstanding), 1) if outstanding else None
+    # 3 · weekly proxy v0.4 on the GI grid
+    gi = S.clean(data.get("snbgwdchfsgw:GI", []))
+    ops_net = S.merge_series(bf["bills_net_daily"], rf["repo_net_daily"], lambda x, y: round(x + y, 3)) if bf["bills_net_daily"] and rf["repo_net_daily"] else (bf["bills_net_daily"] or rf["repo_net_daily"])
+    px = O.intervention_proxy(gi, ops_net, ni, ops_cut)
+    gi_level = gi[-1][1] if gi else None
+    V4.enrich_central_bank(blocks["central_bank"], cfg, rf, bf, cal_b, absorption, recon_es, recon_vr, px, ops_cut)
+    V4.enrich_fiscal(blocks["fiscal"], cfg, mm, bfl, cal, ni, asof, own_avail, gi_level)
+    for k, ser in (("ops_net_daily", ops_net), ("absorption_stock_daily", absorption), ("net_issuance_private_daily", ni), ("fx_intervention_proxy_v04", px.get("proxy_weekly", []))):
+        if ser:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
+    E.log_event(oplog, "CHF_V04", "system", {"ops_rows": len(ops), "ops_cut": ops_cut, "mmdrc_records": len(efv_records.get("mmdrc") or []), "bond_records": len(efv_records.get("bonds") or []),
+                                             "bonds_outstanding": len(outstanding), "outstanding_asof": asof, "es_recon_months": len(recon_es), "proxy_weeks": len(px.get("proxy_weekly", []))})
+
 
 def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
     """NZD lanes (RBNZ stable XLSX URLs + NZDM HTML/XLSX; one request per file >= 1 s apart):

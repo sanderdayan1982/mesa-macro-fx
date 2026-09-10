@@ -330,6 +330,7 @@ class EfvAuctionsProvider:
 
     def __init__(self, url_mmdrc: str, url_bonds: str, fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
         self.url_mmdrc, self.url_bonds, self.fixtures_dir, self.raw_dir = url_mmdrc, url_bonds, fixtures_dir, raw_dir
+        self.records: Dict[str, List[dict]] = {"mmdrc": [], "bonds": []}
 
     @staticmethod
     def _table(cells: Dict[str, object]) -> List[dict]:
@@ -346,7 +347,7 @@ class EfvAuctionsProvider:
             for c, h in hdr.items():
                 rec[h] = rows[r].get(c)
             d = rec.get("auction")
-            iso = _serial_to_iso(d) if isinstance(d, float) else None
+            iso = _serial_to_iso(float(d)) if isinstance(d, (int, float)) and not isinstance(d, bool) else None
             if not iso:
                 continue
             rec["_date"] = iso
@@ -400,6 +401,12 @@ class EfvAuctionsProvider:
 
     def fetch(self) -> Tuple[Dict[str, Series], List[str]]:
         if self.fixtures_dir:
+            import json as _json
+            for tag in ("mmdrc", "bonds"):
+                pj = os.path.join(os.path.dirname(self.fixtures_dir.rstrip("/")), "chf_hist", "efv_%s_cells.json" % tag)
+                if os.path.exists(pj):
+                    cells_by_sheet = _json.load(open(pj, encoding="utf-8"))
+                    self.records[tag] = [r for name, cells in cells_by_sheet.items() if re.match(r"^20\d\d$", name.strip()) and int(name) >= 2019 for r in self._table(cells)]
             return read_fixture(os.path.join(self.fixtures_dir, "efv_auctions.csv")), []
         out: Dict[str, Series] = {}
         errs: List[str] = []
@@ -412,6 +419,7 @@ class EfvAuctionsProvider:
                 for name, cells in sheets.items():
                     if re.match(r"^20\d\d$", name.strip()) and int(name) >= 2019:
                         recs += self._table(cells)
+                self.records[tag] = recs  # v0.4: per-auction records (settlement / maturity) for ops_chf
                 got = fn(recs)
                 if not any(got.values()):
                     errs.append("efv %s: no rows parsed (STRUCTURE CHANGE?)" % tag)

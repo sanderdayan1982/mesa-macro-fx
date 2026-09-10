@@ -1,6 +1,6 @@
 {
  "$schema": "../schema/block.schema.json",
- "config_version": "0.2",
+ "config_version": "0.4.0",
  "currency": "CHF",
  "name": "CHF Command Center — Swiss National Bank / Confederation liquidity desk",
  "jurisdiction": "Switzerland",
@@ -120,7 +120,8 @@
    "portal_doc": "https://data.snb.ch/en/topics/snb/doc/snbgmges",
    "format": "single sheet 'Tabelle'; header row 17: Transaction date | SNB (CP=cash provider, CT=cash taker) | Contract/term | from | to | Type (Repo, SNB Bills, Swaps) | Procedure | Yield % | Premium/discount to policy rate bp | Bids | Allocation; CHF millions",
    "freq": "monthly (last working day of month 09:00, previous month)",
-   "verified": "2026-07-23 SNB Bills 28T bids 17795 / alloc 15645 yield −0.06; 2026-07-29 Repo CT VAR fixed-rate tender policy −5 bp alloc 17420"
+   "verified": "2026-07-23 SNB Bills 28T bids 17795 / alloc 15645 yield −0.06; 2026-07-29 Repo CT VAR fixed-rate tender policy −5 bp alloc 17420",
+   "v04": "per-operation rows archived to history/chf/snb_ops_rows.csv (union by date/side/term/from/to/type/allocation); live file covers 2019-11-01 onward (1 606 rows on 2026-09-10); flows cut at the last transaction date when within 60 days"
   },
   "snb_fx_transactions": {
    "cube": "snbfxtr",
@@ -198,7 +199,8 @@
    "url": "https://www.efv.admin.ch/dam/en/sd-web/d9FElh8dV0db/resultate-gmbf.xlsx",
    "format": "sheet per year; header row 11 (EN): Auction | Settlement | Maturity | Days | ISIN | Total bids | Bids without price | Amount issued | Price | Yield; Excel serial dates; CHF millions",
    "freq": "weekly (Tuesday auction, Thursday settlement)",
-   "verified": "2026-08-25: bids 2522.45 / issued 397.45 → 6.35x, yield −0.083%; 2026-09-01: 5.21x −0.087%; 2026-09-08: 5.05x −0.083%"
+   "verified": "2026-08-25: bids 2522.45 / issued 397.45 → 6.35x, yield −0.083%; 2026-09-01: 5.21x −0.087%; 2026-09-08: 5.05x −0.083%",
+   "v04": "per-auction records kept (Settlement = Liberierung, Maturity = Fälligkeit); announced auctions (no amount) go to the calendar only"
   },
   "efv_bond_auctions": {
    "url": "https://www.efv.admin.ch/dam/en/sd-web/AFFQnqhWiEVW/resultate-anleihen.xlsx",
@@ -208,7 +210,9 @@
   },
   "efv_bonds_outstanding": {
    "url": "https://www.efv.admin.ch/dam/en/sd-web/K9gjjBZzAoPz/ausstehende-anleihen.xlsx",
-   "verified": "2026-09-08 (33 rows; ISIN, bond, maturity, coupon, issued, placed, own holdings)"
+   "format": "single sheet 'Ausstehende Anleihen'; English header row 11: ISIN | Bond | Maturity | Interest rate | Amount of issue incl. own holdings issued | Amount of issue incl. own holdings placed (placed on the market) | Own holdings placed | Own holdings available; footer 'Stand per dd.mm.yyyy'; Excel serial dates; CHF millions",
+   "freq": "monthly (as of month-end)",
+   "verified": "2026-09-10 captured through the browser: 23 lines, as of 31.08.2026, total issued 80 532.64 / placed on the market 73 655.65 / own available 6 876.99; e.g. CH0008680370 Eidg. 08.04.98/28 4% placed 5 612.455"
   },
   "efv_issuance_calendars": {
    "mmdrc_2026": "https://www.efv.admin.ch/dam/en/sd-web/962GRmuHDjrK/GMBF-Kalender-2026.pdf",
@@ -588,6 +592,16 @@
      "stress_above": "p97",
      "note": "C6/C14: FOREIGN_SIGHT_DEPOSITS_JUMP"
     }
+   },
+   "derived_v04": {
+    "bills_issued / bills_repaid / bills_net_daily": "gmges 'SNB Bills' rows: from (payment) −, to (repayment) +",
+    "repo_ct_settled / repo_ct_matured / repo_net_daily": "gmges repo rows: CT from −, to +; CP the reverse",
+    "bills_stock_daily / repo_ct_stock_daily / absorption_stock_daily": "daily stocks from operations (S1: daily in dates, monthly in amounts); reconciled with snbbipo ES / VRGSF at month-end (bills_stock_vs_es_error, repo_stock_vs_vrgsf_error)",
+    "ops_net_daily / ops_net_5d": "Bills + repos net flow, daily and 5 sessions",
+    "repo_maturities_next_4w / bills_repayments_next_4w": "calendars: known 'to' dates; register shape × ES (the register includes SNB own holdings → register_minus_es)",
+    "fx_intervention_proxy_v04 (+ _partial)": "S3: ΔGI − SNB ops net − Confederation net, weekly on the GI grid; complete weeks up to the gmges cut",
+    "ops_data_cut": "last day covered by the operations file",
+    "components_v04": "shadow: ops_net_5d_pct, fx_proxy_v04_pct, absorption_share_daily (% of GI)"
    }
   },
   "fiscal": {
@@ -624,7 +638,7 @@
      "table": "efv_bonds_outstanding",
      "label": "Confederation bonds outstanding (placed volume)",
      "freq": "monthly",
-     "status": "pending — Phase 3 parser (ausstehende-anleihen.xlsx verified 2026-09-08: ISIN, bond, maturity, coupon, issued, placed, own holdings)"
+     "status": "v0.4: parsed from ausstehende-anleihen.xlsx (see derived_v04); the v0.3 card keeps its source until the replay"
     },
     "mmdrc_3m_yield_monthly": {
      "id": "zimoma:EG3M",
@@ -705,6 +719,14 @@
      "stress_above": 5,
      "note": "C7 sign fixed (R3/R4): weak demand = yield at/above SARON"
     }
+   },
+   "derived_v04": {
+    "mmdrc_settled / mmdrc_matured / mmdrc_net_daily / mmdrc_stock_daily": "resultate-gmbf.xlsx by Settlement / Maturity",
+    "bond_settled / bond_own_retained": "resultate-anleihen.xlsx by Settlement (market amount; own tranches not placed as context)",
+    "coupons_market_paid / coupons_market_next_4w / bond_redemptions_market_next_12m": "ausstehende-anleihen.xlsx: placed on the market × coupon, annual on the maturity day-of-year; redemptions of the placed amount",
+    "net_issuance_private_daily / _5d": "− MMDRC settled − bonds settled + MMDRC matured + market coupons (S2); VB monthly stays live until the replay",
+    "mmdrc_maturities_next_4w / mmdrc_settlements_announced / bond_settlements_ahead": "calendars",
+    "components_v04": "shadow: net_issuance_5d_pct (% of GI)"
    }
   },
   "banking": {
