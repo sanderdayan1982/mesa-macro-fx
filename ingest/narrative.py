@@ -112,8 +112,8 @@ SPEC: Dict[str, dict] = {
         "ops": [("central_bank", "derived", "omo_outstanding", "OMO vivas", "stock")],
         "govt": ("central_bank", "series", "government_account", "la cuenta del gobierno en el RBA"),
         "fiscal": {"week": ("fiscal", "derived", "fiscal_flow_weekly", "semana"), "month": ("fiscal", "derived", "fiscal_flow_4w_cum", "4 semanas"), "q13": None, "label": "flujo fiscal (−Δ cuenta del gobierno)"},
-        "issuance": {"gross": None, "redemptions": None, "freq": "none"},
-        "auctions": [],
+        "issuance": {"gross": ("fiscal", "derived", "aofm_issued_gross"), "redemptions": ("fiscal", "derived", "aofm_redeemed_gross"), "freq": "daily"},
+        "auctions": [("fiscal", "derived", "tender_coverage", "tenders de la AOFM: cobertura"), ("fiscal", "derived", "tb_tail_bp", "tail del bono")],
         "spread": ("rates", "derived", "overnight_minus_target_bps", "cash rate − objetivo"), "friction": ("rates", "derived", "overnight_minus_target_bps", "friction_confirmed"),
     },
     "nzd": {

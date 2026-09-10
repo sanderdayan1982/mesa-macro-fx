@@ -426,7 +426,116 @@ def fetch_aud(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         blocks["fiscal"] = BA.build_fiscal(cfg, data, prev.get("fiscal"))
     if "monthly" in lanes or (a.backfill and "weekly" in lanes):
         blocks["banking"] = BA.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    if str(cfg.get("config_version", "")).startswith("0.4"):
+        try:
+            _aud_v04(cfg, a, blocks, data, hist_dir, oplog, errors, a.fixtures, raw_dir)
+        except Exception as e:  # noqa
+            errors.append("aud_v04: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "aud_v04", "error": str(e)})
     return blocks
+
+
+def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, oplog: str, errors: List[str], fx, raw_dir) -> None:
+    """AUD v0.4 (CAMBIOS A1–A6): OMO by operation + unwinds schedule, AOFM issuance by settlement (link discovery on the Data Hub), TB gross calendar."""
+    from . import ops_aud as O
+    from . import blocks_aud_v04 as V4
+    from . import series as S
+    from .providers_chf import xlsx_sheets
+    from .providers_jpy import _snapshot
+    from datetime import date, timedelta
+    import time as _time
+    today = date.today().isoformat()
+    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+
+    def _get(url: str, binary: bool = False, timeout: int = 120):
+        import requests  # type: ignore
+        from .providers import UA
+        r = requests.get(url, headers=dict(UA, Accept="*/*"), timeout=timeout)
+        if r.status_code != 200:
+            raise ProviderError("HTTP %s for %s" % (r.status_code, url))
+        return r.content if binary else r.content.decode("utf-8-sig", errors="replace")
+
+    # 1 · RBA OMO per operation + unwinds
+    ops, unw = [], []
+    try:
+        if fx:
+            det = open(os.path.join(fx, "rba_%s.csv" % O.RBA_OMO_DETAILS.replace("-", "_")), encoding="utf-8").read()
+            unt = open(os.path.join(fx, "rba_%s.csv" % O.RBA_OMO_UNWINDS.replace("-", "_")), encoding="utf-8").read()
+        else:
+            base = cfg["sources"]["rba_tables"]["base_url"].rstrip("/") + "/"
+            det = _get(base + O.RBA_OMO_DETAILS + ".csv")
+            _snapshot(raw_dir, "rba_%s.csv" % O.RBA_OMO_DETAILS, det)
+            _time.sleep(2.0)
+            unt = _get(base + O.RBA_OMO_UNWINDS + ".csv")
+            _snapshot(raw_dir, "rba_%s.csv" % O.RBA_OMO_UNWINDS, unt)
+        ops, unw = O.parse_omo_details(det), O.parse_omo_unwinds(unt)
+    except Exception as e:  # noqa
+        errors.append("rba_omo_v04: %s" % e)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "rba_omo_v04", "error": str(e)})
+    omo = O.omo_flows(ops, unw, days) if ops else {}
+    omo_cut = omo["omo_cut"][0][0] if omo else today
+    recon = O.reconcile_stock(omo.get("omo_stock_full", []), S.clean(data.get("AORROMO", []))) if omo else []
+    # 2 · AOFM issuance by settlement (Data Hub link discovery; fixtures = aud_hist XLSX + buyback / face-value CSVs)
+    recs: Dict[str, list] = {}
+    bb: Dict[str, list] = {}
+    lines: list = []
+    links_note = "fixtures"
+    hist_fx = os.path.join(ROOT, "fixtures", "aud_hist")
+    try:
+        if fx:
+            for k, fn in (("tb", "aofm_treasury_bonds_issuance.xlsx"), ("tn", "aofm_treasury_notes_issuance.xlsx"), ("tib", "aofm_treasury_indexed_bonds_issuance.xlsx")):
+                pth = os.path.join(hist_fx, fn)
+                if os.path.exists(pth):
+                    recs[k] = O.parse_transactions(xlsx_sheets(open(pth, "rb").read())["Transactions"])
+            bb = {"tb": O.records_from_csv(os.path.join(hist_fx, "aofm_tb_buybacks.csv"), "buyback"), "tib": O.records_from_csv(os.path.join(hist_fx, "aofm_tib_buybacks.csv"), "buyback")}
+            lines = O.face_value_from_csv(os.path.join(hist_fx, "aofm_tb_face_value_by_line.csv"))
+        else:
+            try:
+                links = O.discover_links(_get(O.DATA_HUB))
+                links_note = "resolved on the Data Hub: " + ", ".join("%s=%s" % (k, v.rsplit("/", 2)[-2]) for k, v in links.items())
+            except Exception as e:  # noqa
+                links = {k: v[1] for k, v in O.AOFM_FILES.items()}
+                links_note = "Data Hub unreachable (%s): fallback URLs verified 2026-09-10" % e
+            for k, key in (("tb", "tb_issuance"), ("tn", "tn_issuance"), ("tib", "tib_issuance")):
+                blob = _get(links[key], binary=True, timeout=180)
+                _snapshot(raw_dir, "aofm_%s.xlsx" % key, blob)
+                recs[k] = O.parse_transactions(xlsx_sheets(blob)["Transactions"])
+                _time.sleep(1.5)
+            for k, key in (("tb", "tb_buybacks"), ("tib", "tib_buybacks")):
+                try:
+                    blob = _get(links[key], binary=True, timeout=120)
+                    _snapshot(raw_dir, "aofm_%s.xlsx" % key, blob)
+                    bb[k] = O.parse_transactions(xlsx_sheets(blob)["Transactions"])
+                    for r in bb[k]:
+                        r["method"] = r.get("tender number / buyback method", "")
+                except Exception as e:  # noqa
+                    errors.append("aofm_%s: %s" % (key, e))
+                _time.sleep(1.5)
+            try:
+                blob = _get(links["tb_portfolio"], binary=True, timeout=180)
+                _snapshot(raw_dir, "aofm_tb_portfolio.xlsx", blob)
+                lines = O.parse_face_value_sheet(xlsx_sheets(blob)["FaceValue"])
+            except Exception as e:  # noqa
+                errors.append("aofm_tb_portfolio: %s" % e)
+    except Exception as e:  # noqa
+        errors.append("aofm_v04: %s" % e)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "aofm_v04", "error": str(e)})
+    iss = O.issuance_flows(recs, bb, days) if recs else {}
+    cal = O.tb_calendar(lines)
+    es = S.clean(data.get("AESAT", []))
+    es_level = es[-1][1] if es else None
+    if blocks.get("central_bank") and omo:
+        V4.enrich_central_bank(blocks["central_bank"], cfg, omo, recon, omo_cut)
+    if blocks.get("fiscal") and iss:
+        V4.enrich_fiscal(blocks["fiscal"], cfg, iss, cal, es_level, links_note)
+    if blocks.get("rates") and iss:
+        V4.enrich_rates(blocks["rates"], cfg, iss.get("tn_wa_yield", []))
+    for k, ser in (("omo_net_daily", omo.get("omo_net_daily", []) if omo else []), ("omo_stock_daily", omo.get("omo_stock_daily", []) if omo else []),
+                   ("net_issuance_private_daily", iss.get("net_issuance_private_daily", []) if iss else []), ("tn_stock_daily", iss.get("tn_stock_daily", []) if iss else [])):
+        if ser:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
+    E.log_event(oplog, "AUD_V04", "system", {"omo_ops": len(ops), "omo_cut": omo_cut, "unwind_days": len(unw), "tenders": {k: len(v) for k, v in recs.items()},
+                                             "buybacks": {k: len(v) for k, v in bb.items()}, "tb_lines": len({l["maturity"] for l in lines if l.get("date") == max((x["date"] for x in lines), default="")}), "links": links_note[:200]})
 
 
 def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:

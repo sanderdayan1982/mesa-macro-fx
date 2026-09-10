@@ -1,6 +1,6 @@
 {
  "$schema": "../schema/config.schema.json",
- "config_version": "0.2.2",
+ "config_version": "0.4.0",
  "currency": "AUD",
  "name": "AUD Command Center",
  "jurisdiction": "Australia",
@@ -101,7 +101,7 @@
     "a3_omo_repo": {
      "file": "a3-omo-repo-transaction-details.csv",
      "freq": "per operation (weekly)",
-     "status": "pending parse"
+     "status": "v0.4: parsed per operation (ops_aud.parse_omo_details; AFROMO* + additional rounds AAROMO*); verified 2026-09-10 live, 5 301 rows since 2013-11-11; same-day settlement verified against the unwinds schedule"
     },
     "a31": {
      "file": "a3.1-summary.csv",
@@ -114,6 +114,11 @@
     "a4": {
      "file": "a4-data.csv",
      "freq": "monthly"
+    },
+    "a3_omo_unwinds": {
+     "file": "a3-omo-repo-unwinds.csv",
+     "freq": "daily forward schedule (~2 years; nonzero on maturity days)",
+     "status": "v0.4: ARRRUNW = maturing repo agreements incl. accrued interest (published 9 296 vs implied 9 272 on 2026-09-16, +0.26 %); verified 2026-09-10"
     }
    },
    "rate_limit_rule": "one GET per table per lane, ≥ 2 s apart, identifiable User-Agent; files are 60k+ lines (F2) — parse streaming, keep raw copy",
@@ -127,12 +132,16 @@
   },
   "aofm": {
    "base_url": "https://www.aofm.gov.au/data-hub",
-   "status": "pending (Phase 2/3)",
+   "status": "v0.4: wired — link discovery by file name on /data-hub (upload-dated URLs, contents updated in place), fallback URLs verified 2026-09-10",
    "files": {
-    "treasury_bonds_issuance": "tender results history XLSX (coverage ratio, weighted avg yield, amount)",
-    "treasury_notes_issuance": "weekly T-note tenders XLSX",
+    "treasury_bonds_issuance": "'treasury bonds - issuance.xlsx' sheet Transactions: Date Held | Tender Number | Maturity | Coupon | ISIN | Amount Offered | Amount Allotted | Amount of Bids | Coverage Ratio | Weighted Average Issue Yield | Lowest/Highest Accepted Yield | Highest Bid Yield | ... | Settlement Proceeds | Date Settled (AUD; last TB1711 held 2026-09-09 settled 09-11, 800 m nominal / 742.719 m proceeds)",
+    "treasury_notes_issuance": "'Treasury Notes - Issuance.xlsx' same layout without Coupon (last 34/26 held 2026-09-03 settled 09-04)",
+    "treasury_indexed_bonds_issuance": "'Treasury Indexed Bonds - Issuance*.xlsx' (last TIB308 held 2026-09-03 settled 09-07)",
+    "treasury_bonds_buybacks": "'treasury bonds - buybacks.xlsx': Date Held | Tender Number / Buyback Method | Maturity | Coupon | ISIN | Amount Repurchased | Amount of Offers | WA Repurchase Yield | ... | Settlement Proceeds | Date Settled; last TBB78 2020-03-18; 'RBA' rows = transfers to the RBA",
+    "treasury_indexed_bonds_buybacks": "'treasury indexed bonds - buybacks.xlsx' (last syndication 2024-11-26, settled 12-03, 3 026.46 m proceeds)",
+    "portfolio_treasury_bonds_settlement": "'portfolio_aggregate_-_treasury_bonds_-_settlement.xlsx' sheet FaceValue: one row per month-end (serial in A), one column per line (row 'Maturity' serial, row 'Coupon (%)'), negative face in AUD; 2026-08-31 total 921 749.274 m (RBA holdings included)",
     "headline_cash_balance": "headline_cash_balance.csv (monthly)",
-    "gross_funding_req": "gross_funding_req.csv"
+    "stock_ags": "stock_ags.csv (FY totals only)"
    },
    "note": "Data Hub file URLs carry upload dates; resolve the link from the Data Hub page at each run (link discovery), keep checksum; tender results per event on aofm.gov.au"
   },
@@ -415,6 +424,13 @@
      "stress_above": "p90",
      "note": "OMO_TAKEUP_SURGE flag"
     }
+   },
+   "derived_v04": {
+    "omo_dealt_daily / omo_matured_daily / omo_net_daily / omo_net_5d": "A3 transaction details per operation: + value on the deal date, − at deal + term; cut at the last operation (weekly)",
+    "omo_stock_daily": "principal outstanding from operations; omo_stock_vs_a3_error vs AORROMO (interest included; ≈ 0.1 %)",
+    "omo_takeup_7d / omo_takeup_28d / omo_wa_spread_bp": "A3: take-up by term and weighted-average spread per operation day",
+    "omo_unwinds_next_4w / unwinds_vs_implied_pct": "A4: RBA published unwind schedule (ARRRUNW) and its reconciliation with dealt + term",
+    "components_v04": "shadow: omo_net_5d_pct, omo_takeup_week_pct, omo_stock_share (% of ES balances)"
    }
   },
   "fiscal": {
@@ -514,6 +530,15 @@
       "exit_on": "p70/p30"
      }
     }
+   },
+   "derived_v04": {
+    "aofm_settled / tb_settled / tn_settled / tib_settled": "AOFM tenders by Date Settled, settlement proceeds (−)",
+    "tn_matured / tib_matured / buybacks_settled": "notes and indexed bonds by maturity (+ nominal); buybacks by Date Settled (+ proceeds; RBA transfers excluded)",
+    "net_issuance_private_daily / _5d": "A1: − proceeds settled + note / indexed maturities + buybacks; Treasury Bond redemptions and coupons stay in the gross calendar (RBA share not by line, A5)",
+    "tender_coverage / tb_tail_bp / tb_wa_yield": "A2: tender health per tender day",
+    "tb_redemptions_gross_next_12m / tb_coupons_gross_next_4w / tb_face_total": "portfolio FaceValue by line (RBA holdings included); semi-annual coupons on the maturity day-of-month",
+    "aofm_settlements_ahead / tn_maturities_next_4w": "calendars",
+    "components_v04": "shadow: net_issuance_5d_pct (% of ES), tender_coverage_latest"
    }
   },
   "banking": {
@@ -826,7 +851,10 @@
      "origin": "v0.2.2 after first live run (p98.9 at 27 bp)"
     }
    },
-   "note_f2": "F2 values are daily but the file is updated WEEKLY with ~2-business-day lag (Kimi, verified: last row 2026-09-02 on 2026-09-08); F1 is daily. Curve cards carry 'weekly' cadence; semis yields removed from F2 in 2023 → unavailable"
+   "note_f2": "F2 values are daily but the file is updated WEEKLY with ~2-business-day lag (Kimi, verified: last row 2026-09-02 on 2026-09-08); F1 is daily. Curve cards carry 'weekly' cadence; semis yields removed from F2 in 2023 → unavailable",
+   "derived_v04": {
+    "tn_wa_yield / tn_yield_minus_target_bps": "A6: Treasury Note tender yield vs the cash rate target (context)"
+   }
   }
  },
  "regime": {

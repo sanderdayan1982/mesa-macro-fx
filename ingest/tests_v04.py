@@ -127,7 +127,51 @@ def main_chf() -> int:
     return 1 if fails else 0
 
 
+def main_aud() -> int:
+    """AUD: OMO per operation vs the RBA unwind schedule and A3 outstanding; AOFM settlement dates and proceeds; TB gross calendar."""
+    from . import ops_aud as A
+    from .providers import RbaProvider
+    from .providers_chf import xlsx_sheets
+    fails = []
+    fx = os.path.join(ROOT, "fixtures", "aud")
+    hx = os.path.join(ROOT, "fixtures", "aud_hist")
+    days = A.business_days("2023-01-01", "2026-09-10")
+    ops = A.parse_omo_details(open(os.path.join(fx, "rba_a3_omo_repo_transaction_details.csv"), encoding="utf-8").read())
+    unw = A.parse_omo_unwinds(open(os.path.join(fx, "rba_a3_omo_repo_unwinds.csv"), encoding="utf-8").read())
+    omo = A.omo_flows(ops, unw, days)
+    check(dict(omo["omo_dealt_daily"]).get("2026-09-09") == 2231.0 + 5459.0, "OMO dealt 2026-09-09 = 2 231 (7 d) + 5 459 (28 d)", fails)
+    imp = dict(omo["omo_maturities_implied_ahead"])
+    check(imp.get("2026-09-16") == 2231.0 + 7041.0 and dict(unw).get("2026-09-16") == 9296.0, "implied maturity 2026-09-16 = 9 272 (dealt + term, same-day settlement) vs published unwind 9 296 (interest)", fails)
+    check(all(0 < v < 1.0 for _, v in omo["unwinds_vs_implied_pct"]), "published unwinds exceed implied maturities by < 1 % on every scheduled day (accrued interest)", fails)
+    ref = RbaProvider.parse(open(os.path.join(fx, "rba_a3_es.csv"), encoding="utf-8").read(), ["AORROMO"], strict=False)["AORROMO"]
+    rec = dict(A.reconcile_stock(omo["omo_stock_full"], ref))
+    check(all(abs(rec[d]) / dict(ref)[d] < 0.005 for d in ("2026-08-27", "2026-09-02", "2026-09-07")), "OMO stock from operations = A3 outstanding (AORROMO) within 0.5 % (interest) on 27-Aug / 02-Sep / 07-Sep 2026", fails)
+    check(omo["omo_cut"][0][0] == "2026-09-09" and all(d > "2026-09-09" for d, _ in omo["omo_unwinds_ahead"]), "OMO cut at the last operation; unwind schedule strictly ahead", fails)
+    recs = {}
+    for k, fn in (("tb", "aofm_treasury_bonds_issuance.xlsx"), ("tn", "aofm_treasury_notes_issuance.xlsx"), ("tib", "aofm_treasury_indexed_bonds_issuance.xlsx")):
+        recs[k] = A.parse_transactions(xlsx_sheets(open(os.path.join(hx, fn), "rb").read())["Transactions"])
+    bb = {"tb": A.records_from_csv(os.path.join(hx, "aofm_tb_buybacks.csv"), "buyback"), "tib": A.records_from_csv(os.path.join(hx, "aofm_tib_buybacks.csv"), "buyback")}
+    iss = A.issuance_flows(recs, bb, days)
+    last_tb = recs["tb"][-1]
+    check(last_tb["held"] == "2026-09-09" and last_tb["settled"] == "2026-09-11" and dict(iss["aofm_settlements_ahead"]).get("2026-09-11") == 742.719, "TB1711 held 09-09 settles 09-11 with proceeds 742.719 m (nominal 800 m) → calendar, not flows", fails)
+    tn = [r for r in recs["tn"] if r["held"] == "2026-09-03"]
+    check(len(tn) == 3 and all(r["settled"] == "2026-09-04" for r in tn) and abs(dict(iss["tn_settled"]).get("2026-09-04", 0) + sum(r["settlement proceeds"] for r in tn) / 1e6) < 1e-3,
+          "three Treasury Note lines held 09-03 settle 09-04 (T+1): −3 929.401 m proceeds", fails)
+    check(dict(iss["tn_matured"]).get("2026-08-21") == 6000.0 and dict(iss["tn_maturities_ahead"]).get("2026-09-11") == 7000.0, "note maturities: 6 000 m on 2026-08-21, 7 000 m due 2026-09-11", fails)
+    check(dict(iss["buybacks_settled"]).get("2024-12-03") == 3026.46 and not any(d == "2018-08-03" for d, _ in iss["buybacks_settled"]), "buyback proceeds by Date Settled; 'RBA' transfers (e.g. 2018-08-01 3 000 m) excluded", fails)
+    check(all(d <= "2026-09-10" for d, _ in iss["net_issuance_private_daily"]) and len(iss["net_issuance_private_daily"]) == len(days), "net issuance dense over business days, nothing future-dated", fails)
+    lines = A.face_value_from_csv(os.path.join(hx, "aofm_tb_face_value_by_line.csv"))
+    cal = A.tb_calendar(lines)
+    check(cal["tb_face_total"] == [("2026-08-31", 921749.274)] and dict(cal["tb_redemptions_gross_ahead"]).get("2026-09-21") == 39400.0, "TB face value 2026-08-31 Σ 921 749.274 m; 21-Sep-2026 line 39 400 m (gross, RBA holdings included)", fails)
+    check(abs(dict(cal["tb_coupons_gross_ahead"]).get("2026-09-21", 0) - (39400.0 * 0.5 + 28200.0 * 4.25 + 14800.0 * 3.0) / 200) < 1e-6,
+          "coupons 2026-09-21 = Σ face × coupon / 2 over the 21-Sep-2026, 21-Mar-2036 and 21-Mar-2047 lines (semi-annual on the maturity day-of-month)", fails)
+    print("%d failures" % len(fails))
+    return 1 if fails else 0
+
+
 def main() -> int:
+    if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "aud":
+        return main_aud()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "chf":
         return main_chf()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "gbp":
