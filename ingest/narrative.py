@@ -51,7 +51,7 @@ SPEC: Dict[str, dict] = {
         "ops": [("central_bank", "series", "mro_weekly", "MRO", "stock"), ("central_bank", "series", "ltro_weekly", "LTRO", "stock")],
         "govt": ("fiscal", "series", "govt_deposits", "los depósitos de las administraciones en el Eurosistema"),
         "fiscal": {"week": ("fiscal", "derived", "govt_deposits_wow", "−Δ depósitos"), "month": ("fiscal", "derived", "fiscal_impulse_4w", "4 semanas"), "q13": ("fiscal", "derived", "fiscal_impulse_13w", "13 semanas"), "label": "impulso fiscal (−Δ depósitos públicos)", "week_sign": -1},
-        "issuance": {"gross": ("fiscal", "derived", "de_supply_4w"), "redemptions": None, "freq": "event", "gross_label": "oferta alemana en subastas de 4 semanas"},
+        "issuance": {"gross": ("fiscal", "derived", "issued_gross"), "redemptions": ("fiscal", "derived", "redeemed_gross"), "freq": "daily"},
         "auctions": [("fiscal", "series", "de_auction_bid_to_cover", "Bund/Schatz: cobertura"), ("fiscal", "series", "de_auction_avg_yield", "rendimiento medio"), ("fiscal", "series", "de_auction_retention", "retención")],
         "spread": ("rates", "derived", "estr_minus_dfr_bps", "€STR − DFR"), "friction": ("rates", "derived", "friction_confirmed"),
     },
@@ -376,6 +376,9 @@ def f4_issuance(ccy: str, blocks: dict, L: Ledger, spec: dict) -> str:
             continue
         fld = "%s.%s.%s" % (b, sec, key)
         u = (e.get("unit") or "").lower()
+        if "million" in u and "retention" in key:  # EUR: de_auction_retention is € m, not a share → money token
+            au.append("%s %s (%s)" % (label, _money(L, e["value"], spec, fld + ".value", signed=False), e.get("date")))
+            continue
         kind = ("ratio" if any(t in key for t in ("bid_to_cover", "coverage", "btc")) else "bps" if ("bp" in key or "bp" in u) else "pct" if "retention" in key else
                 "rate" if "yield" in key else "ratio" if u in ("x", "ratio") else "pct" if "%" in u else "rate")
         tok = L.num(e["value"], fld + ".value", kind, u)

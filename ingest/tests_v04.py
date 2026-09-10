@@ -169,7 +169,63 @@ def main_aud() -> int:
     return 1 if fails else 0
 
 
+def main_eur() -> int:
+    """EUR: settlement conventions and cash per issuer against the captured primary pages/files; PDF and HTML parsers."""
+    from . import ops_eur as U
+    from .providers_eur import FinanzagenturProvider
+    import json
+    fails = []
+    hx = os.path.join(ROOT, "fixtures", "eur_hist")
+    days = U.business_days("2024-01-01", "2026-09-10")
+    fa = FinanzagenturProvider(fixtures_dir=os.path.join(ROOT, "fixtures", "eur"))
+    fa.fetch()
+    de = U.de_records(fa.rows)
+    r = next(x for x in de if x["auction"] == "2026-09-08" and x["isin"] == "DE000BU3F007")
+    check(r["settlement"] == "2026-09-10" and r["nominal"] == 644.0 and abs(r["cash"] - 644 * 88.28 / 100) < 0.01, "DE Green 15y 2026-09-08: allotted 644 (retention 106 excluded), value date T+2 = 09-10, cash = 644 × 88.28 %", fails)
+    fr = U.fr_records_from_csv(os.path.join(hx, "aft_oat_auctions.csv"), os.path.join(hx, "aft_btf_auctions.csv"))
+    b = [x for x in fr if x["kind"] == "bill"][-1]
+    check(b["auction"] == "2026-07-27" and b["settlement"] == "2026-07-29" and b["maturity"] == "2027-07-14" and b["nominal"] == 2476.0, "FR BTF 2026-07-27 (history XLSX): settled 07-29 (T+2), matures 2027-07-14, total issued 2 476 (NCTs included)", fails)
+    o = [x for x in fr if x["kind"] == "bond" and x["isin"] == "FR0014008181"][-1]
+    check(o["settlement"] == "2026-07-20" and o["maturity"] == "2053-07-25", "FR OAT€i 0,1% 25 juillet 2053: settlement from the file, maturity parsed from the line name", fails)
+    h = U.fr_records_from_html(open(os.path.join(hx, "aft_latest_auctions_2026-09.html"), encoding="utf-8").read())
+    check(len(h) == 8 and h[0]["settlement"] == "2026-09-07" and h[0]["nominal"] == 4193.0 and h[-1]["kind"] == "bill" and h[-1]["settlement"] == "2026-09-09" and h[-1]["maturity"] == "2027-09-08",
+          "FR latest-auctions HTML (Sep 2026): 4 OAT lines settled 09-07 (4 193 m first line) + 4 BTF settled 09-09; maturities parsed", fails)
+    es = U.es_records_from_csv(os.path.join(hx, "es_tesoro_auctions.csv"))
+    e = [x for x in es if x["source"] == "tesoro_nid_46359"][0]
+    check(e["settlement"] == "2026-09-08" and e["maturity"] == "2036-04-30" and abs(e["nominal"] - (1996.03 + 415.35)) < 0.01 and abs(e["cash"] - (1949.81 + 405.71)) < 0.01,
+          "ES Obligaciones 10y 2026-09-03: settled 09-08 (T+3), nominal incl. 2ª vuelta, cash 1 949.81 + 405.71", fails)
+    html_es = open(os.path.join(hx, "es_tesoro_auctions.csv"), encoding="utf-8").read()
+    fake = '<table><tr><th>Plazo</th><td>10 AÑOS</td></tr><tr><th>Fecha subasta</th><td>03/09/2026</td></tr><tr><th>Fecha vencimiento</th><td>30/04/2036</td></tr><tr><th>Fecha de liquidación</th><td>08/09/2026</td></tr><tr><th>Nominal adjudicado</th><td>1.996,03</td></tr><tr><th>Nominal adjudicado (2ª vuelta)</th><td>415.35</td></tr><tr><th>Efectivo adjudicado</th><td>1.949,81</td></tr><tr><th>Efectivo adjudicado (2ª vuelta)</th><td>405.71</td></tr><tr><th>Ratio de cobertura</th><td>2,29</td></tr><tr><th>Tipo de interés medio</th><td>3,736</td></tr></table>'
+    p = U.es_parse_auction_page(fake, "Subasta de Obligaciones a 10 años", "46359")[0]
+    check(abs(p["nominal"] - 2411.38) < 0.01 and abs(p["cash"] - 2355.52) < 0.01 and p["cover"] == 2.29, "ES page parser handles '1.996,03' and '415.35' number styles on the same page", fails)
+    try:
+        import pdfplumber  # type: ignore
+        import io as _io
+        for fn, exp in (("mef_btp10_2026-07-30.pdf", ("2026-07-30", "2026-08-03", 1750.0, 236.135)), ("mef_bot6_latest.pdf", ("2026-08-27", "2026-08-31", 2500.0, 107.055))):
+            with pdfplumber.open(os.path.join(hx, fn)) as pp:
+                txt = "\n".join(pg.extract_text() or "" for pg in pp.pages)
+            rr = U.it_parse_pdf_text(txt, fn)
+            check(len(rr) == 2 and rr[0]["auction"] == exp[0] and rr[0]["settlement"] == exp[1] and rr[0]["nominal"] == exp[2] and rr[1]["nominal"] == exp[3], "IT PDF %s: auction %s → settlement %s, allotted %s + specialists %s" % ((fn,) + exp), fails)
+    except ImportError:
+        print("skip IT PDF checks (pdfplumber missing)")
+    eu = U.eu_records_from_tables(json.load(open(os.path.join(hx, "eu_auction_result_tables.json"), encoding="utf-8")))
+    bo = [x for x in eu if x["isin"] == "EU000A4EXVK3" and x["auction"] == "2026-08-31"]
+    check(len(bo) == 1 and bo[0]["settlement"] == "2026-09-02" and abs(bo[0]["cash"] - 2183 * 98.28 / 100) < 0.01, "EU-Bond auction 2026-08-31: settled 09-02 (T+2), cash = 2 183 × 98.280 %; zero non-competitive leg not duplicated", fails)
+    bi = [x for x in eu if x["isin"] == "EU000A4E0DU7"][0]
+    check(bi["settlement"] == "2026-09-04" and bi["maturity"] == "2027-09-03" and bi["nominal"] == 1920.0, "EU-Bill 2026-09-02: settled 09-04, matures 2027-09-03, 1 920 m", fails)
+    out = U.de_outstanding_from_csv(os.path.join(hx, "de_outstanding_securities_2026-08-31.csv"))
+    cal = U.de_calendar(out)
+    check(dict(cal["de_redemptions_gross_ahead"]).get("2026-09-16") == 14000.0 and cal["de_outstanding_total"][0][0] == "2026-08-31", "DE outstanding list 2026-08-31: 14 000 m redeeming 2026-09-16 (gross)", fails)
+    fl = U.issuance_flows(de + fr + h + es + eu, days)
+    check(len(fl["net_issuance_private_daily"]) == len(days) and all(d <= "2026-09-10" for d, _ in fl["net_issuance_private_daily"]) and dict(fl["settlements_ahead"]).get("2026-09-11") == 1446.18,
+          "net issuance dense over business days; Letras settling 2026-09-11 in the calendar, not in the flows", fails)
+    print("%d failures" % len(fails))
+    return 1 if fails else 0
+
+
 def main() -> int:
+    if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "eur":
+        return main_eur()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "aud":
         return main_aud()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "chf":

@@ -1,6 +1,6 @@
 {
   "$schema": "mesa-macro/config.schema.json",
-  "config_version": "0.2.1",
+  "config_version": "0.4.0",
   "currency": "EUR",
   "name": "EUR Command Center — Eurosystem liquidity desk",
   "jurisdiction": "Euro area (20)",
@@ -80,6 +80,34 @@
       "money_market_daily": "ECB daily money market statistics (secured/unsecured) — NOT on the SDMX portal (MMSR flow = survey; EMMS aggregated per maintenance period, 15 TARGET days after) — Phase 3",
       "national_daily_yields": "YC.B.<CC>.EUR... keys do NOT exist (verified 404) — national daily 10Y only via Bundesbank / AFT / BdI / BdE — Phase 3",
       "note": "GFS / BLS / MIR / PEPP resolved in v0.2 (E1–E4)"
+    },
+    "issuers_v04": {
+      "DE": {
+        "auction_results": "finanzagentur XLSX (already wired); value date = auction + 2 business days (verified on Issuance_outlook_2026_Update_Q3_en.xlsx: 'Start of interest period' = auction + 2 for Bund 2026-07-08 → 07-10 and Schatz 07-14 → 07-16)",
+        "outstanding": "https://www.deutsche-finanzagentur.de/fileadmin/user_upload/Institutionelle-investoren/berichtswesen/einzelaufstellung_en.xlsx (sheet 'security list': TYPE OF SECURITY | ISIN | COUPON | ISSUANCE DATE | MATURITY | month-end nominal columns; 2026-08-31 total 2 094 219 m incl. strips; verified 2026-09-10)",
+        "calendar": "issuance-calendar page → Issuance_outlook_<year>_Update_Q<n>_en.xlsx (Serial | Date | Security | Term | Type | Volume € mn | Maturity | ISIN | Coupon | Start of interest period | First coupon date)"
+      },
+      "FR": {
+        "history": "https://www.aft.gouv.fr/en/principaux-chiffres-oat → <yyyy-mm>_hist_mlt.xlsx (sheet MLT: type, auction date, settlement date, offered min/max, ISIN, line, bids, served, cover, NCTs, total issued, wa rate, wa price, indexation coef; since 1999, monthly update, end-July as of 2026-09-10); https://www.aft.gouv.fr/en/btf-principaux-chiffres → <yyyy-mm>_hist_btf.xlsx (auction, settlement, weeks, maturity, ISIN, bids, served, cover, NCTs, total, wa rate)",
+        "current": "https://www.aft.gouv.fr/en/dernieres-adjudications (HTML tables; POST op=ok&period_textfield[month]=m&period_textfield[year]=y for a month); OAT 2026-09-03 settled 09-07 (T+2), BTF 09-07 settled 09-09",
+        "verified": "2026-09-10"
+      },
+      "ES": {
+        "pages": "https://www.tesoro.es/deuda-publica/subastas/resultados-subastas-anteriores?page=N (20 per page, ~700 to 2021-04) → …/resultado-ultimas-subastas/<tipo>?nid=N key-value table (Fecha subasta, Fecha vencimiento, Fecha de liquidación, Nominal adjudicado, 2ª vuelta, Efectivo adjudicado, Ratio de cobertura, Tipo de interés medio); T+3 (bonos 09-03 → 09-08, letras 09-08 → 09-11); no bulk file; archive seeded with the 2022-01 → 2026-09 crawl (576 auctions)",
+        "verified": "2026-09-10"
+      },
+      "IT": {
+        "pages": "https://www.dt.mef.gov.it/en/debito_pubblico/emissioni_titoli_di_stato_interni/risultati_aste/<instrument>/index.html?selezione-anno=YYYY → per-auction PDFs (35 KB, text key-value: ISIN Code, Coupon, Issue date, Maturity Date, Auction Date, Settlement Date, Amount Allotted, Allotment Price / Weighted Average Price, Bid To Cover Ratio, Gross Yield, Amount Allotted to Specialists); parsed with pdfplumber; BTP 10y 2026-07-30 settled 08-03, BOT 6m 08-27 settled 08-31; the runner crawls 2022→ on the first run (~1 000 PDFs)",
+        "verified": "2026-09-10"
+      },
+      "EU": {
+        "pages": "https://commission.europa.eu/eu-bills-<year>_en and /eu-bonds-<year>_en (2025–2026 live; older years on wayback) → /news-and-media/news/results-dd-mm-yyyy-auction-eu-(bills|bonds)-…_en (HTML table: ISIN, Date of auction / Competitive auction, Settlement date(s), Maturity, Volume allotment, Non-competitive allocation, Weighted average price/yield, Cover ratio); EU-Bills T+2, bonds T+2 (+ non-competitive leg T+3)",
+        "limitation": "syndications not wired (press releases; Transactions data = Qlik frame)",
+        "verified": "2026-09-10"
+      },
+      "ESM_EFSF": {
+        "status": "NOT WIRED — https://www.esm.europa.eu/investors/esm returned 'Access denied. You must log in' on 2026-09-10"
+      }
     }
   },
   "blocks": {
@@ -287,6 +315,9 @@
           "two_sided": true,
           "min_n": 120
         }
+      },
+      "derived_v04": {
+        "components_v04": "E4: monpol_wow_pct (Δ MonPol securities w/w as % of excess liquidity) joins the v0.3 flows (shadow)"
       }
     },
     "fiscal": {
@@ -440,6 +471,15 @@
           "stress_above": "p95",
           "min_n": 24
         }
+      },
+      "derived_v04": {
+        "settled_all / settled_<issuer> / bills_matured_all": "auctions settled by settlement date (cash where a price is published), bill maturities by nominal; DE + FR + ES + IT + EU (auctions only)",
+        "net_issuance_private_daily / _5d / _weekly": "E2: − settled + bill maturities; weekly on the WFS (L050100) grid",
+        "fiscal_impulse_v04_weekly": "E3: −Δ L050100 − net issuance weekly ≈ spending − taxes",
+        "settlements_ahead / bill_maturities_next_4w / de_supply_next_4w / de_redemptions_gross_next_12m / de_coupons_gross_next_4w / de_outstanding_total": "calendars (German redemptions and coupons GROSS: Eurosystem holdings not by line)",
+        "tender_coverage_all / coverage_<issuer>": "auction health per auction day",
+        "gfs_context": "E1: GFS.Q leaves the regime (context)",
+        "components_v04": "shadow: net_issuance_weekly_pct, fiscal_impulse_v04_pct (% of excess liquidity) + v0.3 govt_deposits_wow / fiscal_impulse_4w"
       }
     },
     "banking": {

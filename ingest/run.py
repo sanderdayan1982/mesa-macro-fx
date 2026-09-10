@@ -1258,6 +1258,11 @@ def fetch_eur(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     blocks["fiscal"] = BE.build_fiscal(cfg, data, prev.get("fiscal"), aux={"de_rows": de_rows or ((prev.get("fiscal") or {}).get("history") or {}).get("auction_lines")})
     blocks["banking"] = BE.build_banking(cfg, data, prev.get("banking"))
     blocks["rates"] = BE.build_rates(cfg, data, prev.get("rates"), blocks["central_bank"])
+    if str(cfg.get("config_version", "")).startswith("0.4"):
+        try:
+            _eur_v04(cfg, a, blocks, data, de_rows, hist_dir, oplog, errors, fx, raw_dir)
+        except Exception as e:  # noqa
+            _err("eur_v04", e)
     return blocks
 
 
@@ -1283,6 +1288,254 @@ def apply_engine_settings(cfg: dict) -> None:
     dual = (cfg.get("regime") or {}).get("dual") or {}
     TH.set_era_anchor(dual.get("era_start") if dual.get("anchor_percentiles", bool(dual.get("era_start"))) else None)
     SC.set_level_weight(dual.get("level_weight"))
+
+
+
+def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_dir: str, oplog: str, errors: List[str], fx, raw_dir) -> None:
+    """EUR v0.4 (CAMBIOS E1–E4): net issuance by settlement issuer by issuer (DE XLSX, FR XLSX + HTML, ES HTML archive, IT PDF archive, EU HTML archive),
+    German gross calendar, fiscal impulse v0.4, MonPol w/w shadow flow."""
+    from . import ops_eur as O
+    from . import blocks_eur_v04 as V4
+    from . import providers_eur as PE
+    from . import series as S
+    from .providers_chf import xlsx_sheets
+    from .providers_jpy import _snapshot
+    from datetime import date, timedelta
+    import json as _json
+    import re as _re
+    import time as _time
+    today = date.today().isoformat()
+    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    hx = os.path.join(ROOT, "fixtures", "eur_hist")
+    arch = os.path.join(hist_dir, "issuance_records.csv")
+    recs: List[dict] = []
+    notes: Dict[str, str] = {}
+
+    def _get(url: str, binary: bool = False, timeout: int = 90, post: Optional[dict] = None):
+        import requests  # type: ignore
+        from .providers import UA
+        hdr = dict(UA, Accept="*/*")
+        r = requests.post(url, data=post, headers=hdr, timeout=timeout) if post is not None else requests.get(url, headers=hdr, timeout=timeout)
+        if r.status_code != 200:
+            raise ProviderError("HTTP %s for %s" % (r.status_code, url))
+        return r.content if binary else r.content.decode("utf-8", errors="replace")
+
+    def _pdf_text(blob: bytes) -> str:
+        import io as _io
+        try:
+            import pdfplumber  # type: ignore
+        except ImportError as e:  # pragma: no cover
+            raise ProviderError("pdfplumber missing (add to requirements.txt): %s" % e)
+        with pdfplumber.open(_io.BytesIO(blob)) as p:
+            return "\n".join(pg.extract_text() or "" for pg in p.pages)
+
+    # ── DE ──
+    rows = de_rows
+    if rows is None:
+        try:
+            fa = PE.FinanzagenturProvider(fixtures_dir=fx, raw_dir=raw_dir)
+            fa.fetch()
+            rows = fa.rows
+        except Exception as e:  # noqa
+            errors.append("finanzagentur(v04): %s" % e)
+            rows = []
+    recs += O.de_records(rows or [])
+    outstanding: List[dict] = []
+    de_cal: List[dict] = []
+    if fx:
+        outstanding = O.de_outstanding_from_csv(os.path.join(hx, "de_outstanding_securities_2026-08-31.csv"))
+    else:
+        try:
+            blob = _get(O.DE_OUTSTANDING, binary=True)
+            _snapshot(raw_dir, "de_einzelaufstellung.xlsx", blob)
+            outstanding = O.parse_de_outstanding(next(iter(xlsx_sheets(blob).values())))
+            if outstanding:
+                with open(os.path.join(hist_dir, "de_outstanding_securities.csv"), "w", newline="", encoding="utf-8") as f:
+                    w = csv.DictWriter(f, fieldnames=["type", "isin", "coupon", "issue_date", "maturity", "nominal", "asof"])
+                    w.writeheader()
+                    for r in outstanding:
+                        w.writerow(r)
+        except Exception as e:  # noqa
+            errors.append("de_outstanding: %s" % e)
+            outstanding = O.de_outstanding_from_csv(os.path.join(hist_dir, "de_outstanding_securities.csv"))
+        try:
+            html = _get(O.DE_CALENDAR_PAGE)
+            m = _re.search(r'href="([^"]*[Ii]ssuance_outlook_\d{4}[^"]*\.xlsx)"', html)
+            if m:
+                url = m.group(1) if m.group(1).startswith("http") else "https://www.deutsche-finanzagentur.de" + m.group(1)
+                de_cal = O.parse_de_calendar(next(iter(xlsx_sheets(_get(url, binary=True)).values())))
+        except Exception as e:  # noqa
+            errors.append("de_calendar: %s" % e)
+    # ── FR ──
+    if fx:
+        recs += O.fr_records_from_csv(os.path.join(hx, "aft_oat_auctions.csv"), os.path.join(hx, "aft_btf_auctions.csv"))
+        for fn in ("aft_latest_auctions_2026-08.html", "aft_latest_auctions_2026-09.html"):
+            recs += O.fr_records_from_html(open(os.path.join(hx, fn), encoding="utf-8").read())
+    else:
+        try:
+            links = {}
+            for page, pat, key in ((O.AFT_OAT_PAGE, r'href="([^"]*_hist_mlt\.xlsx)"', "oat"), (O.AFT_BTF_PAGE, r'href="([^"]*_hist_btf\.xlsx)"', "btf")):
+                m = _re.search(pat, _get(page))
+                if m:
+                    links[key] = m.group(1) if m.group(1).startswith("http") else "https://www.aft.gouv.fr" + m.group(1)
+                _time.sleep(1.0)
+            fr_hist = O.fr_records_from_xlsx(_get(links["oat"], binary=True) if "oat" in links else None, _get(links["btf"], binary=True) if "btf" in links else None)
+            recs += fr_hist
+            last_x = max((r["settlement"] for r in fr_hist), default="2000-01-01")
+            # bridge the monthly file with the HTML months from the last month in the file to today
+            y, mth = int(last_x[:4]), int(last_x[5:7])
+            months = []
+            while (y, mth) <= (date.today().year, date.today().month):
+                months.append((y, mth))
+                mth += 1
+                if mth > 12:
+                    y, mth = y + 1, 1
+            for (yy, mm) in months[-4:]:
+                html = _get(O.AFT_LATEST, post={"op": "ok", "period_textfield[month]": str(mm), "period_textfield[year]": str(yy)})
+                recs += O.fr_records_from_html(html)
+                _time.sleep(1.0)
+            notes["FR"] = "history file to %s; HTML months %s" % (last_x, ",".join("%d-%02d" % m for m in months[-4:]))
+        except Exception as e:  # noqa
+            errors.append("aft_v04: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "aft_v04", "error": str(e)})
+    # ── ES ──
+    es_arch = os.path.join(hist_dir, "es_tesoro_auctions.csv")
+    if fx:
+        recs += O.es_records_from_csv(os.path.join(hx, "es_tesoro_auctions.csv"))
+    else:
+        try:
+            if not os.path.exists(es_arch) and os.path.exists(os.path.join(hx, "es_tesoro_auctions.csv")):
+                import shutil
+                os.makedirs(hist_dir, exist_ok=True)
+                shutil.copy(os.path.join(hx, "es_tesoro_auctions.csv"), es_arch)  # seed with the 2022→2026-09 crawl
+            known = {r["nid"] for r in csv.DictReader(open(es_arch, encoding="utf-8"))} if os.path.exists(es_arch) else set()
+            new_rows = []
+            for page in range(0, 3 if a.backfill else 2):
+                items = O.es_parse_listing(_get(O.ES_LIST % page))
+                for it in items:
+                    if it["nid"] in known:
+                        continue
+                    html = _get(O.ES_BASE + it["href"])
+                    for r in O.es_parse_auction_page(html, it["title"], it["nid"]):
+                        new_rows.append({"nid": it["nid"], "list_date": it["date"], "title": it["title"], "plazo": "", "denominacion": "", "auction": r["auction"], "maturity": r["maturity"],
+                                         "settlement": r["settlement"], "nominal_bid": "", "nominal_alloc": r["nominal"], "nominal_2nd": 0, "cash_alloc": r["cash"], "cash_2nd": 0,
+                                         "btc": r["cover"] if r["cover"] is not None else "", "avg_yield": r["yield"] if r["yield"] is not None else "", "marginal_yield": ""})
+                    known.add(it["nid"])
+                    _time.sleep(0.8)
+                _time.sleep(1.0)
+            if new_rows:
+                exists = os.path.exists(es_arch)
+                with open(es_arch, "a", newline="", encoding="utf-8") as f:
+                    w = csv.DictWriter(f, fieldnames=list(new_rows[0].keys()))
+                    if not exists:
+                        w.writeheader()
+                    for r in new_rows:
+                        w.writerow(r)
+            recs += O.es_records_from_csv(es_arch)
+            notes["ES"] = "%d new auction pages" % len(new_rows)
+        except Exception as e:  # noqa
+            errors.append("tesoro_v04: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "tesoro_v04", "error": str(e)})
+            recs += O.es_records_from_csv(es_arch)
+    # ── IT ──
+    it_arch = os.path.join(hist_dir, "it_mef_auctions.csv")
+    if fx:
+        for fn in ("mef_btp10_2026-07-30.pdf", "mef_bot6_latest.pdf"):
+            pth = os.path.join(hx, fn)
+            if os.path.exists(pth):
+                try:
+                    recs += O.it_parse_pdf_text(_pdf_text(open(pth, "rb").read()), fn)
+                except Exception as e:  # noqa
+                    errors.append("mef_pdf(%s): %s" % (fn, e))
+    else:
+        try:
+            old = O.read_records(it_arch)
+            seen = {r["source"] for r in old}
+            new_recs = []
+            years = list(range(2022, date.today().year + 1)) if (a.backfill or not old) else [date.today().year]
+            for key, page in O.IT_PAGES.items():
+                for yy in years:
+                    try:
+                        html = _get(O.IT_INDEX % (page, yy))
+                    except Exception as e:  # noqa
+                        errors.append("mef_index(%s,%d): %s" % (key, yy, e))
+                        continue
+                    for url in O.it_pdf_links(html):
+                        tag = "mef_pdf:" + url.rsplit("/", 1)[-1]
+                        if tag in seen or (tag + "#supplementary") in seen:
+                            continue
+                        try:
+                            got = O.it_parse_pdf_text(_pdf_text(_get(url, binary=True, timeout=60)), url)
+                            new_recs += got
+                            seen.add(tag)
+                        except Exception as e:  # noqa
+                            errors.append("mef_pdf(%s): %s" % (url.rsplit("/", 1)[-1], e))
+                        _time.sleep(0.5)
+                    _time.sleep(0.8)
+            all_it = O.merge_records(it_arch, new_recs) if new_recs else old
+            recs += all_it
+            notes["IT"] = "%d new PDFs, %d records" % (len(new_recs), len(all_it))
+        except Exception as e:  # noqa
+            errors.append("mef_v04: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "mef_v04", "error": str(e)})
+            recs += O.read_records(it_arch)
+    # ── EU ──
+    eu_arch = os.path.join(hist_dir, "eu_auctions.csv")
+    if fx:
+        recs += O.eu_records_from_tables(_json.load(open(os.path.join(hx, "eu_auction_result_tables.json"), encoding="utf-8")))
+    else:
+        try:
+            old = O.read_records(eu_arch)
+            seen = {r["source"].split("#")[0] for r in old}
+            tables = {}
+            years = [date.today().year - 1, date.today().year] if (a.backfill or not old) else [date.today().year]
+            for kind in ("bills", "bonds"):
+                for yy in years:
+                    for u in O.eu_result_links(_get(O.EU_YEAR % (kind, yy))):
+                        tag = "eu_news:" + u.rsplit("/", 1)[-1]
+                        if tag in seen:
+                            continue
+                        tables[u] = O._html_tables(_get(O.EU_BASE + u))
+                        _time.sleep(0.6)
+                    _time.sleep(0.8)
+            new_recs = O.eu_records_from_tables(tables)
+            all_eu = O.merge_records(eu_arch, new_recs) if new_recs else old
+            recs += all_eu
+            notes["EU"] = "%d new result pages, %d records" % (len(tables), len(all_eu))
+        except Exception as e:  # noqa
+            errors.append("eu_v04: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "eu_v04", "error": str(e)})
+            recs += O.read_records(eu_arch)
+    # ── flows ──
+    if not fx:
+        recs = O.merge_records(arch, recs)
+    fl = O.issuance_flows(recs, days)
+    cal = O.de_calendar(outstanding)
+    de_ahead = O.de_supply_ahead(de_cal)
+    gd = S.clean(data.get("ILM.W.U2.C.L050100.U2.EUR", []))
+    ex = S.clean(data.get("ILM.D.U2.C.EXLIQ.U2.EUR", []))
+    grid = [d for d, _ in gd] or [d for d, _ in S.clean(data.get("ILM.W.U2.C.A070100.U2.EUR", []))]
+    ni_weekly = O.weekly_on(fl["net_issuance_private_daily"], grid[-160:]) if grid else []
+    impulse = []
+    if gd and ni_weekly:
+        dgd = [(gd[i][0], round(-(gd[i][1] - gd[i - 1][1]), 3)) for i in range(1, len(gd))]
+        impulse = S.merge_series(dgd, ni_weekly, lambda x, y: round(x - y, 3))
+    cov_by: Dict[str, Dict[str, list]] = {}
+    last_by: Dict[str, str] = {}
+    for r in recs:
+        c = O._num(r.get("cover"))
+        if c is not None and r.get("auction"):
+            cov_by.setdefault(r["issuer"], {}).setdefault(r["auction"], []).append(c)
+        if r.get("settlement"):
+            last_by[r["issuer"]] = max(last_by.get(r["issuer"], ""), r["settlement"])
+    coverage = {iss: S.clean(sorted((d, round(sum(v) / len(v), 3)) for d, v in m.items())) for iss, m in cov_by.items()}
+    V4.enrich_fiscal(blocks["fiscal"], cfg, fl, cal, de_ahead, ni_weekly, impulse, coverage, last_by, ex[-1][1] if ex else None)
+    V4.enrich_central_bank(blocks["central_bank"], cfg)
+    for k, ser in (("net_issuance_private_daily", fl["net_issuance_private_daily"]), ("net_issuance_private_weekly", ni_weekly), ("fiscal_impulse_v04_weekly", impulse)):
+        if ser:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
+    E.log_event(oplog, "EUR_V04", "system", {"records": len(recs), "by_issuer": {iss: sum(1 for r in recs if r["issuer"] == iss) for iss in ("DE", "FR", "ES", "IT", "EU")},
+                                             "last_settlement": last_by, "de_lines": len(outstanding), "de_calendar": len(de_cal), "weeks": len(ni_weekly), "notes": notes})
 
 
 def main(argv: Optional[List[str]] = None) -> int:
