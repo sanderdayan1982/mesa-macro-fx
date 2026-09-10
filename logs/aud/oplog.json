@@ -1,6 +1,79 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-10T10:20:57+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-09-10T10:20:56+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "8ace78685013bcb0",
+    "degraded": [
+     "F4: no issuance fields"
+    ],
+    "streaks": {
+     "central_bank": 3,
+     "fiscal": 1,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-10T10:20:56+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "aofm_v04: HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=180)"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-10T10:20:56+00:00",
+   "type": "AUD_V04",
+   "category": "system",
+   "details": {
+    "omo_ops": 4431,
+    "omo_cut": "2026-09-09",
+    "unwind_days": 522,
+    "tenders": {},
+    "buybacks": {},
+    "tb_lines": 0,
+    "links": "Data Hub unreachable (HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=120)): fallback URLs verified 2026-09-10"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T10:20:56+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "aofm_v04",
+    "error": "HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=180)"
+   }
+  },
+  {
    "timestamp": "2026-09-10T07:29:12+00:00",
    "type": "NOTIFY",
    "category": "system",

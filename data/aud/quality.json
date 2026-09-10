@@ -1,6 +1,6 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-10T07:29:11+00:00",
+ "generated_at": "2026-09-10T10:20:56+00:00",
  "series": {
   "central_bank.es_balances_daily": {
    "freshness": "fresh",
@@ -159,7 +159,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-09-02",
-   "age_days": 7,
+   "age_days": 8,
    "latest_outlier": false
   },
   "banking.credit_total_mom": {
@@ -169,7 +169,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "banking.credit_housing_mom": {
@@ -179,7 +179,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "banking.credit_business_mom": {
@@ -189,7 +189,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "banking.credit_personal_mom": {
@@ -199,7 +199,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "banking.m3_mom": {
@@ -209,7 +209,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "banking.broad_money_yoy": {
@@ -219,7 +219,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "banking.m3_level": {
@@ -229,7 +229,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "banking.money_base": {
@@ -239,7 +239,7 @@
     "tier": "HIGH"
    },
    "last_valid_date": "2026-07-31",
-   "age_days": 40,
+   "age_days": 41,
    "latest_outlier": false
   },
   "rates.policy_rate": {
@@ -313,44 +313,44 @@
    "latest_outlier": false
   },
   "rates.bond_2y": {
-   "freshness": "unavailable",
+   "freshness": "fresh",
    "confidence": {
-    "score": 0,
-    "tier": "CRITICAL"
+    "score": 85,
+    "tier": "MEDIUM"
    },
-   "last_valid_date": null,
-   "age_days": null,
-   "latest_outlier": false
+   "last_valid_date": "2026-09-02",
+   "age_days": 8,
+   "latest_outlier": true
   },
   "rates.bond_3y": {
-   "freshness": "unavailable",
+   "freshness": "stale",
    "confidence": {
-    "score": 0,
-    "tier": "CRITICAL"
+    "score": 70,
+    "tier": "MEDIUM"
    },
-   "last_valid_date": null,
-   "age_days": null,
-   "latest_outlier": false
+   "last_valid_date": "2026-09-02",
+   "age_days": 8,
+   "latest_outlier": true
   },
   "rates.bond_5y": {
-   "freshness": "unavailable",
+   "freshness": "stale",
    "confidence": {
-    "score": 0,
-    "tier": "CRITICAL"
+    "score": 70,
+    "tier": "MEDIUM"
    },
-   "last_valid_date": null,
-   "age_days": null,
-   "latest_outlier": false
+   "last_valid_date": "2026-09-02",
+   "age_days": 8,
+   "latest_outlier": true
   },
   "rates.bond_10y": {
-   "freshness": "unavailable",
+   "freshness": "fresh",
    "confidence": {
-    "score": 0,
-    "tier": "CRITICAL"
+    "score": 92,
+    "tier": "HIGH"
    },
-   "last_valid_date": null,
-   "age_days": null,
-   "latest_outlier": false
+   "last_valid_date": "2026-09-02",
+   "age_days": 8,
+   "latest_outlier": true
   },
   "rates.es_rate": {
    "freshness": "fresh",
@@ -374,13 +374,15 @@
   }
  },
  "system": {
-  "average": 87,
-  "abv90": 30,
-  "blw70": 4,
+  "average": 96,
+  "abv90": 31,
+  "blw70": 0,
   "lowest": {
-   "series": "rates.bond_2y",
-   "score": 0
+   "series": "rates.bond_3y",
+   "score": 70
   }
  },
- "errors": []
+ "errors": [
+  "aofm_v04: HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=180)"
+ ]
 }

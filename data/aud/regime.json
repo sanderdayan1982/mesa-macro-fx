@@ -1,14 +1,14 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-10T07:29:11+00:00",
+ "generated_at": "2026-09-10T10:20:56+00:00",
  "as_of": "2026-09-09",
- "config_version": "0.2.2",
+ "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.171,
+ "weighted_score": 0.233,
  "block_scores": {
   "central_bank": 0.67,
-  "rates": 0.0,
+  "rates": 0.25,
   "fiscal": -0.39,
   "banking": 0.0
  },
@@ -321,8 +321,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "all",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "aofm_v04: HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=180)"
+  ]
  }
 }
