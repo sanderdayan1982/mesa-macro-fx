@@ -9,8 +9,8 @@ from .series import Series
 from .blocks import entry
 from .scoring import Comps
 
-ISSUERS = ("DE", "FR", "ES", "IT", "EU")
-NOT_WIRED = "ESM/EFSF (investor pages behind a login on 2026-09-10) and EU syndications (press-release format) are NOT in the series; the EU component = auctions only"
+ISSUERS = ("DE", "FR", "ES", "IT", "EU", "ESM")
+NOT_WIRED = "round 3: EU auctions + syndications from the Commission Qlik app (Date of settlement per operation); ESM bills via Bundesbank PDFs (value date); ESM/EFSF bond syndications NOT in the flow (settlement not published in the CSV) — calendar only"
 
 
 def _cal_card(label: str, ahead: Series, unit: str, days: int = 28, n: int = 8, note: Optional[str] = None) -> dict:
@@ -90,4 +90,26 @@ def enrich_central_bank(block: dict, cfg: dict) -> dict:
         for k, v in ((block["signals"].get("components") or {}).get("flow", {})).items():
             C.flow(k, v)
     block["signals"]["components_v04"] = dict(C.to_dict(), note="shadow (E4): MonPol w/w joins the v0.3 excess-liquidity flows; cuts by the v0.4 replay")
+    return block
+
+
+def enrich_fiscal_eu_esm(block: dict, cfg: dict, eu_cal: Dict[str, Series], esm_cal: Dict[str, Series], notes: Dict[str, str]) -> dict:
+    """Round 3: EU-Bonds/Bills outstanding by ISIN (Commission Qlik) and ESM/EFSF outstanding (public CSV) → GROSS redemption / coupon
+    calendars (the Eurosystem does not publish APP/PEPP holdings by ISIN). All issuers stay in the flow: their cash sits at the ECB
+    (Decision (EU) 2022/1521 art. 2), so settlement drains reserves like a sovereign auction."""
+    unit = cfg["units"]["balance_sheet"]
+    D = block["derived"]
+    D["eu_redemptions_gross_next_12m"] = _cal_card("EU-Bonds/Bills redemptions next 12 months — GROSS (Commission outstanding by ISIN)", eu_cal.get("eu_redemptions_gross_ahead", []), unit, 365, 6,
+                                                   note="source: EU debt securities data (Qlik) · %s" % notes.get("EU_qlik", ""))
+    D["eu_coupons_gross_next_4w"] = _cal_card("EU-Bonds coupons next 4 weeks — GROSS", eu_cal.get("eu_coupons_gross_ahead", []), unit)
+    tot = eu_cal.get("eu_outstanding_total", [])
+    D["eu_outstanding_total"] = entry("eu_outstanding_total", tot, "EU-Bonds and EU-Bills outstanding (Commission, by ISIN)", "daily", unit, cfg, "commission.europa.eu:eu-debt-securities-data (Qlik)",
+                                      status="fresh" if tot else "unavailable")
+    D["esm_redemptions_next_12m"] = _cal_card("ESM/EFSF redemptions next 12 months — EUR issues (outstanding list)", esm_cal.get("esm_redemptions_ahead", []), unit, 365, 6,
+                                              note="ESM enters gross (loan disbursements are transfers inside the Eurosystem); USD issues excluded: %s" % ",".join(esm_cal.get("_non_eur", [])[:4]))
+    D["esm_coupons_next_4w"] = _cal_card("ESM/EFSF coupons next 4 weeks — EUR bonds", esm_cal.get("esm_coupons_ahead", []), unit)
+    et = esm_cal.get("esm_outstanding_total", [])
+    D["esm_outstanding_total"] = entry("esm_outstanding_total", et, "ESM + EFSF EUR issues outstanding (transactions export)", "daily", unit, cfg, "esm.europa.eu:export-transactions-list", status="fresh" if et else "unavailable")
+    D["esm_bills_note"] = {"label": "ESM bill auctions (Bundesbank EBS)", "value": None, "status": "fresh", "date": date.today().isoformat(),
+                           "note": notes.get("ESM", "fixture: one auction (1-Sep-2026, value date 3-Sep-2026)")}
     return block

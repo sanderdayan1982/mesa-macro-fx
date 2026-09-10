@@ -120,6 +120,70 @@ def enrich_fiscal(block: dict, cfg: dict, iss: Dict[str, Series], rg: Dict[str, 
     return block
 
 
+def _cal_card(label: str, ahead: Series, unit: str, days: int = 28, n: int = 8, note: Optional[str] = None) -> dict:
+    from datetime import date, timedelta
+    lim = (date.today() + timedelta(days=days)).isoformat()
+    sel = [(d, v) for d, v in ahead if d <= lim and v]
+    out = {"label": label, "value": round(sum(v for _, v in sel), 3) if ahead else None, "unit": unit,
+           "status": "fresh" if ahead else "unavailable", "date": date.today().isoformat(), "calendar": sel[:n]}
+    if note:
+        out["note"] = note
+    return out
+
+
+def enrich_fiscal_net(block: dict, cfg: dict, iss: Dict[str, Series], netcal: Dict[str, Series], nethist: Dict[str, Series], reserves_w: Series) -> dict:
+    """Round-2 netting (BoC holdings by ISIN): bond redemptions and coupons to the PRIVATE sector = outstanding − BoC par.
+    Adds the net calendars, the daily net series and a second net-issuance definition (v2 = −issued + matured net + coupons net
+    + repurchases) as shadow components; `net_issuance` (v0.4 first pass) stays as published so the replay can compare both."""
+    unit = cfg["units"]["balance_sheet"]
+    D = block["derived"]
+    src = "bankofcanada.ca:bank-of-canada-holdings + Valet:GOC_OUTSTANDING"
+    for k, label in (("bond_redemptions_net_daily", "GoC bond redemptions to the private sector (outstanding − BoC par; daily)"),
+                     ("bond_coupons_net_daily", "GoC bond coupons to the private sector (daily)"),
+                     ("tbill_maturities_net_daily", "T-bill maturities to the private sector (outstanding − BoC par; daily)")):
+        ser = nethist.get(k, [])
+        D[k] = entry(k, ser, label, "daily", unit, cfg, src, status="fresh" if ser else "unavailable")
+    for k, label in (("boc_share_bonds", "BoC share of GoC bonds outstanding (par / nominal)"), ("boc_share_tbills", "BoC share of T-bills outstanding")):
+        ser = netcal.get(k, [])
+        D[k] = entry(k, ser, label, "daily", "ratio", cfg, src, status="fresh" if ser else "unavailable")
+    D["boc_holdings_bonds_total"] = entry("boc_holdings_bonds_total", netcal.get("boc_holdings_bonds_total", []), "BoC holdings of GoC bonds (par)", "daily", unit, cfg, src,
+                                          status="fresh" if netcal.get("boc_holdings_bonds_total") else "unavailable")
+    D["bond_redemptions_net_next_12m"] = _cal_card("GoC bond redemptions next 12 months — NET of BoC holdings", netcal.get("bond_redemptions_net_ahead", []), unit, 365, 6,
+                                                   note="gross %s · BoC %s" % (round(sum(v for _, v in netcal.get("bond_redemptions_gross_ahead", [])), 1),
+                                                                               round(sum(v for _, v in netcal.get("bond_redemptions_boc_ahead", [])), 1)))
+    D["bond_coupons_net_next_4w"] = _cal_card("GoC bond coupons next 4 weeks — NET of BoC holdings", netcal.get("bond_coupons_net_ahead", []), unit)
+    D["tbill_maturities_net_next_4w"] = _cal_card("T-bill maturities next 4 weeks — NET of BoC holdings", netcal.get("tbill_maturities_net_ahead", []), unit)
+    ha = netcal.get("holdings_asof", [])
+    D["boc_holdings_asof"] = {"label": "BoC holdings snapshot used for netting", "value": None, "cut_date": ha[-1][0] if ha else None,
+                              "status": "fresh" if ha else "unavailable", "date": D["bond_coupons_net_next_4w"]["date"], "unmatched": netcal.get("_unmatched", [])}
+    # v2 net issuance: −issued + matured NET (bonds + bills) + coupons NET + repurchases, dense on the issuance grid
+    issued = iss.get("issued_private", [])
+    if issued and nethist.get("bond_redemptions_net_daily"):
+        m = {d: 0.0 for d, _ in issued}
+        for d, v in issued:
+            m[d] -= v or 0.0
+        for k in ("bond_redemptions_net_daily", "bond_coupons_net_daily", "tbill_maturities_net_daily"):
+            for d, v in nethist.get(k, []):
+                if d in m and v is not None:
+                    m[d] += v
+        for d, v in iss.get("repurchased_private", []):
+            if d in m:
+                m[d] += v or 0.0
+        first = min((d for d, v in nethist["bond_redemptions_net_daily"] if v is not None), default=None)
+        v2 = [(d, round(m[d], 3)) for d in sorted(m) if first and d >= first]
+        D["net_issuance_private_v2_daily"] = entry("net_issuance_private_v2_daily", v2, "Net issuance to the private sector v2 — coupons and redemptions NET of BoC holdings (daily; − = drain)", "daily", unit, cfg, "derived",
+                                                    status="fresh" if v2 else "unavailable", equivalence_note="round 2: BoC holdings by ISIN since 2018-12; before that the v0.4 first pass applies")
+        wk = S.rolling_sum(v2, 5)
+        D["net_issuance_v2_5d"] = entry("net_issuance_v2_5d", wk, "Net issuance v2, 5 sessions (− = drain)", "daily", unit, cfg, "derived", status="fresh" if wk else "unavailable")
+        lvl = S.last(reserves_w)
+        if lvl and lvl[1] and wk:
+            comp = block["signals"].get("components_v04") or {}
+            comp.setdefault("flow", {})["net_issuance_v2_5d_pct"] = round(wk[-1][1] / lvl[1] * 100, 4)
+            comp["note"] = (comp.get("note") or "") + " · net_issuance_v2 (BoC holdings netted) added as a candidate"
+            block["signals"]["components_v04"] = comp
+    return block
+
+
 def enrich_rates(block: dict, cfg: dict, valet: Dict[str, Series]) -> dict:
     E, D = block["series"], block["derived"]
     p25, p75 = S.clean(valet.get("CORRA_RATE_AT_PERCENTILE_25", [])), S.clean(valet.get("CORRA_RATE_AT_PERCENTILE_75", []))

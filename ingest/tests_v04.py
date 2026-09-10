@@ -14,6 +14,13 @@ def rows(name):
     return O.rows_from_csv(open(os.path.join(FIX, name + ".csv"), encoding="utf-8").read())
 
 
+def _pdf(path):
+    import io
+    import pdfplumber  # type: ignore
+    with pdfplumber.open(io.BytesIO(open(path, "rb").read())) as p:
+        return "\n".join(pg.extract_text() or "" for pg in p.pages)
+
+
 def check(cond, msg, fails):
     print(("ok   " if cond else "FAIL ") + msg)
     if not cond:
@@ -165,6 +172,14 @@ def main_aud() -> int:
     check(cal["tb_face_total"] == [("2026-08-31", 921749.274)] and dict(cal["tb_redemptions_gross_ahead"]).get("2026-09-21") == 39400.0, "TB face value 2026-08-31 Σ 921 749.274 m; 21-Sep-2026 line 39 400 m (gross, RBA holdings included)", fails)
     check(abs(dict(cal["tb_coupons_gross_ahead"]).get("2026-09-21", 0) - (39400.0 * 0.5 + 28200.0 * 4.25 + 14800.0 * 3.0) / 200) < 1e-6,
           "coupons 2026-09-21 = Σ face × coupon / 2 over the 21-Sep-2026, 21-Mar-2036 and 21-Mar-2047 lines (semi-annual on the maturity day-of-month)", fails)
+    from . import ops_aud_holdings as AH
+    a31 = AH.parse_a31_csv(open(os.path.join(ROOT, "fixtures", "aud_hist", "rba_a3.1_ags_bonds.csv"), encoding="utf-8").read())
+    asof, bym = AH.rba_by_maturity(a31)
+    check(asof == "2026-08-31" and bym.get("2026-09-21") == 12756.0, "RBA A3.1 2026-08-31: Treasury Bond 164 (21-Sep-2026) held 12 756 $m by line", fails)
+    lines = A.face_value_from_csv(os.path.join(ROOT, "fixtures", "aud_hist", "aofm_tb_face_value_by_line.csv"))
+    nc = AH.net_tb_calendar(lines, a31, today="2026-09-10")
+    check(dict(nc["tb_redemptions_gross_ahead"]).get("2026-09-21") == 39400.0 and dict(nc["tb_redemptions_net_ahead"]).get("2026-09-21") == 26644.0,
+          "21-Sep-2026 redemption: gross 39 400 (AOFM face) → net 26 644 to the market (round 2)", fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
 
@@ -198,6 +213,20 @@ def main_eur() -> int:
     fake = '<table><tr><th>Plazo</th><td>10 AÑOS</td></tr><tr><th>Fecha subasta</th><td>03/09/2026</td></tr><tr><th>Fecha vencimiento</th><td>30/04/2036</td></tr><tr><th>Fecha de liquidación</th><td>08/09/2026</td></tr><tr><th>Nominal adjudicado</th><td>1.996,03</td></tr><tr><th>Nominal adjudicado (2ª vuelta)</th><td>415.35</td></tr><tr><th>Efectivo adjudicado</th><td>1.949,81</td></tr><tr><th>Efectivo adjudicado (2ª vuelta)</th><td>405.71</td></tr><tr><th>Ratio de cobertura</th><td>2,29</td></tr><tr><th>Tipo de interés medio</th><td>3,736</td></tr></table>'
     p = U.es_parse_auction_page(fake, "Subasta de Obligaciones a 10 años", "46359")[0]
     check(abs(p["nominal"] - 2411.38) < 0.01 and abs(p["cash"] - 2355.52) < 0.01 and p["cover"] == 2.29, "ES page parser handles '1.996,03' and '415.35' number styles on the same page", fails)
+    from . import ops_eu_qlik as Q
+    from . import ops_esm as ESM
+    qr = Q.records_from_fixture_csv(os.path.join(hx, "eu_transactions_qlik_2026-09-10.csv"))
+    syn = [r for r in qr if r["source"].endswith(":syndication")]
+    first = min(qr, key=lambda r: r["settlement"])
+    check(len([r for r in qr if "#noncomp" not in r["source"]]) == 488 and len(syn) == 103 and first["isin"] == "EU000A28X702" and first["settlement"] == "2020-06-10",
+          "EU Qlik seed: 488 operations (103 syndications) since 2020-06-03; first syndication settled 2020-06-10 (T+5)", fails)
+    esm_rows = ESM.parse_esm_transactions_csv(open(os.path.join(hx, "esm", "esm_transactions_outstanding_2026-09-10.csv"), encoding="utf-8").read())
+    ann = ESM.parse_esm_announcement(_pdf(os.path.join(hx, "esm", "esm_bill_announcement_2026-08-28.pdf")))
+    res = ESM.parse_esm_result(_pdf(os.path.join(hx, "esm", "esm_bill_result_2026-09-01.pdf")))
+    rec = ESM.esm_bill_records([ann], [res])[0]
+    check(rec["settlement"] == "2026-09-03" and rec["nominal"] == 1599.95 and abs(rec["cash"] - 1599.95 * 0.9937152) < 0.01 and rec["maturity"] == "2026-12-03",
+          "ESM 3-month bill 2026-09-01: value date 2026-09-03 from the Bundesbank announcement, 1 599.95 allotted at 99.37152", fails)
+    check(len(esm_rows) == 119 and all(r["maturity"] > "2026-09-10" for r in esm_rows if r["maturity"]), "ESM export = 119 outstanding issues (no matured lines)", fails)
     try:
         import pdfplumber  # type: ignore
         import io as _io
@@ -223,7 +252,58 @@ def main_eur() -> int:
     return 1 if fails else 0
 
 
+
+def main_jpy() -> int:
+    """JPY: the daily file's three columns, operations by operation (face) vs the cash line, mei ↔ MoF issue map, net redemptions."""
+    from . import ops_jpy as J
+    fails = []
+    hx = os.path.join(ROOT, "fixtures", "jpy_hist")
+    rd = lambda fn: open(os.path.join(hx, fn), "rb").read()
+    jd = J.parse_daily_file(rd("jd20260909.xlsx"), "jd20260909.xlsx")
+    check(jd["date"] == "2026-09-09" and jd["proj"]["treasury"] == -33600 and jd["prov"]["treasury"] == -35900 and jd["final"]["treasury"] == -35900,
+          "jd 2026-09-09 keeps the three columns: treasury 予想 −33 600 / 速報 −35 900 / 確報 −35 900 (revision 2 300)", fails)
+    check(jd["final"]["cab"] == 4116600 and jd["final"]["reserve_bal"] == 3811200, "jd stocks: 当座預金残高 4 116 600, 準備預金残高 3 811 200 (100m)", fails)
+    jp = J.parse_daily_file(rd("jp20260911.xlsx"), "jp20260911.xlsx")
+    check(jp["date"] == "2026-09-11" and jp["proj"]["treasury"] == -10400 and jp["prov"].get("treasury") is None, "jp 2026-09-11: projection only (−10 400), no provisional/final", fails)
+    jx = J.parse_daily_file(rd("jx20260910.xlsx"), "jx20260910.xlsx")
+    check(jx["prov"]["jgb_purch"] == 7200 and jx["proj"]["treasury"] == 2200 and jx["prov"]["treasury"] == 3400, "jx 2026-09-10: 国債買入 cash 7 200; treasury surprise 3 400 − 2 200", fails)
+    ops = J.parse_ope_file(rd("ope20260909.xlsx"), "ope20260909.xlsx")
+    jg = [o for o in ops if o["kind"] == "jgb_purch"]
+    check(len(jg) == 3 and round(sum(o["allotted"] for o in jg)) == 7659 and all(o["start"] == "2026-09-10" for o in jg), "ope 2026-09-09: 3 outright JGB purchases, face 7 659, Date of Exercise 09-10 (T+1)", fails)
+    days = J.business_days("2026-08-01", "2026-09-10")
+    fl = J.ops_flows(ops + J.parse_ope_file(rd("ope20260910.xlsx"), "ope20260910.xlsx"), {"jgb_purch": [("2026-09-10", 7200.0)]}, days, today="2026-09-10")
+    check(dict(fl["jgb_purch_settled"]).get("2026-09-10") == 7659.0 and dict(fl["jgb_purch_face_minus_cash"]).get("2026-09-10") == 459.0, "face 7 659 vs cash 7 200 on the settlement date → reconciliation 459 (the reserve flow is the cash)", fails)
+    q = J.parse_juqp(rd("juqp2609.xlsx"))
+    check(q["month"] == "2026-09" and q["treasury"] == -76100 and q["jgb_net"] == -62500 and q["tbill_net"] == 36700 and q["other"] == -50300 and q["published"] == "2026-09-03",
+          "juqp September 2026: 財政等要因 −76 100 = 国債等 −62 500 + 国庫短期証券等 36 700 + その他 −50 300; published 09-03", fails)
+    check(q["shortage_days"] == ["2026-09-01", "2026-09-02", "2026-09-09", "2026-09-11", "2026-09-29"] and q["surplus_days"] == ["2026-09-24"], "juqp days with large shortage / surplus", fails)
+    mei = J.parse_mei(rd("mei260831.xlsx"), "mei260831.xlsx")
+    jgb = J.parse_mof_jgb_xls(os.path.join(hx, "mof_auction_results_jgbs.xls"))
+    tb = J.parse_mof_tbill_xls(os.path.join(hx, "mof_auction_results_tbills.xls"))
+    imap = J.issue_map(jgb)
+    bm = J.mei_to_maturity(mei, imap)
+    unm = bm.pop("_unmapped")
+    tot = sum(r["amount"] for r in mei["rows"])
+    check(mei["asof"] == "2026-08-31" and abs(sum(bm.values()) + sum(x[2] for x in unm) - tot) < 1 and len(unm) <= 2,
+          "mei 2026-08-31: %d issues, %.0f (100m) mapped to maturities via the MoF XLS; unmapped %s" % (len(mei["rows"]), sum(bm.values()), unm), fails)
+    cl = J.coupon_lines(imap, mei)
+    cut = max(r["issue"] for r in jgb + tb if r.get("issue"))
+    ni = J.net_issuance(jgb, tb, bm, cl, [d for d in J.business_days("2024-01-01", cut)], today=cut)
+    ah0 = J.net_issuance(jgb, tb, bm, cl, [], today="2026-09-10")
+    g = dict(ah0["jgb_redemptions_gross_ahead"]); n = dict(ah0["jgb_redemptions_net_ahead"])
+    held = [d for d in g if d in bm and bm[d] > 0]
+    check(held and all(n[d] < g[d] for d in held) and all(abs(g[d] - n[d] - min(bm[d], g[d])) < 1 for d in held),
+          "JGB redemptions ahead: net = gross − BoJ holding of the maturity (%d held maturities in the next 12 months; past redemptions need the mei archive)" % len(held), fails)
+    check(len(ni["net_issuance_private_daily"]) == len(J.business_days("2024-01-01", cut)), "net issuance dense over business days up to the MoF cut (%s)" % cut, fails)
+    ah = J.net_issuance(jgb, tb, bm, cl, [], today="2026-09-10")
+    check(all(d > "2026-09-10" for d, _ in ah["jgb_redemptions_net_ahead"]) and ah["jgb_redemptions_net_ahead"], "redemption calendar strictly ahead", fails)
+    print("%d failures" % len(fails))
+    return 1 if fails else 0
+
+
 def main() -> int:
+    if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "jpy":
+        return main_jpy()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "eur":
         return main_eur()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "aud":
@@ -258,6 +338,15 @@ def main() -> int:
     html = '<table><tr><th></th><th>2024-12-12</th><th>2025-01-30</th><th>2025-03-13</th></tr><tr><td>Bank Rate</td><td>3.50</td><td>3.25</td><td>3.00</td></tr></table><table><tr><th></th><th>2026-09-08</th><th>2026-09-09</th><th>2026-09-10</th></tr><tr><td>Target (Available)</td><td></td><td></td><td></td></tr><tr><td>Actual</td><td>65,188</td><td>66,140</td><td></td></tr><tr><td>Term Repos</td><td>0.0</td><td>0.0</td><td>16,000.0</td></tr></table>'
     ind = O.parse_indicators_html(html)
     check(ind["settlement_actual"] == [("2026-09-08", 65188.0), ("2026-09-09", 66140.0)] and ind["ind_term_repos"][-1] == ("2026-09-10", 16000.0), "indicators table parser", fails)
+    from . import ops_cad_holdings as H
+    hold = H.parse_boc_holdings_html(open(os.path.join(FIX, "boc_holdings_2026-09-10.html"), encoding="utf-8").read())
+    outs = H.goc_outstanding_from_csv(os.path.join(FIX, "GOC_OUTSTANDING_latest.csv"))
+    nc = H.net_calendar(outs, hold, today="2026-09-10")
+    sb = dict(nc["boc_share_bonds"]); ha = nc["holdings_asof"][-1][0]
+    check(ha == "2026-09-10" and 0.10 < sb.get(ha, 0) < 0.13, "BoC holdings 2026-09-10 by ISIN: bonds share %.4f of GOC_OUTSTANDING nominal (round 2 netting)" % sb.get(ha, 0), fails)
+    g = dict(nc["bond_redemptions_gross_ahead"]); n = dict(nc["bond_redemptions_net_ahead"])
+    check(all(n[d] <= g[d] + 1e-6 for d in g) and any(n[d] < g[d] for d in g), "net redemptions ≤ gross and strictly lower where the BoC holds the line", fails)
+    check(dict(nc["bond_coupons_net_ahead"]).get("2026-11-01", 0) > 0 and n.get("2026-11-01") == 11787.128, "CA135087S398 2026-11-01: not held by the BoC → private = outstanding 11 787.128; coupon on the same day", fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
 

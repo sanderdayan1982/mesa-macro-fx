@@ -107,6 +107,50 @@ def enrich_fiscal(block: dict, cfg: dict, iss: Dict[str, Series], cal: Dict[str,
     return block
 
 
+def enrich_fiscal_net(block: dict, cfg: dict, iss: Dict[str, Series], netcal: Dict[str, Series], nethist: Dict[str, Series], es_level: Optional[float]) -> dict:
+    """Round-2 netting (RBA A3.1 by line, monthly): Treasury Bond redemptions and coupons to the PRIVATE sector = AOFM face − RBA
+    holding of the same line. Adds net calendars, dense daily net history (replay) and net issuance v2 = v0.4 net issuance
+    + TB redemptions net + TB coupons net (the v0.4 series left them out because they were only gross)."""
+    unit = cfg["units"]["balance_sheet"]
+    D = block["derived"]
+    src = "RBA:a3.1-ags---bonds.csv + AOFM face value by line"
+    for k, label in (("tb_redemptions_net_daily", "Treasury Bond redemptions to the private sector (face − RBA holding; daily)"),
+                     ("tb_coupons_net_daily", "Treasury Bond coupons to the private sector (daily)")):
+        ser = nethist.get(k, [])
+        D[k] = entry(k, ser, label, "daily", unit, cfg, src, status="fresh" if ser else "unavailable")
+    sh = netcal.get("tb_rba_share", [])
+    D["tb_rba_share"] = entry("tb_rba_share", sh, "RBA share of Treasury Bonds on issue (A3.1 / AOFM face, month-end)", "monthly", "ratio", cfg, src, status="fresh" if sh else "unavailable")
+    D["tb_rba_total"] = entry("tb_rba_total", netcal.get("tb_rba_total", []), "RBA holdings of Treasury Bonds (A3.1, month-end)", "monthly", unit, cfg, "RBA:a3.1-ags---bonds.csv",
+                              status="fresh" if netcal.get("tb_rba_total") else "unavailable")
+    D["tb_redemptions_net_next_12m"] = _cal_card("Treasury Bond redemptions next 12 months — NET of RBA holdings", netcal.get("tb_redemptions_net_ahead", []), unit, 365, 6,
+                                                 note="gross %s · RBA %s (A3.1 lags one month)" % (round(sum(v for _, v in netcal.get("tb_redemptions_gross_ahead", [])), 1),
+                                                                                                  round(sum(v for _, v in netcal.get("tb_redemptions_rba_ahead", [])), 1)))
+    D["tb_coupons_net_next_4w"] = _cal_card("Treasury Bond coupons next 4 weeks — NET of RBA holdings", netcal.get("tb_coupons_net_ahead", []), unit)
+    ha = netcal.get("tb_holdings_asof", [])
+    D["rba_holdings_asof"] = {"label": "RBA A3.1 snapshot used for netting", "value": None, "cut_date": ha[-1][0] if ha else None, "status": "fresh" if ha else "unavailable",
+                              "date": date.today().isoformat(), "unmatched": netcal.get("_unmatched", [])}
+    ni = iss.get("net_issuance_private_daily", [])
+    if ni and nethist.get("tb_redemptions_net_daily"):
+        m = {d: (v or 0.0) for d, v in ni}
+        for k in ("tb_redemptions_net_daily", "tb_coupons_net_daily"):
+            for d, v in nethist.get(k, []):
+                if d in m and v is not None:
+                    m[d] += v
+        first = min((d for d, v in nethist["tb_redemptions_net_daily"] if v is not None), default=None)
+        v2 = [(d, round(m[d], 3)) for d in sorted(m) if first and d >= first]
+        D["net_issuance_private_v2_daily"] = entry("net_issuance_private_v2_daily", v2, "Net issuance to the private sector v2 — + Treasury Bond redemptions and coupons NET of RBA holdings (daily; − = drain)",
+                                                    "daily", unit, cfg, "derived", status="fresh" if v2 else "unavailable",
+                                                    equivalence_note="round 2: RBA A3.1 by line (monthly since 2017-01) netted with the previous month-end; v0.4 series unchanged")
+        wk = S.rolling_sum(v2, 5)
+        D["net_issuance_v2_5d"] = entry("net_issuance_v2_5d", wk, "Net issuance v2, 5 sessions (− = drain)", "daily", unit, cfg, "derived", status="fresh" if wk else "unavailable")
+        if es_level and wk:
+            comp = block["signals"].get("components_v04") or {}
+            comp.setdefault("flow", {})["net_issuance_v2_5d_pct"] = round(wk[-1][1] / es_level * 100, 4)
+            comp["note"] = (comp.get("note") or "") + " · net_issuance_v2 (RBA holdings netted) added as the candidate to replace −Δ deposits"
+            block["signals"]["components_v04"] = comp
+    return block
+
+
 def enrich_rates(block: dict, cfg: dict, tn_yield: Series) -> dict:
     D = block["derived"]
     tgt = block["series"].get("cash_rate_target", {}) or block["series"].get("policy_rate", {}) or {}

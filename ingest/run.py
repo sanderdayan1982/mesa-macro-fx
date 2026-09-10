@@ -198,6 +198,14 @@ def _cad_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
         V4.enrich_central_bank(cb, cfg, ind, ops)
     if blocks.get("fiscal"):
         V4.enrich_fiscal(blocks["fiscal"], cfg, iss, rg, reserves_w)
+        # ── round 2: BoC holdings by ISIN → net redemptions / coupons ──
+        try:
+            netcal, nethist, hnote = _cad_holdings(cfg, a, gp, hist_dir, days, errors, oplog)
+            V4.enrich_fiscal_net(blocks["fiscal"], cfg, iss, netcal, nethist, reserves_w)
+            E.log_event(oplog, "CAD_HOLDINGS", "system", hnote)
+        except Exception as e:  # noqa
+            errors.append("boc_holdings: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "boc_holdings", "error": str(e)})
     if blocks.get("rates"):
         V4.enrich_rates(blocks["rates"], cfg, rates_raw)
     for k in ("term_repo_net_daily", "term_repo_outstanding", "overnight_ops_net_daily"):
@@ -208,6 +216,91 @@ def _cad_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
         append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, iss.get(k, []))
     E.log_event(oplog, "CAD_V04", "system", {"groups": {k: len(v) for k, v in rows.items()}, "indicator_days": len(ind.get("settlement_actual", [])),
                                              "net_issuance_last": iss.get("net_issuance_private_daily", [])[-1] if iss.get("net_issuance_private_daily") else None})
+
+
+def _cad_holdings(cfg: dict, a, gp, hist_dir: str, days: List[str], errors: List[str], oplog: str):
+    """BoC holdings page (by ISIN, daily as-of) + monthly historical blobs (2018-12→) + Valet GOC_OUTSTANDING (nominal by ISIN)
+    → net calendars (today) and dense daily net history (replay). Fixture mode reads fixtures/cad/boc_holdings_*.html and GOC_OUTSTANDING_latest.csv."""
+    from . import ops_cad_holdings as H
+    from .providers import _get as _pget
+    import time as _time
+    from datetime import date, timedelta
+    src = cfg["sources"].get("boc_holdings", {})
+    page_url = src.get("url", "https://www.bankofcanada.ca/markets/government-securities-auctions/bank-of-canada-holdings/")
+    h_arch = os.path.join(hist_dir, "boc_holdings.csv")
+    o_arch = os.path.join(hist_dir, "goc_outstanding.csv")
+    note: Dict[str, object] = {}
+    if a.fixtures:
+        rows = H.parse_boc_holdings_html(open(os.path.join(a.fixtures, "boc_holdings_2026-09-10.html"), encoding="utf-8").read())
+        bp = os.path.join(a.fixtures, "boc_holdings_blob_boc_holdings_2026_08.html")
+        if os.path.exists(bp):
+            rows += H.parse_boc_holdings_html(open(bp, encoding="utf-8").read())
+        outstanding = H.goc_outstanding_from_csv(os.path.join(a.fixtures, "GOC_OUTSTANDING_latest.csv"))
+        hist_rows, out_hist = rows, outstanding
+    else:
+        rows = H.parse_boc_holdings_html(_pget(page_url, as_json=False, timeout=60))
+        hist_rows = H.merge_holdings_archive(h_arch, rows)
+        have = {r["asof"][:7] for r in hist_rows}
+        want = [n for n in H.blob_names() if n[13:20].replace("_", "-") not in have]
+        if a.backfill or len(have) < 3:
+            got = 0
+            for n in want[-120:]:
+                try:
+                    hist_rows = H.merge_holdings_archive(h_arch, H.parse_boc_holdings_html(_pget(H.blob_url(n), as_json=False, timeout=60)))
+                    got += 1
+                except Exception as e:  # noqa
+                    errors.append("boc_holdings_blob[%s]: %s" % (n, str(e)[:80]))
+                    if got == 0 and len(errors) > 3:
+                        break
+                _time.sleep(0.6)
+            note["blobs_fetched"] = got
+        else:
+            note["blobs_pending"] = len(want)
+        since = (date.today() - timedelta(days=21)).isoformat()
+        obs = gp.fetch("GOC_OUTSTANDING", start_date=since)
+        outstanding = H.parse_goc_outstanding(obs)
+        out_hist = _merge_outstanding_archive(o_arch, outstanding)
+    netcal = H.net_calendar(outstanding, rows)
+    nethist = H.net_daily_history(hist_rows, out_hist, days)
+    ha = netcal.get("holdings_asof", [])
+    note.update({"holdings_asof": ha[-1][0] if ha else None, "holdings_rows": len(rows), "history_asofs": len({r["asof"] for r in hist_rows}),
+                 "outstanding_asof": outstanding[0]["asof"] if outstanding else None, "outstanding_isins": len(outstanding), "unmatched": netcal.get("_unmatched", [])})
+    return netcal, nethist, note
+
+
+def _merge_outstanding_archive(path: str, snap: List[dict]) -> List[dict]:
+    """month-end style archive of GOC_OUTSTANDING snapshots: keeps the latest as-of per calendar month plus the latest snapshot"""
+    cols = ["asof", "isin", "security_type", "instrument_type", "coupon", "issue_date", "maturity", "outstanding", "inflation_adjusted"]
+    old: List[dict] = []
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                r["outstanding"] = float(r["outstanding"]) if r.get("outstanding") else None
+                r["inflation_adjusted"] = float(r["inflation_adjusted"]) if r.get("inflation_adjusted") else None
+                r["coupon"] = float(r["coupon"]) if r.get("coupon") else None
+                old.append(r)
+    by_month: Dict[str, str] = {}
+    for r in old + snap:
+        m = r["asof"][:7]
+        if r["asof"] >= by_month.get(m, ""):
+            by_month[m] = r["asof"]
+    keep_asofs = set(by_month.values())
+    rows = [r for r in old + snap if r["asof"] in keep_asofs]
+    seen = set()
+    out: List[dict] = []
+    for r in sorted(rows, key=lambda r: (r["asof"], r["isin"])):
+        k = (r["asof"], r["isin"])
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(r)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w.writeheader()
+        for r in out:
+            w.writerow({c: ("" if r.get(c) is None else r.get(c)) for c in cols})
+    return out
 
 
 def _merge_group_rows(path: str, fresh: List[dict]) -> List[dict]:
@@ -567,6 +660,26 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
         V4.enrich_central_bank(blocks["central_bank"], cfg, omo, recon, omo_cut)
     if blocks.get("fiscal") and iss:
         V4.enrich_fiscal(blocks["fiscal"], cfg, iss, cal, es_level, links_note)
+        # ── round 2: RBA A3.1 holdings by line → Treasury Bond redemptions / coupons NET ──
+        try:
+            from . import ops_aud_holdings as H
+            if fx:
+                a31 = open(os.path.join(hist_fx, "rba_a3.1_ags_bonds.csv"), encoding="utf-8").read()
+            else:
+                a31 = _get(cfg["sources"]["rba_tables"]["base_url"].rstrip("/") + "/a3.1-ags---bonds.csv")
+                _snapshot(raw_dir, "rba_a3.1_ags_bonds.csv", a31)
+                with open(os.path.join(hist_dir, "rba_a3.1_ags_bonds.csv"), "w", encoding="utf-8") as f:
+                    f.write(a31)
+            rba_rows = H.parse_a31_csv(a31)
+            netcal = H.net_tb_calendar(lines, rba_rows)
+            nethist = H.net_daily_history(lines, rba_rows, days)
+            V4.enrich_fiscal_net(blocks["fiscal"], cfg, iss, netcal, nethist, es_level)
+            ha = netcal.get("tb_holdings_asof", [])
+            E.log_event(oplog, "AUD_HOLDINGS", "system", {"a31_rows": len(rba_rows), "rba_asof": ha[-1][0] if ha else None, "unmatched": netcal.get("_unmatched", []),
+                                                          "rba_share": (netcal.get("tb_rba_share") or [(None, None)])[-1][1]})
+        except Exception as e:  # noqa
+            errors.append("rba_a31: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "rba_a31", "error": str(e)})
     if blocks.get("rates") and iss:
         V4.enrich_rates(blocks["rates"], cfg, iss.get("tn_wa_yield", []))
     for k, ser in (("omo_net_daily", omo.get("omo_net_daily", []) if omo else []), ("omo_stock_daily", omo.get("omo_stock_daily", []) if omo else []),
@@ -738,7 +851,210 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     blocks["central_bank"] = BJ.build_central_bank(cfg, data, prev.get("central_bank"))
     blocks["fiscal"] = BJ.build_fiscal(cfg, data, prev.get("fiscal"))
     blocks["banking"] = BJ.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    if cfg.get("version", "0.3.0") >= "0.4.0":
+        try:
+            _jpy_v04(cfg, a, blocks, data, hist_dir, oplog, errors, fx, raw_dir)
+        except Exception as e:  # noqa
+            errors.append("jpy_v04: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "jpy_v04", "error": str(e)})
     return blocks
+
+
+def _jpy_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, oplog: str, errors: List[str], fx, raw_dir) -> None:
+    """JPY v0.4 (round 4): daily file with its three columns (予想/速報/確報) archived by business day, operations by operation (ope XLSX),
+    monthly projection (juqp), BoJ holdings by issue (mei) + MoF auction XLS → net issuance by issue date. Shadow components only."""
+    from . import ops_jpy as J
+    from . import blocks_jpy_v04 as V4
+    from . import series as S
+    from .providers import _get as _pget
+    from .providers_jpy import _snapshot
+    import time as _time
+    from datetime import date, timedelta
+    import requests  # type: ignore
+    src = cfg["sources"]
+    today = date.today()
+    days = J.business_days((today - timedelta(days=3 * 365)).isoformat(), today.isoformat())
+    hx = os.path.join(ROOT, "fixtures", "jpy_hist")
+    base = src["boj_daily_cab"]["url_final"].split("jd/")[0]  # …/juq/d_release/
+    ope_base = base.replace("/juq/", "/ope/") + "ope/"
+    note: Dict[str, object] = {}
+
+    def _bin(url: str, timeout: int = 60) -> Optional[bytes]:
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (mesa-macro)"}, timeout=timeout)
+        if r.status_code == 404:
+            return None
+        if r.status_code != 200:
+            raise ProviderError("HTTP %s for %s" % (r.status_code, url))
+        return r.content
+
+    # ── daily files, three columns ──
+    d_arch = os.path.join(hist_dir, "boj_daily_v04.csv")
+    recs: List[dict] = []
+    if fx:
+        for fn in ("jd20260909.xlsx", "jx20260910.xlsx", "jp20260911.xlsx"):
+            recs.append(J.parse_daily_file(open(os.path.join(hx, fn), "rb").read(), fn))
+        daily_recs = recs
+    else:
+        old = J.read_daily_archive(d_arch)
+        have_final = {r["date"] for r in old if r.get("version") == "final"}
+        back = 400 if a.backfill else 15
+        want = [d for d in J.business_days((today - timedelta(days=back)).isoformat(), (today - timedelta(days=1)).isoformat()) if d not in have_final]
+        n = 0
+        for d in want:
+            try:
+                blob = _bin("%sjd/%s/jd%s.xlsx" % (base, d[:4], d.replace("-", "")))
+                if blob:
+                    recs.append(J.parse_daily_file(blob, "jd%s.xlsx" % d.replace("-", "")))
+                    n += 1
+            except Exception as e:  # noqa
+                errors.append("boj_jd_v04[%s]: %s" % (d, str(e)[:60]))
+            _time.sleep(1.0)
+        for kind, d in (("jx", today.isoformat()), ("jp", (today + timedelta(days=1)).isoformat()), ("jp", today.isoformat())):
+            try:
+                blob = _bin("%s%s/%s%s.xlsx" % (base, kind, kind, d.replace("-", "")))
+                if blob:
+                    recs.append(J.parse_daily_file(blob, "%s%s.xlsx" % (kind, d.replace("-", ""))))
+                    _snapshot(raw_dir, "%s%s.xlsx" % (kind, d.replace("-", "")), blob)
+            except Exception as e:  # noqa
+                errors.append("boj_%s_v04[%s]: %s" % (kind, d, str(e)[:60]))
+            _time.sleep(1.0)
+        daily_recs = J.merge_daily_archive(d_arch, recs) if recs else old
+        note["daily_new"] = n
+    daily = J.daily_records_to_wide(daily_recs)
+    # the v0.3 daily archive (final column only) fills the history behind the three-column archive
+    for k in ("treasury", "cab", "jgb_purch", "ops_ex_lsp", "banknotes", "net_change", "reserve_bal", "excess"):
+        have = {d for d, _ in daily["final"].get(k, [])}
+        extra = [(d, v) for d, v in S.clean(data.get(k, [])) if d not in have]
+        if extra:
+            daily["final"][k] = S.clean(daily["final"].get(k, []) + extra)
+    note["daily_files"] = len({r["date"] for r in daily_recs})
+    # ── operations by operation ──
+    o_arch = os.path.join(hist_dir, "boj_ops_v04.csv")
+    ops: List[dict] = []
+    if fx:
+        for fn in ("ope20260909.xlsx", "ope20260910.xlsx"):
+            ops += J.parse_ope_file(open(os.path.join(hx, fn), "rb").read(), fn)
+    else:
+        old_ops = _read_csv_rows(o_arch)
+        have = {r["date"] for r in old_ops}
+        back = 400 if a.backfill else 15
+        want = [d for d in J.business_days((today - timedelta(days=back)).isoformat(), today.isoformat()) if d not in have]
+        new_ops: List[dict] = []
+        for d in want:
+            try:
+                blob = _bin("%s%s/ope%s.xlsx" % (ope_base, d[:4], d.replace("-", "")))
+                if blob:
+                    new_ops += J.parse_ope_file(blob, "ope%s.xlsx" % d.replace("-", ""))
+            except Exception as e:  # noqa
+                errors.append("boj_ope[%s]: %s" % (d, str(e)[:60]))
+            _time.sleep(1.0)
+        ops = _merge_csv_rows(o_arch, old_ops, new_ops, ["date", "kind", "instrument_jp", "instrument_en", "offered", "start", "end", "rate", "yield", "bids", "allotted"],
+                              key=lambda r: (r["date"], r["instrument_jp"], str(r.get("start")), str(r.get("allotted"))))
+        for r in ops:
+            for k in ("offered", "rate", "yield", "bids", "allotted"):
+                r[k] = float(r[k]) if r.get(k) not in (None, "") else None
+        note["ops_new"] = len(new_ops)
+    opsf = J.ops_flows(ops, {"jgb_purch": S.clean(J.best_realized(daily["final"].get("jgb_purch", []), daily["prov"].get("jgb_purch", [])))}, days)
+    recon = opsf.get("jgb_purch_face_minus_cash", [])
+    last_ops = max((r["date"] for r in ops), default=None)
+    ops_note = {"last_date": last_ops, "lag_days": (today - date.fromisoformat(last_ops)).days if last_ops else None, "ope_files": len({r["date"] for r in ops}), "daily_files": note["daily_files"]}
+    # ── monthly projection ──
+    juqp = None
+    try:
+        if fx:
+            juqp = J.parse_juqp(open(os.path.join(hx, "juqp2609.xlsx"), "rb").read())
+        else:
+            for m in (today, (today.replace(day=1) - timedelta(days=1))):
+                blob = _bin("https://www.boj.or.jp/en/statistics/boj/fm/juqp/juqp%s.xlsx" % m.strftime("%y%m"))
+                if blob:
+                    juqp = J.parse_juqp(blob)
+                    _snapshot(raw_dir, "juqp%s.xlsx" % m.strftime("%y%m"), blob)
+                    break
+                _time.sleep(1.0)
+    except Exception as e:  # noqa
+        errors.append("boj_juqp: %s" % str(e)[:80])
+    # ── mei + MoF XLS → net issuance ──
+    ni: Dict[str, Series] = {}
+    mei_note: Dict[str, object] = {}
+    try:
+        if fx:
+            mei = J.parse_mei(open(os.path.join(hx, "mei260831.xlsx"), "rb").read(), "mei260831.xlsx")
+            jgb = J.parse_mof_jgb_xls(os.path.join(hx, "mof_auction_results_jgbs.xls"))
+            tb = J.parse_mof_tbill_xls(os.path.join(hx, "mof_auction_results_tbills.xls"))
+        else:
+            idx = _pget(src["boj_jgb_holdings_xlsx"]["index"], as_json=False, timeout=60)
+            import re as _re
+            m = _re.search(r'href="([^"]*mei\d{6}\.xlsx)"', idx)
+            if not m:
+                raise ProviderError("mei link not found on the index page")
+            u = m.group(1) if m.group(1).startswith("http") else "https://www.boj.or.jp" + m.group(1)
+            blob = _bin(u)
+            _snapshot(raw_dir, u.rsplit("/", 1)[-1], blob)
+            with open(os.path.join(hist_dir, "mei_latest.xlsx"), "wb") as f:
+                f.write(blob)
+            mei = J.parse_mei(blob, u.rsplit("/", 1)[-1])
+            _time.sleep(1.0)
+            jb = _bin(src["mof_auction_results"]["url_jgb"], timeout=120)
+            _time.sleep(1.0)
+            tbb = _bin(src["mof_auction_results"]["url_tbills"], timeout=120)
+            for nm, b in (("mof_auction_results_jgbs.xls", jb), ("mof_auction_results_tbills.xls", tbb)):
+                if b:
+                    with open(os.path.join(hist_dir, nm), "wb") as f:
+                        f.write(b)
+            jgb = J.parse_mof_jgb_xls(jb if jb else os.path.join(hx, "mof_auction_results_jgbs.xls"))
+            tb = J.parse_mof_tbill_xls(tbb if tbb else os.path.join(hx, "mof_auction_results_tbills.xls"))
+        imap = J.issue_map(jgb)
+        by_mat = J.mei_to_maturity(mei, imap)
+        unm = by_mat.pop("_unmapped", [])
+        cl = J.coupon_lines(imap, mei)
+        # the MoF 'past auction results' XLS lags the calendar by weeks: flows are cut at the last ISSUE date in the file (never
+        # maturities without the issuance that refinances them); the calendars ahead stay complete
+        mof_cut = max([r["issue"] for r in jgb + tb if r.get("issue")] or [today.isoformat()])
+        mof_cut = min(mof_cut, today.isoformat())
+        ni = J.net_issuance(jgb, tb, by_mat, cl, [d for d in days if d <= mof_cut], today=mof_cut)
+        for k in ("jgb_redemptions_net_ahead", "jgb_redemptions_gross_ahead", "tbill_maturities_ahead", "jgb_coupons_net_ahead", "jgb_coupons_gross_ahead"):
+            full = J.net_issuance(jgb, tb, by_mat, cl, [], today=today.isoformat()).get(k, [])
+            ni[k] = [(d, v) for d, v in full if d > today.isoformat()]
+        mei_note = {"asof": mei.get("asof"), "published": mei.get("published"), "total": round(sum(r["amount"] for r in mei.get("rows", [])), 1),
+                    "unmapped": [list(x) for x in unm][:10], "jgb_records": len(jgb), "tbill_records": len(tb), "mof_cut": mof_cut,
+                    "mof_lag_days": (today - date.fromisoformat(mof_cut)).days}
+    except Exception as e:  # noqa
+        errors.append("jpy_net_issuance: %s" % e)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "jpy_net_issuance", "error": str(e)})
+    cab = S.clean(J.best_realized(daily["final"].get("cab", []), daily["prov"].get("cab", [])))
+    cab_level = cab[-1][1] if cab else (S.clean(data.get("cab", []))[-1][1] if data.get("cab") else None)
+    if blocks.get("fiscal"):
+        V4.enrich_fiscal(blocks["fiscal"], cfg, daily, ni, juqp, cab_level, mei_note)
+    if blocks.get("central_bank"):
+        V4.enrich_central_bank(blocks["central_bank"], cfg, daily, opsf, recon, cab_level, ops_note)
+    for k, ser in (("treasury_realized_daily", S.clean(J.best_realized(daily["final"].get("treasury", []), daily["prov"].get("treasury", [])))),
+                   ("treasury_projection_daily", S.clean(daily["proj"].get("treasury", []))), ("net_issuance_private_daily", ni.get("net_issuance_private_daily", [])),
+                   ("ops_net_daily", opsf.get("ops_net_daily", []))):
+        if ser:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
+    E.log_event(oplog, "JPY_V04", "system", dict(note, ops=ops_note, mei=mei_note, juqp=juqp.get("month") if juqp else None,
+                                                  net_issuance_last=ni.get("net_issuance_private_daily", [])[-1] if ni.get("net_issuance_private_daily") else None))
+
+
+def _read_csv_rows(path: str) -> List[dict]:
+    if not os.path.exists(path):
+        return []
+    with open(path, encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def _merge_csv_rows(path: str, old: List[dict], new: List[dict], cols: List[str], key) -> List[dict]:
+    seen = {}
+    for r in old + new:
+        seen[key(r)] = r
+    rows = sorted(seen.values(), key=lambda r: (str(r.get("date")), str(r.get(cols[1]))))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w.writeheader()
+        for r in rows:
+            w.writerow({c: ("" if r.get(c) is None else r.get(c)) for c in cols})
+    return rows
 
 def fetch_chf(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
     """CHF lanes (SNB data portal, no auth, one request per cube ≥ 1 s apart):
@@ -1521,8 +1837,39 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
             recs += O.read_records(it_arch)
     # ── EU ──
     eu_arch = os.path.join(hist_dir, "eu_auctions.csv")
+    # round 3: the Commission's Qlik app (all operations since Jun-2020 with Date of settlement + NCB settlement) is the primary EU
+    # source; the auction news pages stay as a contrast archive only. Seed fixture from 2026-09-10 when the engine is unreachable.
+    from . import ops_eu_qlik as Q
+    from . import ops_esm as ESM
+    eu_q_recs: List[dict] = []
+    eu_out: List[dict] = []
+    q_tx_path = os.path.join(hist_dir, "eu_qlik_transactions.csv")
+    q_out_path = os.path.join(hist_dir, "eu_qlik_outstanding.csv")
+    seed_tx, seed_out = os.path.join(hx, "eu_transactions_qlik_2026-09-10.csv"), os.path.join(hx, "eu_outstanding_qlik_2026-09-10.csv")
     if fx:
-        recs += O.eu_records_from_tables(_json.load(open(os.path.join(hx, "eu_auction_result_tables.json"), encoding="utf-8")))
+        eu_q_recs = Q.records_from_fixture_csv(seed_tx)
+        eu_out = Q.outstanding_from_fixture_csv(seed_out)
+        notes["EU_qlik"] = "fixture seed"
+    else:
+        try:
+            rows_tx = Q.fetch_qlik_table(Q.TX_FIELDS_EXTRA)
+            rows_out = Q.fetch_qlik_table(Q.OUT_FIELDS)
+            with open(q_tx_path, "w", encoding="utf-8") as f:
+                f.write(Q.rows_to_csv(Q.TX_FIELDS_EXTRA, rows_tx))
+            with open(q_out_path, "w", encoding="utf-8") as f:
+                f.write(Q.rows_to_csv(Q.OUT_FIELDS, rows_out))
+            eu_q_recs = Q.transactions_from_rows(Q.TX_FIELDS_EXTRA, rows_tx)
+            eu_out = Q.outstanding_from_rows(Q.OUT_FIELDS, rows_out)
+            notes["EU_qlik"] = "engine: %d rows / %d outstanding" % (len(rows_tx), len(rows_out))
+        except Exception as e:  # noqa
+            errors.append("eu_qlik: %s (using the last good copy)" % str(e)[:160])
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "eu_qlik", "error": str(e)[:300]})
+            eu_q_recs = Q.records_from_fixture_csv(q_tx_path if os.path.exists(q_tx_path) else seed_tx)
+            eu_out = Q.outstanding_from_fixture_csv(q_out_path if os.path.exists(q_out_path) else seed_out)
+            notes["EU_qlik"] = "last good copy (%s)" % ("archive" if os.path.exists(q_tx_path) else "seed 2026-09-10")
+    if fx:
+        eu_news = O.eu_records_from_tables(_json.load(open(os.path.join(hx, "eu_auction_result_tables.json"), encoding="utf-8")))
+        recs += eu_q_recs if eu_q_recs else eu_news
     else:
         try:
             old = O.read_records(eu_arch)
@@ -1540,12 +1887,72 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
                     _time.sleep(0.8)
             new_recs = O.eu_records_from_tables(tables)
             all_eu = O.merge_records(eu_arch, new_recs) if new_recs else old
-            recs += all_eu
-            notes["EU"] = "%d new result pages, %d records" % (len(tables), len(all_eu))
+            if eu_q_recs:
+                recs += eu_q_recs  # Qlik is the source of record; the news archive is contrast only
+                qk = {(r["isin"], r["settlement"]) for r in eu_q_recs}
+                miss = [r for r in all_eu if (r["isin"], r["settlement"]) not in qk]
+                notes["EU"] = "qlik %d records; news archive %d (%d new pages; %d news records not in qlik)" % (len(eu_q_recs), len(all_eu), len(tables), len(miss))
+            else:
+                recs += all_eu
+                notes["EU"] = "news only: %d new result pages, %d records" % (len(tables), len(all_eu))
         except Exception as e:  # noqa
             errors.append("eu_v04: %s" % e)
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "eu_v04", "error": str(e)})
-            recs += O.read_records(eu_arch)
+            recs += eu_q_recs if eu_q_recs else O.read_records(eu_arch)
+    # ── ESM / EFSF (round 3): outstanding list (public CSV) + ESM bill auctions via the Bundesbank press PDFs (value date published) ──
+    esm_rows: List[dict] = []
+    esm_arch = os.path.join(hist_dir, "esm_bills.csv")
+    esm_fx = os.path.join(hx, "esm")
+    try:
+        if fx:
+            esm_rows = ESM.parse_esm_transactions_csv(open(os.path.join(esm_fx, "esm_transactions_outstanding_2026-09-10.csv"), encoding="utf-8").read())
+            ann = [ESM.parse_esm_announcement(_pdf_text(open(os.path.join(esm_fx, "esm_bill_announcement_2026-08-28.pdf"), "rb").read()))]
+            res = [ESM.parse_esm_result(_pdf_text(open(os.path.join(esm_fx, "esm_bill_result_2026-09-01.pdf"), "rb").read()))]
+            esm_recs = ESM.esm_bill_records(ann, res)
+        else:
+            try:
+                txt = _get(ESM.ESM_CSV_URL if hasattr(ESM, "ESM_CSV_URL") else "https://www.esm.europa.eu/export-transactions-list?_format=csv")
+                esm_rows = ESM.parse_esm_transactions_csv(txt)
+                with open(os.path.join(hist_dir, "esm_transactions_outstanding.csv"), "w", encoding="utf-8") as f:
+                    f.write(txt)
+            except Exception as e:  # noqa
+                errors.append("esm_csv: %s" % str(e)[:120])
+                p = os.path.join(hist_dir, "esm_transactions_outstanding.csv")
+                esm_rows = ESM.parse_esm_transactions_csv(open(p if os.path.exists(p) else os.path.join(esm_fx, "esm_transactions_outstanding_2026-09-10.csv"), encoding="utf-8").read())
+            old_esm = O.read_records(esm_arch)
+            seen_isin = {r["isin"] for r in old_esm}
+            pages = range(0, 113) if (a.backfill or not old_esm) else range(0, 2)
+            ann, res = [], []
+            for pg in pages:
+                try:
+                    items = ESM.bundesbank_list_links(_get(ESM.bundesbank_list_url(pg), timeout=60))
+                except Exception as e:  # noqa
+                    errors.append("bbk_esm_list(%d): %s" % (pg, str(e)[:80]))
+                    break
+                if not items:
+                    break
+                for it in items:
+                    if it["kind"] not in ("announcement", "result") or it["issuer"] != "ESM":
+                        continue
+                    try:
+                        txt = _pdf_text(_get(it["url"], binary=True, timeout=60))
+                        (ann if it["kind"] == "announcement" else res).append(ESM.parse_esm_announcement(txt) if it["kind"] == "announcement" else ESM.parse_esm_result(txt))
+                    except Exception as e:  # noqa
+                        errors.append("bbk_esm_pdf(%s): %s" % (it["date"], str(e)[:60]))
+                    _time.sleep(0.4)
+                if not a.backfill and old_esm and all((r.get("isin") in seen_isin) for r in res if r.get("isin")):
+                    break
+                _time.sleep(0.6)
+            new_esm = [r for r in ESM.esm_bill_records(ann, res) if r["isin"] not in seen_isin or a.backfill]
+            esm_recs = O.merge_records(esm_arch, new_esm) if new_esm else old_esm
+            notes["ESM"] = "%d bill records (%d new); outstanding list %d issues" % (len(esm_recs), len(new_esm), len(esm_rows))
+        recs += esm_recs
+    except Exception as e:  # noqa
+        errors.append("esm_v04: %s" % e)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "esm_v04", "error": str(e)})
+        recs += O.read_records(esm_arch) if not fx else []
+    eu_cal = Q.eu_calendar(eu_out) if eu_out else {}
+    esm_cal = ESM.esm_calendar(esm_rows) if esm_rows else {}
     # ── flows ──
     if not fx:
         recs = O.merge_records(arch, recs)
@@ -1570,11 +1977,12 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
             last_by[r["issuer"]] = max(last_by.get(r["issuer"], ""), r["settlement"])
     coverage = {iss: S.clean(sorted((d, round(sum(v) / len(v), 3)) for d, v in m.items())) for iss, m in cov_by.items()}
     V4.enrich_fiscal(blocks["fiscal"], cfg, fl, cal, de_ahead, ni_weekly, impulse, coverage, last_by, ex[-1][1] if ex else None)
+    V4.enrich_fiscal_eu_esm(blocks["fiscal"], cfg, eu_cal, esm_cal, notes)
     V4.enrich_central_bank(blocks["central_bank"], cfg)
     for k, ser in (("net_issuance_private_daily", fl["net_issuance_private_daily"]), ("net_issuance_private_weekly", ni_weekly), ("fiscal_impulse_v04_weekly", impulse)):
         if ser:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
-    E.log_event(oplog, "EUR_V04", "system", {"records": len(recs), "by_issuer": {iss: sum(1 for r in recs if r["issuer"] == iss) for iss in ("DE", "FR", "ES", "IT", "EU")},
+    E.log_event(oplog, "EUR_V04", "system", {"records": len(recs), "by_issuer": {iss: sum(1 for r in recs if r["issuer"] == iss) for iss in ("DE", "FR", "ES", "IT", "EU", "ESM")},
                                              "last_settlement": last_by, "de_lines": len(outstanding), "de_calendar": len(de_cal), "weeks": len(ni_weekly), "notes": notes})
 
 
