@@ -1,14 +1,14 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-10T08:22:16+00:00",
+ "generated_at": "2026-09-10T13:45:15+00:00",
  "as_of": "2026-09-09",
  "config_version": "0.2.3",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.247,
+ "weighted_score": 0.072,
  "block_scores": {
   "central_bank": 0.5,
-  "rates": 0.75,
+  "rates": 0.25,
   "fiscal": -0.95,
   "banking": 0.0
  },
@@ -82,7 +82,7 @@
    "score": -0.95,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-10",
+   "as_of": "2026-09-11",
    "detail": "flow -35900.0 (Z -1.2617) · 5d -45800.0 · 20d -85100.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.788",
    "raw_regime": "DRAIN",
    "cuts": {
@@ -101,10 +101,14 @@
     "effective_score": -0.95,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "recent": [
      [
       "2026-09-10",
+      -0.95
+     ],
+     [
+      "2026-09-11",
       -0.95
      ]
     ],
@@ -224,7 +228,7 @@
    "details": [
     {
      "condition": "rates.gc_minus_ioer_bps level >= WATCH",
-     "met": false
+     "met": null
     },
     {
      "condition": "central_bank.slf_daily >= p95",
@@ -232,7 +236,7 @@
     },
     {
      "condition": "rates.curve_20y_10y_bps level >= WATCH",
-     "met": false
+     "met": null
     }
    ]
   },
@@ -290,7 +294,7 @@
    "details": [
     {
      "condition": "rates.jgb_10y_5d_change_bps level >= WATCH",
-     "met": false
+     "met": null
     },
     {
      "condition": "central_bank.balance_sheet_phase == NIMBLE_SUPPORT",
@@ -298,7 +302,7 @@
     },
     {
      "condition": "rates.curve_30y_10y_bps level >= WATCH",
-     "met": false
+     "met": null
     }
    ]
   },
@@ -348,7 +352,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "daily_provisional",
   "backfill": false,
   "errors": []
  }

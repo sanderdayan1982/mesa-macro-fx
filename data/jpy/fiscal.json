@@ -3,13 +3,13 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.3",
- "generated_at": "2026-09-10T08:22:16+00:00",
- "as_of": "2026-09-10",
+ "generated_at": "2026-09-10T13:45:15+00:00",
+ "as_of": "2026-09-11",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
  "source_health": {
-  "status": "fresh",
-  "series_loaded": 17,
+  "status": "stale",
+  "series_loaded": 16,
   "series_expected": 17,
   "last_fetch_ok": true,
   "errors": [],
@@ -104,12 +104,12 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 2200.0,
-   "date": "2026-09-10",
-   "prev_value": -33600.0,
-   "prev_date": "2026-09-09",
-   "change_abs": 35800.0,
-   "change_pct": 106.5476,
+   "value": -10400.0,
+   "date": "2026-09-11",
+   "prev_value": 2200.0,
+   "prev_date": "2026-09-10",
+   "change_abs": -12600.0,
+   "change_pct": -572.7273,
    "zscore": null,
    "percentile": null,
    "window": null,
@@ -117,7 +117,8 @@
    "sparkline": [
     -5600.0,
     -33600.0,
-    2200.0
+    2200.0,
+    -10400.0
    ],
    "high_low": {
     "high": 2200.0,
@@ -125,7 +126,7 @@
     "low": -33600.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 0,
+   "age_days": -1,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "tomorrow's fiscal impulse — unique to JPY"
@@ -623,65 +624,14 @@
    "label": "JGB auction calendar — next coupon auctions (MoF monthly HTML)",
    "unit": "days",
    "frequency": "event",
-   "status": "fresh",
-   "value": 6,
-   "date": "2026-09-09",
-   "next": {
-    "date": "2026-09-15",
-    "issue": "20-year",
-    "tenor": "20y",
-    "result_href": null
-   },
-   "next_superlong": {
-    "date": "2026-09-15",
-    "issue": "20-year",
-    "tenor": "20y",
-    "result_href": null
-   },
-   "days_to_superlong": 6,
-   "upcoming": [
-    {
-     "date": "2026-09-15",
-     "tenor": "20y",
-     "issue": "20-year"
-    },
-    {
-     "date": "2026-09-29",
-     "tenor": "40y",
-     "issue": "40-year"
-    },
-    {
-     "date": "2026-09-30",
-     "tenor": "2y",
-     "issue": "2-year"
-    },
-    {
-     "date": "2026-10-06",
-     "tenor": "10y",
-     "issue": "10-year"
-    },
-    {
-     "date": "2026-10-08",
-     "tenor": "30y",
-     "issue": "30-year"
-    },
-    {
-     "date": "2026-10-14",
-     "tenor": "5y",
-     "issue": "5-year"
-    },
-    {
-     "date": "2026-10-20",
-     "tenor": "20y",
-     "issue": "20-year"
-    },
-    {
-     "date": "2026-10-29",
-     "tenor": "2y",
-     "issue": "2-year"
-    }
-   ],
-   "level": "SAFE",
+   "status": "unavailable",
+   "value": null,
+   "date": null,
+   "next": null,
+   "next_superlong": null,
+   "days_to_superlong": null,
+   "upcoming": [],
+   "level": "NO DATA",
    "note": "supply event: super-long auction within 3 days = WATCH (position for the tail / QT_STRESS read)"
   },
   "auction_results": {
@@ -1843,11 +1793,11 @@
    },
    {
     "metric": "auction_calendar",
-    "level": "SAFE",
-    "value": 6,
+    "level": "NO DATA",
+    "value": null,
     "threshold": null,
-    "status": "fresh",
-    "action_hint": "next super-long: 2026-09-15 20y"
+    "status": "unavailable",
+    "action_hint": "no super-long auction in the published calendar"
    }
   ]
  },
@@ -2678,193 +2628,159 @@
   },
   "auctions": [
    {
+    "date": "2026-01-06",
+    "tenor": "10y",
+    "btc": 3.304
+   },
+   {
+    "date": "2026-01-08",
+    "tenor": "30y",
+    "btc": 3.138
+   },
+   {
+    "date": "2026-01-20",
+    "tenor": "20y",
+    "btc": 3.192
+   },
+   {
+    "date": "2026-01-28",
+    "tenor": "40y",
+    "btc": 2.76
+   },
+   {
+    "date": "2026-02-03",
+    "tenor": "10y",
+    "btc": 3.02
+   },
+   {
+    "date": "2026-02-05",
+    "tenor": "30y",
+    "btc": 3.635
+   },
+   {
+    "date": "2026-02-19",
+    "tenor": "20y",
+    "btc": 3.077
+   },
+   {
+    "date": "2026-03-03",
+    "tenor": "10y",
+    "btc": 3.304
+   },
+   {
+    "date": "2026-03-05",
+    "tenor": "30y",
+    "btc": 3.656
+   },
+   {
+    "date": "2026-03-17",
+    "tenor": "20y",
+    "btc": 3.247
+   },
+   {
+    "date": "2026-03-24",
+    "tenor": "40y",
+    "btc": 2.541
+   },
+   {
     "date": "2026-04-02",
     "tenor": "10y",
-    "btc": 2.565,
-    "hy": 2.35
+    "btc": 2.565
    },
    {
     "date": "2026-04-07",
     "tenor": "30y",
-    "btc": 3.115,
-    "hy": 3.697
-   },
-   {
-    "date": "2026-04-09",
-    "tenor": "5y",
-    "btc": 3.585,
-    "hy": 1.826
+    "btc": 3.115
    },
    {
     "date": "2026-04-14",
     "tenor": "20y",
-    "btc": 4.82,
-    "hy": 3.327
-   },
-   {
-    "date": "2026-04-30",
-    "tenor": "2y",
-    "btc": 5.244,
-    "hy": 1.407
+    "btc": 4.82
    },
    {
     "date": "2026-05-12",
     "tenor": "10y",
-    "btc": 3.904,
-    "hy": 2.54
+    "btc": 3.904
    },
    {
     "date": "2026-05-14",
     "tenor": "30y",
-    "btc": 3.494,
-    "hy": 3.842
-   },
-   {
-    "date": "2026-05-18",
-    "tenor": "5y",
-    "btc": 3.216,
-    "hy": 2.024
+    "btc": 3.494
    },
    {
     "date": "2026-05-20",
     "tenor": "20y",
-    "btc": 4.011,
-    "hy": 3.711
+    "btc": 4.011
    },
    {
     "date": "2026-05-27",
     "tenor": "40y",
-    "btc": 2.702,
-    "hy": 3.84
-   },
-   {
-    "date": "2026-05-29",
-    "tenor": "2y",
-    "btc": 3.696,
-    "hy": 1.369
+    "btc": 2.702
    },
    {
     "date": "2026-06-02",
     "tenor": "10y",
-    "btc": 3.53,
-    "hy": 2.649
+    "btc": 3.53
    },
    {
     "date": "2026-06-10",
     "tenor": "30y",
-    "btc": 2.936,
-    "hy": 3.86
-   },
-   {
-    "date": "2026-06-23",
-    "tenor": "5y",
-    "btc": 3.112,
-    "hy": 1.905
+    "btc": 2.936
    },
    {
     "date": "2026-06-25",
     "tenor": "20y",
-    "btc": 2.967,
-    "hy": 3.542
-   },
-   {
-    "date": "2026-06-30",
-    "tenor": "2y",
-    "btc": 4.818,
-    "hy": 1.407
+    "btc": 2.967
    },
    {
     "date": "2026-07-02",
     "tenor": "10y",
-    "btc": 3.13,
-    "hy": 2.729
+    "btc": 3.13
    },
    {
     "date": "2026-07-07",
     "tenor": "30y",
-    "btc": 4.55,
-    "hy": 3.993
-   },
-   {
-    "date": "2026-07-09",
-    "tenor": "5y",
-    "btc": 3.433,
-    "hy": 2.02
+    "btc": 4.55
    },
    {
     "date": "2026-07-14",
     "tenor": "20y",
-    "btc": 4.522,
-    "hy": 3.626
+    "btc": 4.522
    },
    {
     "date": "2026-07-22",
     "tenor": "40y",
-    "btc": 2.824,
-    "hy": 3.865
-   },
-   {
-    "date": "2026-07-30",
-    "tenor": "2y",
-    "btc": 3.626,
-    "hy": 1.483
+    "btc": 2.824
    },
    {
     "date": "2026-08-04",
     "tenor": "10y",
     "btc": 2.558,
-    "hy": 2.9,
     "tail_bp": 6.0
    },
    {
     "date": "2026-08-06",
     "tenor": "30y",
     "btc": 3.864,
-    "hy": 3.952,
     "tail_bp": 1.5
-   },
-   {
-    "date": "2026-08-18",
-    "tenor": "5y",
-    "btc": 4.152,
-    "hy": 2.168,
-    "avg_yield": 2.163,
-    "tail_bp": 0.5
    },
    {
     "date": "2026-08-20",
     "tenor": "20y",
     "btc": 3.982,
-    "hy": 3.713,
     "tail_bp": 1.5
-   },
-   {
-    "date": "2026-08-28",
-    "tenor": "2y",
-    "btc": 2.966,
-    "hy": 1.725
    },
    {
     "date": "2026-09-01",
     "tenor": "10y",
     "btc": 3.286,
-    "hy": 3.011,
     "tail_bp": 1.6
    },
    {
     "date": "2026-09-03",
     "tenor": "30y",
     "btc": 3.788,
-    "hy": 4.1,
     "tail_bp": 2.1
-   },
-   {
-    "date": "2026-09-08",
-    "tenor": "5y",
-    "btc": 3.422,
-    "hy": 2.248,
-    "avg_yield": 2.239,
-    "tail_bp": 0.9
    }
   ],
   "signal_log": [
@@ -2917,6 +2833,11 @@
     "date": "2026-09-08",
     "label": "NEUTRAL",
     "score": -0.2
+   },
+   {
+    "date": "2026-09-09",
+    "label": "NEUTRAL",
+    "score": -0.95
    },
    {
     "date": "2026-09-09",
