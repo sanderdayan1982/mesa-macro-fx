@@ -44,27 +44,32 @@ class QlikError(RuntimeError):
 
 
 # ═══════════════════════ Qlik Engine JSON-RPC over websocket ═══════════════════════
-def _session(origin: str, vp_prefix: str, timeout: int) -> Tuple[str, str]:
-    """Qlik Sense virtual proxy handshake as the mashup does it (observed 2026-09-10 in the browser):
-    GET {vp_prefix}qps/csrftoken?xrfkey=<16 chars> with header X-Qlik-Xrfkey → 204 with response header `qlik-csrf-token`
-    (+ the session cookie X-Qlik-Session-*). Returns (cookie header value, csrf token)."""
+def _session(origin: str, vp_prefix: str, timeout: int, mashup_url: str = "") -> Tuple[str, str]:
+    """Qlik Sense virtual proxy handshake as the mashup does it (observed 2026-09-10 in the browser): (1) GET the mashup page under the
+    virtual proxy → the proxy sets the session cookie (X-Qlik-Session-*); (2) GET {vp_prefix}qps/csrftoken?xrfkey=<16 chars> with header
+    X-Qlik-Xrfkey and the cookie → 204 with response header `qlik-csrf-token` (403 without the cookie). Returns (Cookie header, token)."""
     import urllib.request
+    import http.cookiejar
     import random
     import string
+    jar = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    base_hdr = {"User-Agent": UA, "Accept": "*/*", "Accept-Language": "en-GB,en;q=0.9", "Referer": mashup_url or origin + vp_prefix}
+    if mashup_url:
+        try:
+            with opener.open(urllib.request.Request(mashup_url, headers=dict(base_hdr, Accept="text/html,*/*")), timeout=timeout) as resp:
+                resp.read(65536)
+        except Exception as e:  # noqa: BLE001
+            raise QlikError("mashup GET failed: %s" % e)
     xrf = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(16))
-    req = urllib.request.Request(origin + vp_prefix + "qps/csrftoken?xrfkey=" + xrf, headers={"User-Agent": UA, "X-Qlik-Xrfkey": xrf, "Accept": "*/*"})
+    req = urllib.request.Request(origin + vp_prefix + "qps/csrftoken?xrfkey=" + xrf, headers=dict(base_hdr, **{"X-Qlik-Xrfkey": xrf, "Origin": origin}))
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            hdrs = resp.headers.get_all("Set-Cookie") or []
+        with opener.open(req, timeout=timeout) as resp:
             token = resp.headers.get("qlik-csrf-token") or ""
     except Exception as e:  # noqa: BLE001
-        raise QlikError("csrftoken GET failed: %s" % e)
-    parts = []
-    for h in hdrs:
-        kv = h.split(";", 1)[0].strip()
-        if "=" in kv:
-            parts.append(kv)
-    return "; ".join(parts), token
+        raise QlikError("csrftoken GET failed: %s (cookies after mashup GET: %s)" % (e, ",".join(c.name for c in jar) or "none"))
+    cookie = "; ".join("%s=%s" % (c.name, c.value) for c in jar)
+    return cookie, token
 
 
 class _Rpc:
@@ -113,7 +118,7 @@ def fetch_qlik_table(fields: List[str], app_id: str = APP_ID, host: str = HOST, 
     n = len(fields)
     origin = "https://" + host
     vp = prefix + "public/"  # the mashup runs on the 'public' virtual proxy: wss://host/<prefix>public/app/<id>/identity/<x>?reloadUri=…&qlik-csrf-token=…
-    cookies, token = _session(origin, vp, timeout)
+    cookies, token = _session(origin, vp, timeout, mashup_url=origin + prefix + mashup_path)
     headers = ["Origin: " + origin, "User-Agent: " + UA]
     if cookies:
         headers.append("Cookie: " + cookies)
