@@ -1,6 +1,6 @@
 {
  "$schema": "../schema/block.schema.json",
- "config_version": "0.2.1",
+ "config_version": "0.4.0",
  "currency": "NZD",
  "name": "NZD Command Center — Reserve Bank of New Zealand / New Zealand Debt Management liquidity desk",
  "jurisdiction": "New Zealand",
@@ -26,7 +26,8 @@
    "composite score 0–100",
    "static seed data",
    "60-second refresh (no source publishes intraday)"
-  ]
+  ],
+  "v0.4": "2026-09-10: tenders by settlement, bond calendar, OMO per operation, D10/OIA reconciliations, ECP; LSAP sales to NZDM re-read as Crown↔RBNZ (no reserve effect); shadow components only — CAMBIOS N1–N6"
  },
  "sources": {
   "rbnz_statistics": {
@@ -236,6 +237,19 @@
    "url": "https://www.nzfbf.co.nz/benchmarks/bkbm",
    "note": "BKBM 1/3/6-month set in a two-minute window at 10:20 NZT (2/4/5 m interpolated); operating rules Jan-2026; public/delayed data feed NOT verified (nzfma.org 'Free to Air' to inspect) — Phase 3",
    "verified": "2026-09-08 (page read)"
+  },
+  "oia_csa_daily": {
+   "url": "https://www.treasury.govt.nz/sites/default/files/2026-02/oia-20250819-overdraft-facility-csa.xlsx",
+   "publisher": "NZ Treasury, OIA-20250819 (Information on the Use of the Overdraft Facility in Respect of the CSA)",
+   "content": "Crown Settlement Account balance, DAILY, 1997-11-10 → 2025-10-31 (7 949 rows; sheet UptoOctober25; NZ$)",
+   "verified": "2026-09-10",
+   "use": "replay and validation of the daily residual proxy; fetched once into history/nzd/csa_daily_oia.csv; the Treasury does not update the release"
+  },
+  "nzdm": {},
+  "nzdm_v04": {
+   "ecp_on_issue": "ECP-onissue-<month>.xlsx on the data page (monthly, since 2020-04; verified 2026-09-10)",
+   "lsap_repurchase": "Repurchase-history-<date>.xlsx sheet 'LSAP Repurchase' (Deal Date, Settlement Date, volume; NZ$415m/month, T+2) — Crown ↔ RBNZ, no settlement-cash effect; context",
+   "settlement_convention": "bills T+1 business day, bonds T+3 (verified on the tender listing 2026-09-08/09-09 and 2026-09-03/09-08); the listing's settlement date is used when present"
   }
  },
  "blocks": {
@@ -605,6 +619,14 @@
      "drain_below": "p20",
      "min_n": 120
     }
+   },
+   "derived_v04": {
+    "omo_settled_daily / omo_matured_daily / omo_net_daily / omo_net_5d": "D3 per operation (date held = settlement, maturity 7/28 d); cut at the last published operation",
+    "omo_maturities_next_4w": "calendar of scheduled drains",
+    "proxy_vs_d10_error / _pct": "Σ monthly residual_flow_daily − D10 government cash influence (N3 quality control)",
+    "csa_daily_oia": "OIA daily CSA balance (historical)",
+    "proxy_vs_csa_error": "Σ monthly residual − (−ΔCSA) over the overlap 2024-01 → 2025-10 (validation)",
+    "components_v04": "shadow: omo_net_5d_pct + v0.3 settlement_cash_wow / settlement_cash_20d"
    }
   },
   "fiscal": {
@@ -894,6 +916,16 @@
      "stress_below": 0.5,
      "note": "Fase 2 correction: NZDM under-allocates the 1-year series routinely (e.g. 1886: 30/100 on the Nov line, 0/50 on the Aug-2027 line) → 0.75 WATCH / 0.50 STRESS on the volume-weighted ratio"
     }
+   },
+   "derived_v04": {
+    "tender_settled": "NZDM tenders by settlement (−)",
+    "bill_matured": "bills by maturity (+)",
+    "coupons_market_paid": "bonds on issue × coupon/2 × market holdings on coupon dates (last 60 d)",
+    "tender_coverage": "mean coverage per tender day",
+    "net_issuance_private_daily / _5d": "− tenders + bill maturities + market coupons",
+    "tender_settlements_next_4w / bill_maturities_next_4w / coupons_market_next_4w / bond_redemptions_market_next_12m": "calendars",
+    "ecp_on_issue": "NZDM monthly (context)",
+    "components_v04": "shadow: net_issuance_5d_pct, residual_5d_pct (% of settlement cash); the D10 monthly band stays live until the replay"
    }
   },
   "banking": {

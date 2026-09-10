@@ -566,7 +566,12 @@ class NzdmProvider:
                     out["bonds_on_issue"] = h
                 if re.search(r"TBills-onissue", h, re.I):
                     out["tbills_on_issue"] = h
+                if re.search(r"ECP-onissue", h, re.I):
+                    out["ecp"] = h
         return out
+
+    def data_links_all(self) -> Dict[str, str]:
+        return self.data_links()
 
     def history(self, kind: str, since: str = "2024-01-01", links: Optional[Dict[str, str]] = None) -> List[dict]:
         """rows [{tender_date, maturity, coupon?, tender_no, offered, bids_n, success_n, bid, accepted, coverage, low_acc, high_acc, wavg}] newest first in file → sorted ascending"""

@@ -293,7 +293,84 @@ def fetch_gbp(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         blocks["banking"] = BG.build_banking(cfg, bk_raw, blocks.get("rates"), prev.get("banking"))
         for i in ids:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, bk_raw.get(i, []))
+    # ── v0.4 · operation-level sources (daily + weekly lanes): BoE XLSX by operation, DMO D1A/D2.2D, APF, Exchequer residual ──
+    if "daily" in lanes or "weekly" in lanes:
+        _gbp_v04(cfg, a, blocks, hist_dir, oplog, errors)
     return blocks
+
+
+def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, errors: List[str]) -> None:
+    """GBP v0.4 (CAMBIOS G1–G5). Blocks enriched in place; live scores untouched."""
+    from .providers import BoeOpsProvider, DmoProvider
+    from . import ops_gbp as O
+    from . import blocks_gbp_v04 as V4
+    raw_dir = os.path.join(ROOT, "logs", "gbp", "raw") if not a.fixtures else None
+    boe, dmo = BoeOpsProvider(fixtures_dir=a.fixtures, raw_dir=raw_dir), DmoProvider(fixtures_dir=a.fixtures, raw_dir=raw_dir)
+    rows: Dict[str, List[dict]] = {}
+    import time as _t
+    for kind in ("str", "iltr", "ctrf", "apf_sales", "apf_profile"):
+        try:
+            rows[kind] = boe.fetch(kind)
+        except (ProviderError, Exception) as e:  # never block the lane
+            rows[kind] = []
+            errors.append("boe_ops[%s]: %s" % (kind, e))
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "boe_ops", "kind": kind, "error": str(e)})
+        if not a.fixtures:
+            _t.sleep(2.5)
+    for kind in ("d1a", "d22d"):
+        try:
+            rows[kind] = dmo.fetch(kind)
+        except (ProviderError, Exception) as e:
+            rows[kind] = []
+            errors.append("dmo[%s]: %s" % (kind, e))
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "dmo_xml", "kind": kind, "error": str(e)})
+    from datetime import date, timedelta
+    today = date.today().isoformat()
+    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    ops = O.repo_series(rows.get("str", []), rows.get("iltr", []), rows.get("ctrf", []), days)
+    apf = O.apf_series(rows.get("apf_sales", []), rows.get("apf_profile", []))
+    apf_name = O.apf_holdings_by_name(rows.get("apf_profile", []))
+    # D1A archive (append-only; gilt issuance = Δ amount in issue between snapshots)
+    d1a_path = os.path.join(hist_dir, "dmo_gilts_in_issue.csv")
+    arch = O.append_d1a_archive(d1a_path, rows.get("d1a", [])) if (rows.get("d1a") and not a.fixtures) else O.read_d1a_archive(d1a_path)
+    if a.fixtures and rows.get("d1a"):
+        arch = {r["date"]: {} for r in rows["d1a"][:1]}
+        for r in rows["d1a"]:
+            v = O._num(r.get("amount_in_issue_m"))
+            if v is not None:
+                arch[r["date"]][r["isin"]] = v
+    red_by_isin = {r["isin"]: r["redemption_date"] for r in rows.get("d1a", []) if r.get("isin")}
+    apf_by_isin = {r["isin"]: apf_name.get(O._norm_name(r.get("name", "")), 0.0) for r in rows.get("d1a", [])}
+    gi = O.issuance_from_archive(arch, red_by_isin, apf_by_isin, {r["isin"]: r.get("first_issue_date", "") for r in rows.get("d1a", []) if r.get("isin")})
+    cal = O.gilt_calendar(rows.get("d1a", []), apf_name)
+    tb = O.tbill_series(rows.get("d22d", []))
+    tb["tbill_issued"], tb["tbill_matured"] = O._dense(tb["tbill_issued"], days), O._dense(tb["tbill_matured"], days)  # true sessions for 5-day sums
+    # coupons paid in the last 60 days: estimated from the current snapshot (amounts barely change between coupon date and today)
+    cp_paid = O.coupons_paid_recent(rows.get("d1a", []), apf_name, 60)
+    iss = dict(gi)
+    iss.update(tb)
+    iss["coupons_private_paid"] = cp_paid
+    iss["net_issuance_private_daily"] = O.net_issuance_private(gi["gilt_issued_daily"], gi["gilt_redeemed_private"], tb["tbill_issued"], tb["tbill_matured"], cp_paid, days)
+    # Exchequer residual from the weekly history CSVs
+    def _h(code: str) -> Series:
+        p = os.path.join(hist_dir, "%s.csv" % code)
+        return clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"]) if os.path.exists(p) else []
+    resid = O.exchequer_residual_weekly({"reserves": _h("RPWB56A"), "str": _h("RPWB67A"), "ltr": _h("RPWB69A"), "apf": _h("RPWZ4TM"),
+                                         "tfsme": _h("RPWZOQ4"), "wm": _h("RPWB72A"), "notes": _h("RPWB55A")})
+    cb = blocks.get("central_bank")
+    reserves_w: Series = _h("RPWB56A")
+    if cb:
+        V4.enrich_central_bank(cb, cfg, ops, apf, resid)
+    if blocks.get("fiscal"):
+        V4.enrich_fiscal(blocks["fiscal"], cfg, iss, cal, resid, reserves_w)
+    for k in ("str_net_daily", "str_outstanding_ops", "iltr_net_daily", "iltr_outstanding_ops", "repo_net_daily"):
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ops.get(k, []))
+    append_history_csv(os.path.join(hist_dir, "apf_sales_daily.csv"), "apf_sales_daily", apf.get("apf_sales_daily", []))
+    for k in ("gilt_issued_daily", "gilt_redeemed_private", "tbill_issued", "tbill_matured", "net_issuance_private_daily"):
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, iss.get(k, []))
+    append_history_csv(os.path.join(hist_dir, "exchequer_residual_weekly.csv"), "exchequer_residual_weekly", resid.get("exchequer_residual_weekly", []))
+    E.log_event(oplog, "GBP_V04", "system", {"rows": {k: len(v) for k, v in rows.items()}, "d1a_snapshots": len(arch),
+                                             "residual_last": resid["exchequer_residual_weekly"][-1] if resid.get("exchequer_residual_weekly") else None})
 
 
 def fetch_aud(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
@@ -759,7 +836,70 @@ def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     blocks["rates"] = BN.build_rates(cfg, data, prev.get("rates"))
     blocks["fiscal"] = BN.build_fiscal(cfg, data, prev.get("fiscal"), blocks["central_bank"])
     blocks["banking"] = BN.build_banking(cfg, data, blocks.get("rates"), prev.get("banking"))
+    try:
+        _nzd_v04(cfg, a, blocks, data, d3_rows, hist_dir, oplog, errors, fx, N)
+    except Exception as e:  # noqa — never block the lane
+        errors.append("nzd_v04: %s" % e)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "nzd_v04", "error": str(e)})
     return blocks
+
+
+def _nzd_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, d3_rows, hist_dir: str, oplog: str, errors: List[str], fx, N) -> None:
+    """NZD v0.4 (CAMBIOS N1–N6): tenders by settlement, bond calendar, OMO per operation, D10 / OIA reconciliations, ECP."""
+    from . import ops_nzd as O
+    from . import blocks_nzd_v04 as V4
+    from . import series as S
+    from datetime import date, timedelta
+    today = date.today().isoformat()
+    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    tf = O.tender_flows(data.get("_tender_rows") or [], data.get("_upcoming_tenders") or [])
+    cal = O.bond_calendar(data.get("_bonds_on_issue") or [])
+    ni = O.net_issuance_private(tf["tender_settled"], tf["bill_matured"], cal["coupons_market_paid"], days)
+    tf["tender_settled"], tf["bill_matured"] = O._dense(tf["tender_settled"], days), O._dense(tf["bill_matured"], days)  # true sessions for 5-day sums
+    omo = O.omo_flows((d3_rows or {}).get("rr") or [], days)
+    # daily residual proxy recomputed on the full history (the block keeps only a window)
+    sc = S.clean(data.get("D12:settlement_cash", []))
+    omo_out = S.clean(data.get("D3:rr_omo_outstanding", []))
+    res = S.diff_series(sc, 1)
+    for comp in (S.diff_series(omo_out, 1), S.diff_series(S.clean(data.get("D12:fx_swaps", [])), 1), S.diff_series(S.clean(data.get("D12:overnight_reverse_repo", [])), 1)):
+        res = S.merge_series(res, comp, lambda x, y: round(x - y, 1))
+    res = S.clean(res)
+    gci = S.clean(data.get("D10:govt_cash_influence", []))
+    recon_d10 = O.reconcile_monthly(res, gci)
+    # OIA daily CSA: fetched once into history/nzd/csa_daily_oia.csv (the Treasury does not update the release)
+    oia_path = os.path.join(hist_dir, "csa_daily_oia.csv")
+    csa = O.read_csv_series(oia_path)
+    if fx:
+        csa = O.read_csv_series(os.path.join(fx, "csa_daily_oia.csv"))
+    elif not csa:
+        try:
+            from .providers_nzd import _http
+            csa = O.parse_oia_csa_xlsx(_http(O.OIA_CSA_URL, timeout=180, binary=True))
+            append_history_csv(oia_path, "csa_daily_oia", csa)
+        except Exception as e:  # noqa
+            errors.append("oia_csa: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "oia_csa", "error": str(e)})
+    recon_oia = O.reconcile_monthly(res, O.monthly_sum(O.csa_flow_from_balance(csa))) if csa else {}
+    # ECP on issue (monthly xlsx on the NZDM data page)
+    ecp: List = []
+    try:
+        if fx:
+            ecp = O.read_csv_series(os.path.join(fx, "nzdm_ecp_on_issue.csv"))
+        else:
+            links = N.data_links_all() if hasattr(N, "data_links_all") else {}
+            if links.get("ecp"):
+                ecp = O.parse_ecp_xlsx(N._get(links["ecp"], "nzdm_ecp.xlsx", binary=True))
+    except Exception as e:  # noqa
+        errors.append("nzdm_ecp: %s" % e)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "nzdm_ecp", "error": str(e)})
+    sc_level = sc[-1][1] if sc else 0.0
+    V4.enrich_central_bank(blocks["central_bank"], cfg, omo, recon_d10, recon_oia, csa)
+    V4.enrich_fiscal(blocks["fiscal"], cfg, tf, cal, ni, ecp, res, sc_level)
+    for k, ser in (("net_issuance_private_daily", ni), ("omo_net_daily", omo.get("omo_net_daily", [])), ("residual_flow_daily", res), ("ecp_on_issue", ecp)):
+        if ser:
+            append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
+    E.log_event(oplog, "NZD_V04", "system", {"tenders": len(data.get("_tender_rows") or []), "omo_ops": len((d3_rows or {}).get("rr") or []), "csa_days": len(csa),
+                                             "d10_recon_months": len(recon_d10.get("error", [])), "oia_recon_months": len(recon_oia.get("error", [])) if recon_oia else 0})
 
 
 def fetch_usd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
