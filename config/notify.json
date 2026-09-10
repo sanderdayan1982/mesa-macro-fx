@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "channel": "telegram",
+  "secrets": ["TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"],
+  "timezone_operator": "Africa/Lagos",
+  "digest": {
+    "enabled": true,
+    "hour_wat": 7,
+    "days": "Mon-Sat",
+    "content": ["quality_incidents", "per_currency_regimes_and_streaks", "F1_F5_per_currency", "jefe_ranking"]
+  },
+  "events": {
+    "regime_change_general": {"enabled": true, "note": "regime.json regimes.general.regime changes vs last notified"},
+    "regime_change_block": {"enabled": true, "note": "central_bank or fiscal confirmed regime changes vs last notified"},
+    "gate_withheld": {"enabled": true, "note": "daily_log gate pass -> fail (and recovery fail -> pass)"},
+    "block_degraded": {"enabled": true, "note": "a block's source_health leaves 'fresh' (stale/proxy/unavailable) or returns to fresh"},
+    "refresh_error": {"enabled": true, "note": "ingestion finished with source errors (heartbeat.errors non-empty), transition only"},
+    "jefe_ranking_change": {"enabled": true, "note": "new jefe Friday: own position changed, or top/bottom currency changed"},
+    "price_gate": {"enabled": true, "note": "FLOOR_FRICTION / LIQUIDITY_SCARCITY entered or left (covered by regime_change_general, listed for clarity)"}
+  },
+  "suppression": {
+    "transition_only": true,
+    "note": "an event fires once, on the transition; the same state on later refreshes is silent. No cooldown needed: state is persisted in data/<ccy>/notify_state.json"
+  },
+  "format": {
+    "parse_mode": "HTML",
+    "max_chars": 3900,
+    "language": "es",
+    "numbers": "only from agent.json / regime.json / jefe.json (no computation in the notifier)"
+  }
+}
