@@ -53,6 +53,8 @@ jobs:
           python -m ingest.run --ccy aud --lane ${{ steps.lane.outputs.lane }} $BF || echo "::warning::ingestion finished with source errors (see logs/aud/oplog.json) — last good JSON kept as stale"
       - name: Validate JSON against schema
         run: python -m ingest.validate --ccy aud
+      - name: v0.4 reconciliation checks
+        run: python -m ingest.tests_v04 --ccy aud || echo "::warning::v0.4 self-checks failed (see step log)"
       - name: Anti-invention gate (daily_log)
         run: python -m ingest.gate --ccy aud || echo "::warning::daily_log withheld by the anti-invention gate (see data/aud/agent.json)"
       - name: Commit data
