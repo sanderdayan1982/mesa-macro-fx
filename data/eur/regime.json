@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-09T23:52:23+00:00",
- "as_of": "2026-09-08",
- "config_version": "0.2.1",
+ "generated_at": "2026-09-10T11:40:36+00:00",
+ "as_of": "2026-09-09",
+ "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.349,
+ "weighted_score": 0.309,
  "block_scores": {
-  "central_bank": 0.28,
+  "central_bank": 0.18,
   "rates": 0.2,
   "fiscal": 0.18,
   "banking": 1.0
@@ -22,11 +22,11 @@
  "regimes": {
   "central_bank": {
    "regime": "INJECTION",
-   "score": 0.28,
+   "score": 0.18,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-08",
-   "detail": "excess liquidity 2149575.0 M (SAFE) · Δ5s 16764.0 (p91.04) · TOMO 28171.0 M (ROUTINE) · MLF 2.93676097 M · €STR−DFR -6.2 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-09-09",
+   "detail": "excess liquidity 2116818.0 M (SAFE) · Δ5s 11596.0 (p84.49) · TOMO 26546.0 M (ROUTINE) · MLF 36.5 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.02,
@@ -43,14 +43,18 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.28,
+    "effective_score": 0.23,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-08",
+    "as_of": "2026-09-09",
     "recent": [
      [
       "2026-09-08",
       0.28
+     ],
+     [
+      "2026-09-09",
+      0.18
      ]
     ],
     "pending_days": null
@@ -59,8 +63,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": 0.78,
-     "excess_20s_vs_stock": -0.09
+     "excess_wow_vs_stock": 0.55,
+     "excess_20s_vs_stock": -0.11
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -72,8 +76,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.28,
-    "score_flows_only": 0.28
+    "score_v02": 0.18,
+    "score_flows_only": 0.18
    }
   },
   "fiscal": {
@@ -134,8 +138,8 @@
   },
   "general": {
    "regime": "NEUTRAL",
-   "score": 0.25,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.25 shown for context",
+   "score": 0.18,
+   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.18 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -184,7 +188,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.2,
+  "spread_bps": -6.1,
   "friction_confirmed": false
  },
  "rules": {
@@ -222,7 +226,7 @@
    "name": "Scarcity building (€STR drifting to the DFR, MRO take-up rising)",
    "bias": "EUR-BULLISH (funding)",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "details": [
     {
@@ -235,7 +239,7 @@
     },
     {
      "condition": "central_bank.excess_liquidity_wow level >= WATCH",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -266,7 +270,7 @@
    "name": "Government cash drain",
    "bias": "RISK-OFF",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "details": [
     {
@@ -279,7 +283,7 @@
     },
     {
      "condition": "central_bank.excess_liquidity_wow level >= WATCH",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -287,8 +291,8 @@
    "id": "L5",
    "name": "Fiscal injection into excess liquidity",
    "bias": "RISK-ON",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 3,
    "details": [
     {
@@ -297,7 +301,7 @@
     },
     {
      "condition": "central_bank.excess_liquidity_wow level == SAFE",
-     "met": false
+     "met": true
     },
     {
      "condition": "banking.transmission_signal == GREEN",
@@ -309,6 +313,8 @@
  "heartbeat": {
   "lane": "all",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "tesoro_v04: HTTPSConnectionPool(host='www.tesoro.es', port=443): Max retries exceeded with url: /deuda-publica/subastas/resultados-subastas-anteriores?page=0 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1016)')))"
+  ]
  }
 }
