@@ -20,7 +20,45 @@ def check(cond, msg, fails):
         fails.append(msg)
 
 
+def main_gbp() -> int:
+    from . import ops_gbp as G
+    fails = []
+    fx = os.path.join(ROOT, "fixtures", "gbp")
+    rd = lambda n: G.rows_from_csv(open(os.path.join(fx, n), encoding="utf-8").read())
+    days = G.business_days("2025-01-01", "2026-09-10")
+    ops = G.repo_series(rd("boe_str_by_operation.csv"), rd("boe_iltr_by_operation.csv"), rd("boe_ctrf_by_operation.csv"), days)
+    # STR: the operation of 2026-08-27 (124 825) is the stock the Weekly Report shows on 2026-09-02 (RPWB67A = 124 825)
+    iadb = {r[0]: float(r[1]) for r in csv.reader(open(os.path.join(ROOT, "history", "gbp", "RPWB67A.csv"))) if r and r[0] != "date"}
+    st = dict(ops["str_outstanding_ops"])
+    if "2026-09-02" in iadb and "2026-09-02" in st:
+        check(abs(st["2026-09-02"] - iadb["2026-09-02"]) < 1.0, "STR stock from operations %.0f = IADB RPWB67A %.0f on 2026-09-02" % (st["2026-09-02"], iadb["2026-09-02"]), fails)
+    check(dict(ops["str_net_daily"]).get("2026-09-03") == 123656.0 - 124825.0, "STR net 2026-09-03 = new op − maturing op", fails)
+    check(all(d > "2026-09-03" for d, _ in ops["repo_maturities_ahead"]), "repo maturity calendar strictly after the last published operation", fails)
+    apf = G.apf_series(rd("boe_apf_gilt_sales.csv"), rd("boe_apf_maturity_profile.csv"))
+    check(abs(dict(apf["apf_sales_daily"]).get("2026-08-18", 0) - (-(380.712935 + 284.865799 + 59.337239))) < 0.01, "APF sales 2026-08-18 = −Σ proceeds (three gilts)", fails)
+    check(dict(apf["apf_redemptions_ahead"]).get("2026-10-22") == 5742.8, "APF redemption calendar 2026-10-22 = 5 742.8 (0 3/8% 2026)", fails)
+    check(G.coupon_from_name("0 3/8% Treasury Gilt 2026") == 0.375 and G.coupon_from_name("4¼% Treasury Stock 2032") == 4.25 and G.coupon_from_name("1 5/8% Treasury Gilt 2071") == 1.625, "coupon parsed from the gilt name", fails)
+    check(G.dividend_dates("22 Apr/Oct", "2026-09-10", "2027-09-10") == ["2026-10-22", "2027-04-22"], "dividend dates from '22 Apr/Oct'", fails)
+    d1a = rd("dmo_gilts_in_issue_D1A.csv")
+    prof = G.apf_holdings_by_name(rd("boe_apf_maturity_profile.csv"))
+    cal = G.gilt_calendar(d1a, prof)
+    red = dict(cal["gilt_redemptions_private_ahead"])
+    check(abs(red.get("2026-10-22", 0) - (33660.598 - 5742.8)) < 0.01, "private-held redemption of the 0 3/8% 2026 = amount in issue − APF nominal", fails)
+    tb = G.tbill_series(rd("dmo_tbill_tenders_D22D.csv"))
+    check(dict(tb["tbill_issued"]).get("2026-09-07") == 4500.0, "T-bills issued 2026-09-07 = 4 500 (1m+3m+6m tenders of 2026-09-04)", fails)
+    arch = {"2026-09-08": {"A": 100.0, "B": 50.0}, "2026-09-09": {"A": 103.0, "C": 7.0, "D": 9.0}}
+    gi = G.issuance_from_archive(arch, {"B": "2026-09-09"}, {"B": 20.0}, {"C": "2026-09-09", "D": "2020-01-01"})
+    check(dict(gi["gilt_issued_daily"]).get("2026-09-09") == 10.0 and dict(gi["gilt_redeemed_private"]).get("2026-09-09") == 30.0 and dict(gi["gilt_redeemed_apf"]).get("2026-09-09") == 20.0, "D1A archive: Δ issue + new gilt = issuance (old gilt missing before ≠ issuance); vanished gilt = redemption split private/APF", fails)
+    res = G.exchequer_residual_weekly({"reserves": [("w1", 100.0), ("w2", 110.0)], "str": [("w1", 10.0), ("w2", 12.0)], "ltr": [("w1", 5.0), ("w2", 5.0)], "apf": [("w1", 50.0), ("w2", 48.0)],
+                                       "tfsme": [("w1", 8.0), ("w2", 7.0)], "wm": [("w1", 0.0), ("w2", 0.0)], "notes": [("w1", 30.0), ("w2", 31.0)]})
+    check(dict(res["exchequer_residual_weekly"]).get("w2") == 10.0 - 2.0 - 0.0 + 2.0 + 1.0 + 1.0, "Exchequer residual identity (ΔR − ΔSTR − ΔLTR − ΔAPF − ΔTFSME − ΔW&M + ΔNotes)", fails)
+    print("%d failures" % len(fails))
+    return 1 if fails else 0
+
+
 def main() -> int:
+    if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "gbp":
+        return main_gbp()
     fails = []
     days = O.business_days("2025-01-01", "2026-09-10")
     tr = O.term_repo_series(rows("TERM_REPO_RESULTS"), days)

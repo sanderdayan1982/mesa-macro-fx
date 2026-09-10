@@ -293,7 +293,84 @@ def fetch_gbp(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         blocks["banking"] = BG.build_banking(cfg, bk_raw, blocks.get("rates"), prev.get("banking"))
         for i in ids:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, bk_raw.get(i, []))
+    # ── v0.4 · operation-level sources (daily + weekly lanes): BoE XLSX by operation, DMO D1A/D2.2D, APF, Exchequer residual ──
+    if "daily" in lanes or "weekly" in lanes:
+        _gbp_v04(cfg, a, blocks, hist_dir, oplog, errors)
     return blocks
+
+
+def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, errors: List[str]) -> None:
+    """GBP v0.4 (CAMBIOS G1–G5). Blocks enriched in place; live scores untouched."""
+    from .providers import BoeOpsProvider, DmoProvider
+    from . import ops_gbp as O
+    from . import blocks_gbp_v04 as V4
+    raw_dir = os.path.join(ROOT, "logs", "gbp", "raw") if not a.fixtures else None
+    boe, dmo = BoeOpsProvider(fixtures_dir=a.fixtures, raw_dir=raw_dir), DmoProvider(fixtures_dir=a.fixtures, raw_dir=raw_dir)
+    rows: Dict[str, List[dict]] = {}
+    import time as _t
+    for kind in ("str", "iltr", "ctrf", "apf_sales", "apf_profile"):
+        try:
+            rows[kind] = boe.fetch(kind)
+        except (ProviderError, Exception) as e:  # never block the lane
+            rows[kind] = []
+            errors.append("boe_ops[%s]: %s" % (kind, e))
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "boe_ops", "kind": kind, "error": str(e)})
+        if not a.fixtures:
+            _t.sleep(2.5)
+    for kind in ("d1a", "d22d"):
+        try:
+            rows[kind] = dmo.fetch(kind)
+        except (ProviderError, Exception) as e:
+            rows[kind] = []
+            errors.append("dmo[%s]: %s" % (kind, e))
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "dmo_xml", "kind": kind, "error": str(e)})
+    from datetime import date, timedelta
+    today = date.today().isoformat()
+    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    ops = O.repo_series(rows.get("str", []), rows.get("iltr", []), rows.get("ctrf", []), days)
+    apf = O.apf_series(rows.get("apf_sales", []), rows.get("apf_profile", []))
+    apf_name = O.apf_holdings_by_name(rows.get("apf_profile", []))
+    # D1A archive (append-only; gilt issuance = Δ amount in issue between snapshots)
+    d1a_path = os.path.join(hist_dir, "dmo_gilts_in_issue.csv")
+    arch = O.append_d1a_archive(d1a_path, rows.get("d1a", [])) if (rows.get("d1a") and not a.fixtures) else O.read_d1a_archive(d1a_path)
+    if a.fixtures and rows.get("d1a"):
+        arch = {r["date"]: {} for r in rows["d1a"][:1]}
+        for r in rows["d1a"]:
+            v = O._num(r.get("amount_in_issue_m"))
+            if v is not None:
+                arch[r["date"]][r["isin"]] = v
+    red_by_isin = {r["isin"]: r["redemption_date"] for r in rows.get("d1a", []) if r.get("isin")}
+    apf_by_isin = {r["isin"]: apf_name.get(O._norm_name(r.get("name", "")), 0.0) for r in rows.get("d1a", [])}
+    gi = O.issuance_from_archive(arch, red_by_isin, apf_by_isin, {r["isin"]: r.get("first_issue_date", "") for r in rows.get("d1a", []) if r.get("isin")})
+    cal = O.gilt_calendar(rows.get("d1a", []), apf_name)
+    tb = O.tbill_series(rows.get("d22d", []))
+    tb["tbill_issued"], tb["tbill_matured"] = O._dense(tb["tbill_issued"], days), O._dense(tb["tbill_matured"], days)  # true sessions for 5-day sums
+    # coupons paid in the last 60 days: estimated from the current snapshot (amounts barely change between coupon date and today)
+    cp_paid = O.coupons_paid_recent(rows.get("d1a", []), apf_name, 60)
+    iss = dict(gi)
+    iss.update(tb)
+    iss["coupons_private_paid"] = cp_paid
+    iss["net_issuance_private_daily"] = O.net_issuance_private(gi["gilt_issued_daily"], gi["gilt_redeemed_private"], tb["tbill_issued"], tb["tbill_matured"], cp_paid, days)
+    # Exchequer residual from the weekly history CSVs
+    def _h(code: str) -> Series:
+        p = os.path.join(hist_dir, "%s.csv" % code)
+        return clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"]) if os.path.exists(p) else []
+    resid = O.exchequer_residual_weekly({"reserves": _h("RPWB56A"), "str": _h("RPWB67A"), "ltr": _h("RPWB69A"), "apf": _h("RPWZ4TM"),
+                                         "tfsme": _h("RPWZOQ4"), "wm": _h("RPWB72A"), "notes": _h("RPWB55A")})
+    cb = blocks.get("central_bank")
+    reserves_w: Series = _h("RPWB56A")
+    if cb:
+        V4.enrich_central_bank(cb, cfg, ops, apf, resid)
+    if blocks.get("fiscal"):
+        V4.enrich_fiscal(blocks["fiscal"], cfg, iss, cal, resid, reserves_w)
+    for k in ("str_net_daily", "str_outstanding_ops", "iltr_net_daily", "iltr_outstanding_ops", "repo_net_daily"):
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ops.get(k, []))
+    append_history_csv(os.path.join(hist_dir, "apf_sales_daily.csv"), "apf_sales_daily", apf.get("apf_sales_daily", []))
+    for k in ("gilt_issued_daily", "gilt_redeemed_private", "tbill_issued", "tbill_matured", "net_issuance_private_daily"):
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, iss.get(k, []))
+    append_history_csv(os.path.join(hist_dir, "exchequer_residual_weekly.csv"), "exchequer_residual_weekly", resid.get("exchequer_residual_weekly", []))
+    E.log_event(oplog, "GBP_V04", "system", {"rows": {k: len(v) for k, v in rows.items()}, "d1a_snapshots": len(arch),
+                                             "residual_last": resid["exchequer_residual_weekly"][-1] if resid.get("exchequer_residual_weekly") else None})
 
 
 def fetch_aud(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:

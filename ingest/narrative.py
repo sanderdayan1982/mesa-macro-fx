@@ -63,8 +63,8 @@ SPEC: Dict[str, dict] = {
         "ops": [("central_bank", "series", "str_lending", "STR", "stock"), ("central_bank", "series", "ltr_lending", "ILTR", "stock")],
         "govt": None,
         "fiscal": {"week": None, "month": ("fiscal", "derived", "net_spending", "mes"), "q13": ("fiscal", "derived", "fiscal_flow_3m_cum", "3 meses"), "label": "gasto neto del gobierno central (CGNCR)", "monthly_only": True},
-        "issuance": {"gross": None, "redemptions": None, "freq": "none"},
-        "auctions": [],
+        "issuance": {"gross": ("fiscal", "derived", "tbill_issued"), "redemptions": ("fiscal", "derived", "tbill_matured"), "freq": "daily"},
+        "auctions": [("fiscal", "derived", "tbill_cover", "tender de letras: cobertura"), ("central_bank", "derived", "iltr_cover", "ILTR: cobertura")],
         "spread": ("rates", "derived", "overnight_minus_policy_bps", "SONIA − Bank Rate"), "friction": ("rates", "derived", "overnight_minus_policy_bps", "friction_confirmed"),
     },
     "jpy": {

@@ -1,6 +1,6 @@
 {
  "$schema": "../schema/config.schema.json",
- "config_version": "0.2.2",
+ "config_version": "0.4.0",
  "currency": "GBP",
  "name": "Pound Sterling",
  "jurisdiction": "United Kingdom",
@@ -42,7 +42,8 @@
    ],
    "perplexity": "returned a summary, not a review — to be re-run",
    "verdict": "4/4 VALIDADO CON CHANGES; applied in v0.2 (see TRIANGULACION_GBP_matriz.md)"
-  }
+  },
+  "v0.4": "2026-09-10: BoE operations by operation, DMO D1A/D2.2D, APF sales and redemption calendar, Exchequer residual; shadow components only — CAMBIOS_V04_PENDIENTES.md G1–G5, VERIFICACIONES_V04.md"
  },
  "sources": {
   "boe_iadb": {
@@ -145,6 +146,24 @@
     }
    },
    "rule": "same courtesy rule as the IADB: sequential, ≥ 2.5 s apart, identifiable User-Agent; keep raw copies in logs/gbp/raw"
+  },
+  "boe_ops": {
+   "files": {
+    "str": "https://www.bankofengland.co.uk/-/media/boe/files/markets/other-market-operations/short-term-repo-omos-by-operation.xlsx",
+    "iltr": "https://www.bankofengland.co.uk/-/media/boe/files/markets/sterling-monetary-framework/indexed-long-term-repo-omos-by-operation.xlsx",
+    "ctrf": "https://www.bankofengland.co.uk/-/media/boe/files/markets/sterling-monetary-framework/contingent-term-repo-operations-results.xlsx",
+    "apf_sales": "https://www.bankofengland.co.uk/-/media/boe/files/markets/asset-purchase-facility/gilt-sales-time-series.xlsx",
+    "apf_profile": "https://www.bankofengland.co.uk/-/media/boe/files/markets/asset-purchase-facility/table-for-website.xlsx"
+   },
+   "verified": "2026-09-10 (columns opened; STR 202 ops since 2022-10-06 without participants; ILTR bids/alloc/spread by level A/B/C; APF sales by ISIN with settlement date since 2022-11; maturity profile 46 gilts, stock £489bn)",
+   "publication": "STR Thursday ~10:00 result, file same afternoon; ILTR Tuesday 10:00–10:30; APF sales Monday 14:15–14:45, settlement T+1; profile after each operation/redemption",
+   "rule": "one GET per file, ≥2.5 s apart, identifiable UA (Akamai)"
+  },
+  "dmo_xml": {
+   "d1a": "https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D1A",
+   "d22d": "https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D2.2D",
+   "verified": "2026-09-10: XML by direct link (no bot challenge on this route); D1A = gilts in issue at close of business (104 gilts: REDEMPTION_DATE, FIRST_ISSUE_DATE, DIVIDEND_DATES, TOTAL_AMOUNT_IN_ISSUE); D2.2D = T-bill tenders since 2000 (issue date, size, cover, yields). D1C/D8B/D2.1A cannot be exported as XML",
+   "archive": "history/gbp/dmo_gilts_in_issue.csv (append-only daily snapshot; gilt issuance = Δ amount in issue between snapshots, from 2026-09-10)"
   }
  },
  "blocks": {
@@ -459,6 +478,19 @@
      "escalation_requires": "rates.overnight_minus_policy_bps >= 0 persistent",
      "note": "quantity alone never escalates in a demand-driven framework"
     }
+   },
+   "derived_v04": {
+    "str_net_daily": "STR allocated at operation date (+) − matured (−)",
+    "str_outstanding_ops": "cumulative (reconciles with RPWB67A: 124 825 on 2026-09-02)",
+    "iltr_net_daily / iltr_outstanding_ops": "same for ILTR",
+    "ctrf_net_daily": "CTRF",
+    "repo_net_daily / repo_net_5d": "sum of the three",
+    "repo_maturities_next_4w": "calendar of scheduled drains",
+    "iltr_cover": "total bids / allocated",
+    "apf_sales_daily / apf_sales_5d": "− proceeds at settlement",
+    "apf_redemptions_next_12m": "APF nominal by maturity date (HMT ↔ BoE, no reserve effect)",
+    "exchequer_residual_weekly / _4w": "ΔR − ΔSTR − ΔLTR − ΔAPF loan − ΔTFSME − ΔW&M + ΔNotes (Weekly Report identity)",
+    "components_v04": "shadow: repo_net_5d_pct, apf_sales_5d_pct (flows), repo_dependence_ops_pct (level) as % of reserves — not in the live score until the replay"
    }
   },
   "fiscal": {
@@ -576,6 +608,17 @@
    "influence_cap": {
     "note": "fiscal layer cannot flip regime alone (monthly, 3-week lag): contribution capped at ±0.5 of block score",
     "cap": 0.5
+   },
+   "derived_v04": {
+    "gilt_issued_daily": "Δ TOTAL_AMOUNT_IN_ISSUE between D1A snapshots (+ new gilts first issued after the previous snapshot)",
+    "gilt_redeemed_private / gilt_redeemed_apf": "gilt vanishing at redemption; split by APF nominal (profile)",
+    "tbill_issued / tbill_matured": "D2.2D by issue and maturity date (dense daily)",
+    "tbill_cover": "tender cover",
+    "coupons_private_paid": "last 60 days, estimated from the current snapshot × coupon/2 × private share",
+    "net_issuance_private_daily / net_issuance": "− gilts − T-bills + private redemptions + T-bill maturities + private coupons (daily / 5 sessions)",
+    "*_next_4w": "calendars from D1A dividend and redemption dates",
+    "exchequer_residual_weekly / _4w": "as in central_bank",
+    "components_v04": "shadow: net_issuance_5d_pct, exchequer_residual_4w_pct + v0.3 net_spending_band_x_z; CGNCR remains the monthly anchor"
    }
   },
   "banking": {

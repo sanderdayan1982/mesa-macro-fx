@@ -148,6 +148,53 @@ class MarketOpsIndicatorsProvider:
         return got
 
 
+class BoeOpsProvider:
+    """Bank of England operation-level XLSX (STR, ILTR, CTRF, APF gilt sales, APF maturity profile) — verified 2026-09-10.
+    Fixture mode reads fixtures/gbp/boe_*.csv with the normalised column names."""
+    name = "boe_ops"
+
+    def __init__(self, fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
+        self.fixtures_dir, self.raw_dir = fixtures_dir, raw_dir
+
+    def fetch(self, kind: str) -> List[dict]:
+        from .ops_gbp import BOE_FILES, FIXTURES, parse_boe_xlsx, rows_from_csv
+        if self.fixtures_dir:
+            p = os.path.join(self.fixtures_dir, FIXTURES[kind])
+            return rows_from_csv(open(p, encoding="utf-8").read()) if os.path.exists(p) else []
+        from .providers_chf import _http, _snapshot
+        blob = _http(BOE_FILES[kind], binary=True, timeout=180)
+        _snapshot(self.raw_dir, "boe_%s.xlsx" % kind, blob)
+        rows = parse_boe_xlsx(blob, kind)
+        if not rows:
+            raise ProviderError("boe_ops %s: no rows parsed (STRUCTURE CHANGE?)" % kind)
+        return rows
+
+
+class DmoProvider:
+    """DMO XML data reports (D1A gilts in issue, D2.2D T-bill tenders) — verified 2026-09-10: XML by direct link, no bot challenge.
+    Fixture mode reads fixtures/gbp/dmo_*.csv."""
+    name = "dmo_xml"
+
+    def __init__(self, fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
+        self.fixtures_dir, self.raw_dir = fixtures_dir, raw_dir
+
+    def fetch(self, kind: str) -> List[dict]:
+        from .ops_gbp import DMO_D1A, DMO_D22D, FIXTURES, parse_d1a_xml, parse_d22d_xml, rows_from_csv
+        if self.fixtures_dir:
+            p = os.path.join(self.fixtures_dir, FIXTURES[kind])
+            return rows_from_csv(open(p, encoding="utf-8").read()) if os.path.exists(p) else []
+        from .providers_chf import _http, _snapshot
+        url = DMO_D1A if kind == "d1a" else DMO_D22D
+        txt = _http(url, timeout=180)
+        if "<Data" not in txt[:2000] or "ErrorDetails" in txt[:500]:
+            raise ProviderError("dmo %s: not an XML data report (bot challenge or STRUCTURE CHANGE?)" % kind)
+        _snapshot(self.raw_dir, "dmo_%s.xml" % kind, txt.encode("utf-8"))
+        rows = parse_d1a_xml(txt) if kind == "d1a" else parse_d22d_xml(txt)
+        if not rows:
+            raise ProviderError("dmo %s: no rows parsed" % kind)
+        return rows
+
+
 # ───────────────────── Receiver General Daily Cash Balance ─────────────────────
 class ReceiverGeneralProvider:
     """Public Services and Procurement Canada — Daily Cash Balance (open.canada.ca dataset 477bf61b…).
