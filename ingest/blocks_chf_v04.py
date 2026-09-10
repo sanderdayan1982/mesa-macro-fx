@@ -71,7 +71,8 @@ def enrich_central_bank(block: dict, cfg: dict, rf: Dict[str, Series], bf: Dict[
     pp = px.get("proxy_weekly_partial", [])
     D["fx_intervention_proxy_v04_partial"] = entry("fx_intervention_proxy_v04_partial", pp, "Proxy v0.4 for weeks not yet covered by the gmges amounts (ΔGI − Confederation only)", "weekly", unit, cfg, "derived",
                                                    status="fresh" if pp else "unavailable", equivalence_note="incomplete by construction until the monthly file arrives")
-    D["ops_data_cut"] = {"label": "Last day covered by the SNB operations file", "value": ops_cut, "status": "fresh" if ops_cut else "unavailable", "date": date.today().isoformat(), "lag_days": lag}
+    D["ops_data_cut"] = {"label": "Last day covered by the SNB operations file", "value": float(lag) if ops_cut else None, "unit": "days behind today", "cut_date": ops_cut,
+                         "status": "fresh" if ops_cut else "unavailable", "date": date.today().isoformat(), "lag_days": lag}
     C = Comps(cfg, "sum")
     gi = block["series"].get("sight_deposits_domestic_weekly", {}).get("value")
     if gi:
@@ -116,7 +117,7 @@ def enrich_fiscal(block: dict, cfg: dict, mm: Dict[str, Series], bfl: Dict[str, 
     D["bond_settlements_ahead"] = _cal_card("Bond settlements ahead (scheduled drain)", bfl.get("bond_settlements_ahead", []), unit)
     D["bond_redemptions_market_next_12m"] = _cal_card("Market-held bond redemptions, next 12 months", cal.get("bond_redemptions_market_ahead", []), unit, 365, 6)
     D["coupons_market_next_4w"] = _cal_card("Market coupons, next 4 weeks", cal.get("coupons_market_ahead", []), unit)
-    D["bonds_outstanding_asof"] = {"label": "Bonds outstanding list — as of", "value": outstanding_asof, "own_available_m": own_available, "status": "fresh" if outstanding_asof else "unavailable",
+    D["bonds_outstanding_asof"] = {"label": "Bonds outstanding list — own holdings available (CHF m)", "value": own_available, "as_of": outstanding_asof, "own_available_m": own_available, "status": "fresh" if outstanding_asof else "unavailable",
                                    "date": date.today().isoformat(), "note": "own-holding sales in the secondary market are not dated (S6)"}
     C = Comps(cfg, "sum")
     if gi_level:
