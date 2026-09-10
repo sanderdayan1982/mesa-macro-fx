@@ -160,7 +160,7 @@
     },
     "GOC_OUTSTANDING": {
      "label": "GoC T-bills and bonds outstanding by ISIN",
-     "status": "verified, not wired (context; 15 250 rows)"
+     "status": "wired 2026-09-10 (latest as-of by ISIN; monthly archive history/cad/goc_outstanding.csv)"
     },
     "CORRA": {
      "label": "CORRA group incl. percentiles 25/75",
@@ -185,6 +185,12 @@
    },
    "archive": "history/cad/market_ops_indicators.csv (append-only, from 2026-09-10; the BoC keeps no public history)",
    "publication": "same day, after the operations; verified values 2026-09-03 64 414 · 09-04 65 018 · 09-08 65 188 · 09-09 66 140"
+  },
+  "boc_holdings": {
+   "url": "https://www.bankofcanada.ca/markets/government-securities-auctions/bank-of-canada-holdings/",
+   "historical": "https://www.bankofcanada.ca/markets/government-securities-auctions/bank-of-canada-holdings/historical-bank-of-canada-holdings/?blob=boc_holdings_YYYY_MM.html",
+   "format": "three HTML tables by ISIN (T-bills, bonds, CMB): Maturity | Coupon | ISIN | Par value | Of which on repo/loan; as-of daily 06:00 ET; monthly blobs 2018-12→ (verified 2026-09-10)",
+   "use": "round 2: redemptions and coupons to the private sector = GOC_OUTSTANDING nominal − BoC par; daily archive history/cad/boc_holdings.csv"
   }
  },
  "blocks": {
@@ -1386,5 +1392,6 @@
    "idempotency": "runs are re-executable; revision detection diffs against last committed JSON"
   },
   "adapters": "LiquidityProvider abstraction: valet, fred, receiver_general, statcan, ecb, boe, snb, rba, rbnz, boj — engine only sees the block schema"
- }
+ },
+ "version": "0.4.1"
 }

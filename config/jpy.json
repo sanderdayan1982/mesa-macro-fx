@@ -53,7 +53,8 @@
     "assert expected item count and structure hash → DATA_DEGRADED on change, never silent remap",
     "if jd for T-1 is missing at 02:30 UTC retry every 30 min until 06:00 UTC, publish jx as provisional meanwhile",
     "the daily file has ONE 'Treasury funds and others' row — no sub-table (verified 2026-09-08)"
-   ]
+   ],
+   "v04": "all three columns (予想/速報/確報) archived by business day in history/jpy/boj_daily_v04.csv; the final file keeps the projection column (verified 2026-09-10) → projection history since 2021 via Past Data"
   },
   "boj_accounts": {
    "index": "https://www.boj.or.jp/en/statistics/boj/other/acmai/index.htm",
@@ -65,7 +66,7 @@
   "boj_jgb_holdings_xlsx": {
    "index": "https://www.boj.or.jp/en/statistics/boj/other/mei/index.htm",
    "freq": "every ten days",
-   "status": "verified index only; issue-by-issue parser = Phase 3"
+   "status": "wired 2026-09-10 (round 2/4): latest meiYYMMDD.xlsx by type + issue number → maturity via the MoF auction XLS; JGB redemptions and coupons net of BoJ holdings"
   },
   "boj_api": {
    "base": "https://www.stat-search.boj.or.jp/api/v1/",
@@ -177,6 +178,16 @@
   },
   "jpx_tona_futures": {
    "status": "pending verification (CodeWord proposal: 3m TONA futures daily settlement at OSE/JPX as free forward anchor)"
+  },
+  "boj_ops_by_operation": {
+   "url": "https://www.boj.or.jp/en/statistics/boj/fm/ope/d_release/ope/{YYYY}/ope{YYYYMMDD}.xlsx",
+   "index": "https://www.boj.or.jp/en/statistics/boj/fm/ope/index.htm",
+   "format": "Offers/Results per operation: instrument, amount offered, Date of Exercise (settlement; outright JGB = T+1), end date, rates, bids, allotted (100m, FACE); verified 2026-09-10 (9-Sep offers 3,553+3,354+752 exercised 10-Sep)",
+   "history": "2026 and 2025 (since Oct.) under d_release/ope/; earlier on www3.boj.or.jp/market"
+  },
+  "boj_monthly_projection": {
+   "url": "https://www.boj.or.jp/en/statistics/boj/fm/juqp/juqp{YYMM}.xlsx",
+   "format": "見込み: banknotes, treasury (国債等 / 国庫短期証券等 / その他), surplus; days with large shortage/surplus; note 4: BoJ-held redemptions excluded (verified 2026-09-10, published 3-Sep for September)"
   }
  },
  "blocks": {
@@ -1847,5 +1858,6 @@
   "Japanese holidays 2026-2027 verified; fiscal seasonality learned from data",
   "Pending sources: BoJ USD funds-supplying operation results, JPX TONA futures, TIBOR PDF, xccy basis (vendor)",
   "Sander's OK on v0.2 → Fase 2 JPY"
- ]
+ ],
+ "version": "0.4.0"
 }
