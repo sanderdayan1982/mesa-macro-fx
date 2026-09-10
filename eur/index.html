@@ -143,7 +143,13 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
 // EUR COMMAND CENTER — frontend engine (reads static JSON only; no source fetches)
 // Layer order is fixed by the desk rule: 1 central bank → 2 treasury/equivalent → 3 banking transmission → 4 rates
 // ═══════════════════════════════════════════════════════════════════════
-const CCY='eur', BASE='../data/'+CCY+'/';
+const CCY='eur';
+// v0.4 hosting: the JSON is read straight from GitHub (branch main) so data commits never trigger a Netlify deploy;
+// the site itself deploys from branch `site` only when the HTML changes. Fallback: the relative path (same origin).
+const DATA_ROOT='https://raw.githubusercontent.com/sanderdayan1982/mesa-macro-fx/main/', BASE=DATA_ROOT+'data/'+CCY+'/', BASE_LOCAL='../data/'+CCY+'/', VQ='?v='+Math.floor(Date.now()/60000);
+function tfetch(u,ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); return fetch(u,{cache:'no-store',signal:c.signal}).finally(()=>clearTimeout(t)); }
+function getJSON(f){ return tfetch(BASE+f+'.json'+VQ,6000).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .catch(()=>fetch(BASE_LOCAL+f+'.json'+VQ,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)); }
 const FILES=['central_bank','fiscal','banking','rates','regime','calendar','quality','alerts','revisions','regime_history','news','oplog','agent'];
 const $=id=>document.getElementById(id);
 let D={};
@@ -376,7 +382,7 @@ function exportJSON(){ const blob=new Blob([JSON.stringify(D,null,2)],{type:'app
 
 async function loadAll(){
   $('msg').className='msg info'; $('msg').textContent='Loading…';
-  const results=await Promise.allSettled(FILES.map(f=>fetch(BASE+f+'.json',{cache:'no-store'}).then(r=>r.ok?r.json():null)));
+  const results=await Promise.allSettled(FILES.map(f=>getJSON(f)));
   D={}; results.forEach((r,i)=>{ D[FILES[i]]=r.status==='fulfilled'?r.value:null; });
   if(!D.regime&&!D.central_bank){ $('msg').className='msg alert'; $('msg').textContent='No data files found under '+BASE+' — run the ingestion workflow first.'; return; }
   try{ render(); }catch(err){ $('msg').className='msg alert'; $('msg').textContent='Render error: '+err.message; console.error(err); }

@@ -78,7 +78,10 @@ function age(iso){if(!iso)return null;const h=(Date.now()-new Date(iso).getTime(
 function ageTxt(h){if(h==null)return '—';if(h<1)return Math.round(h*60)+' min';if(h<48)return h.toFixed(1)+' h';return (h/24).toFixed(1)+' d';}
 function tick(){const d=new Date();$('clock').textContent='WAT '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',timeZone:'Africa/Lagos'});}
 setInterval(tick,30000);tick();
-async function get(u){try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null;}catch(e){return null;}}
+const DATA_ROOT='https://raw.githubusercontent.com/sanderdayan1982/mesa-macro-fx/main/', VQ='?v='+Math.floor(Date.now()/60000);
+// v0.4 hosting: JSON straight from GitHub (branch main); relative path as fallback. Data commits no longer deploy the site.
+function tfetch(u,ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); return fetch(u,{cache:'no-store',signal:c.signal}).finally(()=>clearTimeout(t)); }
+async function get(u){ const rel=u.replace(/^\.\.\//,''); try{const r=await tfetch(DATA_ROOT+rel+VQ,6000); if(r.ok) return await r.json();}catch(e){} try{const r=await fetch(u+VQ,{cache:'no-store'});return r.ok?await r.json():null;}catch(e){return null;} }
 async function load(){
   $('msg').className='msg info';$('msg').textContent='Cargando…';
   const D={};
