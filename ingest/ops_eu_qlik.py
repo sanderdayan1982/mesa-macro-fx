@@ -44,21 +44,27 @@ class QlikError(RuntimeError):
 
 
 # ═══════════════════════ Qlik Engine JSON-RPC over websocket ═══════════════════════
-def _get_cookies(url: str, timeout: int) -> str:
-    """GET the mashup page with a browser UA; return the Cookie header value ('' when the server sets none)"""
+def _session(origin: str, vp_prefix: str, timeout: int) -> Tuple[str, str]:
+    """Qlik Sense virtual proxy handshake as the mashup does it (observed 2026-09-10 in the browser):
+    GET {vp_prefix}qps/csrftoken?xrfkey=<16 chars> with header X-Qlik-Xrfkey → 204 with response header `qlik-csrf-token`
+    (+ the session cookie X-Qlik-Session-*). Returns (cookie header value, csrf token)."""
     import urllib.request
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html,*/*"})
+    import random
+    import string
+    xrf = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(16))
+    req = urllib.request.Request(origin + vp_prefix + "qps/csrftoken?xrfkey=" + xrf, headers={"User-Agent": UA, "X-Qlik-Xrfkey": xrf, "Accept": "*/*"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             hdrs = resp.headers.get_all("Set-Cookie") or []
+            token = resp.headers.get("qlik-csrf-token") or ""
     except Exception as e:  # noqa: BLE001
-        raise QlikError("mashup GET failed: %s" % e)
+        raise QlikError("csrftoken GET failed: %s" % e)
     parts = []
     for h in hdrs:
         kv = h.split(";", 1)[0].strip()
         if "=" in kv:
             parts.append(kv)
-    return "; ".join(parts)
+    return "; ".join(parts), token
 
 
 class _Rpc:
@@ -106,11 +112,15 @@ def fetch_qlik_table(fields: List[str], app_id: str = APP_ID, host: str = HOST, 
         raise QlikError("no fields")
     n = len(fields)
     origin = "https://" + host
-    cookies = _get_cookies(origin + prefix + mashup_path, timeout)
+    vp = prefix + "public/"  # the mashup runs on the 'public' virtual proxy: wss://host/<prefix>public/app/<id>/identity/<x>?reloadUri=…&qlik-csrf-token=…
+    cookies, token = _session(origin, vp, timeout)
     headers = ["Origin: " + origin, "User-Agent: " + UA]
     if cookies:
         headers.append("Cookie: " + cookies)
-    url = "wss://" + host + prefix + "app/" + app_id
+    import time as _t
+    import urllib.parse
+    url = "wss://" + host + vp + "app/" + app_id + "/identity/mesa%d" % int(_t.time()) + "?reloadUri=" + urllib.parse.quote(origin + prefix + mashup_path, safe="") + \
+          ("&qlik-csrf-token=" + token if token else "")
     try:
         ws = websocket.create_connection(url, header=headers, timeout=timeout, suppress_origin=True)
     except Exception as e:  # noqa: BLE001
