@@ -1351,10 +1351,11 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
     notes: Dict[str, str] = {}
 
     def _get(url: str, binary: bool = False, timeout: int = 90, post: Optional[dict] = None):
-        import requests  # type: ignore
         from .providers import UA
+        from . import tls as T
         hdr = dict(UA, Accept="*/*")
-        r = requests.post(url, data=post, headers=hdr, timeout=timeout) if post is not None else requests.get(url, headers=hdr, timeout=timeout)
+        # T.request = requests + chain completion via AIA when a host omits its intermediate certificate (tesoro.es, 2026-09-10); verify stays on
+        r = T.request("POST" if post is not None else "GET", url, raw_dir=raw_dir, notes=notes, data=post, headers=hdr, timeout=timeout)
         if r.status_code != 200:
             raise ProviderError("HTTP %s for %s" % (r.status_code, url))
         return r.content if binary else r.content.decode("utf-8", errors="replace")
