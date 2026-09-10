@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#090d13"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <title>USD COMMAND CENTER — Liquidity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -80,8 +84,21 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
 .take{font-family:var(--font);font-size:12px;line-height:1.7;color:var(--white)}
 .mono{font-family:var(--font)}
 .ops{font-family:var(--font);font-size:10px;padding:4px 10px;border-bottom:1px solid var(--border);display:flex;gap:12px;color:var(--text2)}
+/* desk navigation (home + eight currencies) */
+.desknav{display:flex;align-items:center;gap:4px;padding:6px 16px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.desknav a{font-family:var(--font);font-size:11px;font-weight:700;padding:6px 10px;border:1px solid var(--border);color:var(--text2);text-decoration:none;letter-spacing:.06em;white-space:nowrap;min-height:32px;display:inline-flex;align-items:center}
+.desknav a:hover{border-color:var(--blue);color:var(--blue)}.desknav a.cur{color:var(--gold);border-color:#3d3010;background:#1a1608}
+.desknav a.home{color:var(--white);background:var(--panel2);border-color:var(--border2);margin-right:6px}
+.desknav .sep{width:1px;height:20px;background:var(--border2);margin:0 4px;flex:none}
+/* responsive — phones and tablets */
+.card{overflow-x:auto}.card table{min-width:100%}
 @media(max-width:1100px){.g2,.g3,.g4,.g5,.g6,.g7,.g8{grid-column:span 12}.kpi{font-size:20px}}
-@media(max-width:700px){.g2,.g3{grid-column:span 6}}
+@media(max-width:900px){.hdr-sub{display:none}.main{padding:8px}.grid{gap:6px}.tab{padding:12px 12px}.btn,.pill,.regime{min-height:32px;display:inline-flex;align-items:center}}
+@media(max-width:700px){.g2,.g3{grid-column:span 6}body{font-size:14px}.hdr{padding:8px 10px}.hdr-title{font-size:13px}.tabs,.desknav,.wire,.msg,.ops{padding-left:10px;padding-right:10px}
+ .card{padding:10px;min-height:0}.kpi{font-size:22px}.kpi.sm{font-size:17px}.take{font-size:13px;line-height:1.75}.note{font-size:12px}
+ .alert-item{flex-wrap:wrap;gap:6px}.alert-ts{min-width:0}.cal-item{flex-wrap:wrap}.cal-date{min-width:0}
+ .layer{flex-wrap:wrap;gap:6px}.layer .lsig{margin-left:0;width:100%}.hdr-right{width:100%;justify-content:flex-start}}
+@media(max-width:480px){.g2,.g3{grid-column:span 12}.hdr-right .pill:nth-child(n+4){display:none}.wire{display:none}}
 </style>
 </head>
 <body>
@@ -97,6 +114,7 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
     <button class="btn" onclick="loadAll()">RELOAD</button>
   </div>
 </div>
+<div class="desknav"><a class="home" href="../">⌂ MESA</a><span class="sep"></span><a href="../usd/" class="cur">USD</a><a href="../eur/">EUR</a><a href="../gbp/">GBP</a><a href="../jpy/">JPY</a><a href="../chf/">CHF</a><a href="../cad/">CAD</a><a href="../aud/">AUD</a><a href="../nzd/">NZD</a><span class="sep"></span><a href="../mesa/">ESTADO</a></div>
 <div class="tabs" id="tabBar">
   <div class="tab active" data-tab="command">COMMAND</div>
   <div class="tab" data-tab="regime">REGIME</div>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#090d13"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<title>MESA MACRO FX — Estado de la mesa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#090d13;--bg2:#0e1319;--panel:#111820;--panel2:#151d28;--border:#1a2536;--border2:#243447;--text:#c5d0dc;--text2:#8899aa;--text3:#556677;--white:#e8edf2;--blue:#33b1ff;--green:#42be65;--red:#fa4d56;--amber:#f1c21b;--gold:#f1c21b;--font:'JetBrains Mono',monospace;--sans:'IBM Plex Sans Condensed',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.4}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 16px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;flex-wrap:wrap}
+.hdr-logo{font-family:var(--font);font-weight:800;font-size:11px;letter-spacing:.15em;color:var(--gold);background:#1a1608;border:1px solid #3d3010;padding:5px 10px}
+.hdr-title{font-family:var(--font);font-weight:700;font-size:14px;color:var(--white);letter-spacing:.04em;margin-left:10px}
+.pill{font-family:var(--font);font-size:10px;font-weight:700;padding:5px 10px;border:1px solid var(--border);color:var(--text2);min-height:32px;display:inline-flex;align-items:center}
+.btn{font-family:var(--font);font-size:10px;font-weight:700;padding:5px 12px;cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);min-height:32px}
+.desknav{display:flex;align-items:center;gap:4px;padding:6px 16px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto}
+.desknav a{font-family:var(--font);font-size:11px;font-weight:700;padding:6px 10px;border:1px solid var(--border);color:var(--text2);text-decoration:none;letter-spacing:.06em;white-space:nowrap;min-height:32px;display:inline-flex;align-items:center}
+.desknav a.home{color:var(--white);background:var(--panel2);border-color:var(--border2);margin-right:6px}.desknav a.cur{color:var(--gold);border-color:#3d3010;background:#1a1608}
+.main{padding:12px;max-width:1400px;margin:0 auto}
+.msg{padding:7px 16px;font-family:var(--font);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)}.msg.ok{background:#071a0e;color:var(--green)}.msg.warn{background:#1a1508;color:var(--amber)}.msg.err{background:#1a0808;color:var(--red)}.msg.info{background:#08121a;color:var(--blue)}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:var(--panel);border:1px solid var(--border);padding:10px 12px}.kpi .t{font-family:var(--font);font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}.kpi .v{font-family:var(--font);font-size:22px;font-weight:800;color:var(--white);margin-top:4px}.kpi .v.g{color:var(--green)}.kpi .v.a{color:var(--amber)}.kpi .v.r{color:var(--red)}
+h2{font-family:var(--font);font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--white);text-transform:uppercase;margin:16px 0 8px;border-bottom:2px solid var(--border2);padding-bottom:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.card{background:var(--panel);border:1px solid var(--border);padding:12px;display:block;color:var(--text);text-decoration:none}
+.card:hover{border-color:var(--blue)}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.ccy{font-family:var(--font);font-size:18px;font-weight:800;color:var(--gold)}
+.regime{font-family:var(--font);font-size:10px;font-weight:800;padding:4px 10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid}
+.regime.GREEN{background:#0a2a1a;color:var(--green);border-color:#1a4a2a}.regime.YELLOW{background:#1a1a0a;color:var(--amber);border-color:#3a3a1a}.regime.RED{background:#2a0a0a;color:var(--red);border-color:#4a1a1a}.regime.NONE{background:#1a1a1a;color:#777;border-color:#2a2a2a}
+.blocks{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:6px 0}
+.blk{border:1px solid var(--border);padding:5px 6px;font-family:var(--font);font-size:9px;line-height:1.5}
+.blk b{display:block;font-size:9px;letter-spacing:.06em;color:var(--text2)}
+.blk.fresh{border-color:#1a3a2a;color:var(--green)}.blk.stale{border-color:#3a3a1a;color:var(--amber);background:#1a1a0a}.blk.proxy{border-color:#1a2a3a;color:var(--blue)}.blk.unavailable,.blk.degraded{border-color:#3a1a1a;color:var(--red);background:#1a0808}
+.row{display:flex;justify-content:space-between;gap:8px;font-family:var(--font);font-size:10px;color:var(--text2);padding:3px 0;border-top:1px dashed var(--border);flex-wrap:wrap}
+.row span:last-child{color:var(--text);text-align:right}
+.badge{font-family:var(--font);font-size:9px;font-weight:800;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;display:inline-block;border:1px solid;white-space:nowrap}
+.badge.ok{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.warn{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}.badge.err{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.dim{background:#1a1a1a;color:#777;border-color:#2a2a2a}
+table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font)}th{text-align:left;padding:6px 8px;color:var(--text2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl{background:var(--panel);border:1px solid var(--border);padding:8px;overflow-x:auto}
+.issue{padding:8px 12px;border-left:3px solid var(--amber);background:var(--bg2);margin-bottom:4px;font-family:var(--font);font-size:11px}.issue.err{border-left-color:var(--red)}.issue.ok{border-left-color:var(--green);color:var(--text2)}
+.src{font-size:9px;color:var(--text3);font-family:var(--font);margin-top:8px;line-height:1.6}
+@media(max-width:700px){body{font-size:14px}.main{padding:8px}.hdr{padding:8px 10px}.desknav{padding:6px 10px}.blocks{grid-template-columns:repeat(2,1fr)}.kpi .v{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div style="display:flex;align-items:center"><div class="hdr-logo">MESA</div><span class="hdr-title">ESTADO DE LA MESA — G8</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><div id="clock" class="pill">WAT --:--</div><button class="btn" onclick="load()">RELOAD</button></div>
+</div>
+<div class="desknav"><a class="home" href="../">⌂ MESA</a><a href="../usd/">USD</a><a href="../eur/">EUR</a><a href="../gbp/">GBP</a><a href="../jpy/">JPY</a><a href="../chf/">CHF</a><a href="../cad/">CAD</a><a href="../aud/">AUD</a><a href="../nzd/">NZD</a><a class="cur" href="./">ESTADO</a></div>
+<div id="msg" class="msg info">Cargando…</div>
+<div class="main">
+  <div class="strip" id="strip"></div>
+  <h2>Incidencias de calidad</h2>
+  <div id="issues"></div>
+  <h2>Ocho divisas</h2>
+  <div class="cards" id="cards"></div>
+  <h2>Jefe de mesa — convicción por la pata BC (banco central)</h2>
+  <div class="tbl" id="jefe"></div>
+  <div class="src">Lee sólo los JSON publicados: data/&lt;ccy&gt;/agent.json, regime.json, quality.json y data/mesa/jefe.json. Frescura por bloque = source_health del último refresco; «antigüedad» = tiempo desde generated_at. Puerta = anti-invención del daily_log. Sin fuentes externas.</div>
+</div>
+<script>
+const CCYS=['usd','eur','gbp','jpy','chf','cad','aud','nzd'];
+const $=id=>document.getElementById(id);
+const fN=(v,d=2)=>v==null?'—':Number(v).toLocaleString('es-ES',{maximumFractionDigits:d,minimumFractionDigits:d});
+const BN={central_bank:'BC',fiscal:'TESORO',rates:'TIPOS',banking:'BANCA'};
+const ES={fresh:'fresco',stale:'stale',proxy:'proxy',unavailable:'no disp.',degraded:'degradado'};
+const STALE_H=30; // a refresh older than this (hours) is flagged
+function age(iso){if(!iso)return null;const h=(Date.now()-new Date(iso).getTime())/36e5;return h;}
+function ageTxt(h){if(h==null)return '—';if(h<1)return Math.round(h*60)+' min';if(h<48)return h.toFixed(1)+' h';return (h/24).toFixed(1)+' d';}
+function tick(){const d=new Date();$('clock').textContent='WAT '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',timeZone:'Africa/Lagos'});}
+setInterval(tick,30000);tick();
+async function get(u){try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null;}catch(e){return null;}}
+async function load(){
+  $('msg').className='msg info';$('msg').textContent='Cargando…';
+  const D={};
+  await Promise.all(CCYS.map(async c=>{const [a,r,q]=await Promise.all([get('../data/'+c+'/agent.json'),get('../data/'+c+'/regime.json'),get('../data/'+c+'/quality.json')]);D[c]={a,r,q};}));
+  const J=await get('../data/mesa/jefe.json');
+  let fresh=0,stale=0,unav=0,gates=0,gateFail=0,old=0,missing=0;const issues=[];
+  const cards=CCYS.map(c=>{
+    const {a,r,q}=D[c];const C=c.toUpperCase();
+    if(!r){missing++;issues.push({lvl:'err',t:C+': regime.json no disponible'});return `<a class="card" href="../${c}/"><div class="top"><span class="ccy">${C}</span><span class="regime NONE">SIN DATOS</span></div></a>`;}
+    const bm=(a&&a.blocks_meta)||{};
+    const blocks=['central_bank','fiscal','rates','banking'].map(b=>{const m=bm[b]||{};const st=m.status||'unavailable';if(st==='fresh')fresh++;else if(st==='stale')stale++;else unav++;
+      if(st!=='fresh')issues.push({lvl:st==='stale'?'warn':'err',t:`${C} · ${BN[b]}: ${ES[st]||st} (as-of ${m.as_of||'—'})`});
+      return `<div class="blk ${st}"><b>${BN[b]}</b>${ES[st]||st}<br>${m.as_of||'—'}</div>`;}).join('');
+    const h=age(r.generated_at);if(h!=null&&h>STALE_H){old++;issues.push({lvl:'warn',t:`${C}: último refresco hace ${ageTxt(h)} (> ${STALE_H} h)`});}
+    let gate='<span class="badge dim">SIN AGENT</span>';
+    if(a&&a.gate){if(a.gate.pass){gates++;gate='<span class="badge ok">PUERTA PASA</span>';}else{gateFail++;gate='<span class="badge err">PUERTA RETIENE</span>';issues.push({lvl:'err',t:`${C}: daily_log retenido — ${(a.gate.failures||[]).join('; ')}`});}}
+    const R=r.regimes||{};const cb=(R.central_bank||{}).regime||'—',fi=(R.fiscal||{}).regime||'—';const s=(a&&a.streaks)||{};
+    const deg=(a&&a.degraded)||[];
+    const rank=J&&J.ranking?J.ranking.find(x=>x.ccy===C):null;
+    return `<a class="card" href="../${c}/"><div class="top"><span class="ccy">${C}</span><span class="regime ${r.traffic_light||'NONE'}">${(r.regime||'—').replace(/_/g,' ')}</span></div>
+      <div class="blocks">${blocks}</div>
+      <div class="row"><span>BC / Tesoro</span><span>${cb} ${s.central_bank?s.central_bank+'.ª':''} · ${fi} ${s.fiscal?s.fiscal+'.ª':''}</span></div>
+      <div class="row"><span>último refresco</span><span>${r.generated_at?r.generated_at.slice(0,16).replace('T',' ')+'Z · hace '+ageTxt(h):'—'}</span></div>
+      <div class="row"><span>calidad media</span><span>${q&&q.system?q.system.average+' (≥90: '+q.system.abv90+' · <70: '+q.system.blw70+')':'—'}</span></div>
+      <div class="row"><span>daily_log</span><span>${gate} ${deg.length?'<span class="badge warn">'+deg.length+' DEGRADADO'+(deg.length>1?'S':'')+'</span>':''}</span></div>
+      <div class="row"><span>jefe de mesa</span><span>${rank?rank.rank+'.º · Δ13 s '+fN(rank.d13_pct,1)+' % · Z '+fN(rank.z):'—'}</span></div></a>`;
+  }).join('');
+  $('cards').innerHTML=cards;
+  const tot=fresh+stale+unav;
+  $('strip').innerHTML=`<div class="kpi"><div class="t">bloques frescos</div><div class="v ${fresh===tot?'g':'a'}">${fresh} / ${tot}</div></div>
+    <div class="kpi"><div class="t">stale</div><div class="v ${stale?'a':'g'}">${stale}</div></div>
+    <div class="kpi"><div class="t">no disponibles</div><div class="v ${unav?'r':'g'}">${unav}</div></div>
+    <div class="kpi"><div class="t">puerta anti-invención</div><div class="v ${gateFail?'r':(gates===8?'g':'a')}">${gates} / 8</div></div>
+    <div class="kpi"><div class="t">refrescos &gt; ${STALE_H} h</div><div class="v ${old?'a':'g'}">${old}</div></div>
+    <div class="kpi"><div class="t">jefe de mesa</div><div class="v">${J&&J.as_of_friday?J.as_of_friday:'—'}</div></div>`;
+  $('issues').innerHTML=issues.length?issues.map(i=>`<div class="issue ${i.lvl}">${i.t}</div>`).join(''):'<div class="issue ok">Sin incidencias: los 32 bloques frescos, ocho puertas pasan, ningún refresco atrasado.</div>';
+  if(J&&J.ranking){$('jefe').innerHTML=`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th></tr></thead><tbody>${J.ranking.map(r=>`<tr><td>${r.rank}</td><td><a style="color:var(--gold);text-decoration:none" href="../${r.ccy.toLowerCase()}/">${r.ccy}</a></td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td></tr>`).join('')}</tbody></table>
+    <div class="src">viernes ${J.as_of_friday} · ${J.label} · ${J.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(J.sigma_week,3)} · p20 era ${fN(J.sigma_week_p20_era,3)}) · par: ${J.pair_max_conviction?J.pair_max_conviction.reserves_growth+' / '+J.pair_max_conviction.reserves_drain+' (brecha Z '+fN(J.pair_max_conviction.z_gap)+')':'—'}</div>`;}
+  else $('jefe').innerHTML='<div class="issue err">data/mesa/jefe.json no disponible</div>';
+  const bad=issues.filter(i=>i.lvl==='err').length;
+  $('msg').className='msg '+(bad?'err':issues.length?'warn':'ok');
+  $('msg').textContent=(missing?missing+' divisa(s) sin datos · ':'')+`${fresh}/${tot} bloques frescos · ${gates}/8 puertas · ${issues.length} incidencia(s) · ${new Date().toISOString().slice(0,16)}Z`;
+}
+load();
+</script>
+</body>
+</html>
