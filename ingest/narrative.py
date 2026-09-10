@@ -100,8 +100,8 @@ SPEC: Dict[str, dict] = {
         "ops": [("central_bank", "series", "liquidity_repos", "repos de liquidez a plazo", "stock")],
         "govt": ("central_bank", "series", "government_account", "la cuenta del Receptor General en el BoC"),
         "fiscal": {"week": ("fiscal", "derived", "fiscal_flow_7d_cum", "7 días"), "month": None, "q13": None, "label": "flujo fiscal proxy (−Δ cuenta del gobierno)"},
-        "issuance": {"gross": None, "redemptions": None, "freq": "none"},
-        "auctions": [],
+        "issuance": {"gross": ("fiscal", "derived", "issued_private"), "redemptions": ("fiscal", "derived", "matured_private"), "freq": "daily"},
+        "auctions": [("fiscal", "derived", "rg_am_coverage", "subasta matinal del Receptor General: cobertura")],
         "spread": ("rates", "derived", "overnight_minus_policy_bps", "CORRA − tipo objetivo"), "friction": None,
     },
     "aud": {

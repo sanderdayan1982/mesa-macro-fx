@@ -1,6 +1,6 @@
 {
  "$schema": "../schema/config.schema.json",
- "config_version": "0.3.0",
+ "config_version": "0.4.0",
  "currency": "CAD",
  "name": "Canadian Dollar",
  "jurisdiction": "Canada",
@@ -94,6 +94,97 @@
     "Consolidated Revenue Fund Term Deposits c31a17df-9964-4565-ad3f-42bcd82dba59",
     "Government of Canada - Domestic Payments e19d7468-6f95-475a-bcfc-4141cad76268"
    ]
+  },
+  "valet_groups": {
+   "base_url": "https://www.bankofcanada.ca/valet",
+   "endpoint": "/observations/group/{group}/json",
+   "note": "verified 2026-09-10: /groups/{group}/json returns metadata only; observations live under /observations/group/. start_date is ignored for these auction groups (full history returned) → archived append-only in history/cad/groups/",
+   "incremental_start": "2024-01-01",
+   "issuance_start": "2005-01-01",
+   "groups": {
+    "TERM_REPO_RESULTS": {
+     "label": "Term Repos - Results",
+     "since": "2015-10-13",
+     "rows_verified": 428,
+     "fields": [
+      "TR_OPERATION_DATE",
+      "TR_SETTLEMENT_DATE",
+      "TR_TERM_DAYS",
+      "TR_MATURITY_DATE",
+      "TR_OFFERED_AMOUNT",
+      "TR_ALLOCATED_AMOUNT",
+      "TR_LOW_RATE",
+      "TR_AVERAGE_RATE",
+      "TR_HIGH_RATE"
+     ],
+     "reserve_effect": "+ at settlement, − at maturity"
+    },
+    "OR_RESULTS": {
+     "label": "Overnight Repo (OR) - Results",
+     "since": "2020-03-16",
+     "rows_verified": 327,
+     "reserve_effect": "+ at settlement, − next day"
+    },
+    "ORR": {
+     "label": "Overnight Reverse Repo (ORR)",
+     "since": "2022-03-03",
+     "rows_verified": 412,
+     "reserve_effect": "− at settlement, + next day"
+    },
+    "AUC_RGAM_RESULTS": {
+     "label": "Receiver General Cash Balances Morning Auction - Results",
+     "since": "2024-02-21",
+     "rows_verified": 2164,
+     "fields": [
+      "AUC_RGAM_AUCTION_DATE",
+      "AUC_RGAM_SETTLEMENT_DATE",
+      "AUC_RGAM_TERM_DAYS",
+      "AUC_RGAM_MATURITY_DATE",
+      "AUC_RGAM_AMOUNT",
+      "AUC_RGAM_OFFER_AMOUNT",
+      "AUC_RGAM_COVERAGE"
+     ],
+     "reserve_effect": "+ when placed (government cash BoC → banks), − at maturity (adjudicated 4/6, ADJUDICACION_METRICAS_CAD.md)"
+    },
+    "AUC_TBILL_RESULTS": {
+     "label": "Treasury bill auctions",
+     "reserve_effect": "− (amount − BoC purchase) at issue, + at maturity"
+    },
+    "AUC_BOND_RESULTS": {
+     "label": "Bond auctions",
+     "reserve_effect": "− (amount − BoC purchase) at issue, + at maturity"
+    },
+    "AUC_BOND_S_RESULTS_REPURCHASE": {
+     "label": "Bond Switch - Results Repurchase",
+     "reserve_effect": "+ at settlement (last operations 2020)"
+    },
+    "GOC_OUTSTANDING": {
+     "label": "GoC T-bills and bonds outstanding by ISIN",
+     "status": "verified, not wired (context; 15 250 rows)"
+    },
+    "CORRA": {
+     "label": "CORRA group incl. percentiles 25/75",
+     "status": "wired via series ids in blocks.rates"
+    },
+    "CORRA_COMPOUNDED_INDEX": {
+     "label": "CORRA Compounded Index",
+     "status": "wired via series id CORRA.COMPOUNDED.INDEX"
+    }
+   }
+  },
+  "market_ops_indicators": {
+   "url": "https://www.bankofcanada.ca/rates/indicators/market-operations-indicators/",
+   "format": "HTML table (second table), rolling window of 6 business days, no Valet series (verified 2026-09-10)",
+   "rows": {
+    "Actual": "Lynx settlement balances, $M",
+    "Target (Available)": "empty in the current regime",
+    "Overnight Repos (OR)": "$M",
+    "Overnight Reverse Repos (ORR)": "$M",
+    "Term Repos": "settled that day, $M",
+    "Securities Lending": "$M"
+   },
+   "archive": "history/cad/market_ops_indicators.csv (append-only, from 2026-09-10; the BoC keeps no public history)",
+   "publication": "same day, after the operations; verified values 2026-09-03 64 414 · 09-04 65 018 · 09-08 65 188 · 09-09 66 140"
   }
  },
  "blocks": {
@@ -306,6 +397,38 @@
       "exit_on": "p30/p20/p10"
      }
     }
+   },
+   "series_v04": {
+    "settlement_actual": {
+     "source": "market_ops_indicators:Actual",
+     "frequency": "daily",
+     "label": "Lynx settlement balances — actual",
+     "status": "archive from 2026-09-10"
+    },
+    "settlement_target": {
+     "source": "market_ops_indicators:Target (Available)",
+     "frequency": "daily"
+    },
+    "ind_term_repos": {
+     "source": "market_ops_indicators:Term Repos",
+     "frequency": "daily"
+    },
+    "ind_securities_lending": {
+     "source": "market_ops_indicators:Securities Lending",
+     "frequency": "daily"
+    }
+   },
+   "derived_v04": {
+    "settlement_daily_chg": "Δ1 settlement_actual",
+    "settlement_5d_chg": "Δ5 sessions",
+    "settlement_20d_chg": "Δ20 sessions",
+    "term_repo_settled": "TR_ALLOCATED_AMOUNT at TR_SETTLEMENT_DATE (+)",
+    "term_repo_matured": "− at TR_MATURITY_DATE",
+    "term_repo_net_daily": "settled + matured",
+    "term_repo_outstanding": "cumulative net over business days (3-year window)",
+    "term_repo_net_5d": "5-session sum",
+    "overnight_ops_net_daily": "OR (+/−) and ORR (−/+) by settlement and maturity",
+    "components_v04": "shadow score published in signals.components_v04: settlement_5d_pct, settlement_20d_pct, term_repo_net_5d_pct (flows) and term_repo_dependence (level), all as % of weekly reserves (V36636). NOT in the live score until the v0.4 replay calibrates the cuts"
    }
   },
   "fiscal": {
@@ -432,6 +555,21 @@
     "frequency": "monthly",
     "source": "fiscal_monitor",
     "status": "pending"
+   },
+   "derived_v04": {
+    "issued_private": "(AUC_*_AMOUNT − AUC_*_BOC_PURCHASE) at issue date (− reserves)",
+    "matured_private": "same private-held amount at maturity (+ reserves)",
+    "repurchased_private": "AUC_BOND_S_AMOUNT_REPURCHASED at settlement (+)",
+    "boc_primary_purchase": "BoC take at auction (government ↔ BoC, no reserve effect)",
+    "net_issuance_private_daily": "−issued + matured + repurchased (daily; announced auctions excluded)",
+    "net_issuance": "5-session sum (replaces the v0.3 placeholder); coupons pending (C3)",
+    "maturities_next_4w": "calendar of private-held maturities ahead",
+    "rg_am_placed": "AUC_RGAM_AMOUNT at settlement (+)",
+    "rg_am_matured": "− at maturity",
+    "rg_am_net_daily": "placed + matured",
+    "rg_am_outstanding": "cumulative net",
+    "rg_am_coverage": "auction coverage (mean per day)",
+    "components_v04": "shadow: net_issuance_5d_pct, rg_am_net_5d_pct (% of weekly reserves) + fiscal_flow_z (v0.3). NOT in the live score until the replay"
    }
   },
   "banking": {
@@ -612,6 +750,23 @@
     "corra_p5": {
      "id": "CORRA_RATE_AT_PERCENTILE_5",
      "label": "CORRA 5th percentile rate"
+    },
+    "corra_p25": {
+     "id": "CORRA_RATE_AT_PERCENTILE_25",
+     "label": "CORRA 25th percentile",
+     "usd_analog": "SOFR p25",
+     "verified": "2026-09-10 (group CORRA)"
+    },
+    "corra_p75": {
+     "id": "CORRA_RATE_AT_PERCENTILE_75",
+     "label": "CORRA 75th percentile",
+     "usd_analog": "SOFR p75",
+     "verified": "2026-09-10 (group CORRA)"
+    },
+    "corra_compounded_index": {
+     "id": "CORRA.COMPOUNDED.INDEX",
+     "label": "CORRA Compounded Index",
+     "verified": "2026-09-10 (117.16077410 on 2026-09-09)"
     }
    },
    "derived": {
@@ -645,6 +800,10 @@
      "formula": "(CORRA_RATE_AT_PERCENTILE_95 - CORRA_RATE_AT_PERCENTILE_5) * 100",
      "label": "CORRA intraday dispersion",
      "role": "interbank stress from price distribution (replaces the rejected deposits-of-banks proxy)"
+    },
+    "corra_iqr_bps": {
+     "formula": "(corra_p75 − corra_p25) × 100",
+     "note": "v0.4 C6: interquartile dispersion of CORRA; context"
     }
    },
    "thresholds": {
@@ -906,7 +1065,8 @@
    "green-count regime mixing prices with liquidity",
    "absolute-only thresholds duplicated in frontend",
    "null treated as amber"
-  ]
+  ],
+  "v0.4": "2026-09-10: operation-level sources (Valet groups, daily indicators archive), net issuance to the private sector, RG AM auctions, CORRA IQR; shadow components only — CAMBIOS_V04_PENDIENTES.md C1–C6, VERIFICACIONES_V04.md"
  },
  "desk_exports": {
   "note": "series fetched by the CAD ingestion but consumed by the Desk / Cross-Market tabs, not by the CAD liquidity tab",

@@ -97,6 +97,57 @@ class ValetProvider:
         return {k: clean(v) for k, v in out.items()}
 
 
+class ValetGroupProvider:
+    """Valet group observations (operation-level tables: term repos, OR/ORR, Receiver General auctions, T-bill / bond
+    auctions, repurchases). Verified 2026-09-10: the data live at /observations/group/<G>/json; /groups/<G>/json is
+    metadata only. Fixture mode reads fixtures/<ccy>/<GROUP>.csv (one row per operation, columns = series names)."""
+    name = "valet_group"
+
+    def __init__(self, base_url: str = "https://www.bankofcanada.ca/valet", fixtures_dir: Optional[str] = None):
+        self.base = base_url.rstrip("/")
+        self.fixtures_dir = fixtures_dir
+
+    def fetch(self, group: str, start_date: Optional[str] = None) -> List[dict]:
+        from .ops_cad import parse_group_json, rows_from_csv
+        if self.fixtures_dir:
+            p = os.path.join(self.fixtures_dir, "%s.csv" % group)
+            if not os.path.exists(p):
+                return []
+            return rows_from_csv(open(p, encoding="utf-8").read())
+        q = "?start_date=%s" % start_date if start_date else ""
+        j = _get("%s/observations/group/%s/json%s" % (self.base, group, q), timeout=90)
+        return parse_group_json(j)
+
+
+class MarketOpsIndicatorsProvider:
+    """Bank of Canada 'Indicators related to market operations' — daily Lynx settlement balances, OR/ORR, term repos and
+    securities lending as an HTML table with a 6-business-day rolling window (no Valet series, no download; verified
+    2026-09-10). run.py archives every fetch into history/cad/market_ops_indicators.csv so the daily history accumulates."""
+    name = "boc_market_ops_indicators"
+
+    def __init__(self, url: str = "https://www.bankofcanada.ca/rates/indicators/market-operations-indicators/", fixtures_dir: Optional[str] = None):
+        self.url, self.fixtures_dir = url, fixtures_dir
+
+    def fetch(self) -> Dict[str, Series]:
+        from .ops_cad import parse_indicators_html, IND_KEYS
+        if self.fixtures_dir:
+            p = os.path.join(self.fixtures_dir, "market_ops_indicators.csv")
+            out: Dict[str, List] = {k: [] for k in IND_KEYS.values()}
+            if os.path.exists(p):
+                with open(p, encoding="utf-8") as f:
+                    for row in csv.DictReader(f):
+                        for k in out:
+                            v = row.get(k, "")
+                            if v not in ("", None):
+                                out[k].append((row["date"], float(v)))
+            return {k: clean(v) for k, v in out.items()}
+        html = _get(self.url, as_json=False, timeout=60)
+        got = parse_indicators_html(html)
+        if not got.get("settlement_actual"):
+            raise ProviderError("market ops indicators: settlement balances table not found (STRUCTURE CHANGE?)")
+        return got
+
+
 # ───────────────────── Receiver General Daily Cash Balance ─────────────────────
 class ReceiverGeneralProvider:
     """Public Services and Procurement Canada — Daily Cash Balance (open.canada.ca dataset 477bf61b…).

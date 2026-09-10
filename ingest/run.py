@@ -146,7 +146,96 @@ def fetch_cad(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         for i in ids:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, bk_raw.get(i, []))
 
+    # ── v0.4 · operation-level sources (daily + weekly lanes): Valet groups, daily indicators table ──
+    if "daily" in lanes or "weekly" in lanes:
+        _cad_v04(cfg, a, blocks, hist_dir, oplog, errors, rates_raw)
     return blocks
+
+
+def _cad_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, errors: List[str], rates_raw: Dict[str, Series]) -> None:
+    """CAD v0.4 (CAMBIOS C1–C6): daily settlement balances archive, term repo / OR / ORR / RG AM auctions, net issuance to the
+    private sector, CORRA IQR. Blocks are enriched in place; live scores untouched (shadow components_v04)."""
+    from .providers import ValetGroupProvider, MarketOpsIndicatorsProvider
+    from . import ops_cad as O
+    from . import blocks_cad_v04 as V4
+    v04 = cfg["sources"].get("valet_groups", {})
+    gp = ValetGroupProvider(cfg["sources"]["valet"]["base_url"], fixtures_dir=a.fixtures)
+    start = None if a.backfill else v04.get("incremental_start")
+    rows: Dict[str, List[dict]] = {}
+    for key, group in O.GROUPS.items():
+        try:
+            rows[key] = gp.fetch(group, start_date=start)
+        except ProviderError as e:
+            rows[key] = []
+            errors.append("valet_group[%s]: %s" % (group, e))
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "valet_group", "group": group, "error": str(e)})
+    # incremental runs merge with the archived rows so flows keep their history
+    if not a.fixtures:
+        for key, group in O.GROUPS.items():
+            p = os.path.join(hist_dir, "groups", "%s.csv" % group)
+            rows[key] = _merge_group_rows(p, rows[key])
+    # daily indicators table → archive
+    ind_path = os.path.join(hist_dir, "market_ops_indicators.csv")
+    try:
+        fresh = MarketOpsIndicatorsProvider(cfg["sources"].get("market_ops_indicators", {}).get("url", MarketOpsIndicatorsProvider().url), fixtures_dir=a.fixtures).fetch()
+        ind = O.merge_archive(ind_path, fresh) if not a.fixtures else fresh
+    except ProviderError as e:
+        errors.append("market_ops_indicators: %s" % e)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "market_ops_indicators", "error": str(e)})
+        ind = O.read_archive(ind_path)
+    from datetime import date, timedelta
+    today = date.today().isoformat()
+    days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
+    ops: Dict[str, Series] = {}
+    ops.update(O.term_repo_series(rows.get("term_repo", []), days))
+    ops.update(O.or_orr_series(rows.get("or", []), rows.get("orr", [])))
+    rg = O.rgam_series(rows.get("rgam", []), days)
+    iss = O.issuance_series(rows.get("tbill", []), rows.get("bond", []), rows.get("bond_repurchase", []), start=v04.get("issuance_start", "2005-01-01"), days=days)
+    cb = blocks.get("central_bank")
+    reserves_w: Series = []
+    if cb:
+        reserves_w = clean([(d, v) for d, v in zip(cb["history"]["dates"], cb["history"]["rows"].get("reserves", [])) if v is not None])
+        V4.enrich_central_bank(cb, cfg, ind, ops)
+    if blocks.get("fiscal"):
+        V4.enrich_fiscal(blocks["fiscal"], cfg, iss, rg, reserves_w)
+    if blocks.get("rates"):
+        V4.enrich_rates(blocks["rates"], cfg, rates_raw)
+    for k in ("term_repo_net_daily", "term_repo_outstanding", "overnight_ops_net_daily"):
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ops.get(k, []))
+    for k in ("rg_am_net_daily", "rg_am_outstanding"):
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, rg.get(k, []))
+    for k in ("net_issuance_private_daily", "issued_private", "matured_private"):
+        append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, iss.get(k, []))
+    E.log_event(oplog, "CAD_V04", "system", {"groups": {k: len(v) for k, v in rows.items()}, "indicator_days": len(ind.get("settlement_actual", [])),
+                                             "net_issuance_last": iss.get("net_issuance_private_daily", [])[-1] if iss.get("net_issuance_private_daily") else None})
+
+
+def _merge_group_rows(path: str, fresh: List[dict]) -> List[dict]:
+    """append-only archive of group observations keyed by the group's id column (first column ending in '_id' or 'id')"""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    old: List[dict] = []
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            old = [dict(r) for r in csv.DictReader(f)]
+    allrows = old + fresh
+    if not allrows:
+        return []
+    keycol = next((c for c in allrows[0].keys() if c.endswith("_id") or c == "id"), None)
+    merged: Dict[str, dict] = {}
+    for r in allrows:
+        k = r.get(keycol) if keycol else json.dumps(r, sort_keys=True)
+        merged[k] = r
+    cols: List[str] = []
+    for r in merged.values():
+        for c in r:
+            if c not in cols:
+                cols.append(c)
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=cols)
+        w.writeheader()
+        for r in merged.values():
+            w.writerow(r)
+    return list(merged.values())
 
 
 def fetch_gbp(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
