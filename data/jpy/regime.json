@@ -1,15 +1,15 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-09T23:55:45+00:00",
- "as_of": "2026-09-08",
+ "generated_at": "2026-09-10T07:27:00+00:00",
+ "as_of": "2026-09-09",
  "config_version": "0.2.3",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.398,
+ "weighted_score": 0.247,
  "block_scores": {
   "central_bank": 0.5,
   "rates": 0.75,
-  "fiscal": -0.2,
+  "fiscal": -0.95,
   "banking": 0.0
  },
  "weights": {
@@ -25,8 +25,8 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-08",
-   "detail": "CAB 4151800.0 · excess/required 27.46x (SAFE) · ΔCAB d/d -9400.0 · 20d -39600.0 (SAFE) · JGB purchases vs plan -0.021 · CLF 0.0",
+   "as_of": "2026-09-09",
+   "detail": "CAB 4116600.0 · excess/required 27.27x (SAFE) · ΔCAB d/d -35200.0 · 20d -58100.0 (SAFE) · JGB purchases vs plan -0.021 · CLF 0.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.75,
@@ -44,10 +44,14 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-08",
+    "as_of": "2026-09-09",
     "recent": [
      [
       "2026-09-08",
+      0.5
+     ],
+     [
+      "2026-09-09",
       0.5
      ]
     ],
@@ -74,13 +78,13 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "score": -0.2,
+   "regime": "DRAIN",
+   "score": -0.95,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-10",
-   "detail": "flow -11000.0 (Z -0.26) · 5d -44200.0 · 20d -66100.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.788",
-   "raw_regime": "NEUTRAL",
+   "detail": "flow -35900.0 (Z -1.2617) · 5d -45800.0 · 20d -85100.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.788",
+   "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.24,
     "injection_exit": 0.13,
@@ -92,16 +96,16 @@
     "drain": "provisional_era_corta"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": -0.2,
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -0.95,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-10",
     "recent": [
      [
       "2026-09-10",
-      -0.2
+      -0.95
      ]
     ],
     "pending_days": null
@@ -110,7 +114,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": -0.2
+     "fiscal_flow_z": -0.95
     },
     "level": {},
     "weights": {},
@@ -118,14 +122,14 @@
      -1.5,
      1.5
     ],
-    "score_v02": -0.2,
-    "score_flows_only": -0.2
+    "score_v02": -0.95,
+    "score_flows_only": -0.95
    }
   },
   "general": {
    "regime": "NEUTRAL",
-   "score": 0.22,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 110 weeks < 150); dual score +0.22 shown for context",
+   "score": -0.08,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 110 weeks < 150); dual score -0.08 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -165,6 +169,7 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_QT",
+  "FISCAL_BIG_DAY",
   "FX_INTERVENTION_SUSPECT"
  ],
  "overlays": {
@@ -343,7 +348,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
