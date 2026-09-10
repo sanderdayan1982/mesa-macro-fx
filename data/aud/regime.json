@@ -1,14 +1,14 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-09T23:44:07+00:00",
- "as_of": "2026-09-08",
+ "generated_at": "2026-09-10T07:29:11+00:00",
+ "as_of": "2026-09-09",
  "config_version": "0.2.2",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.233,
+ "weighted_score": 0.171,
  "block_scores": {
   "central_bank": 0.67,
-  "rates": 0.25,
+  "rates": 0.0,
   "fiscal": -0.39,
   "banking": 0.0
  },
@@ -25,8 +25,8 @@
    "score": 0.67,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-08",
-   "detail": "ES SAFE (above demand range) · ΔES d/d 3494.0 · BS liq NEUTRAL · OMO/ES 0.2519 · SF+25 0.0",
+   "as_of": "2026-09-09",
+   "detail": "ES SAFE (above demand range) · ΔES d/d 775.0 · BS liq NEUTRAL · OMO/ES 0.2455 · SF+25 0.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.0,
@@ -44,10 +44,14 @@
     "effective_score": 0.67,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-08",
+    "as_of": "2026-09-09",
     "recent": [
      [
       "2026-09-08",
+      0.67
+     ],
+     [
+      "2026-09-09",
       0.67
      ]
     ],
@@ -124,7 +128,7 @@
   "general": {
    "regime": "NEUTRAL",
    "score": 0.246,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 73 weeks < 150); dual score +0.25 shown for context",
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 74 weeks < 150); dual score +0.25 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -151,7 +155,7 @@
    "engine": "0.3",
    "agreement_only": true,
    "era_start": "2025-04-09",
-   "era_weeks": 73,
+   "era_weeks": 74,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -317,8 +321,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
-  "backfill": true,
+  "lane": "daily",
+  "backfill": false,
   "errors": []
  }
 }
