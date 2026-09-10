@@ -448,6 +448,14 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
     days = O.business_days((date.today() - timedelta(days=3 * 365)).isoformat(), today)
 
     def _get(url: str, binary: bool = False, timeout: int = 120):
+        """RBA: plain requests. AOFM (Akamai): the Chrome-impersonating ladder from providers_nzd (curl_cffi → curl → requests), 2 tries, then the
+        verified fixture file as fallback — the AOFM files are full histories, so a stale copy is labelled, never invented."""
+        if "aofm.gov.au" in url:
+            from .providers_nzd import _http as _ladder
+            try:
+                return _ladder(url, timeout=min(timeout, 60), retries=2, binary=binary)
+            except Exception as e:  # noqa
+                raise ProviderError("aofm: %s" % e)
         import requests  # type: ignore
         from .providers import UA
         r = requests.get(url, headers=dict(UA, Accept="*/*"), timeout=timeout)
@@ -491,32 +499,63 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
             lines = O.face_value_from_csv(os.path.join(hist_fx, "aofm_tb_face_value_by_line.csv"))
         else:
             try:
-                links = O.discover_links(_get(O.DATA_HUB))
+                links = O.discover_links(_get(O.DATA_HUB, timeout=45))
                 links_note = "resolved on the Data Hub: " + ", ".join("%s=%s" % (k, v.rsplit("/", 2)[-2]) for k, v in links.items())
             except Exception as e:  # noqa
                 links = {k: v[1] for k, v in O.AOFM_FILES.items()}
                 links_note = "Data Hub unreachable (%s): fallback URLs verified 2026-09-10" % e
-            for k, key in (("tb", "tb_issuance"), ("tn", "tn_issuance"), ("tib", "tib_issuance")):
-                blob = _get(links[key], binary=True, timeout=180)
-                _snapshot(raw_dir, "aofm_%s.xlsx" % key, blob)
+            fallback_used = []
+            aofm_down = [False]  # after one failed download the site is treated as down for this run (no 12-minute wall of timeouts)
+
+            def _aofm(url, timeout=60):
+                if aofm_down[0]:
+                    raise ProviderError("aofm skipped: site unreachable earlier in this run")
+                try:
+                    return _get(url, binary=True, timeout=timeout)
+                except Exception:
+                    aofm_down[0] = True
+                    raise
+            for k, key, fn in (("tb", "tb_issuance", "aofm_treasury_bonds_issuance.xlsx"), ("tn", "tn_issuance", "aofm_treasury_notes_issuance.xlsx"), ("tib", "tib_issuance", "aofm_treasury_indexed_bonds_issuance.xlsx")):
+                cache = os.path.join(hist_dir, "aofm_%s.xlsx" % key)
+                try:
+                    blob = _aofm(links[key])
+                    _snapshot(raw_dir, "aofm_%s.xlsx" % key, blob)
+                    os.makedirs(hist_dir, exist_ok=True)
+                    open(cache, "wb").write(blob)  # last good copy for the next timeout
+                except Exception as e:  # noqa
+                    errors.append("aofm_%s: %s (using the last good copy)" % (key, e))
+                    src_path = cache if os.path.exists(cache) else os.path.join(hist_fx, fn)
+                    blob = open(src_path, "rb").read()
+                    fallback_used.append("%s←%s" % (key, "history" if src_path == cache else "fixture 2026-09-10"))
                 recs[k] = O.parse_transactions(xlsx_sheets(blob)["Transactions"])
                 _time.sleep(1.5)
+            if fallback_used:
+                links_note += " · FALLBACK (AOFM unreachable): " + ", ".join(fallback_used)
             for k, key in (("tb", "tb_buybacks"), ("tib", "tib_buybacks")):
                 try:
-                    blob = _get(links[key], binary=True, timeout=120)
+                    blob = _aofm(links[key])
                     _snapshot(raw_dir, "aofm_%s.xlsx" % key, blob)
                     bb[k] = O.parse_transactions(xlsx_sheets(blob)["Transactions"])
                     for r in bb[k]:
                         r["method"] = r.get("tender number / buyback method", "")
                 except Exception as e:  # noqa
-                    errors.append("aofm_%s: %s" % (key, e))
+                    errors.append("aofm_%s: %s (using the fixture)" % (key, e))
+                    bb[k] = O.records_from_csv(os.path.join(hist_fx, "aofm_%s_buybacks.csv" % k), "buyback")
                 _time.sleep(1.5)
             try:
-                blob = _get(links["tb_portfolio"], binary=True, timeout=180)
+                blob = _aofm(links["tb_portfolio"])
                 _snapshot(raw_dir, "aofm_tb_portfolio.xlsx", blob)
                 lines = O.parse_face_value_sheet(xlsx_sheets(blob)["FaceValue"])
+                O_lines_path = os.path.join(hist_dir, "aofm_tb_face_value_by_line.csv")
+                with open(O_lines_path, "w", newline="", encoding="utf-8") as f:
+                    w = csv.DictWriter(f, fieldnames=["date", "maturity", "coupon", "face"])
+                    w.writeheader()
+                    for l in lines:
+                        w.writerow(l)
             except Exception as e:  # noqa
-                errors.append("aofm_tb_portfolio: %s" % e)
+                errors.append("aofm_tb_portfolio: %s (using the last good copy)" % e)
+                cache = os.path.join(hist_dir, "aofm_tb_face_value_by_line.csv")
+                lines = O.face_value_from_csv(cache if os.path.exists(cache) else os.path.join(hist_fx, "aofm_tb_face_value_by_line.csv"))
     except Exception as e:  # noqa
         errors.append("aofm_v04: %s" % e)
         E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "aofm_v04", "error": str(e)})
