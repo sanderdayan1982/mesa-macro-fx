@@ -63,6 +63,8 @@ table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font)
   <div class="cards" id="cards"></div>
   <h2>Jefe de mesa — convicción por la pata BC (banco central)</h2>
   <div class="tbl" id="jefe"></div>
+  <h2>Telegram — últimos envíos</h2>
+  <div id="outbox"></div>
   <div class="src">Lee sólo los JSON publicados: data/&lt;ccy&gt;/agent.json, regime.json, quality.json y data/mesa/jefe.json. Frescura por bloque = source_health del último refresco; «antigüedad» = tiempo desde generated_at. Puerta = anti-invención del daily_log. Sin fuentes externas.</div>
 </div>
 <script>
@@ -82,6 +84,8 @@ async function load(){
   const D={};
   await Promise.all(CCYS.map(async c=>{const [a,r,q]=await Promise.all([get('../data/'+c+'/agent.json'),get('../data/'+c+'/regime.json'),get('../data/'+c+'/quality.json')]);D[c]={a,r,q};}));
   const J=await get('../data/mesa/jefe.json');
+  const OB=await get('../data/mesa/outbox.json');
+  $('outbox').innerHTML=OB&&OB.sent&&OB.sent.length?OB.sent.slice(-6).reverse().map(x=>`<div class="issue ${x.delivered?'ok':'err'}"><b>${x.ts.slice(0,16).replace('T',' ')}Z · ${x.tag} · ${x.delivered?'entregado':(x.note?'dry run (sin secretos)':'no entregado')}</b><br>${x.text.replace(/<[^>]+>/g,'').slice(0,400).replace(/\n/g,'<br>')}</div>`).join(''):'<div class="issue ok">Sin envíos todavía (data/mesa/outbox.json).</div>';
   let fresh=0,stale=0,unav=0,gates=0,gateFail=0,old=0,missing=0;const issues=[];
   const cards=CCYS.map(c=>{
     const {a,r,q}=D[c];const C=c.toUpperCase();
