@@ -17,12 +17,12 @@
 | variante | cobertura | semanas | corte inyección (entra/sale) | corte drenaje | cuota INY/NEU/DRE | estabilidad | B 4s ρ (p_boot) | B 12s ρ (p_boot) | B escasez 12s | acuerdo con A |
 |---|---|---|---|---|---|---|---|---|---|---|
 | A — v0.3 (banda CGNCR mensual) | 1.00 | 201 | 0.5 / 0.5 | -0.5 / -0.5 | 0.10 / 0.69 / 0.21 | estable | -0.166 (0.1374) | -0.258 (0.0565) | -0.333 (0.076) | — |
-| B — v0.4 base | 1.00 | 201 | 0.0782 / 0.0349 | -0.1636 / -0.1052 | 0.28 / 0.50 / 0.22 | provisional | -0.236 (0.0345) | -0.066 (0.6477) | -0.213 (0.3653) | 0.463 |
-| C — candidato ronda 1 | 0.94 | 190 | 0.3719 / 0.2181 | -0.3895 / -0.1754 | 0.23 / 0.51 / 0.20 | estable | 0.059 (0.4598) | 0.013 (0.8721) | -0.009 (0.942) | 0.384 |
+| B — v0.4 base | 0.0 | 0 | insuficiente (0 semanas con dato) | | | | | | | |
+| C — candidato ronda 1 | 0.0 | 0 | insuficiente (0 semanas con dato) | | | | | | | |
 
-- B · `net_issuance_5d` ← hist:net_issuance_private_daily · daily5 · retraso de publicación 1 d · cobertura 1.0 · conciliación: gilts + letras − APF − vencimientos − cupones, por liquidación (D2.1A/D2.2D/D1A)
-- C · `exchequer_residual_w` ← hist:exchequer_residual_weekly · weekly · retraso de publicación 7 d · cobertura 0.945 · conciliación: residual del Exchequer semanal (canal de renta)
+- B · `net_issuance_5d` ← hist:net_issuance_private_daily · daily5 · retraso de publicación 1 d · cobertura 0.0 · conciliación: gilts + letras − APF − vencimientos − cupones, por liquidación (D2.1A/D2.2D/D1A)
+- C · `exchequer_residual_w` ← hist:exchequer_residual_weekly · weekly · retraso de publicación 7 d · cobertura 0.0 · conciliación: residual del Exchequer semanal (canal de renta)
 
-**Selección (escalera de la ronda 1): B** — sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte provisional)
+**Selección (escalera de la ronda 1): A** — sólo una variante evaluable
 
 Robustez a revisiones (peldaño 3): no evaluable sin vintages archivados; el archivo por fecha de publicación empieza con el lote 2 (JPY tres columnas, BoC diario).

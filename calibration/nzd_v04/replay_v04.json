@@ -4,7 +4,7 @@
  "weeks": 210,
  "first": "2022-07-01",
  "last": "2026-09-03",
- "generated_at": "2026-09-10T23:10:34Z",
+ "generated_at": "2026-09-10T23:27:17Z",
  "truth": "stress_bps (v0.3 replay)",
  "blocks": {
   "central_bank": {
@@ -197,13 +197,82 @@
        "publication_lag_days": 1,
        "sign": 1,
        "reconciliation": "tenders por liquidación − letras vencidas − cupones al mercado (NZDM, D3 LSAP)",
-       "coverage": 0.071
+       "coverage": 0.705
       }
      },
-     "coverage_era": 0.071,
-     "weeks": 15,
-     "checks": [],
-     "status": "insuficiente (15 semanas con dato)"
+     "coverage_era": 0.705,
+     "weeks": 148,
+     "checks": [
+      "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
+     ],
+     "cuts": {
+      "injection_enter": -0.4682,
+      "injection_exit": -0.74,
+      "drain_enter": -1.8702,
+      "drain_exit": -1.519
+     },
+     "percentiles": {
+      "10": -2.1423,
+      "20": -1.8681,
+      "33": -1.5198,
+      "50": -1.0795,
+      "67": -0.739,
+      "80": -0.4683,
+      "90": 0.0
+     },
+     "shares": {
+      "INJECTION": 0.157,
+      "NEUTRAL": 0.39,
+      "DRAIN": 0.157,
+      "NO SIGNAL": 0.295
+     },
+     "spells": {
+      "switches": 56,
+      "mean_spell_weeks": 2.6,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 148,
+      "origins": 9,
+      "last_origin": "2026-08-20",
+      "cut_drift_last_over_iqr": 0.005,
+      "cut_drift_max_over_iqr": 0.245,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 0.91
+     },
+     "B": {
+      "4": {
+       "rho": 0.023,
+       "p": 0.7871,
+       "n": 144,
+       "p_block_bootstrap": 0.8076,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.142,
+       "p": 0.0996,
+       "n": 136,
+       "p_block_bootstrap": 0.1444,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": 0.012,
+       "p": 0.8887,
+       "n": 129,
+       "p_block_bootstrap": 0.91,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.16,
+       "p": 0.0801,
+       "n": 121,
+       "p_block_bootstrap": 0.1014,
+       "mmt_sign": true
+      }
+     }
     },
     "C": {
      "label": "candidato ronda 1",
@@ -214,89 +283,89 @@
        "publication_lag_days": 1,
        "sign": 1,
        "reconciliation": "proxy residual diario (conciliado D10 −7 mm)",
-       "coverage": 0.633
+       "coverage": 0.643
       }
      },
-     "coverage_era": 0.633,
-     "weeks": 133,
+     "coverage_era": 0.643,
+     "weeks": 135,
      "checks": [],
      "cuts": {
       "injection_enter": 4.2415,
-      "injection_exit": 1.5534,
+      "injection_exit": 1.5731,
       "drain_enter": -5.672,
-      "drain_exit": -4.0648
+      "drain_exit": -4.0675
      },
      "percentiles": {
-      "10": -8.9626,
-      "20": -5.6534,
-      "33": -4.066,
-      "50": -1.0118,
-      "67": 1.5621,
-      "80": 4.2401,
-      "90": 5.8446
+      "10": -9.4233,
+      "20": -5.6795,
+      "33": -4.0669,
+      "50": -1.2979,
+      "67": 1.5688,
+      "80": 4.2545,
+      "90": 5.8203
      },
      "shares": {
-      "INJECTION": 0.143,
+      "INJECTION": 0.148,
       "NEUTRAL": 0.357,
-      "DRAIN": 0.133,
-      "NO SIGNAL": 0.367
+      "DRAIN": 0.138,
+      "NO SIGNAL": 0.357
      },
      "spells": {
-      "switches": 60,
+      "switches": 61,
       "mean_spell_weeks": 2.2,
       "min_spell_weeks": 1
      },
      "stability": {
       "status": "estable",
-      "weeks": 133,
+      "weeks": 135,
       "origins": 8,
       "last_origin": "2026-08-20",
-      "cut_drift_last_over_iqr": 0.095,
-      "cut_drift_max_over_iqr": 0.157,
-      "state_agreement_last": 0.971,
-      "state_agreement_min": 0.906
+      "cut_drift_last_over_iqr": 0.032,
+      "cut_drift_max_over_iqr": 0.219,
+      "state_agreement_last": 0.986,
+      "state_agreement_min": 0.897
      },
      "B": {
       "4": {
-       "rho": 0.075,
-       "p": 0.4009,
-       "n": 129,
-       "p_block_bootstrap": 0.3963,
+       "rho": 0.069,
+       "p": 0.4362,
+       "n": 131,
+       "p_block_bootstrap": 0.4368,
        "mmt_sign": false
       },
       "12": {
-       "rho": -0.056,
-       "p": 0.5447,
-       "n": 121,
-       "p_block_bootstrap": 0.4983,
+       "rho": -0.054,
+       "p": 0.556,
+       "n": 123,
+       "p_block_bootstrap": 0.5082,
        "mmt_sign": true
       }
      },
      "B_scarcity_weeks": {
       "4": {
-       "rho": 0.072,
-       "p": 0.4476,
-       "n": 114,
-       "p_block_bootstrap": 0.4673,
+       "rho": 0.07,
+       "p": 0.4536,
+       "n": 116,
+       "p_block_bootstrap": 0.4803,
        "mmt_sign": false
       },
       "12": {
-       "rho": -0.043,
-       "p": 0.6603,
-       "n": 106,
-       "p_block_bootstrap": 0.6597,
+       "rho": -0.047,
+       "p": 0.6256,
+       "n": 108,
+       "p_block_bootstrap": 0.6167,
        "mmt_sign": true
       }
      }
     }
    },
    "agreement_with_A": {
-    "B": null,
-    "C": 0.406
+    "B": 0.284,
+    "C": 0.415
    },
    "selection": {
     "decision": "A",
-    "reason": "sin evidencia B y la variante v0.4 no cubre la era (cobertura None) → se mantiene v0.3"
+    "reason": "sin evidencia B y la variante v0.4 no cubre la era (cobertura 0.705) → se mantiene v0.3"
    },
    "note": null
   }
