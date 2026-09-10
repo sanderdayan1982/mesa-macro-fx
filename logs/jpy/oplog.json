@@ -1,6 +1,523 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-10T21:09:08+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 2
+   }
+  },
+  {
+   "timestamp": "2026-09-10T21:09:07+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "2ad4388cb92c89c8",
+    "degraded": [
+     "F4: no issuance fields"
+    ],
+    "streaks": {
+     "central_bank": 3,
+     "fiscal": 2,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-10T21:09:07+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": true,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "mof_jgb_yields: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv",
+     "mof_auction_results: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/Auction_Results_for_JGBs.xls",
+     "mof_auction_html: calendar 2601: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2601e.htm",
+     "mof_auction_html: calendar 2602: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2602e.htm",
+     "mof_auction_html: calendar 2603: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2603e.htm",
+     "mof_auction_html: calendar 2604: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2604e.htm",
+     "mof_auction_html: calendar 2605: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2605e.htm",
+     "mof_auction_html: calendar 2606: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2606e.htm",
+     "mof_auction_html: calendar 2607: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2607e.htm",
+     "mof_auction_html: calendar 2608: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2608e.htm",
+     "mof_auction_html: calendar 2609: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2609e.htm",
+     "mof_auction_html: calendar 2610: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2610e.htm",
+     "mof_its_weekly: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv",
+     "mof_treasury_receipts_payments: mof receipts 2024-04: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202404.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-05: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202405.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-06: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202406.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-07: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202407.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-08: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202408.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-09: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202409.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-10: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202410.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-11: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202411.xls",
+     "mof_treasury_receipts_payments: mof receipts 2024-12: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202412.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-01: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202501.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-02: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202502.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-03: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202503.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-04: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202504.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-05: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202505.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-06: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202506.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-07: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202507.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-08: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202508.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-09: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202509.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-10: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202510.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-11: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202511.xls",
+     "mof_treasury_receipts_payments: mof receipts 2025-12: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202512.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-01: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202601.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-02: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202602.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-03: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202603.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-04: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202604.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-05: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202605.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-06: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202606.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-07: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202607.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-08: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202608.xls",
+     "mof_treasury_receipts_payments: mof receipts 2026-09: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202609.xls",
+     "jpy_net_issuance: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/Auction_Results_for_JGBs.xls"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-10T21:09:07+00:00",
+   "type": "JPY_V04",
+   "category": "system",
+   "details": {
+    "daily_new": 230,
+    "daily_files": 232,
+    "ops_new": 718,
+    "ops": {
+     "last_date": "2026-09-10",
+     "lag_days": 0,
+     "ope_files": 231,
+     "daily_files": 232
+    },
+    "mei": {},
+    "juqp": "2026-09",
+    "net_issuance_last": null
+   }
+  },
+  {
+   "timestamp": "2026-09-10T21:09:07+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "jpy_net_issuance",
+    "error": "HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/Auction_Results_for_JGBs.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-09: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202609.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-08: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202608.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-07: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202607.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-06: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202606.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-05: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202605.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-04: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202604.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-03: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202603.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-02: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202602.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2026-01: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202601.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-12: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202512.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-11: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202511.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-10: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202510.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-09: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202509.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-08: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202508.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-07: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202507.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-06: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202506.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-05: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202505.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-04: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202504.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-03: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202503.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-02: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202502.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2025-01: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202501.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-12: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202412.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-11: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202411.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-10: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202410.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-09: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202409.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-08: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202408.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-07: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202407.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-06: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202406.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-05: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202405.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:56:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_treasury_receipts_payments",
+    "error": "mof receipts 2024-04: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202404.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:25:01+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_its_weekly",
+    "error": "failed after 3 tries: HTTP 503 for https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2610: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2610e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2609: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2609e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2608: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2608e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2607: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2607e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2606: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2606e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2605: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2605e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2604: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2604e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2603: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2603e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2602: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2602e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:23:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_html",
+    "error": "calendar 2601: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2601e.htm"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:13:28+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_auction_results",
+    "error": "failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/Auction_Results_for_JGBs.xls"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:11:12+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "mof_jgb_yields",
+    "error": "failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv"
+   }
+  },
+  {
+   "timestamp": "2026-09-10T20:10:06+00:00",
+   "type": "STRUCTURE_HASH",
+   "category": "system",
+   "details": {
+    "jd_latest": "2026-09-09",
+    "hash": "e52a046757370441"
+   }
+  },
+  {
    "timestamp": "2026-09-10T13:45:15+00:00",
    "type": "NOTIFY",
    "category": "system",
