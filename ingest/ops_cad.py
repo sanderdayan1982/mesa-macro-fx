@@ -254,7 +254,8 @@ def parse_indicators_html(html: str) -> Dict[str, Series]:
                 n = _num(v)
                 if n is not None:
                     out[key].append((d, n))
-        break
+        if out["settlement_actual"] or out["ind_term_repos"]:
+            break  # the first table on the page is the policy-rate table (also dated columns): keep scanning until the Lynx table
     return {k: clean(v) for k, v in out.items()}
 
 

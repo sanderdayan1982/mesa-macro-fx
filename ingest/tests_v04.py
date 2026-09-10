@@ -42,7 +42,7 @@ def main() -> int:
     tb = rows("AUC_TBILL_RESULTS")
     one = next(r for r in tb if r["AUC_TBILL_ISSUE_DATE"] == "1998-10-15" and r["AUC_TBILL_TERM_DAYS"] == "98")
     check(abs(float(one["AUC_TBILL_AMOUNT"]) - float(one["AUC_TBILL_BOC_PURCHASE"]) - 2475.0) < 1e-6, "private take = amount − BoC purchase (3 300 − 825)", fails)
-    html = '<table><tr><th></th><th>2026-09-08</th><th>2026-09-09</th><th>2026-09-10</th></tr><tr><td>Target (Available)</td><td></td><td></td><td></td></tr><tr><td>Actual</td><td>65,188</td><td>66,140</td><td></td></tr><tr><td>Term Repos</td><td>0.0</td><td>0.0</td><td>16,000.0</td></tr></table>'
+    html = '<table><tr><th></th><th>2024-12-12</th><th>2025-01-30</th><th>2025-03-13</th></tr><tr><td>Bank Rate</td><td>3.50</td><td>3.25</td><td>3.00</td></tr></table><table><tr><th></th><th>2026-09-08</th><th>2026-09-09</th><th>2026-09-10</th></tr><tr><td>Target (Available)</td><td></td><td></td><td></td></tr><tr><td>Actual</td><td>65,188</td><td>66,140</td><td></td></tr><tr><td>Term Repos</td><td>0.0</td><td>0.0</td><td>16,000.0</td></tr></table>'
     ind = O.parse_indicators_html(html)
     check(ind["settlement_actual"] == [("2026-09-08", 65188.0), ("2026-09-09", 66140.0)] and ind["ind_term_repos"][-1] == ("2026-09-10", 16000.0), "indicators table parser", fails)
     print("%d failures" % len(fails))
