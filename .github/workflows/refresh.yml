@@ -1,7 +1,7 @@
-# Mesa Macro FX — data refresh lanes (Desk Standard v0.3)
+# Mesa Macro FX — CAD refresh lanes (Desk Standard v0.3). Shown in Actions as "refresh-cad" (file kept as refresh.yml so run history and cron continue).
 # One workflow, a currency matrix, one concurrency group per currency so commits never collide.
 # Lanes (UTC): weekly Fri 19:00 (20:00 WAT) · daily Mon–Fri 21:30 (22:30 WAT) · monthly Mon 06:00 · manual dispatch.
-name: refresh-data
+name: refresh-cad
 on:
   schedule:
     - cron: "0 19 * * 5"      # weekly lane — BoC B2 balance sheet (Wednesday data, published Friday)
