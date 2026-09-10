@@ -970,6 +970,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     except Exception as e:  # the narrative never blocks the data refresh
         E.log_event(oplog, "AGENT_DAILY_LOG_ERROR", "system", {"error": str(e)})
         print("daily_log error: %s" % e)
+    # ── Telegram (config/notify.json): one message per transition; dry run without secrets ──
+    try:
+        from . import notify as NT
+        nres = NT.run_events(ccy, ROOT)
+        E.log_event(oplog, "NOTIFY", "system", nres)
+        print("notify mode=%s messages=%d delivered=%d" % (nres.get("mode"), nres.get("messages", 0), nres.get("ok", 0)))
+    except Exception as e:
+        E.log_event(oplog, "NOTIFY_ERROR", "system", {"error": str(e)})
+        print("notify error: %s" % e)
     save_json(os.path.join(data_dir, "oplog.json"), load_json(oplog) or {"entries": []})
 
     print("regime=%s score=%s flags=%s blocks=%s errors=%s" % (regime["regime"], regime["weighted_score"], regime["flags"], list(blocks), errors))
