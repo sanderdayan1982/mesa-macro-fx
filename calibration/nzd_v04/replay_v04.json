@@ -1,0 +1,304 @@
+{
+ "currency": "nzd",
+ "era_start": "2022-07-01",
+ "weeks": 210,
+ "first": "2022-07-01",
+ "last": "2026-09-03",
+ "generated_at": "2026-09-10T23:10:34Z",
+ "truth": "stress_bps (v0.3 replay)",
+ "blocks": {
+  "central_bank": {
+   "variants": {
+    "A": {
+     "label": "v0.3 (settlement cash Δ)",
+     "components": {},
+     "coverage_era": 1.0,
+     "weeks": 210,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.375,
+      "injection_exit": 0.25,
+      "drain_enter": -0.375,
+      "drain_exit": -0.25
+     },
+     "percentiles": {
+      "10": -0.5,
+      "20": -0.375,
+      "33": -0.25,
+      "50": 0.0,
+      "67": 0.25,
+      "80": 0.375,
+      "90": 0.5
+     },
+     "shares": {
+      "INJECTION": 0.271,
+      "NEUTRAL": 0.438,
+      "DRAIN": 0.29,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 93,
+      "mean_spell_weeks": 2.2,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 210,
+      "origins": 13,
+      "last_origin": "2026-08-20",
+      "cut_drift_last_over_iqr": 0.0,
+      "cut_drift_max_over_iqr": 0.0,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 0.942
+     },
+     "B": {
+      "4": {
+       "rho": 0.017,
+       "p": 0.8129,
+       "n": 206,
+       "p_block_bootstrap": 0.8486,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.06,
+       "p": 0.4007,
+       "n": 198,
+       "p_block_bootstrap": 0.4803,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": 0.015,
+       "p": 0.8419,
+       "n": 187,
+       "p_block_bootstrap": 0.8641,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.034,
+       "p": 0.6478,
+       "n": 179,
+       "p_block_bootstrap": 0.6932,
+       "mmt_sign": true
+      }
+     }
+    },
+    "B": {
+     "label": "v0.4 base",
+     "components": {
+      "omo_net_5d": {
+       "source": "hist:omo_net_daily",
+       "kind": "daily5",
+       "publication_lag_days": 1,
+       "sign": 1,
+       "reconciliation": "OMO por operación (D3); settlement cash = conciliación",
+       "coverage": 0.1
+      }
+     },
+     "coverage_era": 0.1,
+     "weeks": 21,
+     "checks": [],
+     "status": "insuficiente (21 semanas con dato)"
+    }
+   },
+   "agreement_with_A": {
+    "B": null
+   },
+   "selection": {
+    "decision": "A",
+    "reason": "sólo una variante evaluable"
+   },
+   "note": null
+  },
+  "fiscal": {
+   "variants": {
+    "A": {
+     "label": "v0.3 (R3 mensual + proxy)",
+     "components": {},
+     "coverage_era": 1.0,
+     "weeks": 210,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.25,
+      "injection_exit": 0.25,
+      "drain_enter": -0.5,
+      "drain_exit": -0.5
+     },
+     "percentiles": {
+      "10": -0.5,
+      "20": -0.5,
+      "33": 0.0,
+      "50": 0.0,
+      "67": 0.0,
+      "80": 0.25,
+      "90": 0.5
+     },
+     "shares": {
+      "INJECTION": 0.238,
+      "NEUTRAL": 0.519,
+      "DRAIN": 0.243,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 52,
+      "mean_spell_weeks": 4.0,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 210,
+      "origins": 13,
+      "last_origin": "2026-08-20",
+      "cut_drift_last_over_iqr": 0.0,
+      "cut_drift_max_over_iqr": 0.0,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 1.0
+     },
+     "B": {
+      "4": {
+       "rho": 0.073,
+       "p": 0.2969,
+       "n": 206,
+       "p_block_bootstrap": 0.3878,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.069,
+       "p": 0.3331,
+       "n": 198,
+       "p_block_bootstrap": 0.5102,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": 0.095,
+       "p": 0.1963,
+       "n": 187,
+       "p_block_bootstrap": 0.2854,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.044,
+       "p": 0.5581,
+       "n": 179,
+       "p_block_bootstrap": 0.6662,
+       "mmt_sign": true
+      }
+     }
+    },
+    "B": {
+     "label": "v0.4 base",
+     "components": {
+      "net_issuance_5d": {
+       "source": "hist:net_issuance_private_daily",
+       "kind": "daily5",
+       "publication_lag_days": 1,
+       "sign": 1,
+       "reconciliation": "tenders por liquidación − letras vencidas − cupones al mercado (NZDM, D3 LSAP)",
+       "coverage": 0.071
+      }
+     },
+     "coverage_era": 0.071,
+     "weeks": 15,
+     "checks": [],
+     "status": "insuficiente (15 semanas con dato)"
+    },
+    "C": {
+     "label": "candidato ronda 1",
+     "components": {
+      "residual_5d": {
+       "source": "hist:residual_flow_daily",
+       "kind": "daily5",
+       "publication_lag_days": 1,
+       "sign": 1,
+       "reconciliation": "proxy residual diario (conciliado D10 −7 mm)",
+       "coverage": 0.633
+      }
+     },
+     "coverage_era": 0.633,
+     "weeks": 133,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 4.2415,
+      "injection_exit": 1.5534,
+      "drain_enter": -5.672,
+      "drain_exit": -4.0648
+     },
+     "percentiles": {
+      "10": -8.9626,
+      "20": -5.6534,
+      "33": -4.066,
+      "50": -1.0118,
+      "67": 1.5621,
+      "80": 4.2401,
+      "90": 5.8446
+     },
+     "shares": {
+      "INJECTION": 0.143,
+      "NEUTRAL": 0.357,
+      "DRAIN": 0.133,
+      "NO SIGNAL": 0.367
+     },
+     "spells": {
+      "switches": 60,
+      "mean_spell_weeks": 2.2,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 133,
+      "origins": 8,
+      "last_origin": "2026-08-20",
+      "cut_drift_last_over_iqr": 0.095,
+      "cut_drift_max_over_iqr": 0.157,
+      "state_agreement_last": 0.971,
+      "state_agreement_min": 0.906
+     },
+     "B": {
+      "4": {
+       "rho": 0.075,
+       "p": 0.4009,
+       "n": 129,
+       "p_block_bootstrap": 0.3963,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.056,
+       "p": 0.5447,
+       "n": 121,
+       "p_block_bootstrap": 0.4983,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": 0.072,
+       "p": 0.4476,
+       "n": 114,
+       "p_block_bootstrap": 0.4673,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": -0.043,
+       "p": 0.6603,
+       "n": 106,
+       "p_block_bootstrap": 0.6597,
+       "mmt_sign": true
+      }
+     }
+    }
+   },
+   "agreement_with_A": {
+    "B": null,
+    "C": 0.406
+   },
+   "selection": {
+    "decision": "A",
+    "reason": "sin evidencia B y la variante v0.4 no cubre la era (cobertura None) → se mantiene v0.3"
+   },
+   "note": null
+  }
+ }
+}

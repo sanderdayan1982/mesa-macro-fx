@@ -1,0 +1,438 @@
+{
+ "currency": "chf",
+ "era_start": "2022-09-22",
+ "weeks": 207,
+ "first": "2022-09-23",
+ "last": "2026-09-04",
+ "generated_at": "2026-09-10T23:10:50Z",
+ "truth": "stress_bps (v0.3 replay)",
+ "blocks": {
+  "central_bank": {
+   "variants": {
+    "A": {
+     "label": "v0.3 (Δ GI semanal, cuota de absorción mensual)",
+     "components": {},
+     "coverage_era": 1.0,
+     "weeks": 207,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 1.0,
+      "injection_exit": 0.5,
+      "drain_enter": -0.5,
+      "drain_exit": -0.5
+     },
+     "percentiles": {
+      "10": -1.5,
+      "20": -0.5,
+      "33": 0.0,
+      "50": 0.0,
+      "67": 0.5,
+      "80": 1.0,
+      "90": 1.0
+     },
+     "shares": {
+      "INJECTION": 0.333,
+      "NEUTRAL": 0.42,
+      "DRAIN": 0.246,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 33,
+      "mean_spell_weeks": 6.1,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 207,
+      "origins": 12,
+      "last_origin": "2026-06-12",
+      "cut_drift_last_over_iqr": 0.0,
+      "cut_drift_max_over_iqr": 0.667,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 0.738
+     },
+     "B": {
+      "4": {
+       "rho": 0.018,
+       "p": 0.802,
+       "n": 203,
+       "p_block_bootstrap": 0.8351,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": 0.093,
+       "p": 0.1979,
+       "n": 195,
+       "p_block_bootstrap": 0.4393,
+       "mmt_sign": false
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      }
+     }
+    },
+    "B": {
+     "label": "v0.4 base",
+     "components": {
+      "fx_proxy_w": {
+       "source": "hist:fx_intervention_proxy_v04",
+       "kind": "weekly",
+       "publication_lag_days": 7,
+       "sign": 1,
+       "reconciliation": "ΔGI − operaciones − Confederación, semanas completas",
+       "coverage": 0.986
+      }
+     },
+     "coverage_era": 0.986,
+     "weeks": 204,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.5948,
+      "injection_exit": 0.2622,
+      "drain_enter": -0.7792,
+      "drain_exit": -0.4869
+     },
+     "percentiles": {
+      "10": -1.0996,
+      "20": -0.7802,
+      "33": -0.487,
+      "50": -0.1265,
+      "67": 0.2622,
+      "80": 0.604,
+      "90": 1.1932
+     },
+     "shares": {
+      "INJECTION": 0.222,
+      "NEUTRAL": 0.551,
+      "DRAIN": 0.213,
+      "NO SIGNAL": 0.014
+     },
+     "spells": {
+      "switches": 87,
+      "mean_spell_weeks": 2.3,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 204,
+      "origins": 12,
+      "last_origin": "2026-06-12",
+      "cut_drift_last_over_iqr": 0.001,
+      "cut_drift_max_over_iqr": 0.192,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 0.808
+     },
+     "B": {
+      "4": {
+       "rho": -0.014,
+       "p": 0.8462,
+       "n": 203,
+       "p_block_bootstrap": 0.8551,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.005,
+       "p": 0.9486,
+       "n": 195,
+       "p_block_bootstrap": 0.9525,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      }
+     }
+    },
+    "C": {
+     "label": "candidato ronda 1",
+     "components": {
+      "ops_net_5d": {
+       "source": "hist:ops_net_daily",
+       "kind": "daily5",
+       "publication_lag_days": 35,
+       "sign": 1,
+       "reconciliation": "Bills + repos por fecha; importes publicados ~35 días tras fin de mes (reloj de publicación)",
+       "coverage": 1.0
+      }
+     },
+     "coverage_era": 1.0,
+     "weeks": 207,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.7997,
+      "injection_exit": 0.4293,
+      "drain_enter": -0.9262,
+      "drain_exit": -0.4763
+     },
+     "percentiles": {
+      "10": -1.3473,
+      "20": -0.9163,
+      "33": -0.4767,
+      "50": -0.0509,
+      "67": 0.4294,
+      "80": 0.7914,
+      "90": 1.2029
+     },
+     "shares": {
+      "INJECTION": 0.237,
+      "NEUTRAL": 0.531,
+      "DRAIN": 0.232,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 90,
+      "mean_spell_weeks": 2.3,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 207,
+      "origins": 12,
+      "last_origin": "2026-06-12",
+      "cut_drift_last_over_iqr": 0.012,
+      "cut_drift_max_over_iqr": 0.165,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 0.769
+     },
+     "B": {
+      "4": {
+       "rho": -0.004,
+       "p": 0.952,
+       "n": 203,
+       "p_block_bootstrap": 0.9465,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.042,
+       "p": 0.5628,
+       "n": 195,
+       "p_block_bootstrap": 0.6002,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      }
+     }
+    }
+   },
+   "agreement_with_A": {
+    "B": 0.392,
+    "C": 0.396
+   },
+   "selection": {
+    "decision": "B",
+    "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable)"
+   },
+   "note": null
+  },
+  "fiscal": {
+   "variants": {
+    "A": {
+     "label": "v0.3 (saldos de la Confederación mensuales)",
+     "components": {},
+     "coverage_era": 1.0,
+     "weeks": 207,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.25,
+      "injection_exit": 0.25,
+      "drain_enter": -0.25,
+      "drain_exit": -0.25
+     },
+     "percentiles": {
+      "10": -0.5,
+      "20": 0.0,
+      "33": 0.0,
+      "50": 0.0,
+      "67": 0.0,
+      "80": 0.25,
+      "90": 0.5
+     },
+     "shares": {
+      "INJECTION": 0.213,
+      "NEUTRAL": 0.589,
+      "DRAIN": 0.198,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 27,
+      "mean_spell_weeks": 7.4,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 207,
+      "origins": 12,
+      "last_origin": "2026-06-12",
+      "cut_drift_last_over_iqr": 0.0,
+      "cut_drift_max_over_iqr": 0.0,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 1.0
+     },
+     "B": {
+      "4": {
+       "rho": -0.045,
+       "p": 0.5281,
+       "n": 203,
+       "p_block_bootstrap": 0.6092,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.164,
+       "p": 0.0223,
+       "n": 195,
+       "p_block_bootstrap": 0.1359,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      }
+     }
+    },
+    "B": {
+     "label": "v0.4 base",
+     "components": {
+      "net_issuance_5d": {
+       "source": "hist:net_issuance_private_daily",
+       "kind": "daily5",
+       "publication_lag_days": 2,
+       "sign": 1,
+       "reconciliation": "MMDRC + bonos por liquidación T+2 (EFV)",
+       "coverage": 1.0
+      }
+     },
+     "coverage_era": 1.0,
+     "weeks": 207,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.034,
+      "injection_exit": 0.0092,
+      "drain_enter": -0.0701,
+      "drain_exit": -0.0392
+     },
+     "percentiles": {
+      "10": -0.1133,
+      "20": -0.0695,
+      "33": -0.0392,
+      "50": -0.0106,
+      "67": 0.0092,
+      "80": 0.0339,
+      "90": 0.0556
+     },
+     "shares": {
+      "INJECTION": 0.246,
+      "NEUTRAL": 0.536,
+      "DRAIN": 0.217,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 49,
+      "mean_spell_weeks": 4.1,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 207,
+      "origins": 12,
+      "last_origin": "2026-06-12",
+      "cut_drift_last_over_iqr": 0.024,
+      "cut_drift_max_over_iqr": 0.647,
+      "state_agreement_last": 0.995,
+      "state_agreement_min": 0.769
+     },
+     "B": {
+      "4": {
+       "rho": 0.077,
+       "p": 0.2738,
+       "n": 203,
+       "p_block_bootstrap": 0.3308,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": 0.182,
+       "p": 0.011,
+       "n": 195,
+       "p_block_bootstrap": 0.1079,
+       "mmt_sign": false
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": null,
+       "p": null,
+       "n": 1,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      }
+     }
+    }
+   },
+   "agreement_with_A": {
+    "B": 0.329
+   },
+   "selection": {
+    "decision": "B",
+    "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable) · aviso: ρ a 12 s con signo no MMT (0.182, no significativo)"
+   },
+   "note": null
+  }
+ }
+}

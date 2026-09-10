@@ -1,0 +1,18 @@
+# Replay v0.4 — resumen · 2026-09-10
+
+| divisa | bloque | decisión | variante | corte inyección (entra/sale, % del stock en 5 sesiones) | corte drenaje | estabilidad | B 12 s ρ (p_boot) | motivo |
+|---|---|---|---|---|---|---|---|---|
+| CAD | central_bank | A | v0.3 (Δ reserves semanal, Δ13s, dependencia de repos) | 0.375 / 0.05 | -0.55 / -0.325 | estable | -0.019 (0.7836) | sólo una variante evaluable · saldos de liquidación diarios sin histórico en fixtures (tabla HTML de 6 días) → fuera del replay hasta que el archivo diario madure |
+| CAD | fiscal | B | v0.4 base | 2.2412 / 0.9705 | -3.0433 / -1.5172 | estable | -0.103 (0.088) | sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable) |
+| GBP | central_bank | A | v0.3 (Δ reservas semanal, Δ13s, dependencia de repos) | 0.665 / 0.5 | -0.165 / 0.165 | provisional | -0.028 (0.8386) | sólo una variante evaluable |
+| GBP | fiscal | B | v0.4 base | 0.0782 / 0.0349 | -0.1636 / -0.1052 | provisional | -0.066 (0.6477) | sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte provisional) |
+| NZD | central_bank | A | v0.3 (settlement cash Δ) | 0.375 / 0.25 | -0.375 / -0.25 | estable | -0.06 (0.4803) | sólo una variante evaluable |
+| NZD | fiscal | A | v0.3 (R3 mensual + proxy) | 0.25 / 0.25 | -0.5 / -0.5 | estable | -0.069 (0.5102) | sin evidencia B y la variante v0.4 no cubre la era (cobertura None) → se mantiene v0.3 |
+| CHF | central_bank | B | v0.4 base | 0.5948 / 0.2622 | -0.7792 / -0.4869 | estable | -0.005 (0.9525) | sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable) |
+| CHF | fiscal | B | v0.4 base | 0.034 / 0.0092 | -0.0701 / -0.0392 | estable | 0.182 (0.1079) | sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable) · aviso: ρ a 12 s con signo no MMT (0.182, no significativo) |
+| AUD | central_bank | B | v0.4 base | 0.466 / 0.2928 | -0.4831 / -0.2075 | estable | 0.021 (0.8876) | sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable) |
+| AUD | fiscal | B | v0.4 base | 2.7248 / 1.6897 | -2.8347 / -1.8796 | estable | -0.077 (0.5842) | sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable) |
+| EUR | central_bank | A | v0.3 (exceso de liquidez diario) | 0.02 / -0.14 | -0.525 / -0.42 | estable | -0.158 (0.061) | sólo una variante evaluable · Δ cartera WFS semanal sin histórico archivado (monpol_wow) → empate 3-3 sin resolver aquí |
+| EUR | fiscal | B | v0.4 base | -0.1862 / -0.2764 | -0.6878 / -0.5041 | estable | -0.307 (0.0005) | método B a 12 s: ρ<0 con p_bootstrap ≤ 0,05 (B); cobertura 1.00 · aviso: la serie es de un solo signo — el estado 'inyección' es sólo menos drenaje (reembolsos y cupones de bonos fuera del flujo) |
+| JPY | central_bank | A | v0.3 (CAB 20d, d/d, banda del balance) | 0.75 / 0.75 | 0.25 / 0.25 | estable | 0.068 (0.5587) | sólo una variante evaluable · operaciones por operación (ope) sólo desde el backfill del runner → replay pendiente de ese archivo |
+| JPY | fiscal | B | v0.4 base | 0.6459 / 0.1934 | -1.0505 / -0.7651 | estable | 0.098 (0.3953) | sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable) |

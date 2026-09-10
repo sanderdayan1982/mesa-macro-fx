@@ -1,0 +1,269 @@
+{
+ "currency": "eur",
+ "era_start": "2022-09-14",
+ "weeks": 208,
+ "first": "2022-09-16",
+ "last": "2026-09-04",
+ "generated_at": "2026-09-10T23:11:14Z",
+ "truth": "stress_bps (v0.3 replay)",
+ "blocks": {
+  "central_bank": {
+   "variants": {
+    "A": {
+     "label": "v0.3 (exceso de liquidez diario)",
+     "components": {},
+     "coverage_era": 1.0,
+     "weeks": 208,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.02,
+      "injection_exit": -0.14,
+      "drain_enter": -0.525,
+      "drain_exit": -0.42
+     },
+     "percentiles": {
+      "10": -0.613,
+      "20": -0.523,
+      "33": -0.4184,
+      "50": -0.295,
+      "67": -0.1431,
+      "80": 0.016,
+      "90": 0.2415
+     },
+     "shares": {
+      "INJECTION": 0.245,
+      "NEUTRAL": 0.505,
+      "DRAIN": 0.25,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 65,
+      "mean_spell_weeks": 3.2,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 208,
+      "origins": 12,
+      "last_origin": "2026-06-05",
+      "cut_drift_last_over_iqr": 0.0,
+      "cut_drift_max_over_iqr": 0.45,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 0.558
+     },
+     "B": {
+      "4": {
+       "rho": -0.311,
+       "p": 0.0,
+       "n": 204,
+       "p_block_bootstrap": 0.0005,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.158,
+       "p": 0.0272,
+       "n": 196,
+       "p_block_bootstrap": 0.061,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": -0.311,
+       "p": 0.0,
+       "n": 204,
+       "p_block_bootstrap": 0.0005,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.158,
+       "p": 0.0272,
+       "n": 196,
+       "p_block_bootstrap": 0.061,
+       "mmt_sign": true
+      }
+     }
+    }
+   },
+   "agreement_with_A": {},
+   "selection": {
+    "decision": "A",
+    "reason": "sólo una variante evaluable · Δ cartera WFS semanal sin histórico archivado (monpol_wow) → empate 3-3 sin resolver aquí"
+   },
+   "note": "Δ cartera WFS semanal sin histórico archivado (monpol_wow) → empate 3-3 sin resolver aquí"
+  },
+  "fiscal": {
+   "variants": {
+    "A": {
+     "label": "v0.3 (déficit estructural GFS.Q + −ΔL050100)",
+     "components": {},
+     "coverage_era": 1.0,
+     "weeks": 208,
+     "checks": [],
+     "cuts": {
+      "injection_enter": 0.59,
+      "injection_exit": 0.46,
+      "drain_enter": -0.02,
+      "drain_exit": 0.1
+     },
+     "percentiles": {
+      "10": -0.11,
+      "20": -0.02,
+      "33": 0.1,
+      "50": 0.305,
+      "67": 0.46,
+      "80": 0.588,
+      "90": 0.683
+     },
+     "shares": {
+      "INJECTION": 0.236,
+      "NEUTRAL": 0.505,
+      "DRAIN": 0.26,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 58,
+      "mean_spell_weeks": 3.5,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 208,
+      "origins": 12,
+      "last_origin": "2026-06-05",
+      "cut_drift_last_over_iqr": 0.013,
+      "cut_drift_max_over_iqr": 0.317,
+      "state_agreement_last": 0.974,
+      "state_agreement_min": 0.654
+     },
+     "B": {
+      "4": {
+       "rho": -0.048,
+       "p": 0.4929,
+       "n": 204,
+       "p_block_bootstrap": 0.5492,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": 0.003,
+       "p": 0.9713,
+       "n": 196,
+       "p_block_bootstrap": 0.9695,
+       "mmt_sign": false
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": -0.048,
+       "p": 0.4929,
+       "n": 204,
+       "p_block_bootstrap": 0.5492,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": 0.003,
+       "p": 0.9713,
+       "n": 196,
+       "p_block_bootstrap": 0.9695,
+       "mmt_sign": false
+      }
+     }
+    },
+    "B": {
+     "label": "v0.4 base",
+     "components": {
+      "net_issuance_5d": {
+       "source": "hist:net_issuance_private_daily",
+       "kind": "daily5",
+       "publication_lag_days": 1,
+       "sign": 1,
+       "reconciliation": "DE+FR+ES+IT+UE(+ESM) por liquidación; ES/IT sólo desde 2022 (cobertura parcial antes)",
+       "coverage": 1.0
+      }
+     },
+     "coverage_era": 1.0,
+     "weeks": 208,
+     "checks": [
+      "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
+     ],
+     "cuts": {
+      "injection_enter": -0.1862,
+      "injection_exit": -0.2764,
+      "drain_enter": -0.6878,
+      "drain_exit": -0.5041
+     },
+     "percentiles": {
+      "10": -0.8683,
+      "20": -0.686,
+      "33": -0.5009,
+      "50": -0.3765,
+      "67": -0.2778,
+      "80": -0.1883,
+      "90": -0.0961
+     },
+     "shares": {
+      "INJECTION": 0.26,
+      "NEUTRAL": 0.5,
+      "DRAIN": 0.24,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 61,
+      "mean_spell_weeks": 3.4,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 208,
+      "origins": 12,
+      "last_origin": "2026-06-05",
+      "cut_drift_last_over_iqr": 0.09,
+      "cut_drift_max_over_iqr": 0.47,
+      "state_agreement_last": 0.954,
+      "state_agreement_min": 0.86
+     },
+     "B": {
+      "4": {
+       "rho": -0.173,
+       "p": 0.0132,
+       "n": 204,
+       "p_block_bootstrap": 0.018,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.307,
+       "p": 0.0,
+       "n": 196,
+       "p_block_bootstrap": 0.0005,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": -0.173,
+       "p": 0.0132,
+       "n": 204,
+       "p_block_bootstrap": 0.018,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.307,
+       "p": 0.0,
+       "n": 196,
+       "p_block_bootstrap": 0.0005,
+       "mmt_sign": true
+      }
+     }
+    }
+   },
+   "agreement_with_A": {
+    "B": 0.442
+   },
+   "selection": {
+    "decision": "B",
+    "reason": "método B a 12 s: ρ<0 con p_bootstrap ≤ 0,05 (B); cobertura 1.00 · aviso: la serie es de un solo signo — el estado 'inyección' es sólo menos drenaje (reembolsos y cupones de bonos fuera del flujo)"
+   },
+   "note": null
+  }
+ }
+}
