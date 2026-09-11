@@ -18,10 +18,10 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | A — v0.3 (−Δ depósitos del gobierno semanal) | 1.00 | 74 | 0.53 / 0.34 | -0.555 / -0.37 | 0.22 / 0.54 / 0.24 | estable | -0.097 (0.4203) | -0.075 (0.5732) | None (None) | — |
 | B — v0.4 base | 0.99 | 73 | 2.7248 / 1.6897 | -2.8347 / -1.8796 | 0.22 / 0.54 / 0.23 | estable | -0.1 (0.4178) | -0.077 (0.5842) | None (None) | 0.959 |
-| C — candidato ronda 1 | 0.0 | 0 | insuficiente (0 semanas con dato) | | | | | | | |
+| C — candidato ronda 1 | 1.00 | 74 | 0.2743 / -0.0099 | -1.3565 / -0.9077 | 0.20 / 0.55 / 0.24 | estable | -0.219 (0.091) | -0.084 (0.5602) | None (None) | 0.486 |
 
 - B · `govt_delta` ← scores:govt_account · dweekly · retraso de publicación 0 d · cobertura 0.986 · conciliación: depósitos del gobierno semanales (A1) — identidad
-- C · `net_issuance_v2_5d` ← hist:net_issuance_private_v2_daily · daily5 · retraso de publicación 1 d · cobertura 0.0 · conciliación: v2: tenders AOFM por Date Settled (caja) − notas/indexados − recompras + reembolsos y cupones de TB NETOS de la cartera del RBA (A3.1)
+- C · `net_issuance_v2_5d` ← hist:net_issuance_private_v2_daily · daily5 · retraso de publicación 1 d · cobertura 1.0 · conciliación: v2: tenders AOFM por Date Settled (caja) − notas/indexados − recompras + reembolsos y cupones de TB NETOS de la cartera del RBA (A3.1)
 
 **Selección (escalera de la ronda 1): B** — sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable)
 

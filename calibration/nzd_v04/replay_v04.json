@@ -4,7 +4,7 @@
  "weeks": 210,
  "first": "2022-07-01",
  "last": "2026-09-03",
- "generated_at": "2026-09-10T23:27:17Z",
+ "generated_at": "2026-09-11T02:33:01Z",
  "truth": "stress_bps (v0.3 replay)",
  "blocks": {
   "central_bank": {
@@ -197,79 +197,79 @@
        "publication_lag_days": 1,
        "sign": 1,
        "reconciliation": "tenders por liquidación − letras vencidas − cupones al mercado (NZDM, D3 LSAP)",
-       "coverage": 0.705
+       "coverage": 1.0
       }
      },
-     "coverage_era": 0.705,
-     "weeks": 148,
+     "coverage_era": 1.0,
+     "weeks": 210,
      "checks": [
       "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
      ],
      "cuts": {
-      "injection_enter": -0.4682,
-      "injection_exit": -0.74,
-      "drain_enter": -1.8702,
-      "drain_exit": -1.519
+      "injection_enter": -0.4283,
+      "injection_exit": -0.7124,
+      "drain_enter": -1.645,
+      "drain_exit": -1.1929
      },
      "percentiles": {
-      "10": -2.1423,
-      "20": -1.8681,
-      "33": -1.5198,
-      "50": -1.0795,
-      "67": -0.739,
-      "80": -0.4683,
+      "10": -2.0019,
+      "20": -1.6458,
+      "33": -1.193,
+      "50": -0.8291,
+      "67": -0.7122,
+      "80": -0.4278,
       "90": 0.0
      },
      "shares": {
-      "INJECTION": 0.157,
-      "NEUTRAL": 0.39,
-      "DRAIN": 0.157,
-      "NO SIGNAL": 0.295
+      "INJECTION": 0.224,
+      "NEUTRAL": 0.548,
+      "DRAIN": 0.229,
+      "NO SIGNAL": 0.0
      },
      "spells": {
-      "switches": 56,
-      "mean_spell_weeks": 2.6,
+      "switches": 65,
+      "mean_spell_weeks": 3.2,
       "min_spell_weeks": 1
      },
      "stability": {
       "status": "estable",
-      "weeks": 148,
-      "origins": 9,
+      "weeks": 210,
+      "origins": 13,
       "last_origin": "2026-08-20",
-      "cut_drift_last_over_iqr": 0.005,
-      "cut_drift_max_over_iqr": 0.245,
+      "cut_drift_last_over_iqr": 0.0,
+      "cut_drift_max_over_iqr": 0.571,
       "state_agreement_last": 1.0,
-      "state_agreement_min": 0.91
+      "state_agreement_min": 0.692
      },
      "B": {
       "4": {
-       "rho": 0.023,
-       "p": 0.7871,
-       "n": 144,
-       "p_block_bootstrap": 0.8076,
+       "rho": 0.007,
+       "p": 0.9231,
+       "n": 206,
+       "p_block_bootstrap": 0.9285,
        "mmt_sign": false
       },
       "12": {
-       "rho": -0.142,
-       "p": 0.0996,
-       "n": 136,
-       "p_block_bootstrap": 0.1444,
+       "rho": -0.115,
+       "p": 0.1077,
+       "n": 198,
+       "p_block_bootstrap": 0.1614,
        "mmt_sign": true
       }
      },
      "B_scarcity_weeks": {
       "4": {
-       "rho": 0.012,
-       "p": 0.8887,
-       "n": 129,
-       "p_block_bootstrap": 0.91,
-       "mmt_sign": false
+       "rho": -0.014,
+       "p": 0.8534,
+       "n": 187,
+       "p_block_bootstrap": 0.8506,
+       "mmt_sign": true
       },
       "12": {
-       "rho": -0.16,
-       "p": 0.0801,
-       "n": 121,
-       "p_block_bootstrap": 0.1014,
+       "rho": -0.133,
+       "p": 0.0762,
+       "n": 179,
+       "p_block_bootstrap": 0.1334,
        "mmt_sign": true
       }
      }
@@ -360,12 +360,12 @@
     }
    },
    "agreement_with_A": {
-    "B": 0.284,
+    "B": 0.343,
     "C": 0.415
    },
    "selection": {
     "decision": "A",
-    "reason": "sin evidencia B y la variante v0.4 no cubre la era (cobertura 0.705) → se mantiene v0.3"
+    "reason": "sin evidencia B y la variante v0.4 es de un solo signo (ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo e) → se mantiene v0.3"
    },
    "note": null
   }

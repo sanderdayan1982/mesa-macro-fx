@@ -4,7 +4,7 @@
  "weeks": 208,
  "first": "2022-09-16",
  "last": "2026-09-04",
- "generated_at": "2026-09-10T23:27:45Z",
+ "generated_at": "2026-09-11T02:33:16Z",
  "truth": "stress_bps (v0.3 replay)",
  "blocks": {
   "central_bank": {
@@ -178,90 +178,90 @@
        "publication_lag_days": 1,
        "sign": 1,
        "reconciliation": "DE+FR+ES+IT+UE(+ESM) por liquidación; ES/IT sólo desde 2022 (cobertura parcial antes)",
-       "coverage": 0.745
+       "coverage": 1.0
       }
      },
-     "coverage_era": 0.745,
-     "weeks": 155,
+     "coverage_era": 1.0,
+     "weeks": 208,
      "checks": [
       "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
      ],
      "cuts": {
-      "injection_enter": -0.3904,
-      "injection_exit": -0.5084,
-      "drain_enter": -0.9574,
-      "drain_exit": -0.8086
+      "injection_enter": -0.3388,
+      "injection_exit": -0.428,
+      "drain_enter": -0.9207,
+      "drain_exit": -0.7066
      },
      "percentiles": {
-      "10": -1.247,
-      "20": -0.9589,
-      "33": -0.8094,
-      "50": -0.6658,
-      "67": -0.5082,
-      "80": -0.3882,
-      "90": -0.2583
+      "10": -1.0391,
+      "20": -0.917,
+      "33": -0.7063,
+      "50": -0.5607,
+      "67": -0.4287,
+      "80": -0.3396,
+      "90": -0.2259
      },
      "shares": {
-      "INJECTION": 0.168,
-      "NEUTRAL": 0.409,
-      "DRAIN": 0.168,
-      "NO SIGNAL": 0.255
+      "INJECTION": 0.24,
+      "NEUTRAL": 0.514,
+      "DRAIN": 0.245,
+      "NO SIGNAL": 0.0
      },
      "spells": {
-      "switches": 29,
-      "mean_spell_weeks": 5.2,
+      "switches": 48,
+      "mean_spell_weeks": 4.2,
       "min_spell_weeks": 1
      },
      "stability": {
       "status": "provisional",
-      "weeks": 155,
-      "origins": 8,
+      "weeks": 208,
+      "origins": 12,
       "last_origin": "2026-06-05",
-      "cut_drift_last_over_iqr": 0.133,
-      "cut_drift_max_over_iqr": 0.472,
+      "cut_drift_last_over_iqr": 0.134,
+      "cut_drift_max_over_iqr": 0.59,
       "state_agreement_last": 0.964,
-      "state_agreement_min": 0.828
+      "state_agreement_min": 0.705
      },
      "B": {
       "4": {
-       "rho": -0.095,
-       "p": 0.2473,
-       "n": 151,
-       "p_block_bootstrap": 0.2679,
+       "rho": -0.162,
+       "p": 0.0206,
+       "n": 204,
+       "p_block_bootstrap": 0.0245,
        "mmt_sign": true
       },
       "12": {
-       "rho": -0.149,
-       "p": 0.0764,
-       "n": 143,
-       "p_block_bootstrap": 0.1344,
+       "rho": -0.251,
+       "p": 0.0004,
+       "n": 196,
+       "p_block_bootstrap": 0.004,
        "mmt_sign": true
       }
      },
      "B_scarcity_weeks": {
       "4": {
-       "rho": -0.095,
-       "p": 0.2473,
-       "n": 151,
-       "p_block_bootstrap": 0.2679,
+       "rho": -0.162,
+       "p": 0.0206,
+       "n": 204,
+       "p_block_bootstrap": 0.0245,
        "mmt_sign": true
       },
       "12": {
-       "rho": -0.149,
-       "p": 0.0764,
-       "n": 143,
-       "p_block_bootstrap": 0.1344,
+       "rho": -0.251,
+       "p": 0.0004,
+       "n": 196,
+       "p_block_bootstrap": 0.004,
        "mmt_sign": true
       }
      }
     }
    },
    "agreement_with_A": {
-    "B": 0.432
+    "B": 0.438
    },
    "selection": {
-    "decision": "A",
-    "reason": "sin evidencia B y la variante v0.4 no cubre la era (cobertura 0.745) → se mantiene v0.3"
+    "decision": "B",
+    "reason": "método B a 12 s: ρ<0 con p_bootstrap ≤ 0,05 (B); cobertura 1.00 · aviso: la serie es de un solo signo — el estado 'inyección' es sólo menos drenaje (reembolsos y cupones de bonos fuera del flujo)"
    },
    "note": null
   }

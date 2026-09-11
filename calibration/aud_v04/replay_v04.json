@@ -4,7 +4,7 @@
  "weeks": 74,
  "first": "2025-04-09",
  "last": "2026-09-02",
- "generated_at": "2026-09-10T23:27:40Z",
+ "generated_at": "2026-09-11T02:33:13Z",
  "truth": "stress_bps (v0.3 replay)",
  "blocks": {
   "central_bank": {
@@ -350,18 +350,85 @@
        "publication_lag_days": 1,
        "sign": 1,
        "reconciliation": "v2: tenders AOFM por Date Settled (caja) − notas/indexados − recompras + reembolsos y cupones de TB NETOS de la cartera del RBA (A3.1)",
-       "coverage": 0.0
+       "coverage": 1.0
       }
      },
-     "coverage_era": 0.0,
-     "weeks": 0,
+     "coverage_era": 1.0,
+     "weeks": 74,
      "checks": [],
-     "status": "insuficiente (0 semanas con dato)"
+     "cuts": {
+      "injection_enter": 0.2743,
+      "injection_exit": -0.0099,
+      "drain_enter": -1.3565,
+      "drain_exit": -0.9077
+     },
+     "percentiles": {
+      "10": -2.61,
+      "20": -1.4601,
+      "33": -0.9047,
+      "50": -0.4557,
+      "67": -0.0125,
+      "80": 0.2883,
+      "90": 1.121
+     },
+     "shares": {
+      "INJECTION": 0.203,
+      "NEUTRAL": 0.554,
+      "DRAIN": 0.243,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 29,
+      "mean_spell_weeks": 2.5,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 74,
+      "origins": 2,
+      "last_origin": "2026-07-01",
+      "cut_drift_last_over_iqr": 0.006,
+      "cut_drift_max_over_iqr": 0.006,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 1.0
+     },
+     "B": {
+      "4": {
+       "rho": -0.219,
+       "p": 0.0681,
+       "n": 70,
+       "p_block_bootstrap": 0.091,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.084,
+       "p": 0.5142,
+       "n": 62,
+       "p_block_bootstrap": 0.5602,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": null,
+       "p": null,
+       "n": 0,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": null,
+       "p": null,
+       "n": 0,
+       "p_block_bootstrap": null,
+       "mmt_sign": false
+      }
+     }
     }
    },
    "agreement_with_A": {
     "B": 0.959,
-    "C": null
+    "C": 0.486
    },
    "selection": {
     "decision": "B",

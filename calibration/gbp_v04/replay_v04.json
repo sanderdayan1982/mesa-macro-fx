@@ -4,7 +4,7 @@
  "weeks": 201,
  "first": "2022-11-02",
  "last": "2026-09-02",
- "generated_at": "2026-09-10T23:27:10Z",
+ "generated_at": "2026-09-11T02:32:55Z",
  "truth": "stress_bps (v0.3 replay)",
  "blocks": {
   "central_bank": {
@@ -205,13 +205,80 @@
        "publication_lag_days": 1,
        "sign": 1,
        "reconciliation": "gilts + letras − APF − vencimientos − cupones, por liquidación (D2.1A/D2.2D/D1A)",
-       "coverage": 0.0
+       "coverage": 0.766
       }
      },
-     "coverage_era": 0.0,
-     "weeks": 0,
+     "coverage_era": 0.766,
+     "weeks": 154,
      "checks": [],
-     "status": "insuficiente (0 semanas con dato)"
+     "cuts": {
+      "injection_enter": 0.1552,
+      "injection_exit": 0.0694,
+      "drain_enter": -0.1525,
+      "drain_exit": -0.0749
+     },
+     "percentiles": {
+      "10": -0.2324,
+      "20": -0.1527,
+      "33": -0.0748,
+      "50": 0.0,
+      "67": 0.0693,
+      "80": 0.1554,
+      "90": 0.2263
+     },
+     "shares": {
+      "INJECTION": 0.194,
+      "NEUTRAL": 0.383,
+      "DRAIN": 0.189,
+      "NO SIGNAL": 0.234
+     },
+     "spells": {
+      "switches": 32,
+      "mean_spell_weeks": 4.7,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 154,
+      "origins": 9,
+      "last_origin": "2026-07-22",
+      "cut_drift_last_over_iqr": 0.012,
+      "cut_drift_max_over_iqr": 0.319,
+      "state_agreement_last": 0.995,
+      "state_agreement_min": 0.769
+     },
+     "B": {
+      "4": {
+       "rho": -0.228,
+       "p": 0.0051,
+       "n": 150,
+       "p_block_bootstrap": 0.091,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.034,
+       "p": 0.6854,
+       "n": 142,
+       "p_block_bootstrap": 0.8466,
+       "mmt_sign": true
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": -0.424,
+       "p": 0.0173,
+       "n": 31,
+       "p_block_bootstrap": 0.1649,
+       "mmt_sign": true
+      },
+      "12": {
+       "rho": -0.155,
+       "p": 0.4038,
+       "n": 31,
+       "p_block_bootstrap": 0.6517,
+       "mmt_sign": true
+      }
+     }
     },
     "C": {
      "label": "candidato ronda 1",
@@ -222,22 +289,89 @@
        "publication_lag_days": 7,
        "sign": 1,
        "reconciliation": "residual del Exchequer semanal (canal de renta)",
-       "coverage": 0.0
+       "coverage": 1.0
       }
      },
-     "coverage_era": 0.0,
-     "weeks": 0,
+     "coverage_era": 1.0,
+     "weeks": 201,
      "checks": [],
-     "status": "insuficiente (0 semanas con dato)"
+     "cuts": {
+      "injection_enter": 0.3659,
+      "injection_exit": 0.1821,
+      "drain_enter": -0.3895,
+      "drain_exit": -0.1815
+     },
+     "percentiles": {
+      "10": -0.8097,
+      "20": -0.3895,
+      "33": -0.1815,
+      "50": -0.0265,
+      "67": 0.1821,
+      "80": 0.3659,
+      "90": 0.5939
+     },
+     "shares": {
+      "INJECTION": 0.239,
+      "NEUTRAL": 0.537,
+      "DRAIN": 0.224,
+      "NO SIGNAL": 0.0
+     },
+     "spells": {
+      "switches": 91,
+      "mean_spell_weeks": 2.2,
+      "min_spell_weeks": 1
+     },
+     "stability": {
+      "status": "estable",
+      "weeks": 201,
+      "origins": 12,
+      "last_origin": "2026-07-22",
+      "cut_drift_last_over_iqr": 0.0,
+      "cut_drift_max_over_iqr": 0.084,
+      "state_agreement_last": 1.0,
+      "state_agreement_min": 0.827
+     },
+     "B": {
+      "4": {
+       "rho": 0.069,
+       "p": 0.3371,
+       "n": 197,
+       "p_block_bootstrap": 0.3988,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": 0.047,
+       "p": 0.5182,
+       "n": 189,
+       "p_block_bootstrap": 0.5377,
+       "mmt_sign": false
+      }
+     },
+     "B_scarcity_weeks": {
+      "4": {
+       "rho": 0.016,
+       "p": 0.8911,
+       "n": 78,
+       "p_block_bootstrap": 0.9015,
+       "mmt_sign": false
+      },
+      "12": {
+       "rho": 0.068,
+       "p": 0.5541,
+       "n": 78,
+       "p_block_bootstrap": 0.5792,
+       "mmt_sign": false
+      }
+     }
     }
    },
    "agreement_with_A": {
-    "B": null,
-    "C": null
+    "B": 0.383,
+    "C": 0.388
    },
    "selection": {
     "decision": "A",
-    "reason": "sólo una variante evaluable"
+    "reason": "sin evidencia B y la variante v0.4 no cubre la era (cobertura 0.766) → se mantiene v0.3"
    },
    "note": null
   }
