@@ -1,8 +1,8 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-11T02:00:09+00:00",
+ "generated_at": "2026-09-11T05:27:10+00:00",
  "as_of": "2026-09-10",
- "config_version": "0.2.3",
+ "config_version": "0.2.4",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
  "weighted_score": 0.485,
@@ -82,41 +82,44 @@
    }
   },
   "fiscal": {
-   "regime": "DRAIN",
-   "score": 0.24,
+   "regime": "NEUTRAL",
+   "score": -0.974,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-11",
+   "as_of": "2026-09-10",
    "detail": "flow 3400.0 (Z 0.3253) · 5d -40200.0 · 20d -78300.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.788",
-   "raw_regime": "DRAIN",
+   "raw_regime": "NEUTRAL",
    "cuts": {
-    "injection_enter": 0.24,
-    "injection_exit": 0.13,
-    "drain_enter": -0.32,
-    "drain_exit": -0.14
+    "injection_enter": 0.6459,
+    "injection_exit": 0.1934,
+    "drain_enter": -1.0505,
+    "drain_exit": -0.7651
    },
    "evidence": {
-    "injection": "provisional_era_corta",
-    "drain": "provisional_era_corta"
+    "injection": "frecuencia_de_era",
+    "drain": "frecuencia_de_era",
+    "stability": "estable",
+    "B12_rho": 0.098,
+    "B12_p_bootstrap": 0.3953,
+    "coverage_era": 1.0,
+    "sign_warning": false,
+    "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -0.355,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.974,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-11",
+    "as_of": "2026-09-10",
     "recent": [
      [
       "2026-09-10",
-      -0.95
-     ],
-     [
-      "2026-09-11",
-      0.24
+      -0.974
      ]
     ],
-    "pending_days": null
+    "pending_days": null,
+    "engine": "0.4"
    },
    "components": {
     "mode": "sum",
@@ -132,12 +135,61 @@
     ],
     "score_v02": 0.24,
     "score_flows_only": 0.24
+   },
+   "engine": "0.4",
+   "component": {
+    "name": "treasury_5d",
+    "source": "treasury_realized_daily",
+    "kind": "daily5",
+    "lag": 0,
+    "sign": 1,
+    "denominator": "central_bank.cab_daily",
+    "reconciliation": "財政等要因 realizado (速報/確報) = −Δ cuenta del gobierno"
+   },
+   "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
+   "print": {
+    "raw": -40200.0,
+    "denominator": 4127100.0,
+    "denominator_date": "2026-09-10",
+    "today": "2026-09-11",
+    "note": null
+   },
+   "v03_shadow": {
+    "regime": "DRAIN",
+    "score": 0.24,
+    "raw_regime": "DRAIN",
+    "cuts": {
+     "injection_enter": 0.24,
+     "injection_exit": 0.13,
+     "drain_enter": -0.32,
+     "drain_exit": -0.14
+    },
+    "as_of": "2026-09-11",
+    "state": {
+     "confirmed": "DRAIN",
+     "raw": "DRAIN",
+     "effective_score": -0.355,
+     "candidate": null,
+     "candidate_since": null,
+     "as_of": "2026-09-11",
+     "recent": [
+      [
+       "2026-09-10",
+       -0.95
+      ],
+      [
+       "2026-09-11",
+       0.24
+      ]
+     ],
+     "pending_days": null
+    }
    }
   },
   "general": {
    "regime": "NEUTRAL",
    "score": 0.396,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 110 weeks < 150); dual score +0.40 shown for context",
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 110 weeks < 150); dual score +0.40 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -155,13 +207,16 @@
      "drain_exit": 0.25
     },
     "fiscal": {
-     "injection_enter": 0.24,
-     "injection_exit": 0.13,
-     "drain_enter": -0.32,
-     "drain_exit": -0.14
+     "injection_enter": 0.6459,
+     "injection_exit": 0.1934,
+     "drain_enter": -1.0505,
+     "drain_exit": -0.7651
     }
    },
    "engine": "0.3",
+   "v04_blocks": [
+    "fiscal"
+   ],
    "agreement_only": true,
    "era_start": "2024-07-31",
    "era_weeks": 110,
@@ -171,7 +226,7 @@
     "mode": "mean"
    },
    "level_weight": 1.0,
-   "calibration": "calibrated by replay 2026-09-09 (engine v0.3, era 2024-07-31, 102 weeks)"
+   "calibration": "calibrated by replay 2026-09-09 (engine v0.3, era 2024-07-31, 102 weeks) · v0.4 active on fiscal (replay-v04 2026-09-11 (runner, 8-year archives)); other blocks v0.3"
   }
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
@@ -356,8 +411,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
-  "backfill": true,
+  "lane": "daily",
+  "backfill": false,
   "errors": []
  }
 }
