@@ -185,9 +185,28 @@ class DmoProvider:
             return rows_from_csv(open(p, encoding="utf-8").read()) if os.path.exists(p) else []
         from .providers_chf import _http, _snapshot
         url = DMO_D1A if kind == "d1a" else DMO_D22D
-        txt = _http(url, timeout=180)
-        if "<Data" not in txt[:2000] or "ErrorDetails" in txt[:500]:
-            raise ProviderError("dmo %s: not an XML data report (bot challenge or STRUCTURE CHANGE?)" % kind)
+        txt, reason = "", ""
+        # two passes: plain requests, then the Chrome-impersonating ladder (curl_cffi → curl) — 2026-09-11 the runner got a non-XML
+        # answer for D2.2D right after a good D1A (same host), which looks like a bot challenge on the second request. Whatever
+        # comes back that is not the report is snapshotted (head) so the next diagnosis reads evidence, not a guess.
+        for attempt in range(2):
+            try:
+                if attempt == 0:
+                    txt = _http(url, timeout=180)
+                else:
+                    from .providers_nzd import _http as _ladder
+                    txt = _ladder(url, timeout=120, retries=2)
+            except Exception as e:  # noqa
+                reason = str(e)
+                txt = ""
+            if txt and "<Data" in txt[:2000] and "ErrorDetails" not in txt[:500]:
+                break
+            if txt:
+                reason = "non-XML answer: %r" % txt.strip()[:120]
+                _snapshot(self.raw_dir, "dmo_%s_rejected_%d.txt" % (kind, attempt), txt[:20000].encode("utf-8", errors="replace"))
+            time.sleep(5)
+        else:
+            raise ProviderError("dmo %s: not an XML data report (bot challenge or STRUCTURE CHANGE?) — %s" % (kind, reason))
         _snapshot(self.raw_dir, "dmo_%s.xml" % kind, txt.encode("utf-8"))
         rows = parse_d1a_xml(txt) if kind == "d1a" else parse_d22d_xml(txt)
         if not rows:

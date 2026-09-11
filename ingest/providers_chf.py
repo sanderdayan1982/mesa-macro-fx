@@ -203,7 +203,8 @@ def xlsx_sheets(blob: bytes) -> Dict[str, Dict[str, object]]:
     for sh in wb.iter("{%s}sheet" % m):
         rid = sh.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")
         target = rid_to_target.get(rid, "")
-        path = target if target.startswith("xl/") else "xl/" + target.lstrip("/")
+        t = target.lstrip("/")
+        path = t if t.startswith("xl/") else "xl/" + t
         if path not in z.namelist():
             continue
         cells: Dict[str, object] = {}

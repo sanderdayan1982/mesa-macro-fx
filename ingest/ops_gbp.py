@@ -112,15 +112,52 @@ def rows_from_csv(text: str) -> List[Row]:
 
 
 # ───────────────────────── BoE XLSX → rows ─────────────────────────
+def _header_map(rows: Dict[int, Dict[str, object]], wanted: Dict[str, str]) -> Dict[str, str]:
+    """{field: column letter} from the first row whose text cells contain the wanted header fragments (case-insensitive)."""
+    if not wanted:
+        return {}
+    for r in sorted(rows)[:15]:
+        found: Dict[str, str] = {}
+        for col, val in rows[r].items():
+            if isinstance(val, str):
+                low = val.lower()
+                for frag, field in wanted.items():
+                    if frag in low and field not in found:
+                        found[field] = col
+        if len(found) >= max(2, len(wanted) // 2):
+            return found
+    return {}
+
+
 def parse_boe_xlsx(blob: bytes, kind: str) -> List[Row]:
     """Normalises the five BoE workbooks to the fixture column names (dates ISO, £mn)."""
     from .providers_chf import xlsx_sheets, _rows_of
     sheets = xlsx_sheets(blob)
-    cells = next(iter(sheets.values()))
+    # the APF maturity-profile workbook opens with a chartsheet (no cells): take the sheet that actually carries the table
+    cells = max(sheets.values(), key=len) if sheets else {}
     rows = _rows_of(cells)
     out: List[Row] = []
+    # the APF workbooks do not start in column A (gilt sales: B..N; a header row names the columns) → map by header text,
+    # falling back to the fixed layout verified 2026-09-10 when no header is found
+    hdr = _header_map(rows, {"apf_sales": {"operation date": "op", "settlement date": "settle", "isin": "isin", "bond": "bond", "offers received": "offers",
+                                           "allocation (proceeds": "alloc_p", "allocation (nominal": "alloc_n", "accepted yield": "yld", "accepted price": "prc"},
+                             "apf_profile": {"gilt": "gilt", "maturity date": "md", "nominal": "nom", "proceeds": "proc", "remaining stock": "rem"}}.get(kind, {}))
     for r in sorted(rows):
         c = rows[r]
+        if kind == "apf_sales" and hdr:
+            d = _serial(c.get(hdr.get("op", "A")))
+            if not d:
+                continue
+            out.append({"operation_date": d, "settlement_date": _serial(c.get(hdr.get("settle", ""))) or "", "isin": str(c.get(hdr.get("isin", ""), "")), "bond": str(c.get(hdr.get("bond", ""), "")).strip(),
+                        "offers_m": str(c.get(hdr.get("offers", ""), "")), "allocated_proceeds_m": str(c.get(hdr.get("alloc_p", ""), "")), "allocated_nominal_m": str(c.get(hdr.get("alloc_n", ""), "")),
+                        "wa_yield": str(c.get(hdr.get("yld", ""), "")), "wa_price": str(c.get(hdr.get("prc", ""), ""))})
+            continue
+        if kind == "apf_profile" and hdr:
+            a, md = c.get(hdr.get("gilt", "A")), _serial(c.get(hdr.get("md", "B")))
+            if not md or not isinstance(a, str):
+                continue
+            out.append({"gilt": a.strip(), "maturity_date": md, "nominal_bn": str(c.get(hdr.get("nom", ""), "")), "proceeds_bn": str(c.get(hdr.get("proc", ""), "")), "remaining_stock_bn": str(c.get(hdr.get("rem", ""), ""))})
+            continue
         a = c.get("A")
         d = _serial(a)
         if kind in ("str", "iltr", "ctrf"):
