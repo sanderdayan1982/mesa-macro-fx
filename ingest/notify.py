@@ -95,7 +95,9 @@ def events_for(ccy: str, cur: dict, prev: Optional[dict], jefe: dict, jefe_prev:
         return ["<b>%s</b> · notificaciones activadas. Estado inicial: general %s · BC %s · Tesoro %s · puerta %s." % (
             C, esc(REG_ES.get(cur["general"], cur["general"])), esc(REG_ES.get(cur["central_bank"], cur["central_bank"])), esc(REG_ES.get(cur["fiscal"], cur["fiscal"])), "PASA" if cur["gate"] else ("RETIENE" if cur["gate"] is False else "—"))]
     if on("regime_change_general") and cur["general"] != prev.get("general"):
-        out.append("<b>%s · RÉGIMEN GENERAL</b>: %s → <b>%s</b> (as-of %s)\n%s" % (C, esc(REG_ES.get(prev.get("general"), prev.get("general"))), esc(REG_ES.get(cur["general"], cur["general"])), esc(cur["as_of"]), esc(cur.get("F5") or "")))
+        miss = [BN.get(b, b) for b in ("central_bank", "fiscal") if cur.get(b) in ("NO SIGNAL", "NO DATA", None)]
+        warn = ("⚠ %s sin dato en esta pasada → sin acuerdo posible entre bloques; el cambio refleja la ausencia de un bloque, no un flujo.\n" % " y ".join(miss)) if miss else ""
+        out.append("<b>%s · RÉGIMEN GENERAL</b>: %s → <b>%s</b> (as-of %s)\n%s%s" % (C, esc(REG_ES.get(prev.get("general"), prev.get("general"))), esc(REG_ES.get(cur["general"], cur["general"])), esc(cur["as_of"]), warn, esc(cur.get("F5") or "")))
     if on("regime_change_block"):
         for b in ("central_bank", "fiscal"):
             if cur[b] != prev.get(b):

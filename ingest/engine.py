@@ -110,7 +110,11 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     def _blk(name: str) -> dict:
         b = blocks.get(name)
         if not b or b["signals"]["traffic_light"] == "NONE":
-            return {"regime": "NO SIGNAL", "score": None, "label": None, "traffic_light": "NONE", "as_of": None}
+            # no print this run (source outage / lane without the series): the block reads NO SIGNAL but its hysteresis state is
+            # carried forward untouched, so the confirmed regime resumes where it was when the data returns (v0.3.1 hotfix)
+            return {"regime": "NO SIGNAL", "score": None, "label": None, "traffic_light": "NONE", "as_of": None,
+                    "state": (prev_regs.get(name) or {}).get("state") or {}, "cuts": {k: v for k, v in _cuts(name).items() if k in ("injection_enter", "injection_exit", "drain_enter", "drain_exit")},
+                    "last_confirmed": ((prev_regs.get(name) or {}).get("state") or {}).get("confirmed"), "last_as_of": (prev_regs.get(name) or {}).get("as_of")}
         sc = b["signals"]["score"]
         cuts = _cuts(name)
         prev_state = (prev_regs.get(name) or {}).get("state") or {}
@@ -138,7 +142,12 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     else:
         tw = sum(dw[k] for k in avail) or 1.0
         g_score = round(sum(dw[k] * v["score"] for k, v in avail.items()) / tw, 3)
-        if len(avail) == 1:
+        if len(avail) == 1 and agree_only:
+            # agreement rule: with one dual block missing no agreement is possible → NEUTRAL, never the surviving block's side
+            # (a source outage must not move the general regime; v0.3.1 hotfix)
+            k = next(iter(avail))
+            g_reg, rule = "NEUTRAL", "single block (%s) — the other has no signal: no agreement possible → NEUTRAL by the agreement rule (v0.3)" % k
+        elif len(avail) == 1:
             k = next(iter(avail))
             g_reg, rule = {"INJECTION": "LIQUIDITY_INJECTION", "DRAIN": "LIQUIDITY_DRAIN", "NEUTRAL": "NEUTRAL"}[avail[k]["regime"]], "single block (%s) — the other has no signal" % k
         elif cbr["regime"] == "INJECTION" and fir["regime"] == "INJECTION":

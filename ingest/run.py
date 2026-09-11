@@ -1642,8 +1642,11 @@ def _merge_hist_named(hist_dir: str, got: Dict[str, Series], names: List[str]) -
     """history CSV lookup for series whose ids carry '|' or spaces (DTS line items): file name = sanitised id."""
     out = dict(got)
     for n in names:
-        p = os.path.join(hist_dir, "%s.csv" % n.replace("/", "_").replace("|", "_").replace(" ", "_").replace(":", "_"))
-        if os.path.exists(p):
+        # the archive is written by append_history_csv with ':' kept (history/usd/DTS:D_....csv); older code looked it up with ':'
+        # replaced too, so a lane that did not fetch the series (weekly_thu / weekly) rebuilt the block from nothing → try both names
+        base = n.replace("/", "_").replace("|", "_").replace(" ", "_")
+        p = next((c for c in (os.path.join(hist_dir, "%s.csv" % base), os.path.join(hist_dir, "%s.csv" % base.replace(":", "_"))) if os.path.exists(c)), None)
+        if p:
             with open(p, encoding="utf-8") as f:
                 rows = list(csv.reader(f))
             ser = [(r[0], float(r[1])) for r in rows[1:] if len(r) >= 2 and r[1] not in ("", "None")]

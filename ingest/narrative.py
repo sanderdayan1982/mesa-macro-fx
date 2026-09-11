@@ -21,7 +21,7 @@ from . import jefe as J
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCKS = ("central_bank", "fiscal", "rates", "banking")
 WINDOWS = {"daily": ("cinco sesiones", "veinte sesiones", 5, 20), "weekly": ("la semana", "cuatro semanas", 1, 4), "ten_day": ("la decena", "tres decenas", 1, 3), "monthly": ("el mes", "tres meses", 1, 3)}
-REG_ES = {"INJECTION": "INYECCIÓN", "DRAIN": "DRENAJE", "NEUTRAL": "NEUTRAL", "NO DATA": "SIN DATO"}
+REG_ES = {"INJECTION": "INYECCIÓN", "DRAIN": "DRENAJE", "NEUTRAL": "NEUTRAL", "NO DATA": "SIN DATO", "NO SIGNAL": "SIN SEÑAL"}
 GEN_ES = {"LIQUIDITY_INJECTION": "INYECCIÓN DE LIQUIDEZ", "LIQUIDITY_DRAIN": "DRENAJE DE LIQUIDEZ", "NEUTRAL": "NEUTRAL", "FLOOR_FRICTION": "FRICCIÓN DE SUELO", "LIQUIDITY_SCARCITY": "ESCASEZ DE LIQUIDEZ", "NO SIGNAL": "SIN SEÑAL"}
 GEN_ENUM = set(GEN_ES)
 BLOCK_ENUM = set(REG_ES)
@@ -412,7 +412,8 @@ def f5_regime(ccy: str, regime: dict, streak: int, L: Ledger, spec: dict) -> Tup
     label = g.get("regime") or regime.get("regime") or "NO SIGNAL"
     cb = (R.get("central_bank") or {}).get("regime", "NO DATA")
     fi = (R.get("fiscal") or {}).get("regime", "NO DATA")
-    mech = MECHANISM.get((cb, fi), "sin lectura de mecanismo: falta el régimen de un bloque")
+    missing = [n for n, r in (("BC", cb), ("Tesoro", fi)) if r in ("NO SIGNAL", "NO DATA")]
+    mech = MECHANISM.get((cb, fi), ("sin lectura de mecanismo: %s sin dato en esta pasada, sin acuerdo posible entre bloques; el régimen general no se mueve por ausencia de datos" % " y ".join(missing)) if missing else "sin lectura de mecanismo: falta el régimen de un bloque")
     s = "F5. Régimen general del motor: %s (%s lectura consecutiva); %s" % (GEN_ES.get(label, label), _ordinal(streak, L, "streaks.general"), mech)
     gate = g.get("price_gate")
     if gate:
@@ -510,9 +511,12 @@ def update_ledger(prev: Optional[dict], regime: dict, blocks: dict) -> Tuple[dic
                 seq.append((d, reg))
         seq = seq[-260:]
         led[k] = [list(x) for x in seq]
+        # a block without a print this run (NO SIGNAL / no as-of) freezes: the ledger is not appended and the streak stays the
+        # run-length of the last recorded regime, which is exactly what the gate recomputes from the ledger (v0.3.1 hotfix)
+        ref = seq[-1][1] if (reg in (None, "NO SIGNAL") or not d) and seq else reg
         n = 0
         for x in reversed(seq):
-            if x[1] == reg:
+            if x[1] == ref:
                 n += 1
             else:
                 break
