@@ -1467,6 +1467,92 @@
   "rule": "una mirada por prerregistro; BH (Benjamini–Hochberg) por familia; bootstrap por bloques; nada entra en el ranking sin pasar su test; los cortes v0.4 salen del replay (escalera: verdad contable → B marginal → robustez), no de la predicción",
   "tests": [
    {
+    "id": "ICL-BC-8",
+    "column": "BC",
+    "hypothesis": "Δ13 s de reservas del BC en % del stock, demeaned entre las ocho, predice el retorno residual a 8 s",
+    "preregistered": "2026-09-09 (ronda 2, diseño 1.0)",
+    "run": "2026-09-09",
+    "horizon_weeks": 8,
+    "ic": {
+     "mean": 0.0866,
+     "ci95": [
+      0.0246,
+      0.1457
+     ],
+     "p": 0.0076,
+     "n": 193,
+     "block": 1
+    },
+    "q_bh": 0.0304,
+    "first_half": 0.0981,
+    "second_half": 0.0752,
+    "status": "validado"
+   },
+   {
+    "id": "ICL-BC-13",
+    "column": "BC",
+    "hypothesis": "Δ13 s de reservas del BC en % del stock, demeaned entre las ocho, predice el retorno residual a 13 s",
+    "preregistered": "2026-09-09 (ronda 2, diseño 1.0)",
+    "run": "2026-09-09",
+    "horizon_weeks": 13,
+    "ic": {
+     "mean": 0.1245,
+     "ci95": [
+      0.0494,
+      0.1983
+     ],
+     "p": 0.0008,
+     "n": 188,
+     "block": 2
+    },
+    "q_bh": 0.0064,
+    "first_half": 0.1477,
+    "second_half": 0.1013,
+    "status": "validado"
+   },
+   {
+    "id": "ICL-BC-26",
+    "column": "BC",
+    "hypothesis": "Δ13 s de reservas del BC en % del stock, demeaned entre las ocho, predice el retorno residual a 26 s",
+    "preregistered": "2026-09-09 (ronda 2, diseño 1.0)",
+    "run": "2026-09-09",
+    "horizon_weeks": 26,
+    "ic": {
+     "mean": -0.0375,
+     "ci95": [
+      -0.1372,
+      0.0608
+     ],
+     "p": 0.4676,
+     "n": 175,
+     "block": 3
+    },
+    "q_bh": 0.6562,
+    "first_half": -0.108,
+    "second_half": 0.0322,
+    "status": "no pasa"
+   },
+   {
+    "id": "ICL-primario",
+    "column": "BC",
+    "hypothesis": "posición semanal de flujos (n = Φ⁻¹ del percentil de era) predice el retorno residual (brazo primario)",
+    "preregistered": "2026-09-09",
+    "run": "2026-09-09",
+    "horizon_weeks": 26,
+    "ic": {
+     "mean": 0.0731,
+     "ci95": [
+      0.0049,
+      0.1417
+     ],
+     "p": 0.034,
+     "n": 150,
+     "block": 1
+    },
+    "q_bh": 0.272,
+    "status": "no pasa (ruido blanco semanal; ninguna q < 0,27)"
+   },
+   {
     "id": "T1",
     "column": "Tesoro",
     "hypothesis": "Φ⁻¹ del percentil de era de la media 13 s del flujo fiscal predice el retorno residual a 13 s",
@@ -1615,7 +1701,7 @@
     "engine": "v0.3",
     "replay_selected": "A",
     "checks": [],
-    "note": null,
+    "note": "sólo una variante evaluable · saldos de liquidación diarios sin histórico en fixtures (tabla HTML de 6 días) → fuera del replay hasta que el archivo diario madure",
     "coverage_era": 0.0,
     "stability": null,
     "B_rho_12w": null,
@@ -1628,7 +1714,7 @@
     "engine": "v0.4",
     "replay_selected": "B",
     "checks": [],
-    "note": null,
+    "note": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)",
     "coverage_era": 0.997,
     "stability": "estable",
     "B_rho_12w": -0.103,
@@ -1641,7 +1727,7 @@
     "engine": "v0.3",
     "replay_selected": "A",
     "checks": [],
-    "note": null,
+    "note": "sólo una variante evaluable",
     "coverage_era": 0.0,
     "stability": null,
     "B_rho_12w": null,
@@ -1669,7 +1755,7 @@
     "engine": "v0.4",
     "replay_selected": "B",
     "checks": [],
-    "note": null,
+    "note": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)",
     "coverage_era": 1.0,
     "stability": "estable",
     "B_rho_12w": 0.021,
@@ -1682,7 +1768,7 @@
     "engine": "v0.4",
     "replay_selected": "B",
     "checks": [],
-    "note": null,
+    "note": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable)",
     "coverage_era": 0.986,
     "stability": "estable",
     "B_rho_12w": -0.077,
@@ -1695,7 +1781,7 @@
     "engine": "v0.3",
     "replay_selected": "A",
     "checks": [],
-    "note": null,
+    "note": "sólo una variante evaluable · operaciones por operación (ope) sólo desde el backfill del runner → replay pendiente de ese archivo",
     "coverage_era": null,
     "stability": null,
     "B_rho_12w": null,
@@ -1708,7 +1794,7 @@
     "engine": "v0.4",
     "replay_selected": "B",
     "checks": [],
-    "note": null,
+    "note": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)",
     "coverage_era": 1.0,
     "stability": "estable",
     "B_rho_12w": 0.098,
@@ -1734,7 +1820,7 @@
     "engine": "v0.4",
     "replay_selected": "B",
     "checks": [],
-    "note": null,
+    "note": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable) · aviso: ρ a 12 s con signo no MMT (0.182, no significativo)",
     "coverage_era": 1.0,
     "stability": "estable",
     "B_rho_12w": 0.182,
@@ -1747,7 +1833,7 @@
     "engine": "v0.3",
     "replay_selected": "A",
     "checks": [],
-    "note": null,
+    "note": "sólo una variante evaluable",
     "coverage_era": 0.1,
     "stability": null,
     "B_rho_12w": null,
@@ -1775,7 +1861,7 @@
     "engine": "v0.3",
     "replay_selected": null,
     "checks": null,
-    "note": null,
+    "note": "sin replay v0.4 por diseño: el USD es la migración exacta de los tres dashboards (H.4.1, DTS, H.8/H.15) con sus anclas absolutas; sigue en v0.3",
     "coverage_era": null,
     "stability": null,
     "B_rho_12w": null,
@@ -1788,7 +1874,7 @@
     "engine": "v0.3",
     "replay_selected": null,
     "checks": null,
-    "note": null,
+    "note": "sin replay v0.4 por diseño: el USD es la migración exacta de los tres dashboards (H.4.1, DTS, H.8/H.15) con sus anclas absolutas; sigue en v0.3",
     "coverage_era": null,
     "stability": null,
     "B_rho_12w": null,
@@ -1801,7 +1887,7 @@
     "engine": "v0.3",
     "replay_selected": "A",
     "checks": [],
-    "note": null,
+    "note": "sólo una variante evaluable · Δ cartera WFS semanal sin histórico archivado (monpol_wow) → empate 3-3 sin resolver aquí",
     "coverage_era": null,
     "stability": null,
     "B_rho_12w": null,
@@ -1814,7 +1900,7 @@
     "engine": "v0.4",
     "replay_selected": "B",
     "checks": [],
-    "note": null,
+    "note": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)",
     "coverage_era": 1.0,
     "stability": "estable",
     "B_rho_12w": -0.071,
@@ -1829,6 +1915,6 @@
    "calibration/<ccy>_v04/replay_v04.json"
   ]
  },
- "generated_at": "2026-09-11T22:07:17+00:00",
+ "generated_at": "2026-09-11T22:20:34+00:00",
  "stamp": "00b723f4603b"
 }
