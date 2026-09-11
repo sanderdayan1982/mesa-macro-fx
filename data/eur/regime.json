@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-11T06:34:25+00:00",
- "as_of": "2026-09-09",
+ "generated_at": "2026-09-11T13:02:39+00:00",
+ "as_of": "2026-09-10",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.309,
+ "weighted_score": 0.165,
  "block_scores": {
-  "central_bank": 0.18,
+  "central_bank": -0.18,
   "rates": 0.2,
   "fiscal": 0.18,
   "banking": 1.0
@@ -22,11 +22,11 @@
  "regimes": {
   "central_bank": {
    "regime": "INJECTION",
-   "score": 0.18,
+   "score": -0.18,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-09",
-   "detail": "excess liquidity 2116818.0 M (SAFE) · Δ5s 11596.0 (p84.49) · TOMO 26546.0 M (ROUTINE) · MLF 36.5 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-09-10",
+   "detail": "excess liquidity 2137073.0 M (SAFE) · Δ5s 1916.0 (p69.44) · TOMO 26546.0 M (ROUTINE) · MLF 56.5 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.02,
@@ -43,10 +43,10 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.23,
+    "effective_score": 0.093,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-09",
+    "as_of": "2026-09-10",
     "recent": [
      [
       "2026-09-08",
@@ -55,6 +55,10 @@
      [
       "2026-09-09",
       0.18
+     ],
+     [
+      "2026-09-10",
+      -0.18
      ]
     ],
     "pending_days": null
@@ -63,8 +67,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": 0.55,
-     "excess_20s_vs_stock": -0.11
+     "excess_wow_vs_stock": 0.09,
+     "excess_20s_vs_stock": -0.53
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -76,8 +80,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.18,
-    "score_flows_only": 0.18
+    "score_v02": -0.18,
+    "score_flows_only": -0.18
    }
   },
   "fiscal": {
@@ -138,8 +142,8 @@
   },
   "general": {
    "regime": "NEUTRAL",
-   "score": 0.18,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.18 shown for context",
+   "score": -0.072,
+   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.07 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -312,8 +316,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
-  "backfill": true,
+  "lane": "daily",
+  "backfill": false,
   "errors": []
  }
 }
