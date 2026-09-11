@@ -146,6 +146,17 @@ LABEL = "momento de flujo de reservas a un trimestre, 8–13 s"
 LABEL_T = "impulso fiscal a un trimestre, 13–26 s (más firme a 26)"
 SIGNATURE_T = "T1/T2 2026-09-11: IC +0.125 (13 s, q 0.013) / +0.177 (26 s, q 0.0006); T3 y T4 no pasan"
 LABELS = ("abundante", "escasa", "vulnerable", "sin señal", "sin señal (compresión)")
+# Adjudication 2026-09-11 (round 2, CURSOR F-SPLIT): the Treasury column keeps reading the v0.3 flows score because that is the
+# object T1/T2 validated; the live fiscal regime of EUR/CAD/AUD/JPY/CHF runs v0.4 (5 sessions, % of stock). Two clocks, declared.
+CLOCK_NOTE_T = ("columna Tesoro = media de 13 s del score de flujos v0.3 (el objeto que pasó T1/T2, impulso a un trimestre); el régimen "
+                "fiscal vivo puede ser v0.4 (cinco sesiones en % del stock). Cuando difieren no es contradicción: miden relojes distintos. "
+                "T1'/T2' sobre el componente v0.4 están prerregistrados (calibration/conviction/PREREGISTRO_T1T2_V04_Y_OOS.md) y se "
+                "correrán cuando los archivos v0.4 tengan era; hasta entonces la columna no cambia de objeto")
+# D: numeraire declared where the BC measure is
+NUMERAIRE = ("USD es el numerario: el retorno del test es el residual de cada divisa contra USD (log Δ FX menos betas as-of de era al "
+             "diferencial de tipos oficiales y a la cesta equiponderada); la señal de par es S_i = Z_i − Z_USD. La fila USD del "
+             "ranking es la referencia, no una pata simétrica (conviction.py, diseño 1.0)")
+LIVE_TRACKING_START = "2026-09-11"  # jefe v2 activation: day zero of the frozen weekly archive (history/mesa/jefe_weekly.csv)
 SIGNATURE = "firma ICL 1.0 (2026-09-09): IC(8) > 0, IC(13) > 0, IC(26) ≤ 0; IC 13 s +0,124 (q BH 0,006), tercil que más inyecta pierde 0,46 % por trimestre frente al que más drena (divisa por USD)"
 NAMES = {"usd": "USD", "eur": "EUR", "gbp": "GBP", "jpy": "JPY", "chf": "CHF", "cad": "CAD", "aud": "AUD", "nzd": "NZD"}
 
@@ -215,6 +226,7 @@ def compute_treasury(grid: List[str], root: str = ROOT) -> dict:
                      "zero_cross": bool(v13_prev is not None and (v13 > 0) != (v13_prev > 0) and v13 != 0 and v13_prev != 0), "proxy": c in PROXY})
     return {"status": "ok", "as_of_friday": use, "measure": "media de 13 semanas del score de flujos del bloque fiscal (v0.3, sólo flujos) → Φ⁻¹ del percentil as-of de la era (mín. 26 s) → recorte ±2,5; demeaned entre las divisas disponibles; Z = valor / σ agrupada de la era (as-of)",
             "label": LABEL_T, "ranking": rows, "missing": [NAMES[c] for c in CCYS if c not in rk], "n": len(rk), "signature": SIGNATURE_T,
+            "clock_note": CLOCK_NOTE_T,
             "sigma_pooled": round(meta[use]["sd_pooled"], 3) if meta[use].get("sd_pooled") else None,
             "z_weekly": _z_weekly(Z, grid[:gi + 1]),
             "panel": {"replay_end": max(P["weekly"][c][-1][0] for c in CCYS if P["weekly"].get(c)), "live_extension": {NAMES[c]: P["definition"][c]["live_points_used"] for c in CCYS}}}
@@ -285,6 +297,8 @@ def compute(as_of: Optional[str] = None, root: str = ROOT) -> dict:
         if pg is None:
             no_gate.append(NAMES[c])
         labels[NAMES[c]] = plumbing_label(bc.get(NAMES[c]), out.get("n", 0), tr.get(NAMES[c]), T.get("n", 0), bool(pg))
+    out["numeraire"] = NUMERAIRE
+    out["live_tracking"] = live_tracking(root)
     out["labels_tercile"] = labels  # the tercile reading, always published (no metric hidden)
     if out.get("low_dispersion"):
         # Adjudication 2026-09-11 (institutionality round, idea B): with the cross-section compressed (this week's σ below the
@@ -314,6 +328,49 @@ def compute(as_of: Optional[str] = None, root: str = ROOT) -> dict:
 
 
 COMPRESSED = "sin señal (compresión)"
+WEEKLY_CSV = os.path.join("history", "mesa", "jefe_weekly.csv")
+WEEKLY_COLS = ["friday", "ccy", "rank_bc", "d13_pct", "z_bc", "rank_tr", "v13", "z_tr", "label", "label_tercile", "low_dispersion", "stamp", "generated_at"]
+
+
+def archive_weekly(j: dict, root: str = ROOT) -> dict:
+    """Frozen weekly track record (idea E, round 2): one row per (Friday, currency) with both Z, ranks and labels; the last
+    write of a Friday wins (the ranking known at that Friday's close). Read later by the pre-registered out-of-sample test."""
+    if j.get("status") != "ok":
+        return {"archived": False}
+    p = os.path.join(root, WEEKLY_CSV)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    rows: List[dict] = []
+    if os.path.exists(p):
+        with open(p, encoding="utf-8") as f:
+            rows = [r for r in csv.DictReader(f)]
+    fri = j["as_of_friday"]
+    rows = [r for r in rows if r.get("friday") != fri]
+    T = j.get("treasury") or {}
+    tr = {r["ccy"]: r for r in T.get("ranking", [])} if T.get("status") == "ok" else {}
+    for r in j["ranking"]:
+        t = tr.get(r["ccy"], {})
+        rows.append({"friday": fri, "ccy": r["ccy"], "rank_bc": r["rank"], "d13_pct": r["d13_pct"], "z_bc": r["z"],
+                     "rank_tr": t.get("rank", ""), "v13": t.get("v13", ""), "z_tr": t.get("z", ""),
+                     "label": (j.get("labels") or {}).get(r["ccy"], ""), "label_tercile": (j.get("labels_tercile") or {}).get(r["ccy"], ""),
+                     "low_dispersion": int(bool(j.get("low_dispersion"))), "stamp": j.get("stamp", ""), "generated_at": j.get("generated_at", "")})
+    rows.sort(key=lambda r: (r["friday"], int(r["rank_bc"])))
+    with open(p, "w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=WEEKLY_COLS)
+        w.writeheader()
+        w.writerows(rows)
+    return {"archived": True, "fridays": len({r["friday"] for r in rows})}
+
+
+def live_tracking(root: str = ROOT) -> dict:
+    """What the frozen archive holds so far; the out-of-sample test is pre-registered to run at ≥ 26 archived Fridays."""
+    p = os.path.join(root, WEEKLY_CSV)
+    fridays: List[str] = []
+    if os.path.exists(p):
+        with open(p, encoding="utf-8") as f:
+            fridays = sorted({r["friday"] for r in csv.DictReader(f) if r.get("friday")})
+    return {"started": LIVE_TRACKING_START, "archive": WEEKLY_CSV, "fridays_archived": len(fridays), "first": fridays[0] if fridays else None,
+            "last": fridays[-1] if fridays else None, "oos_test_at_fridays": 26,
+            "rule": "ranking congelado cada viernes (última escritura del día); test fuera de muestra prerregistrado (PREREGISTRO_T1T2_V04_Y_OOS.md) a las 26 semanas: IC de las Z archivadas contra el retorno residual a 13 s, mismo método, una mirada"}
 
 
 def stamp(j: dict) -> str:

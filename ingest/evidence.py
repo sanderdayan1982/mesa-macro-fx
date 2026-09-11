@@ -16,7 +16,8 @@ PROXY_T = {"gbp", "nzd", "chf"}  # jefe.PROXY: Treasury driver is a proxy/band (
 NO_REPLAY = {"usd": "sin replay v0.4 por diseño: el USD es la migración exacta de los tres dashboards (H.4.1, DTS, H.8/H.15) con sus anclas absolutas; sigue en v0.3"}
 NOTES = {("chf", "central_bank"): "replay B pero no activado: la impresión completa (repos y SNB Bills) llega con 35 días de retraso; v0.3 semanal (3 días) manda",
          ("nzd", "fiscal"): "se queda v0.3: ONE_SIDED por economía (sin pata del gasto; el Tesoro NZ no publica cuenta diaria/semanal)",
-         ("gbp", "fiscal"): "proxy: residual BoE + emisión neta DMO anclados al CGNCR; sin cuenta del gobierno pública"}
+         ("gbp", "fiscal"): "proxy: residual BoE + emisión neta DMO anclados al CGNCR; sin cuenta del gobierno pública",
+         ("chf", "fiscal"): "régimen vivo v0.4 contable (MMDRC/bonos por liquidación); la columna Tesoro del jefe lee el score v0.3 (banda mensual de la Confederación) → proxy en el ranking hasta T1'/T2' sobre v0.4"}
 
 
 def _rj(p: str) -> Optional[dict]:
@@ -100,6 +101,12 @@ def evidence(root: str) -> dict:
         tests.append({"id": "ICL-primario", "column": "BC", "hypothesis": "posición semanal de flujos (n = Φ⁻¹ del percentil de era) predice el retorno residual (brazo primario)",
                       "preregistered": "2026-09-09", "run": "2026-09-09", "horizon_weeks": best.get("h"), "ic": _ic(best.get("ic")), "q_bh": best.get("q_bh"),
                       "status": "no pasa (ruido blanco semanal; ninguna q < 0,27)"})
+    h2 = R.get("H2_elasticity") or {}
+    if h2:
+        tests.append({"id": "H2", "column": "puerta de precio", "hypothesis": "el spread de financiación (capa 4, |spread| > 5 pb) predice el retorno residual FX (elasticidad del precio del dinero)",
+                      "preregistered": "2026-09-09 (diseño 1.0, H2)", "run": "2026-09-09", "horizon_weeks": None,
+                      "ic": {"mean": h2.get("spearman"), "ci95": None, "p": h2.get("p"), "n": h2.get("n"), "block": None}, "q_bh": None,
+                      "status": "no pasa: el precio del dinero no predice la dirección del FX; la puerta de precio confirma o niega el régimen de reservas, no ordena (ρ %s, p %s, n %s)" % (h2.get("spearman"), h2.get("p"), h2.get("n"))})
     for t in T.get("tests") or []:
         tests.append({"id": t.get("test"), "column": "Tesoro", "hypothesis": {"T1": "Φ⁻¹ del percentil de era de la media 13 s del flujo fiscal predice el retorno residual a 13 s",
                                                                                 "T2": "misma medida a 26 s", "T3": "−Δ13 s de la cuenta del gobierno en % de reservas, a 13 s (GBP excluido: sin cuenta)"}.get(t.get("test"), t.get("signal")),

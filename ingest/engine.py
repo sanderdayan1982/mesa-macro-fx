@@ -333,7 +333,8 @@ def evaluate_scenarios(cfg: dict, blocks: Dict[str, dict]) -> List[dict]:
                 met = None
             det.append({"condition": cnd, "met": met})
         n = sum(1 for d in det if d["met"])
-        out.append({"id": sc["id"], "name": sc["name"], "bias": sc["bias"], "active": n >= sc["min"], "conditions_met": n, "total": len(det), "details": det})
+        unknown = sum(1 for d in det if d["met"] is None)  # conditions without data are declared, not counted as met (round 2)
+        out.append({"id": sc["id"], "name": sc["name"], "bias": sc["bias"], "active": n >= sc["min"], "conditions_met": n, "total": len(det), "unknown": unknown, "details": det})
     return out
 
 

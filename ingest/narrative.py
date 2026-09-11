@@ -264,7 +264,9 @@ def f1_reserves(ccy: str, blocks: dict, regime: dict, streak: int, L: Ledger, sp
             s += " y %s en %s" % (_money(L, d2, spec, fld + ".delta_%d" % n2), w2)
         s += ", hasta %s %s (%s)" % (lvl, unit, e.get("date"))
     st = (regime.get("regimes", {}).get("central_bank") or {}).get("state") or {}
-    s += "; régimen del BC: %s, %s lectura consecutiva%s" % (REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.central_bank"), _engine_tag(regime, "central_bank", L))
+    # round 2, idea F (CURSOR F-CLOCK): the change above is the window of the series; the regime reads another clock — say which
+    clock = "cinco sesiones en % del stock" if (regime.get("regimes", {}).get("central_bank") or {}).get("engine") == "0.4" else "media de siete días del score de era"
+    s += "; régimen del BC (reloj: %s, no la variación anterior): %s, %s lectura consecutiva%s" % (clock, REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.central_bank"), _engine_tag(regime, "central_bank", L))
     if st.get("candidate") and st.get("candidate") != reg:
         s += " (candidato %s desde %s, pendiente %s días)" % (REG_ES.get(st["candidate"], st["candidate"]), st.get("candidate_since"), L.num(st.get("pending_days") or 0, "regime.central_bank.state.pending_days", "int"))
     return s + "."
@@ -506,7 +508,7 @@ def f7_treasury(me: str, T: dict, L: Ledger) -> str:
     for r in T["ranking"]:
         items.append("%s %s%s Z %s" % (L.num(r["rank"], "jefe.treasury.ranking.%s.rank" % r["ccy"], "int"), r["ccy"], " (proxy)" if r.get("proxy") else "",
                                         L.num(r["z"], "jefe.treasury.ranking.%s.z" % r["ccy"], "pct", "Z", 2)))
-    s = "Tesoro (viernes %s; %s; media 13 s del flujo fiscal, percentil de era → Φ⁻¹, Z transversal): %s" % (T["as_of_friday"], T["label"], "; ".join(items))
+    s = "Tesoro (viernes %s; %s; media 13 s del score de flujos v0.3 —el objeto validado—, percentil de era → Φ⁻¹, Z transversal; reloj a un trimestre, distinto del régimen fiscal vivo): %s" % (T["as_of_friday"], T["label"], "; ".join(items))
     mine = next((r for r in T["ranking"] if r["ccy"] == me), None)
     if mine:
         s += ". %s ocupa la posición %s de %s por el Tesoro" % (me, L.num(mine["rank"], "jefe.treasury.ranking.%s.rank" % me, "int"), L.num(T["n"], "jefe.treasury.n", "int"))
@@ -648,6 +650,10 @@ def run(ccy: str, root: str = ROOT, jefe: Optional[dict] = None, write: bool = T
             os.makedirs(os.path.dirname(mp), exist_ok=True)
             with open(mp, "w", encoding="utf-8") as f:
                 json.dump(jefe, f, indent=1, ensure_ascii=False)
+            try:  # frozen weekly track record (round 2, idea E); never blocks the daily_log
+                J.archive_weekly(jefe, root)
+            except Exception:
+                pass
     return out
 
 
