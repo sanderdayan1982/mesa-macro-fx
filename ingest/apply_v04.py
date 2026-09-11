@@ -26,9 +26,13 @@ APPROVED = {
     "aud": {"central_bank": {"injection_enter": 0.466, "injection_exit": 0.2928, "drain_enter": -0.4831, "drain_exit": -0.2075},
             "fiscal": {"injection_enter": 2.7248, "injection_exit": 1.6897, "drain_enter": -2.8347, "drain_exit": -1.8796}},
     "jpy": {"fiscal": {"injection_enter": 0.6459, "injection_exit": 0.1934, "drain_enter": -1.0505, "drain_exit": -0.7651}},
+    # eur fiscal approved 2026-09-11 (second batch): two-signed since the FR/IT/ES redemptions+coupons lot — replay-v04 on the runner
+    # 14:18Z: B, stable, coverage 1.00, no ONE_SIDED, injection cut above zero (0.1427). NZD fiscal stays v0.3: still ONE_SIDED on the
+    # runner (injection cut −0.0439) after the LSAP/repurchase netting — net issuance without the spending leg is one-sided by economics
+    "eur": {"fiscal": {"injection_enter": 0.1427, "injection_exit": -0.0359, "drain_enter": -0.5159, "drain_exit": -0.3496}},
 }
 # denominator = the 'reserves' column calibrate.py writes to scores.csv (the replay divides by it)
-DENOMINATOR = {"cad": "central_bank.reserves", "aud": "central_bank.reserves", "jpy": "central_bank.cab_daily", "chf": "central_bank.sight_deposits_domestic_weekly"}
+DENOMINATOR = {"cad": "central_bank.reserves", "aud": "central_bank.reserves", "jpy": "central_bank.cab_daily", "chf": "central_bank.sight_deposits_domestic_weekly", "eur": "central_bank.excess_liquidity"}
 CCYS = list(APPROVED)
 
 

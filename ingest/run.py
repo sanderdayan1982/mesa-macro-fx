@@ -855,8 +855,18 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
             data.update(got)
             if cal:
                 data["_auction_calendar"] = cal  # type: ignore  (list of dicts; not a Series — excluded from history CSVs)
+                if not fx:  # side archive so the lanes that do not fetch the calendar (provisional, ten-day, monthly) keep the entry
+                    json.dump(cal, open(os.path.join(hist_dir, "_auction_calendar.json"), "w", encoding="utf-8"))
         except Exception as e:  # noqa
             _err("mof_auction_html", e)
+    if "_auction_calendar" not in data and not fx:
+        # 2026-09-11 13:43Z daily_provisional lane: no calendar → auction_calendar "unavailable" → fiscal block "stale" (16/17 wired)
+        pc = os.path.join(hist_dir, "_auction_calendar.json")
+        if os.path.exists(pc):
+            try:
+                data["_auction_calendar"] = json.load(open(pc, encoding="utf-8"))  # type: ignore
+            except Exception:  # noqa
+                pass
         try:
             PJ.MofItsProvider(src["mof_its_weekly"]["url"], fixtures_dir=fx, raw_dir=raw_dir).snapshot()
         except Exception as e:  # noqa
