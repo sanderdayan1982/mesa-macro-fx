@@ -17,12 +17,13 @@
 | variante | cobertura | semanas | corte inyección (entra/sale) | corte drenaje | cuota INY/NEU/DRE | estabilidad | B 4s ρ (p_boot) | B 12s ρ (p_boot) | B escasez 12s | acuerdo con A |
 |---|---|---|---|---|---|---|---|---|---|---|
 | A — v0.3 (banda CGNCR mensual) | 1.00 | 201 | 0.5 / 0.5 | -0.5 / -0.5 | 0.10 / 0.69 / 0.21 | estable | -0.166 (0.1374) | -0.258 (0.0565) | -0.333 (0.076) | — |
-| B — v0.4 base | 0.77 | 154 | 0.1552 / 0.0694 | -0.1525 / -0.0749 | 0.19 / 0.38 / 0.19 | estable | -0.228 (0.091) | -0.034 (0.8466) | -0.155 (0.6517) | 0.383 |
+| B — v0.4 base | 1.00 | 201 | -0.1593 / -0.4317 | -0.9259 / -0.7453 | 0.22 / 0.55 / 0.23 | estable | -0.121 (0.1529) | -0.145 (0.0965) | -0.174 (0.1989) | 0.507 |
 | C — candidato ronda 1 | 1.00 | 201 | 0.3659 / 0.1821 | -0.3895 / -0.1815 | 0.24 / 0.54 / 0.22 | estable | 0.069 (0.3988) | 0.047 (0.5377) | 0.068 (0.5792) | 0.388 |
 
-- B · `net_issuance_5d` ← hist:net_issuance_private_daily · daily5 · retraso de publicación 1 d · cobertura 0.766 · conciliación: gilts + letras − APF − vencimientos − cupones, por liquidación (D2.1A/D2.2D/D1A)
+- B · `net_issuance_5d` ← hist:net_issuance_private_daily · daily5 · retraso de publicación 1 d · cobertura 1.0 · conciliación: gilts + letras − APF − vencimientos − cupones, por liquidación (D2.1A/D2.2D/D1A)
+- **comprobaciones**: ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)
 - C · `exchequer_residual_w` ← hist:exchequer_residual_weekly · weekly · retraso de publicación 7 d · cobertura 1.0 · conciliación: residual del Exchequer semanal (canal de renta)
 
-**Selección (escalera de la ronda 1): A** — sin evidencia B y la variante v0.4 no cubre la era (cobertura 0.766) → se mantiene v0.3
+**Selección (escalera de la ronda 1): A** — sin evidencia B y la variante v0.4 es de un solo signo (ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo e) → se mantiene v0.3
 
 Robustez a revisiones (peldaño 3): no evaluable sin vintages archivados; el archivo por fecha de publicación empieza con el lote 2 (JPY tres columnas, BoC diario).

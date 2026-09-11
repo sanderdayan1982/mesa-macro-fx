@@ -5,13 +5,13 @@
 | variante | cobertura | semanas | corte inyección (entra/sale) | corte drenaje | cuota INY/NEU/DRE | estabilidad | B 4s ρ (p_boot) | B 12s ρ (p_boot) | B escasez 12s | acuerdo con A |
 |---|---|---|---|---|---|---|---|---|---|---|
 | A — v0.3 (Δ GI semanal, cuota de absorción mensual) | 1.00 | 207 | 1.0 / 0.5 | -0.5 / -0.5 | 0.33 / 0.42 / 0.25 | estable | 0.018 (0.8351) | 0.093 (0.4393) | None (None) | — |
-| B — v0.4 base | 0.99 | 204 | 0.5948 / 0.2622 | -0.7792 / -0.4869 | 0.22 / 0.55 / 0.21 | estable | -0.014 (0.8551) | -0.005 (0.9525) | None (None) | 0.392 |
+| B — v0.4 base | 1.00 | 207 | 0.5007 / 0.1356 | -0.8572 / -0.5831 | 0.24 / 0.54 / 0.22 | estable | -0.048 (0.5137) | 0.085 (0.2899) | None (None) | 0.396 |
 | C — candidato ronda 1 | 1.00 | 207 | 0.7997 / 0.4293 | -0.9262 / -0.4763 | 0.24 / 0.53 / 0.23 | estable | -0.004 (0.9465) | -0.042 (0.6002) | None (None) | 0.396 |
 
-- B · `fx_proxy_w` ← hist:fx_intervention_proxy_v04 · weekly · retraso de publicación 7 d · cobertura 0.986 · conciliación: ΔGI − operaciones − Confederación, semanas completas
+- B · `fx_proxy_w` ← hist:fx_intervention_proxy_v04 · weekly · retraso de publicación 35 d · cobertura 1.0 · conciliación: ΔGI − operaciones − Confederación, semanas completas
 - C · `ops_net_5d` ← hist:ops_net_daily · daily5 · retraso de publicación 35 d · cobertura 1.0 · conciliación: Bills + repos por fecha; importes publicados ~35 días tras fin de mes (reloj de publicación)
 
-**Selección (escalera de la ronda 1): B** — sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable)
+**Selección (escalera de la ronda 1): B** — sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)
 
 ## fiscal
 
