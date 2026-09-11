@@ -234,6 +234,7 @@
   "missing": [],
   "n": 8,
   "signature": "T1/T2 2026-09-11: IC +0.125 (13 s, q 0.013) / +0.177 (26 s, q 0.0006); T3 y T4 no pasan",
+  "clock_note": "columna Tesoro = media de 13 s del score de flujos v0.3 (el objeto que pasó T1/T2, impulso a un trimestre); el régimen fiscal vivo puede ser v0.4 (cinco sesiones en % del stock). Cuando difieren no es contradicción: miden relojes distintos. T1'/T2' sobre el componente v0.4 están prerregistrados (calibration/conviction/PREREGISTRO_T1T2_V04_Y_OOS.md) y se correrán cuando los archivos v0.4 tengan era; hasta entonces la columna no cambia de objeto",
   "sigma_pooled": 1.028,
   "panel": {
    "replay_end": "2026-09-04",
@@ -1228,6 +1229,16 @@
    ]
   }
  },
+ "numeraire": "USD es el numerario: el retorno del test es el residual de cada divisa contra USD (log Δ FX menos betas as-of de era al diferencial de tipos oficiales y a la cesta equiponderada); la señal de par es S_i = Z_i − Z_USD. La fila USD del ranking es la referencia, no una pata simétrica (conviction.py, diseño 1.0)",
+ "live_tracking": {
+  "started": "2026-09-11",
+  "archive": "history/mesa/jefe_weekly.csv",
+  "fridays_archived": 0,
+  "first": null,
+  "last": null,
+  "oos_test_at_fridays": 26,
+  "rule": "ranking congelado cada viernes (última escritura del día); test fuera de muestra prerregistrado (PREREGISTRO_T1T2_V04_Y_OOS.md) a las 26 semanas: IC de las Z archivadas contra el retorno residual a 13 s, mismo método, una mirada"
+ },
  "labels_tercile": {
   "CAD": "abundante",
   "GBP": "sin señal",
@@ -1553,6 +1564,23 @@
     "status": "no pasa (ruido blanco semanal; ninguna q < 0,27)"
    },
    {
+    "id": "H2",
+    "column": "puerta de precio",
+    "hypothesis": "el spread de financiación (capa 4, |spread| > 5 pb) predice el retorno residual FX (elasticidad del precio del dinero)",
+    "preregistered": "2026-09-09 (diseño 1.0, H2)",
+    "run": "2026-09-09",
+    "horizon_weeks": null,
+    "ic": {
+     "mean": -0.008,
+     "ci95": null,
+     "p": 0.8414,
+     "n": 664,
+     "block": null
+    },
+    "q_bh": null,
+    "status": "no pasa: el precio del dinero no predice la dirección del FX; la puerta de precio confirma o niega el régimen de reservas, no ordena (ρ -0.008, p 0.8414, n 664)"
+   },
+   {
     "id": "T1",
     "column": "Tesoro",
     "hypothesis": "Φ⁻¹ del percentil de era de la media 13 s del flujo fiscal predice el retorno residual a 13 s",
@@ -1820,7 +1848,7 @@
     "engine": "v0.4",
     "replay_selected": "B",
     "checks": [],
-    "note": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable) · aviso: ρ a 12 s con signo no MMT (0.182, no significativo)",
+    "note": "régimen vivo v0.4 contable (MMDRC/bonos por liquidación); la columna Tesoro del jefe lee el score v0.3 (banda mensual de la Confederación) → proxy en el ranking hasta T1'/T2' sobre v0.4",
     "coverage_era": 1.0,
     "stability": "estable",
     "B_rho_12w": 0.182,
@@ -1915,6 +1943,6 @@
    "calibration/<ccy>_v04/replay_v04.json"
   ]
  },
- "generated_at": "2026-09-11T22:42:10+00:00",
+ "generated_at": "2026-09-11T23:21:52+00:00",
  "stamp": "00b723f4603b"
 }
