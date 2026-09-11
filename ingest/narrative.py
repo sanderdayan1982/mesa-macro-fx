@@ -486,7 +486,36 @@ def f7_jefe(ccy: str, jefe: dict, L: Ledger, spec: dict) -> str:
         s += "; dispersión transversal baja (σ semanal %s < p20 de la era %s)" % (L.num(jefe["sigma_week"], "jefe.sigma_week", "pct", "σ", 3), L.num(jefe["sigma_week_p20_era"], "jefe.sigma_week_p20_era", "pct", "σ", 3))
     if jefe.get("missing"):
         s += "; fuera del ranking: %s" % ", ".join(jefe["missing"])
-    return s + "; sin par neto hasta T1–T3."
+    s += ". " + f7_treasury(me, jefe.get("treasury") or {}, L)
+    lab = (jefe.get("labels") or {}).get(me)
+    if lab:
+        s += ". Lectura de fontanería: %s, por terciles de BC y Tesoro y puerta de precio" % lab
+    return s + "; sin par neto (BC y Tesoro se leen en paralelo)."
+
+
+def f7_treasury(me: str, T: dict, L: Ledger) -> str:
+    """Treasury column of jefe de mesa v2 (T1/T2): ranking of the eight by the Treasury Z, own position, «(proxy)» for GBP/NZD/CHF."""
+    if T.get("status") != "ok":
+        L.degraded.append("F7: treasury unavailable")
+        return "Tesoro (%s): ranking no calculable hoy (%s)" % (T.get("label", "impulso fiscal"), T.get("reason", "sin panel"))
+    items = []
+    for r in T["ranking"]:
+        items.append("%s %s%s Z %s" % (L.num(r["rank"], "jefe.treasury.ranking.%s.rank" % r["ccy"], "int"), r["ccy"], " (proxy)" if r.get("proxy") else "",
+                                        L.num(r["z"], "jefe.treasury.ranking.%s.z" % r["ccy"], "pct", "Z", 2)))
+    s = "Tesoro (viernes %s; %s; media 13 s del flujo fiscal, percentil de era → Φ⁻¹, Z transversal): %s" % (T["as_of_friday"], T["label"], "; ".join(items))
+    mine = next((r for r in T["ranking"] if r["ccy"] == me), None)
+    if mine:
+        s += ". %s ocupa la posición %s de %s por el Tesoro" % (me, L.num(mine["rank"], "jefe.treasury.ranking.%s.rank" % me, "int"), L.num(T["n"], "jefe.treasury.n", "int"))
+        if mine.get("rank_prev_week"):
+            s += " (semana anterior %s)" % L.num(mine["rank_prev_week"], "jefe.treasury.ranking.%s.rank_prev_week" % me, "int")
+        if mine.get("zero_cross"):
+            s += "; el flujo fiscal medio cruzó cero frente a hace 13 s (descriptivo, T4 no pasa)"
+    else:
+        s += ". %s no entra en el ranking del Tesoro de hoy" % me
+        L.degraded.append("F7: own currency missing (treasury)")
+    if T.get("missing"):
+        s += "; fuera del ranking del Tesoro: %s" % ", ".join(T["missing"])
+    return s
 
 
 # ───────────────────────────── glossary expansion (first use per text) ─────────────────────────────

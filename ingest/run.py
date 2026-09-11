@@ -77,6 +77,20 @@ def append_history_csv(path: str, name: str, series: Series) -> None:
             w.writerow([d, merged[d]])
 
 
+def fiscal_flows_score_point(regime: dict) -> Optional[tuple]:
+    """(as_of, v0.3 fiscal flows-only score) for history/<ccy>/fiscal_flows_score.csv — the live extension of
+    calibration/conviction/fiscal_panel.json (jefe de mesa v2, Treasury column). The score is components.score_flows_only
+    of the fiscal block (engine.py keeps the v0.3 components beside a v0.4 print); on a v0.4-active block the date is the
+    v0.3 shadow's as_of. None for a NO SIGNAL block (nothing is written)."""
+    fi = (regime.get("regimes") or {}).get("fiscal") or {}
+    v3 = fi.get("v03_shadow") if fi.get("engine") == "0.4" else fi
+    if not v3 or v3.get("regime") == "NO SIGNAL" or v3.get("score") is None:
+        return None
+    sc = (fi.get("components") or {}).get("score_flows_only")
+    d = v3.get("as_of")
+    return (d[:10], float(sc)) if sc is not None and d else None
+
+
 def series_ids(cfg: dict, block: str) -> List[str]:
     return [s["id"] for s in cfg["blocks"][block]["series"].values() if s.get("id")]
 
@@ -107,9 +121,9 @@ def fetch_cad(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         except ProviderError as e:
             errors.append("valet: %s" % e)
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "valet", "error": str(e)})
-            return {i: [] for i in ids}
-        # incremental: merge with history CSVs so percentiles keep their window
-        if not a.backfill and not a.fixtures:
+            got = {i: [] for i in ids}  # a Valet outage must not empty the blocks: the history below still feeds them (lane audit 2026-09-11)
+        # incremental (or failed fetch): merge with history CSVs so percentiles keep their window
+        if (not a.backfill or not any(got.values())) and not a.fixtures:
             for i in ids:
                 p = os.path.join(hist_dir, "%s.csv" % i)
                 if os.path.exists(p):
@@ -874,17 +888,21 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     for i, ser in data.items():
         if ser and not i.startswith("_"):
             append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
-    # daily lane on a live run: pull monthly/ten-day/weekly series from history so all blocks stay complete
+    # any lane on a live run: every archived series the lane did not fetch comes from history, so the four blocks stay complete
+    # (2026-09-11 the Friday weekly lane rebuilt BC/Tesoro without the daily CAB/TONA/MoF series → NO SIGNAL + stale; the old
+    # explicit list only covered the monthly/ten-day/weekly keys)
     if not fx:
-        need = ["ac_" + k for k, _ in PJ.BojAccountsProvider.ITEMS] + ["FAAP@01", "FAAPOBAL1", "FAAPOBAL1@", "FAAPOBRDCD5", "MAM1NAM2M2MO", "MAM1NAM3M3MO", "MAM1NAM3M1MO", "MAM1NAM3DMMO", "MABS1AN11",
-                                                                     "MASDM@01", "MASDM254", "MASDM255", "MASDM273", "MASDM26", "MASDM@03", "MACAB1043", "MACAB1183", "btc_20y", "btc_30y", "btc_40y", "btc_10y", "tail_10y", "tail_20y", "tail_30y", "tail_40y",
-                                                                     "taxes_receipts", "pension_payments", "fefsa_receipts", "fefsa_receipts_py", "fefsa_payments", "gov_bonds_over_1y_receipts", "tbills_balance",
-                                                                     "on_col_same_avg", "on_unc_same_avg", "on_unc_same_max", "on_unc_same_min", "1w_unc_fwd_avg", "1m_unc_fwd_avg", "3m_unc_same_avg", "call_outstanding_total", "treasury_proj"]
-        for k in need:
-            if k not in data:
-                p = os.path.join(hist_dir, "%s.csv" % k)
-                if os.path.exists(p):
-                    data[k] = clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"])
+        for fn in sorted(os.listdir(hist_dir)) if os.path.isdir(hist_dir) else []:
+            k = fn[:-4]
+            if not fn.endswith(".csv") or k in data:
+                continue
+            p = os.path.join(hist_dir, fn)
+            try:
+                ser = clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date" and r[1] not in ("", "None")])
+            except (ValueError, IndexError):
+                continue
+            if ser:
+                data[k] = ser
     blocks["rates"] = BJ.build_rates(cfg, data, prev.get("rates"))
     blocks["central_bank"] = BJ.build_central_bank(cfg, data, prev.get("central_bank"))
     blocks["fiscal"] = BJ.build_fiscal(cfg, data, prev.get("fiscal"))
@@ -2113,6 +2131,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # ── regime, scenarios, alerts, revisions ──
     regime = E.classify_regime(cfg, blocks, load_json(os.path.join(data_dir, "regime.json")), hist_dir=hist_dir)  # hist_dir: v0.4 components read the archive
+    pt = fiscal_flows_score_point(regime)  # jefe de mesa v2 (Treasury column): archive the v0.3 fiscal flows-only score
+    if pt:
+        append_history_csv(os.path.join(hist_dir, "fiscal_flows_score.csv"), "fiscal_flows_score", [pt])
     scenarios = E.evaluate_scenarios(cfg, blocks)
     alerts_path = os.path.join(log_dir, "alerts.json")
     existing = (load_json(alerts_path) or {}).get("alerts", [])

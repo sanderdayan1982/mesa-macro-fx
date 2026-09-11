@@ -447,8 +447,50 @@ def main_activation() -> int:
     reg = {"as_of": "2026-09-10", "regimes": {"fiscal": {"as_of": "2026-09-10", "regime": "NEUTRAL"}, "central_bank": {"as_of": "2026-09-10", "regime": "NEUTRAL"}, "general": {"regime": "NEUTRAL"}}}
     led, st = update_ledger(prev, reg, {})
     check(led["fiscal"] == [["2026-09-07", "INJECTION"], ["2026-09-10", "NEUTRAL"]] and st["fiscal"] == 1, "ledger: an as-of regression drops the later entry and the streak equals the ledger run (gate A3)", fails)
+    main_jefe_v2(fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
+
+
+def main_jefe_v2(fails: list) -> None:
+    """jefe de mesa v2: the pure-python Φ⁻¹ against scipy (when installed), the era-percentile convention against
+    conviction.asof_percentile (numpy/scipy path, when installed), the label rule, and a consistent published jefe.json."""
+    import json
+    from . import jefe as J
+    ps = [1e-12, 1e-6, 0.001, 0.01, 0.02425, 0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95, 0.97575, 0.99, 0.999, 1 - 1e-6, 1 - 1e-12]
+    try:
+        from scipy.stats import norm  # type: ignore
+        err = max(abs(J.norm_ppf(p) - float(norm.ppf(p))) for p in ps)
+        check(err < 1e-9, "jefe.norm_ppf vs scipy.stats.norm.ppf: max abs error %.2e over %d points" % (err, len(ps)), fails)
+    except ImportError:
+        check(abs(J.norm_ppf(0.5)) < 1e-12 and abs(J.norm_ppf(0.975) - 1.959963984540054) < 1e-9 and abs(J.norm_ppf(0.001) + 3.090232306167813) < 1e-9,
+              "jefe.norm_ppf against tabulated quantiles (scipy not installed)", fails)
+    grid = J._fridays("2020-01-03", "2022-12-30")
+    import random
+    rnd = random.Random(3)
+    ser = [(g, round(rnd.uniform(-2, 2), 1)) for g in grid]   # 1-dp values → ties, as in the block score
+    mine = J.asof_era_percentile(dict(ser), "2020-06-01", grid)
+    try:
+        from . import conviction as C  # numpy/scipy
+        ref = C.asof_percentile(ser, "2020-06-01", grid)
+        pairs = [(mine[g], ref[g]) for g in grid]
+        same_none = all((a is None) == (b is None) for a, b in pairs)
+        err = max((abs(a - b) for a, b in pairs if a is not None), default=0.0)
+        check(same_none and err < 1e-9, "jefe.asof_era_percentile = conviction.asof_percentile ((r−0.5)/N, min 26, clip ±2.5): max abs diff %.2e" % err, fails)
+    except ImportError:
+        check(mine[grid[0]] is None and any(v is not None for v in mine.values()), "jefe.asof_era_percentile runs (conviction path not importable)", fails)
+    L = J.plumbing_label
+    check(L(1, 8, 4, 8, False) == "abundante" and L(5, 8, 2, 8, True) == "abundante", "label: a top tercile and no bottom → abundante (gate irrelevant)", fails)
+    check(L(8, 8, 4, 8, False) == "escasa" and L(8, 8, 4, 8, True) == "vulnerable" and L(4, 8, 7, 8, True) == "vulnerable", "label: a bottom tercile and no top → escasa; with the price gate → vulnerable", fails)
+    check(L(1, 8, 8, 8, True) == "sin señal" and L(None, 8, 1, 8, False) == "sin señal" and L(4, 8, 5, 8, True) == "sin señal", "label: opposite terciles, a missing ranking or both mid → sin señal", fails)
+    check(J._tercile(3, 8) == "top" and J._tercile(4, 8) == "mid" and J._tercile(6, 8) == "bottom" and J._tercile(2, 5) == "top" and J._tercile(3, 5) == "mid", "terciles: top size = ceil(n/3)", fails)
+    p = os.path.join(ROOT, "data", "mesa", "jefe.json")
+    if os.path.exists(p):
+        j = json.load(open(p, encoding="utf-8"))
+        T = j.get("treasury") or {}
+        ok = T.get("status") == "ok" and [r["rank"] for r in T["ranking"]] == list(range(1, T["n"] + 1)) and all(r["z"] >= r2["z"] for r, r2 in zip(T["ranking"], T["ranking"][1:])) \
+            and abs(sum(r["z"] for r in T["ranking"])) < 0.05 * T["n"] and set(j.get("labels", {}).values()) <= set(J.LABELS) and all(r["proxy"] == (r["ccy"].lower() in J.PROXY) for r in T["ranking"])
+        check(ok, "data/mesa/jefe.json: treasury ranking ordered by Z, demeaned, proxy flags, labels in the enum", fails)
 
 
 E_BLOCK_ENUM = {"INJECTION", "DRAIN", "NEUTRAL", "NO SIGNAL"}

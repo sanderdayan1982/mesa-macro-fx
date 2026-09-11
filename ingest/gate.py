@@ -16,7 +16,9 @@ from typing import Dict, List, Optional
 
 NUM = re.compile(r"[−\-+]?\d[\d.]*(?:,\d+)?")
 DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
-STRUCTURAL = [r"\bF[1-7]\.", r"T1–T3", r"Δ13", r"p20", r"(?<=\d)\.ª", r"\bH\.4\.1\b"]
+STRUCTURAL = [r"\bF[1-7]\.", r"T1–T3", r"\bT4\b", r"Δ13", r"p20", r"(?<=\d)\.ª", r"\bH\.4\.1\b",
+              # jefe de mesa v2 horizon labels and window names (names, not measurements)
+              r"8–13 s", r"13–26 s \(más firme a 26\)", r"media 13 s", r"hace 13 s"]
 POS_VERBS = {"subieron", "creció", "subió", "alimenta", "por encima"}
 NEG_VERBS = {"cayeron", "cayó", "bajó", "drena", "por debajo"}
 ZERO_VERBS = {"no variaron", "no varió", "no mueve", "al nivel"}

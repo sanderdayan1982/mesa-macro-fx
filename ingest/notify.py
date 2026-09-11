@@ -80,8 +80,10 @@ def snapshot(ccy: str, root: str = ROOT) -> dict:
 
 def jefe_snapshot(root: str = ROOT) -> dict:
     j = _rj(os.path.join(root, "data", "mesa", "jefe.json")) or {}
+    t = j.get("treasury") or {}
     return {"friday": j.get("as_of_friday"), "order": [x["ccy"] for x in j.get("ranking", [])], "ranking": j.get("ranking", []),
-            "low_dispersion": j.get("low_dispersion"), "pair": j.get("pair_max_conviction")}
+            "low_dispersion": j.get("low_dispersion"), "pair": j.get("pair_max_conviction"),
+            "treasury": {"friday": t.get("as_of_friday"), "ranking": t.get("ranking", [])} if t.get("status") == "ok" else None, "labels": j.get("labels") or {}}
 
 
 # ───────────────────────────── event detection ─────────────────────────────
@@ -151,6 +153,19 @@ def jefe_rank_line(j: dict) -> str:
     return " · ".join("%d %s %s%% (Z %s)" % (x["rank"], x["ccy"], _num(x["d13_pct"], 1), _num(x["z"], 2)) for x in j.get("ranking", []))
 
 
+def jefe_treasury_line(j: dict) -> str:
+    """Treasury order (jefe de mesa v2) + plumbing labels; empty when the Treasury column is not computable."""
+    t = j.get("treasury")
+    if not t or not t.get("ranking"):
+        return ""
+    lab = j.get("labels") or {}
+    line = "Tesoro (viernes %s; impulso fiscal a un trimestre, 13–26 s): " % t["friday"] + " · ".join(
+        "%d %s%s (Z %s)" % (x["rank"], x["ccy"], " (proxy)" if x.get("proxy") else "", _num(x["z"], 2)) for x in t["ranking"])
+    if lab:
+        line += "\netiquetas: " + " · ".join("%s %s" % (c, lab[c]) for c in lab)
+    return line
+
+
 def _num(v, d) -> str:
     if v is None:
         return "—"
@@ -193,9 +208,9 @@ def digest(root: str = ROOT) -> List[str]:
         line += esc(s.get("F1") or "F1: sin daily_log") + "\n" + esc(s.get("F5") or "")
         msgs.append(line)
     if j.get("order"):
-        msgs.append("<b>Jefe de mesa</b> · viernes %s · Δ13 semanas de reservas del BC en %% del stock, Z transversal · sólo BC; Tesoro pendiente de prerregistro\n%s\n%s%s" % (
-            esc(j["friday"]), esc(jefe_rank_line(j)), ("par con más convicción relativa: %s (más reservas) frente a %s (más drenaje)" % (j["pair"]["reserves_growth"], j["pair"]["reserves_drain"])) if j.get("pair") else "",
-            "\n⚠ dispersión transversal baja" if j.get("low_dispersion") else ""))
+        msgs.append("<b>Jefe de mesa</b> · viernes %s · BC: Δ13 semanas de reservas del BC en %% del stock, Z transversal · Tesoro en paralelo (sin par neto)\n%s\n%s%s%s" % (
+            esc(j["friday"]), esc(jefe_rank_line(j)), ("par con más convicción relativa por la pata BC: %s (más reservas) frente a %s (más drenaje)" % (j["pair"]["reserves_growth"], j["pair"]["reserves_drain"])) if j.get("pair") else "",
+            "\n⚠ dispersión transversal baja" if j.get("low_dispersion") else "", ("\n" + esc(jefe_treasury_line(j))) if jefe_treasury_line(j) else ""))
     return msgs
 
 
