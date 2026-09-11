@@ -43,7 +43,12 @@ h2{font-family:var(--font);font-size:14px;font-weight:800;letter-spacing:.12em;c
 .badge.ok{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.warn{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}.badge.err{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.dim{background:#1a1a1a;color:#777;border-color:#2a2a2a}
 table{width:100%;border-collapse:collapse;font-size:13px;font-family:var(--font)}th{text-align:left;padding:6px 8px;color:var(--text2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
 .tbl{background:var(--panel);border:1px solid var(--border);padding:8px;overflow-x:auto}
-.issue{padding:8px 12px;border-left:3px solid var(--amber);background:var(--bg2);margin-bottom:4px;font-family:var(--font);font-size:13px}.issue.err{border-left-color:var(--red)}.issue.ok{border-left-color:var(--green);color:var(--text2)}
+.plumb{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px}
+.pc{background:var(--panel);border:1px solid var(--border);padding:10px 12px}.pc .ph{display:flex;justify-content:space-between;align-items:center;font-family:var(--font);font-size:13px;margin-bottom:6px}.pc .ph b{color:var(--gold);font-size:15px}
+.pc .bar{display:grid;grid-template-columns:64px 1fr 52px;align-items:center;gap:6px;font-family:var(--font);font-size:12px;color:var(--text2);margin:3px 0}.pc .bar .tr{position:relative;height:14px;background:var(--bg2);border:1px solid var(--border)}
+.pc .bar .tr i{position:absolute;top:0;bottom:0;background:var(--green)}.pc .bar .tr i.neg{background:var(--red)}.pc .bar .tr .z0{position:absolute;top:-2px;bottom:-2px;left:50%;width:1px;background:var(--text3)}.pc .bar .v{text-align:right;color:var(--white)}
+.pc svg{display:block;width:100%;height:96px;margin-top:6px}.pc .lg{font-family:var(--font);font-size:11px;color:var(--text3);display:flex;gap:10px;margin-top:4px}.pc .lg i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:4px}
+.issue{padding:8px 12px;border-left:3px solid var(--amber);background:var(--bg2);margin-bottom:4px;font-family:var(--font);font-size:13px;overflow-wrap:anywhere}.issue.err{border-left-color:var(--red)}.issue.ok{border-left-color:var(--green);color:var(--text2)}
 .src{font-size:11px;color:var(--text3);font-family:var(--font);margin-top:8px;line-height:1.6}
 @media(max-width:700px){body{font-size:16px}.main{padding:8px}.hdr{padding:8px 10px}.desknav{padding:6px 10px}.blocks{grid-template-columns:repeat(2,1fr)}.kpi .v{font-size:20px}}
 </style>
@@ -61,6 +66,8 @@ table{width:100%;border-collapse:collapse;font-size:13px;font-family:var(--font)
   <div id="issues"></div>
   <h2>Ocho divisas</h2>
   <div class="cards" id="cards"></div>
+  <h2>Fontanería por divisa — BC (banco central) y Tesoro, hoy y 52 semanas atrás</h2>
+  <div class="plumb" id="plumb"></div>
   <h2>Jefe de mesa — BC (banco central) y Tesoro en paralelo</h2>
   <div class="tbl" id="jefe"></div>
   <h2>Telegram — últimos envíos</h2>
@@ -122,6 +129,20 @@ async function load(){
     <div class="kpi"><div class="t">refrescos &gt; ${STALE_H} h</div><div class="v ${old?'a':'g'}">${old}</div></div>
     <div class="kpi"><div class="t">jefe de mesa</div><div class="v">${J&&J.as_of_friday?J.as_of_friday:'—'}</div></div>`;
   $('issues').innerHTML=issues.length?issues.map(i=>`<div class="issue ${i.lvl}">${i.t}</div>`).join(''):'<div class="issue ok">Sin incidencias: los 32 bloques frescos, ocho puertas pasan, ningún refresco atrasado.</div>';
+  // ── fontanería por divisa: two bars (BC, Tesoro) at ±2.5 Z and their 52-week paths; presentation of jefe.json only ──
+  if(J&&J.history&&J.history.bc){const H=J.history,T0=J.treasury&&J.treasury.ranking?J.treasury:null;const LBL=c=>J.labels?J.labels[c]:null;
+    const bar=(name,z)=>{const w=z==null?0:Math.min(Math.abs(z),2.5)/2.5*50;const left=z==null?50:(z<0?50-w:50);return `<div class="bar"><span>${name}</span><div class="tr"><i class="${z<0?'neg':''}" style="left:${left}%;width:${w}%"></i><span class="z0"></span></div><span class="v">${z==null?'—':fN(z)}</span></div>`;};
+    const path=(fr,arr,color)=>{const n=fr.length;if(!n)return '';const X=i=>4+i/(n-1)*(300-8),Y=z=>48-Math.max(-2.5,Math.min(2.5,z))/2.5*44;let d='',pen=false;arr.forEach((z,i)=>{if(z==null){pen=false;return;}d+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(z).toFixed(1)+' ';pen=true;});return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.6"/>`;};
+    const fr=H.bc.fridays,frT=(H.treasury||{}).fridays||fr;
+    $('plumb').innerHTML=(J.ranking.map(r=>r.ccy)).concat((J.missing||[])).map(c=>{const b=J.ranking.find(x=>x.ccy===c),t=T0?T0.ranking.find(x=>x.ccy===c):null,l=LBL(c);
+      const bcZ=b?b.z:null,trZ=t?t.z:null;const sb=H.bc[c]||[],st=(H.treasury||{})[c]||[];
+      // align the Treasury path on the BC grid by date
+      const tm={};frT.forEach((d,i)=>tm[d]=st[i]);const stA=fr.map(d=>tm[d]==null?null:tm[d]);
+      return `<div class="pc"><div class="ph"><b>${c}</b><span style="color:${l?LABC[l]:'var(--text3)'}">${l||'—'}${t&&t.proxy?' · proxy':''}</span></div>
+        ${bar('BC',bcZ)}${bar('Tesoro',trZ)}
+        <svg viewBox="0 0 300 96" preserveAspectRatio="none"><line x1="4" y1="48" x2="296" y2="48" stroke="var(--text3)" stroke-width="1" stroke-dasharray="3 3"/>${path(fr,sb,'var(--blue)')}${path(fr,stA,'var(--gold)')}</svg>
+        <div class="lg"><span><i style="background:var(--blue)"></i>BC Δ13 s reservas (Z)</span><span><i style="background:var(--gold)"></i>Tesoro flujo fiscal 13 s (Z)</span><span>${fr[0]} → ${fr[fr.length-1]}</span></div></div>`;}).join('');}
+  else $('plumb').innerHTML='<div class="issue err">sin historia en data/mesa/jefe.json (lote jefe v2 pendiente de refresco)</div>';
   if(J&&J.ranking){const T=J.treasury&&J.treasury.ranking?J.treasury:null;const TR=c=>T?T.ranking.find(x=>x.ccy===c):null;const LB=c=>J.labels?J.labels[c]:null;
     $('jefe').innerHTML=`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th><th>Tesoro #</th><th>V13</th><th>Z Tesoro</th><th>Etiqueta</th></tr></thead><tbody>${J.ranking.map(r=>{const t=TR(r.ccy),l=LB(r.ccy);return `<tr><td>${r.rank}</td><td><a style="color:var(--gold);text-decoration:none" href="../${r.ccy.toLowerCase()}/">${r.ccy}</a></td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td><td>${t?t.rank+(t.proxy?' (proxy)':''):'—'}</td><td>${t?fN(t.v13):'—'}</td><td>${t?fN(t.z):'—'}</td><td style="color:${l?LABC[l]:'var(--text3)'}">${l||'—'}</td></tr>`;}).join('')}</tbody></table>
     <div class="src">viernes ${J.as_of_friday} · BC: ${J.label} · ${J.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(J.sigma_week,3)} · p20 era ${fN(J.sigma_week_p20_era,3)}) · par BC: ${J.pair_max_conviction?J.pair_max_conviction.reserves_growth+' / '+J.pair_max_conviction.reserves_drain+' (brecha Z '+fN(J.pair_max_conviction.z_gap)+')':'—'}${T?' · Tesoro (viernes '+T.as_of_friday+'): '+T.label+'; V13 = media 13 s del flujo fiscal; (proxy) GBP/NZD/CHF':' · Tesoro: no calculable'} · etiqueta por terciles de BC y Tesoro y puerta de precio; sin par neto</div>`;}
