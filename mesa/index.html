@@ -61,7 +61,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;font-family:var(--font)
   <div id="issues"></div>
   <h2>Ocho divisas</h2>
   <div class="cards" id="cards"></div>
-  <h2>Jefe de mesa — convicción por la pata BC (banco central)</h2>
+  <h2>Jefe de mesa — BC (banco central) y Tesoro en paralelo</h2>
   <div class="tbl" id="jefe"></div>
   <h2>Telegram — últimos envíos</h2>
   <div id="outbox"></div>
@@ -72,6 +72,7 @@ const CCYS=['usd','eur','gbp','jpy','chf','cad','aud','nzd'];
 const $=id=>document.getElementById(id);
 const fN=(v,d=2)=>v==null?'—':Number(v).toLocaleString('es-ES',{maximumFractionDigits:d,minimumFractionDigits:d});
 const BN={central_bank:'BC',fiscal:'TESORO',rates:'TIPOS',banking:'BANCA'};
+const LABC={abundante:'var(--green)',escasa:'var(--amber)',vulnerable:'var(--red)','sin señal':'var(--text3)'};
 const ES={fresh:'fresco',stale:'stale',proxy:'proxy',unavailable:'no disp.',degraded:'degradado'};
 const STALE_H=30; // a refresh older than this (hours) is flagged
 function age(iso){if(!iso)return null;const h=(Date.now()-new Date(iso).getTime())/36e5;return h;}
@@ -103,13 +104,14 @@ async function load(){
     const R=r.regimes||{};const cb=(R.central_bank||{}).regime||'—',fi=(R.fiscal||{}).regime||'—';const s=(a&&a.streaks)||{};
     const deg=(a&&a.degraded)||[];
     const rank=J&&J.ranking?J.ranking.find(x=>x.ccy===C):null;
+    const trk=J&&J.treasury&&J.treasury.ranking?J.treasury.ranking.find(x=>x.ccy===C):null; const lab=J&&J.labels?J.labels[C]:null;
     return `<a class="card" href="../${c}/"><div class="top"><span class="ccy">${C}</span><span class="regime ${r.traffic_light||'NONE'}">${(r.regime||'—').replace(/_/g,' ')}</span></div>
       <div class="blocks">${blocks}</div>
       <div class="row"><span>BC / Tesoro</span><span>${cb} ${s.central_bank?s.central_bank+'.ª':''} · ${fi} ${s.fiscal?s.fiscal+'.ª':''}</span></div>
       <div class="row"><span>último refresco</span><span>${r.generated_at?r.generated_at.slice(0,16).replace('T',' ')+'Z · hace '+ageTxt(h):'—'}</span></div>
       <div class="row"><span>calidad media</span><span>${q&&q.system?q.system.average+' (≥90: '+q.system.abv90+' · <70: '+q.system.blw70+')':'—'}</span></div>
       <div class="row"><span>daily_log</span><span>${gate} ${deg.length?'<span class="badge warn">'+deg.length+' DEGRADADO'+(deg.length>1?'S':'')+'</span>':''}</span></div>
-      <div class="row"><span>jefe de mesa</span><span>${rank?rank.rank+'.º · Δ13 s '+fN(rank.d13_pct,1)+' % · Z '+fN(rank.z):'—'}</span></div></a>`;
+      <div class="row"><span>jefe de mesa</span><span>${rank?rank.rank+'.º · Δ13 s '+fN(rank.d13_pct,1)+' % · Z '+fN(rank.z):'—'}${trk?' · Tesoro '+trk.rank+'.º · Z '+fN(trk.z):''}${lab?' · <span style="color:'+LABC[lab]+'">'+lab+'</span>':''}</span></div></a>`;
   }).join('');
   $('cards').innerHTML=cards;
   const tot=fresh+stale+unav;
@@ -120,8 +122,9 @@ async function load(){
     <div class="kpi"><div class="t">refrescos &gt; ${STALE_H} h</div><div class="v ${old?'a':'g'}">${old}</div></div>
     <div class="kpi"><div class="t">jefe de mesa</div><div class="v">${J&&J.as_of_friday?J.as_of_friday:'—'}</div></div>`;
   $('issues').innerHTML=issues.length?issues.map(i=>`<div class="issue ${i.lvl}">${i.t}</div>`).join(''):'<div class="issue ok">Sin incidencias: los 32 bloques frescos, ocho puertas pasan, ningún refresco atrasado.</div>';
-  if(J&&J.ranking){$('jefe').innerHTML=`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th></tr></thead><tbody>${J.ranking.map(r=>`<tr><td>${r.rank}</td><td><a style="color:var(--gold);text-decoration:none" href="../${r.ccy.toLowerCase()}/">${r.ccy}</a></td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td></tr>`).join('')}</tbody></table>
-    <div class="src">viernes ${J.as_of_friday} · ${J.label} · ${J.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(J.sigma_week,3)} · p20 era ${fN(J.sigma_week_p20_era,3)}) · par: ${J.pair_max_conviction?J.pair_max_conviction.reserves_growth+' / '+J.pair_max_conviction.reserves_drain+' (brecha Z '+fN(J.pair_max_conviction.z_gap)+')':'—'}</div>`;}
+  if(J&&J.ranking){const T=J.treasury&&J.treasury.ranking?J.treasury:null;const TR=c=>T?T.ranking.find(x=>x.ccy===c):null;const LB=c=>J.labels?J.labels[c]:null;
+    $('jefe').innerHTML=`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th><th>Tesoro #</th><th>V13</th><th>Z Tesoro</th><th>Etiqueta</th></tr></thead><tbody>${J.ranking.map(r=>{const t=TR(r.ccy),l=LB(r.ccy);return `<tr><td>${r.rank}</td><td><a style="color:var(--gold);text-decoration:none" href="../${r.ccy.toLowerCase()}/">${r.ccy}</a></td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td><td>${t?t.rank+(t.proxy?' (proxy)':''):'—'}</td><td>${t?fN(t.v13):'—'}</td><td>${t?fN(t.z):'—'}</td><td style="color:${l?LABC[l]:'var(--text3)'}">${l||'—'}</td></tr>`;}).join('')}</tbody></table>
+    <div class="src">viernes ${J.as_of_friday} · BC: ${J.label} · ${J.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(J.sigma_week,3)} · p20 era ${fN(J.sigma_week_p20_era,3)}) · par BC: ${J.pair_max_conviction?J.pair_max_conviction.reserves_growth+' / '+J.pair_max_conviction.reserves_drain+' (brecha Z '+fN(J.pair_max_conviction.z_gap)+')':'—'}${T?' · Tesoro (viernes '+T.as_of_friday+'): '+T.label+'; V13 = media 13 s del flujo fiscal; (proxy) GBP/NZD/CHF':' · Tesoro: no calculable'} · etiqueta por terciles de BC y Tesoro y puerta de precio; sin par neto</div>`;}
   else $('jefe').innerHTML='<div class="issue err">data/mesa/jefe.json no disponible</div>';
   const bad=issues.filter(i=>i.lvl==='err').length;
   $('msg').className='msg '+(bad?'err':issues.length?'warn':'ok');
