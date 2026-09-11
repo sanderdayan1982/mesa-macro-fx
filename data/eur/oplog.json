@@ -1,6 +1,93 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-11T02:13:33+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-11T02:13:33+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "d0585b1f564a9f24",
+    "degraded": [
+     "F2: monthly stock only (app_pepp_total)",
+     "F2: monthly flow only (app_pepp_redemptions)"
+    ],
+    "streaks": {
+     "central_bank": 3,
+     "fiscal": 2,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-11T02:13:33+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": true,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-11T02:13:33+00:00",
+   "type": "EUR_V04",
+   "category": "system",
+   "details": {
+    "records": 8847,
+    "by_issuer": {
+     "DE": 143,
+     "FR": 6360,
+     "ES": 574,
+     "IT": 920,
+     "EU": 516,
+     "ESM": 334
+    },
+    "last_settlement": {
+     "FR": "2026-09-09",
+     "ESM": "2026-09-03",
+     "EU": "2026-09-04",
+     "ES": "2026-09-11",
+     "IT": "2026-09-15",
+     "DE": "2026-09-11"
+    },
+    "de_lines": 273,
+    "de_calendar": 80,
+    "weeks": 36,
+    "notes": {
+     "FR": "history file to 2026-08-26; HTML months 2026-08,2026-09",
+     "tls": {
+      "www.tesoro.es": "server chain incomplete; intermediate completed via AIA, verified against certifi"
+     },
+     "ES": "0 new auction pages",
+     "IT": "7 new PDFs, 920 records",
+     "EU_qlik": "engine: 2633 rows / 238 outstanding",
+     "EU": "qlik 502 records; news archive 164 (9 new pages; 0 news records not in qlik)",
+     "ESM": "334 bill records (334 new); outstanding list 119 issues"
+    }
+   }
+  },
+  {
    "timestamp": "2026-09-10T22:39:28+00:00",
    "type": "NOTIFY",
    "category": "system",
