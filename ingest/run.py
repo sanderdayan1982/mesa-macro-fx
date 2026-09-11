@@ -2362,6 +2362,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     save_json(os.path.join(data_dir, "alerts.json"), {"generated_at": E.now_iso(), "alerts": alerts})
     save_json(os.path.join(data_dir, "revisions.json"), {"generated_at": E.now_iso(), "revisions": all_revs})
     save_json(os.path.join(data_dir, "regime_history.json"), rh)
+    try:  # regime changelog reconstructed from the v0.3 calibration replay (idea G, 2026-09-11); never blocks the refresh
+        from . import regime_changelog as RC
+        save_json(os.path.join(data_dir, "regime_changelog.json"), RC.build(ccy, ROOT))
+    except Exception as e:
+        E.log_event(oplog, "REGIME_CHANGELOG_ERROR", "system", {"error": str(e)})
     E.log_event(oplog, "REFRESH_AUTO", "system", {"lane": a.lane, "backfill": a.backfill, "blocks": list(blocks), "errors": errors, "regime": regime["regime"], "new_revisions": len(revs)})
     # ── daily_log (template 1.0) + jefe de mesa + anti-invention gate → data/<ccy>/agent.json, data/mesa/jefe.json ──
     try:

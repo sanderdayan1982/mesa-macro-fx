@@ -578,6 +578,12 @@ def main_jefe_v2(fails: list) -> None:
         ok = T.get("status") == "ok" and [r["rank"] for r in T["ranking"]] == list(range(1, T["n"] + 1)) and all(r["z"] >= r2["z"] for r, r2 in zip(T["ranking"], T["ranking"][1:])) \
             and abs(sum(r["z"] for r in T["ranking"])) < 0.05 * T["n"] and set(j.get("labels", {}).values()) <= set(J.LABELS) and j.get("stamp") == J.stamp(j) and len(j.get("stamp", "")) == 12 and bool(j.get("generated_at")) and (not j.get("low_dispersion") or set(j["labels"].values()) == {J.COMPRESSED}) and set((j.get("completeness") or {}).keys()) == set(J.NAMES.values()) and all(v["treasury"]["truth"] == "proxy" for k, v in j["completeness"].items() if k.lower() in J.PROXY) and len((j.get("evidence") or {}).get("tests", [])) >= 5 and all(r["proxy"] == (r["ccy"].lower() in J.PROXY) for r in T["ranking"])
         check(ok, "data/mesa/jefe.json: treasury ranking ordered by Z, demeaned, proxy flags, labels in the enum, stamp recomputable, compression withholds labels, completeness for the eight (proxy legs marked), evidence published", fails)
+    from . import regime_changelog as RC
+    for c in ("usd", "eur", "nzd"):
+        r = RC.build(c)
+        check(r.get("status") == "ok" and set(r["blocks"]) == {"central_bank", "fiscal", "general"} and all(b["current"] and b["since"] and b["weeks_in_current"] >= 1 for b in r["blocks"].values())
+              and all(len(b["transitions"]) <= 12 for b in r["blocks"].values()) and r["blocks"]["central_bank"]["cuts_v03"] is not None,
+              "regime_changelog %s: reconstructed from the v0.3 replay with current spell, ≤ 12 transitions per block and the v0.3 cuts" % c.upper(), fails)
 
 
 E_BLOCK_ENUM = {"INJECTION", "DRAIN", "NEUTRAL", "NO SIGNAL"}
