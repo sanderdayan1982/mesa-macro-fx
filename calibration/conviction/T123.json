@@ -1,0 +1,271 @@
+{
+ "design": "ICL T1\u2013T3 (prerregistro definitivo, adjudicaci\u00f3n ronda 3, 2026-09-09 \u00a73; una mirada)",
+ "grid": [
+  "2020-01-03",
+  "2026-09-04"
+ ],
+ "n_boot_seed": "N_BOOT/SEED de conviction.py",
+ "tests": [
+  {
+   "test": "T1",
+   "signal": "fi_mean13",
+   "h": 13,
+   "n_weeks": 163,
+   "ccys": [
+    "aud",
+    "cad",
+    "chf",
+    "eur",
+    "gbp",
+    "jpy",
+    "nzd"
+   ],
+   "excluded": [],
+   "entry_week_by_ccy": {
+    "cad": "2020-09-18",
+    "gbp": "2023-04-28",
+    "aud": "2025-10-03",
+    "jpy": "2025-02-14",
+    "chf": "2023-03-17",
+    "nzd": "2022-12-30",
+    "usd": "2022-11-25",
+    "eur": "2023-03-10"
+   },
+   "first": "2023-04-28",
+   "last": "2026-06-05",
+   "ic": {
+    "mean": 0.1248,
+    "ci95": [
+     0.0287,
+     0.2152
+    ],
+    "p": 0.0084,
+    "block": 3,
+    "n": 163,
+    "se_naive": 0.0325
+   },
+   "acf_ic": [
+    0.6,
+    0.39,
+    0.3,
+    0.17,
+    0.19,
+    0.12,
+    0.08,
+    0.04
+   ],
+   "ic_first_half": 0.1262,
+   "ic_second_half": 0.1233,
+   "hit_rate": 0.564,
+   "ic_raw_return": -0.022,
+   "resid_share": 0.66,
+   "tercile_spread_pct": {
+    "mean": 0.0989,
+    "ci95": [
+     -0.4652,
+     0.642
+    ],
+    "p": 0.727,
+    "block": 3,
+    "n": 163,
+    "se_naive": 0.1924
+   },
+   "q_bh": 0.0126,
+   "survives": true
+  },
+  {
+   "test": "T2",
+   "signal": "fi_mean13",
+   "h": 26,
+   "n_weeks": 150,
+   "ccys": [
+    "aud",
+    "cad",
+    "chf",
+    "eur",
+    "gbp",
+    "jpy",
+    "nzd"
+   ],
+   "excluded": [],
+   "entry_week_by_ccy": {
+    "cad": "2020-09-18",
+    "gbp": "2023-04-28",
+    "aud": "2025-10-03",
+    "jpy": "2025-02-14",
+    "chf": "2023-03-17",
+    "nzd": "2022-12-30",
+    "usd": "2022-11-25",
+    "eur": "2023-03-10"
+   },
+   "first": "2023-04-28",
+   "last": "2026-03-06",
+   "ic": {
+    "mean": 0.1771,
+    "ci95": [
+     0.0797,
+     0.2751
+    ],
+    "p": 0.0002,
+    "block": 4,
+    "n": 150,
+    "se_naive": 0.0318
+   },
+   "acf_ic": [
+    0.6,
+    0.45,
+    0.4,
+    0.31,
+    0.22,
+    0.15,
+    0.05,
+    0.0
+   ],
+   "ic_first_half": 0.2424,
+   "ic_second_half": 0.1118,
+   "hit_rate": 0.633,
+   "ic_raw_return": 0.0217,
+   "resid_share": 0.565,
+   "tercile_spread_pct": {
+    "mean": 1.1348,
+    "ci95": [
+     0.4816,
+     1.8228
+    ],
+    "p": 0.001,
+    "block": 3,
+    "n": 150,
+    "se_naive": 0.2364
+   },
+   "q_bh": 0.0006,
+   "survives": true
+  },
+  {
+   "test": "T3",
+   "signal": "govt_d13_pct",
+   "h": 13,
+   "n_weeks": 319,
+   "ccys": [
+    "aud",
+    "cad",
+    "chf",
+    "eur",
+    "jpy",
+    "nzd"
+   ],
+   "excluded": [
+    "gbp"
+   ],
+   "entry_week_by_ccy": {
+    "cad": "2020-04-03",
+    "aud": "2020-04-03",
+    "jpy": "2023-07-07",
+    "chf": "2020-04-03",
+    "nzd": "2020-04-03",
+    "usd": "2020-04-03",
+    "eur": "2020-04-03"
+   },
+   "first": "2020-05-01",
+   "last": "2026-06-05",
+   "ic": {
+    "mean": 0.0471,
+    "ci95": [
+     -0.0246,
+     0.117
+    ],
+    "p": 0.21,
+    "block": 3,
+    "n": 319,
+    "se_naive": 0.0261
+   },
+   "acf_ic": [
+    0.55,
+    0.39,
+    0.3,
+    0.3,
+    0.24,
+    0.13,
+    0.12,
+    0.15
+   ],
+   "ic_first_half": 0.0553,
+   "ic_second_half": 0.0388,
+   "hit_rate": 0.517,
+   "ic_raw_return": 0.0623,
+   "resid_share": 0.32,
+   "tercile_spread_pct": {
+    "mean": 0.6626,
+    "ci95": [
+     -0.0349,
+     1.354
+    ],
+    "p": 0.0598,
+    "block": 3,
+    "n": 319,
+    "se_naive": 0.2388
+   },
+   "q_bh": 0.21,
+   "survives": false
+  }
+ ],
+ "descriptives": {
+  "fi_mean13": {
+   "signal_acf_lag13_by_ccy": {
+    "cad": 0.45,
+    "gbp": -0.31,
+    "aud": -0.46,
+    "jpy": -0.02,
+    "chf": -0.05,
+    "nzd": -0.16,
+    "usd": -0.07,
+    "eur": -0.07
+   },
+   "ranking_persistence_tau": {
+    "4": 0.524,
+    "8": 0.286,
+    "13": 0.143,
+    "26": 0.067
+   }
+  },
+  "govt_d13_pct": {
+   "signal_acf_lag13_by_ccy": {
+    "cad": -0.0,
+    "aud": 0.07,
+    "jpy": -0.4,
+    "chf": -0.22,
+    "nzd": -0.13,
+    "usd": 0.21,
+    "eur": 0.32
+   },
+   "ranking_persistence_tau": {
+    "4": 0.429,
+    "8": 0.2,
+    "13": -0.2,
+    "26": 0.067
+   }
+  }
+ },
+ "deviations": [
+  "T3 sin puerta de era (historia completa del replay); las se\u00f1ales T1/T2 mantienen la puerta de era del percentil as-of.",
+  "T3: tolerancia as-of de 45 d\u00edas para la cuenta del gobierno (CHF y NZD son mensuales; el replay ya arrastra el \u00faltimo valor publicado a cada semana, as\u00ed que la tolerancia s\u00f3lo act\u00faa en los extremos).",
+  "T3: GBP excluida (el replay no tiene cuenta del gobierno). Ninguna sustituci\u00f3n.",
+  "Rejilla acotada al \u00faltimo viernes cubierto por el FX de todas las divisas (2026-09-04); conviction.py la extiende hasta hoy.",
+  "Retorno residual = camino de conviction.py: antes de 52 retornos completados en la era, el retorno es bruto. Se informa la fracci\u00f3n residualizada por test."
+ ],
+ "consistency_vs_exploratory": {
+  "T1": {
+   "ic_exploratory": 0.1248,
+   "ic_here": 0.1248,
+   "n_exploratory": 163,
+   "n_here": 163,
+   "match": true
+  },
+  "T2": {
+   "ic_exploratory": 0.1771,
+   "ic_here": 0.1771,
+   "n_exploratory": 150,
+   "n_here": 150,
+   "match": true
+  }
+ }
+}

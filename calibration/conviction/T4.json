@@ -1,0 +1,158 @@
+{
+ "design": "ICL T4 (prerregistro adjudicaci\u00f3n fontaner\u00eda 2026-09-11 \u00a72; una mirada)",
+ "grid": [
+  "2020-01-03",
+  "2026-09-04"
+ ],
+ "lag": 13,
+ "n_boot_seed": "N_BOOT/SEED de conviction.py",
+ "tests": [
+  {
+   "test": "T4-13",
+   "h": 13,
+   "n_weeks": 146,
+   "ccys": [
+    "aud",
+    "cad",
+    "chf",
+    "eur",
+    "gbp",
+    "jpy",
+    "nzd"
+   ],
+   "first": "2023-07-28",
+   "last": "2026-06-05",
+   "ic_partial": {
+    "mean": -0.055,
+    "ci95": [
+     -0.1259,
+     0.0169
+    ],
+    "p": 0.1368,
+    "block": 1,
+    "n": 146,
+    "se_naive": 0.0367
+   },
+   "acf_ic": [
+    0.35,
+    0.34,
+    0.15,
+    0.07,
+    -0.16,
+    0.04,
+    -0.08,
+    -0.07
+   ],
+   "ic_first_half": -0.1012,
+   "ic_second_half": -0.0088,
+   "hit_rate": 0.404,
+   "n_xs_mean": 5.16,
+   "ic_plain_A": {
+    "mean": 0.0083,
+    "ci95": [
+     -0.0667,
+     0.0873
+    ],
+    "p": 0.8318,
+    "block": 2,
+    "n": 146,
+    "se_naive": 0.0335
+   },
+   "ic_V_same_weeks": {
+    "mean": 0.132,
+    "ci95": [
+     0.0338,
+     0.2315
+    ],
+    "p": 0.0076,
+    "block": 3,
+    "n": 146,
+    "se_naive": 0.0349
+   },
+   "q_bh": 0.1368,
+   "survives": false
+  },
+  {
+   "test": "T4-26",
+   "h": 26,
+   "n_weeks": 137,
+   "ccys": [
+    "aud",
+    "cad",
+    "chf",
+    "eur",
+    "gbp",
+    "jpy",
+    "nzd"
+   ],
+   "first": "2023-07-28",
+   "last": "2026-03-06",
+   "ic_partial": {
+    "mean": 0.0741,
+    "ci95": [
+     -0.0214,
+     0.1674
+    ],
+    "p": 0.1294,
+    "block": 2,
+    "n": 137,
+    "se_naive": 0.0411
+   },
+   "acf_ic": [
+    0.37,
+    0.2,
+    0.04,
+    -0.13,
+    -0.13,
+    0.01,
+    -0.04,
+    -0.02
+   ],
+   "ic_first_half": 0.0397,
+   "ic_second_half": 0.108,
+   "hit_rate": 0.511,
+   "n_xs_mean": 5.39,
+   "ic_plain_A": {
+    "mean": 0.129,
+    "ci95": [
+     0.0199,
+     0.2339
+    ],
+    "p": 0.0184,
+    "block": 3,
+    "n": 137,
+    "se_naive": 0.0385
+   },
+   "ic_V_same_weeks": {
+    "mean": 0.1638,
+    "ci95": [
+     0.0651,
+     0.2686
+    ],
+    "p": 0.0022,
+    "block": 4,
+    "n": 137,
+    "se_naive": 0.0328
+   },
+   "q_bh": 0.1368,
+   "survives": false
+  }
+ ],
+ "entry_week_by_ccy": {
+  "cad": "2023-07-21",
+  "gbp": "2023-07-28",
+  "aud": "2026-01-02",
+  "jpy": "2025-05-16",
+  "chf": "2023-07-21",
+  "nzd": "2023-07-21",
+  "usd": "2023-07-21",
+  "eur": "2023-07-21"
+ },
+ "deviations": [
+  "A definida sobre la Z transversal por divisa (la misma que alimenta los pares de T1/T2), A_i,t = Z_i,t \u2212 Z_i,t\u221213, y emparejada vs USD como V; equivale exactamente a \u039413 s de la se\u00f1al de pares S.",
+  "IC parcial = Spearman del residuo semanal de rango(A) sobre rango(V) (OLS con constante entre las divisas con A, V y retorno; m\u00ednimo 5) contra el retorno residual. No es la f\u00f3rmula cerrada de correlaci\u00f3n parcial.",
+  "El IC plano de A y el IC de V de referencia se calculan sobre exactamente las semanas de la serie parcial de cada horizonte (mismo n).",
+  "Retorno residual, rejilla (acotada al \u00faltimo viernes con FX de todas las divisas, 2026-09-04) y se\u00f1al V: mismo c\u00f3digo que T1/T2 (conviction_t123).",
+  "Sin variantes: un rezago (13 s), dos horizontes, una pasada."
+ ]
+}
