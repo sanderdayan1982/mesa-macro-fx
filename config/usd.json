@@ -653,7 +653,7 @@
      "rule": "H.15 v2.1: RED if 10Y−2Y < −20 and FF−3M > 20 · GREEN if 10Y−2Y > 0 and FF−3M < 10 · else YELLOW; NO SIGNAL if a spread is missing"
     },
     "forex_signal_matrix": {
-     "rule": "H.4.1: NL Δ% RISK-ON/OFF · SOFR−IORB > 30 USD BULLISH, > 15 USD WATCH · WRESBAL < 3T NERVOUS · TGA ≥ 800B HIGH DRAIN"
+     "rule": "H.4.1: NL Δ% RISK-ON/OFF · SOFR−IORB > 30 FUNDING STRESS, > 15 FUNDING WATCH (heurística heredada, sin replay, sin dirección) · WRESBAL < 3T NERVOUS · TGA ≥ 800B HIGH DRAIN"
     }
    },
    "thresholds": {
@@ -970,7 +970,7 @@
    {
     "id": "L2",
     "name": "Reserve scarcity building (Sept-2019 pattern)",
-    "bias": "USD-BULLISH",
+    "bias": "RESERVE SCARCITY",
     "min": 2,
     "conditions": [
      "central_bank.reserves level >= WATCH",
