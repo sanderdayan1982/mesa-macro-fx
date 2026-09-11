@@ -1,15 +1,15 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-11T07:27:32+00:00",
+ "generated_at": "2026-09-11T12:25:00+00:00",
  "as_of": "2026-09-10",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.233,
+ "weighted_score": 0.378,
  "block_scores": {
   "central_bank": 0.67,
   "rates": 0.25,
-  "fiscal": -0.39,
+  "fiscal": 0.19,
   "banking": 0.0
  },
  "weights": {
@@ -22,7 +22,7 @@
  "regimes": {
   "central_bank": {
    "regime": "NEUTRAL",
-   "score": -0.1077,
+   "score": -0.1061,
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-09-09",
@@ -47,14 +47,14 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.1077,
+    "effective_score": -0.1061,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-09",
     "recent": [
      [
       "2026-09-09",
-      -0.1077
+      -0.1061
      ]
     ],
     "pending_days": null,
@@ -91,8 +91,8 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": -183.0,
-    "denominator": 169961.0,
-    "denominator_date": "2026-09-02",
+    "denominator": 172418.0,
+    "denominator_date": "2026-09-09",
     "today": "2026-09-11",
     "note": null
    },
@@ -134,11 +134,11 @@
   },
   "fiscal": {
    "regime": "NEUTRAL",
-   "score": -2.1375,
+   "score": 1.2203,
    "label": "DRAIN",
    "traffic_light": "RED",
-   "as_of": "2026-09-02",
-   "detail": "flow -3633.0 (Z -0.3872) · 4w cum -27777.0 (RISK_OFF) · gov deposits 80294.0",
+   "as_of": "2026-09-09",
+   "detail": "flow 2104.0 (Z 0.1903) · 4w cum -35425.0 (RISK_OFF) · gov deposits 78190.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.7248,
@@ -159,14 +159,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -2.1375,
+    "effective_score": -0.459,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-02",
+    "as_of": "2026-09-09",
     "recent": [
      [
       "2026-09-02",
       -2.1375
+     ],
+     [
+      "2026-09-09",
+      1.2203
      ]
     ],
     "pending_days": null,
@@ -176,7 +180,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": -0.39
+     "fiscal_flow_z": 0.19
     },
     "level": {},
     "weights": {},
@@ -184,8 +188,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.39,
-    "score_flows_only": -0.39
+    "score_v02": 0.19,
+    "score_flows_only": 0.19
    },
    "engine": "0.4",
    "component": {
@@ -199,15 +203,15 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -3633.0,
-    "denominator": 169961.0,
-    "denominator_date": "2026-09-02",
+    "raw": 2104.0,
+    "denominator": 172418.0,
+    "denominator_date": "2026-09-09",
     "today": "2026-09-11",
     "note": null
    },
    "v03_shadow": {
     "regime": "NEUTRAL",
-    "score": -0.39,
+    "score": 0.19,
     "raw_regime": "NEUTRAL",
     "cuts": {
      "injection_enter": 0.53,
@@ -215,18 +219,22 @@
      "drain_enter": -0.555,
      "drain_exit": -0.37
     },
-    "as_of": "2026-09-02",
+    "as_of": "2026-09-09",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
-     "effective_score": -0.39,
+     "effective_score": -0.1,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-09-02",
+     "as_of": "2026-09-09",
      "recent": [
       [
        "2026-09-02",
        -0.39
+      ],
+      [
+       "2026-09-09",
+       0.19
       ]
      ],
      "pending_days": null
@@ -235,8 +243,8 @@
   },
   "general": {
    "regime": "NEUTRAL",
-   "score": 0.246,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 74 weeks < 150); dual score +0.25 shown for context",
+   "score": 0.478,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 74 weeks < 150); dual score +0.48 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -433,7 +441,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
