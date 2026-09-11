@@ -423,13 +423,15 @@ def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "boe_ops", "kind": kind, "error": str(e)})
         if not a.fixtures:
             _t.sleep(2.5)
-    for kind in ("d1a", "d22d"):
+    for kind in ("d1a", "d22d", "d21e", "d1c"):  # d21e/d1c: seed of the gilt series before the D1A archive
         try:
             rows[kind] = dmo.fetch(kind)
         except (ProviderError, Exception) as e:
             rows[kind] = []
             errors.append("dmo[%s]: %s" % (kind, e))
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "dmo_xml", "kind": kind, "error": str(e)})
+        if not a.fixtures:
+            _t.sleep(2.5)
     from datetime import date, timedelta
     today = date.today().isoformat()
     days = O.business_days((date.today() - timedelta(days=_v04_window_days(a))).isoformat(), today)
@@ -457,6 +459,22 @@ def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
     iss.update(tb)
     iss["coupons_private_paid"] = cp_paid
     iss["net_issuance_private_daily"] = O.net_issuance_private(gi["gilt_issued_daily"], gi["gilt_redeemed_private"], tb["tbill_issued"], tb["tbill_matured"], cp_paid, days)
+    # Seed before the first D1A archive snapshot (ADJUDICACION_GBP_EMISION.md, "Diseño del seed GBP"): D2.1E issuance by settlement,
+    # D1C gross redemptions, rule coupons on the back-solved private outstanding, D2.2D bills (full history). Strictly before the
+    # first snapshot; from that date the archive path above rules untouched. Deterministic → re-runs are idempotent on the CSVs.
+    first_snap = min(arch) if arch else today
+    seed_days = O.business_days(O.SEED_START, (date.fromisoformat(first_snap) - timedelta(days=1)).isoformat())
+    name_of = {r["isin"]: r.get("name", "") for r in rows.get("d1a", []) if r.get("isin")}
+    snap_by_name = {name_of[i]: (v, red_by_isin.get(i, "")) for i, v in (arch.get(first_snap) or {}).items() if i in name_of}
+    seed, seed_stats = O.seed_flows(rows.get("d21e", []), rows.get("d1c", []), (first_snap, snap_by_name), seed_days)
+    if seed_days and rows.get("d21e") and rows.get("d1c"):
+        tb_raw = O.tbill_series(rows.get("d22d", []))  # undensed full history (tb above is densed to the flow window)
+        seed_net = O.net_issuance_private(seed["gilt_issued_daily"], seed["gilt_redeemed_private"], tb_raw["tbill_issued"], tb_raw["tbill_matured"], seed["coupons_private_paid"], seed_days)
+        for k, s in (("gilt_issued_daily", seed["gilt_issued_daily"]), ("gilt_redeemed_private", seed["gilt_redeemed_private"]), ("coupons_private_paid", seed["coupons_private_paid"]),
+                     ("tbill_issued", O._dense(tb_raw["tbill_issued"], seed_days)), ("tbill_matured", O._dense(tb_raw["tbill_matured"], seed_days)), ("net_issuance_private_daily", seed_net)):
+            iss[k] = O.splice(s, iss.get(k, []), first_snap)
+    E.log_event(oplog, "GBP_SEED", "system", dict(seed_stats, first_snapshot=first_snap, seed_days=len(seed_days),
+                                                  seed_last=seed_days[-1] if seed_days else None, tbill_first=(rows.get("d22d") or [{}])[0].get("tender_date")))
     # Exchequer residual from the weekly history CSVs
     def _h(code: str) -> Series:
         p = os.path.join(hist_dir, "%s.csv" % code)
@@ -472,7 +490,7 @@ def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
     for k in ("str_net_daily", "str_outstanding_ops", "iltr_net_daily", "iltr_outstanding_ops", "repo_net_daily"):
         append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ops.get(k, []))
     append_history_csv(os.path.join(hist_dir, "apf_sales_daily.csv"), "apf_sales_daily", apf.get("apf_sales_daily", []))
-    for k in ("gilt_issued_daily", "gilt_redeemed_private", "tbill_issued", "tbill_matured", "net_issuance_private_daily"):
+    for k in ("gilt_issued_daily", "gilt_redeemed_private", "coupons_private_paid", "tbill_issued", "tbill_matured", "net_issuance_private_daily"):
         append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, iss.get(k, []))
     append_history_csv(os.path.join(hist_dir, "exchequer_residual_weekly.csv"), "exchequer_residual_weekly", resid.get("exchequer_residual_weekly", []))
     E.log_event(oplog, "GBP_V04", "system", {"rows": {k: len(v) for k, v in rows.items()}, "d1a_snapshots": len(arch),
@@ -1357,7 +1375,8 @@ def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
             for kind in ("tbill", "bond"):
                 for x in N.history(kind, "2019-01-01" if a.backfill else _since(0, 120), links):
                     tender_rows.append(dict(x, kind=kind, source="xlsx"))
-            data["_bonds_on_issue"] = N.bonds_on_issue(links)  # type: ignore
+            data["_bonds_on_issue_all"] = N.bonds_on_issue_all(links)  # type: ignore  # every month-end (v0.4 two-sided bond flows)
+            data["_bonds_on_issue"] = PN.latest_month_end(data["_bonds_on_issue_all"])  # type: ignore
         except Exception as e:  # noqa
             _err("nzdm_history", e)
     if getattr(N, "fallbacks", None):
@@ -1374,13 +1393,15 @@ def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         tender_rows = prev_side.get("tender_rows", [])
     upcoming = upcoming or prev_side.get("upcoming", [])
     bonds_on_issue = data.get("_bonds_on_issue") or prev_side.get("bonds_on_issue", [])
+    bonds_on_issue_all = data.get("_bonds_on_issue_all") or prev_side.get("bonds_on_issue_all", [])
     if d3_rows is None:
         d3_rows = prev_side.get("d3_rows")
     if not fx:
-        save_json(side, {"tender_rows": tender_rows, "upcoming": upcoming, "bonds_on_issue": bonds_on_issue, "d3_rows": d3_rows})
+        save_json(side, {"tender_rows": tender_rows, "upcoming": upcoming, "bonds_on_issue": bonds_on_issue, "bonds_on_issue_all": bonds_on_issue_all, "d3_rows": d3_rows})
     data["_tender_rows"] = tender_rows  # type: ignore
     data["_upcoming_tenders"] = upcoming  # type: ignore
     data["_bonds_on_issue"] = bonds_on_issue  # type: ignore
+    data["_bonds_on_issue_all"] = bonds_on_issue_all  # type: ignore
     # tender series (volume-weighted per tender date)
     for kind in ("tbill", "bond"):
         ts = PN.NzdmProvider.tender_series([r for r in tender_rows if r["kind"] == kind])
@@ -1428,7 +1449,10 @@ def _nzd_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, d3_rows, hist_di
     days = O.business_days((date.today() - timedelta(days=_v04_window_days(a))).isoformat(), today)
     tf = O.tender_flows(data.get("_tender_rows") or [], data.get("_upcoming_tenders") or [])
     cal = O.bond_calendar(data.get("_bonds_on_issue") or [])
-    ni = O.net_issuance_private(tf["tender_settled"], tf["bill_matured"], cal["coupons_market_paid"], days)
+    # two-sided over the window: market-held redemptions + coupons from every month-end of the register (not only the latest one)
+    bf = O.bond_flows_history(data.get("_bonds_on_issue_all") or data.get("_bonds_on_issue") or [], days)
+    cal["coupons_market_paid"], cal["bond_redeemed_market"] = bf["coupons_market_paid"], bf["bond_redeemed_market"]
+    ni = O.net_issuance_private(tf["tender_settled"], tf["bill_matured"], bf["coupons_market_paid"], days, bf["bond_redeemed_market"])
     tf["tender_settled"], tf["bill_matured"] = O._dense(tf["tender_settled"], days), O._dense(tf["bill_matured"], days)  # true sessions for 5-day sums
     omo = O.omo_flows((d3_rows or {}).get("rr") or [], days)
     # daily residual proxy recomputed on the full history (the block keeps only a window)
@@ -1469,10 +1493,12 @@ def _nzd_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, d3_rows, hist_di
     sc_level = sc[-1][1] if sc else 0.0
     V4.enrich_central_bank(blocks["central_bank"], cfg, omo, recon_d10, recon_oia, csa)
     V4.enrich_fiscal(blocks["fiscal"], cfg, tf, cal, ni, ecp, res, sc_level)
-    for k, ser in (("net_issuance_private_daily", ni), ("omo_net_daily", omo.get("omo_net_daily", [])), ("residual_flow_daily", res), ("ecp_on_issue", ecp)):
+    for k, ser in (("net_issuance_private_daily", ni), ("omo_net_daily", omo.get("omo_net_daily", [])), ("residual_flow_daily", res), ("ecp_on_issue", ecp),
+                   ("bond_redeemed_market", bf["bond_redeemed_market"]), ("coupons_market_paid", bf["coupons_market_paid"])):
         if ser:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
     E.log_event(oplog, "NZD_V04", "system", {"tenders": len(data.get("_tender_rows") or []), "omo_ops": len((d3_rows or {}).get("rr") or []), "csa_days": len(csa),
+                                             "bond_flows_two_sided_from": bf.get("two_sided_from"), "bond_month_ends": len({b.get("month_end") for b in data.get("_bonds_on_issue_all") or []}),
                                              "d10_recon_months": len(recon_d10.get("error", [])), "oia_recon_months": len(recon_oia.get("error", [])) if recon_oia else 0})
 
 
@@ -1730,7 +1756,22 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
         except Exception as e:  # noqa
             errors.append("finanzagentur(v04): %s" % e)
             rows = []
-    recs += O.de_records(rows or [])
+    # issuance history since 1999 (both sides of the German flow: settled issuance over the whole window — the current-year file only
+    # adds the rows newer than the history — and the outstanding of every line at its redemption / coupon dates, ops_eur.de_lines)
+    de_hist: List[dict] = []
+    try:
+        if fx:
+            blob = open(os.path.join(hx, "emissionshistorie_en.xlsx"), "rb").read()
+        else:
+            blob = _get(O.DE_HISTORY_XLSX, binary=True)
+            _snapshot(raw_dir, "de_emissionshistorie.xlsx", blob)
+        de_hist = PE.FinanzagenturProvider.parse(blob)
+    except Exception as e:  # noqa
+        errors.append("de_history: %s (using the 2026-09-08 fixture)" % str(e)[:120])
+        de_hist = PE.FinanzagenturProvider.parse(open(os.path.join(hx, "emissionshistorie_en.xlsx"), "rb").read())
+    last_h = max((r["date"] for r in de_hist), default="")
+    recs += O.de_records(de_hist + [r for r in (rows or []) if r["date"] > last_h])
+    notes["DE"] = "history file to %s (%d rows) + %d current-year rows" % (last_h, len(de_hist), sum(1 for r in (rows or []) if r["date"] > last_h))
     outstanding: List[dict] = []
     de_cal: List[dict] = []
     if fx:
@@ -1991,7 +2032,11 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
     # ── flows ──
     if not fx:
         recs = O.merge_records(arch, recs)
-    fl = O.issuance_flows(recs, days)
+    # GROSS bond redemptions + coupons enter the net for the issuers whose outstanding per line is primary (DE history file, EU Qlik operations);
+    # FR / ES / IT / ESM stay one-sided (no per-line outstanding source wired) — see ops_eur module docstring
+    lines = O.de_lines(de_hist, outstanding) + Q.eu_lines(eu_q_recs, eu_out)
+    fl = O.issuance_flows(recs, days, lines)
+    notes["bonds"] = "redemptions + coupons GROSS from %d DE lines + %d EU lines; FR/ES/IT/ESM one-sided" % (sum(1 for l in lines if l["issuer"] == "DE"), sum(1 for l in lines if l["issuer"] == "EU"))
     cal = O.de_calendar(outstanding)
     de_ahead = O.de_supply_ahead(de_cal)
     gd = S.clean(data.get("ILM.W.U2.C.L050100.U2.EUR", []))
@@ -2014,7 +2059,8 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
     V4.enrich_fiscal(blocks["fiscal"], cfg, fl, cal, de_ahead, ni_weekly, impulse, coverage, last_by, ex[-1][1] if ex else None)
     V4.enrich_fiscal_eu_esm(blocks["fiscal"], cfg, eu_cal, esm_cal, notes)
     V4.enrich_central_bank(blocks["central_bank"], cfg)
-    for k, ser in (("net_issuance_private_daily", fl["net_issuance_private_daily"]), ("net_issuance_private_weekly", ni_weekly), ("fiscal_impulse_v04_weekly", impulse)):
+    for k, ser in (("net_issuance_private_daily", fl["net_issuance_private_daily"]), ("net_issuance_private_weekly", ni_weekly), ("fiscal_impulse_v04_weekly", impulse),
+                   ("bond_redeemed_all", fl.get("bond_redeemed_all", [])), ("coupons_paid_all", fl.get("coupons_paid_all", []))):
         if ser:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
     E.log_event(oplog, "EUR_V04", "system", {"records": len(recs), "by_issuer": {iss: sum(1 for r in recs if r["issuer"] == iss) for iss in ("DE", "FR", "ES", "IT", "EU", "ESM")},
@@ -2060,7 +2106,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         blk["source_health"]["errors"] = [x for x in errors]
 
     # ── regime, scenarios, alerts, revisions ──
-    regime = E.classify_regime(cfg, blocks, load_json(os.path.join(data_dir, "regime.json")))
+    regime = E.classify_regime(cfg, blocks, load_json(os.path.join(data_dir, "regime.json")), hist_dir=hist_dir)  # hist_dir: v0.4 components read the archive
     scenarios = E.evaluate_scenarios(cfg, blocks)
     alerts_path = os.path.join(log_dir, "alerts.json")
     existing = (load_json(alerts_path) or {}).get("alerts", [])

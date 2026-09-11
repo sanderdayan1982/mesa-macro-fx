@@ -32,20 +32,27 @@ def enrich_fiscal(block: dict, cfg: dict, fl: Dict[str, Series], cal: Dict[str, 
                              status="fresh" if fl.get("settled_all") else "unavailable", equivalence_note=NOT_WIRED)
     D["bills_matured_all"] = entry("bills_matured_all", fl.get("bills_matured_all", []), "Bills matured — Bubill + BTF + Letras + BOT + EU-Bills (+; nominal)", "daily", unit, cfg, "derived (ops_eur)",
                                    status="fresh" if fl.get("bills_matured_all") else "unavailable")
+    D["bond_redeemed_all"] = entry("bond_redeemed_all", fl.get("bond_redeemed_all", []), "Bond redemptions — DE + EU, GROSS (+; nominal at maturity; FR/ES/IT/ESM not covered)", "daily", unit, cfg, "derived (ops_eur)",
+                                   status="fresh" if fl.get("bond_redeemed_all") else "unavailable")
+    D["coupons_paid_all"] = entry("coupons_paid_all", fl.get("coupons_paid_all", []), "Coupons paid — DE + EU, GROSS (+; annual on the maturity day/month; FR/ES/IT/ESM not covered)", "daily", unit, cfg, "derived (ops_eur)",
+                                  status="fresh" if fl.get("coupons_paid_all") else "unavailable")
     for iss in ISSUERS:
         ser = fl.get("settled_%s" % iss, [])
         D["settled_%s" % iss] = entry("settled_%s" % iss, ser, "%s auctions settled (−)" % iss, "daily", unit, cfg, "ops_eur:%s" % iss, status="fresh" if ser else "unavailable",
                                       equivalence_note="last record %s" % last_by_issuer.get(iss, "—"))
     days = [d for d, _ in ni]
     def _dense_pos(ser, sign):
-        m = {d: sign * v for d, v in ser}
+        m: Dict[str, float] = {}
+        for d, v in ser:  # several series may share a date (bills + bond redemptions + coupons)
+            m[d] = m.get(d, 0.0) + sign * v
         return [(d, round(m.get(d, 0.0), 3)) for d in days]
     D["issued_gross"] = entry("issued_gross", _dense_pos(fl.get("settled_all", []), -1.0), "Gross issuance settled — all wired issuers (daily)", "daily", unit, cfg, "derived", status="fresh" if ni else "unavailable")
-    D["redeemed_gross"] = entry("redeemed_gross", _dense_pos(fl.get("bills_matured_all", []), 1.0), "Bill maturities — all wired issuers (daily; bond redemptions in the gross calendars)", "daily", unit, cfg, "derived", status="fresh" if ni else "unavailable")
+    D["redeemed_gross"] = entry("redeemed_gross", _dense_pos(fl.get("bills_matured_all", []) + fl.get("bond_redeemed_all", []) + fl.get("coupons_paid_all", []), 1.0),
+                                "Bill maturities (all wired issuers) + bond redemptions and coupons (DE + EU, gross) — daily", "daily", unit, cfg, "derived", status="fresh" if ni else "unavailable")
     D["net_issuance_private_daily"] = entry("net_issuance_private_daily", ni, "Net issuance to the private sector (daily; − = drain)", "daily", unit, cfg, "derived", status="fresh" if ni else "unavailable")
     wk = S.rolling_sum(ni, 5)
     D["net_issuance_private_5d"] = entry("net_issuance_private_5d", wk, "Net issuance to the private sector, 5 sessions (− = drain)", "daily", unit, cfg, "derived", status="fresh" if wk else "unavailable",
-                                         equivalence_note="E2: − auctions settled + bill maturities; bond redemptions / coupons in the gross calendars (Eurosystem holdings not by line)")
+                                         equivalence_note="E2: − auctions settled + bill maturities + bond redemptions + coupons (DE + EU gross; FR/ES/IT/ESM bonds one-sided — no per-line outstanding source)")
     D["net_issuance_private_weekly"] = entry("net_issuance_private_weekly", ni_weekly, "Net issuance to the private sector — weekly on the WFS grid (− = drain)", "weekly", unit, cfg, "derived",
                                              status="fresh" if ni_weekly else "unavailable", z_window=26)
     D["fiscal_impulse_v04_weekly"] = entry("fiscal_impulse_v04_weekly", impulse, "Fiscal impulse v0.4 — −Δ government deposits − net issuance ≈ spending − taxes (weekly)", "weekly", unit, cfg, "derived",

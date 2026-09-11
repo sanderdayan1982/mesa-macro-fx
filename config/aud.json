@@ -1,6 +1,6 @@
 {
  "$schema": "../schema/config.schema.json",
- "config_version": "0.4.0",
+ "config_version": "0.4.1",
  "currency": "AUD",
  "name": "AUD Command Center",
  "jurisdiction": "Australia",
@@ -904,6 +904,136 @@
   },
   "reserves_metric": "central_bank.es_balances_daily",
   "dual": {
+   "version": "0.4",
+   "status": "calibrated by replay 2026-09-09 (engine v0.3, era 2025-04-09, 74 weeks) · v0.4 active on central_bank, fiscal (replay-v04 2026-09-11 (runner, 8-year archives)); other blocks v0.3",
+   "era_start": "2025-04-09",
+   "anchor_percentiles": true,
+   "level_weight": 1.0,
+   "persistence": {
+    "entry_days": 7,
+    "exit_days": 0,
+    "mode": "mean"
+   },
+   "agreement_only": true,
+   "agreement_only_until_weeks": 150,
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "central_bank": {
+     "injection_enter": 1.0,
+     "injection_exit": 1.0,
+     "drain_enter": 0.085,
+     "drain_exit": 0.335,
+     "level_weight": 1.0,
+     "evidence": {
+      "injection": "provisional_era_corta",
+      "drain": "provisional_era_corta"
+     },
+     "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+    },
+    "fiscal": {
+     "injection_enter": 0.53,
+     "injection_exit": 0.34,
+     "drain_enter": -0.555,
+     "drain_exit": -0.37,
+     "level_weight": 1.0,
+     "evidence": {
+      "injection": "provisional_era_corta",
+      "drain": "provisional_era_corta"
+     },
+     "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+    }
+   },
+   "rule": "three regimes per currency (engine v0.3): central_bank and fiscal from their block score with era-calibrated entry/exit cuts on the 7-day mean score; general = agreement only (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN, partial or conflict → NEUTRAL labelled); percentile windows anchored to era_start; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "v04": {
+    "central_bank": {
+     "active": true,
+     "component": {
+      "name": "omo_net_5d",
+      "source": "omo_net_daily",
+      "kind": "daily5",
+      "lag": 1,
+      "sign": 1,
+      "denominator": "central_bank.reserves",
+      "reconciliation": "OMO por operación; stock = A3 AORROMO ±0,1 %"
+     },
+     "cuts": {
+      "injection_enter": 0.466,
+      "injection_exit": 0.2928,
+      "drain_enter": -0.4831,
+      "drain_exit": -0.2075
+     },
+     "evidence": {
+      "injection": "frecuencia_de_era",
+      "drain": "frecuencia_de_era",
+      "stability": "estable",
+      "B12_rho": 0.021,
+      "B12_p_bootstrap": 0.8876,
+      "coverage_era": 1.0,
+      "sign_warning": false,
+      "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
+     },
+     "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
+     "unit": "% of the reserves stock, 5-session sum (weekly components enter as a step)",
+     "rule": "engine v0.4: omo_net_5d → cuts = era p80/p20 (exit p67/p33) of the 2-print mean, hysteresis + persistence as v0.3; first v0.4 run starts from confirmed NEUTRAL"
+    },
+    "fiscal": {
+     "active": true,
+     "component": {
+      "name": "govt_delta",
+      "source": "central_bank.government_account",
+      "kind": "dweekly",
+      "lag": 0,
+      "sign": 1,
+      "denominator": "central_bank.reserves",
+      "reconciliation": "depósitos del gobierno semanales (A1) — identidad"
+     },
+     "cuts": {
+      "injection_enter": 2.7248,
+      "injection_exit": 1.6897,
+      "drain_enter": -2.8347,
+      "drain_exit": -1.8796
+     },
+     "evidence": {
+      "injection": "frecuencia_de_era",
+      "drain": "frecuencia_de_era",
+      "stability": "estable",
+      "B12_rho": -0.077,
+      "B12_p_bootstrap": 0.5842,
+      "coverage_era": 0.986,
+      "sign_warning": false,
+      "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable)"
+     },
+     "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
+     "unit": "% of the reserves stock, 5-session sum (weekly components enter as a step)",
+     "rule": "engine v0.4: govt_delta → cuts = era p80/p20 (exit p67/p33) of the 2-print mean, hysteresis + persistence as v0.3; first v0.4 run starts from confirmed NEUTRAL"
+    }
+   }
+  },
+  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)",
+  "dual_v02": {
+   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   }
+  },
+  "dual_v03": {
    "version": "0.3",
    "status": "calibrated by replay 2026-09-09 (engine v0.3, era 2025-04-09, 74 weeks)",
    "era_start": "2025-04-09",
@@ -951,23 +1081,6 @@
     }
    },
    "rule": "three regimes per currency (engine v0.3): central_bank and fiscal from their block score with era-calibrated entry/exit cuts on the 7-day mean score; general = agreement only (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN, partial or conflict → NEUTRAL labelled); percentile windows anchored to era_start; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime"
-  },
-  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)",
-  "dual_v02": {
-   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
-   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
-   "block_thresholds": {
-    "injection": 0.5,
-    "drain": -0.5
-   },
-   "weights": {
-    "central_bank": 0.6,
-    "fiscal": 0.4
-   },
-   "general_thresholds": {
-    "injection": 0.5,
-    "drain": -0.5
-   }
   }
  },
  "status_rules": {
@@ -1298,5 +1411,6 @@
   "CLF removed (phased out); FX operations as A4/A5 flag only",
   "Sander's OK on v0.2 → Fase 2 AUD"
  ],
- "version": "0.4.1"
+ "version": "0.4.1",
+ "note": "v0.4 activation (replay-v04 2026-09-11 (runner, 8-year archives)): central_bank=omo_net_5d, fiscal=govt_delta"
 }

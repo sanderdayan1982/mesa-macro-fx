@@ -57,14 +57,15 @@ def enrich_fiscal(block: dict, cfg: dict, tf: Dict[str, Series], cal: Dict[str, 
     D = block["derived"]
     for k, label, src in (("tender_settled", "Tenders settled (bills + bonds; − settlement cash)", "NZDM tenders, settlement by convention T+1 bills / T+3 bonds"),
                           ("bill_matured", "Treasury bills matured (+)", "NZDM tenders"),
-                          ("coupons_market_paid", "Coupons to market holders (+; last 60 d, from bonds on issue)", "NZDM bonds on issue"),
+                          ("bond_redeemed_market", "Bond redemptions to market holders (+; market holding of the month-end before maturity)", "NZDM bonds on issue, every month-end"),
+                          ("coupons_market_paid", "Coupons to market holders (+; semi-annual, market nominal of the latest month-end ≤ coupon date)", "NZDM bonds on issue, every month-end"),
                           ("tender_coverage", "Tender coverage (bills + bonds, mean per day)", "NZDM tenders")):
         ser = (tf if k in tf else cal).get(k, [])
         D[k] = entry(k, ser, label, "daily", "ratio" if k == "tender_coverage" else unit, cfg, src, status="fresh" if ser else "unavailable")
     D["net_issuance_private_daily"] = entry("net_issuance_private_daily", ni, "Net issuance to the private sector (daily; − = drain)", "daily", unit, cfg, "derived", status="fresh" if ni else "unavailable")
     wk = S.rolling_sum(ni, 5)
     D["net_issuance_private_5d"] = entry("net_issuance_private_5d", wk, "Net issuance to the private sector, 5 sessions (− = drain)", "daily", unit, cfg, "derived", status="fresh" if wk else "unavailable",
-                                         equivalence_note="v0.4: tenders settled − bill maturities − market coupons; bond redemptions in the calendar and in D10 monthly")
+                                         equivalence_note="v0.4: −tenders settled + bill maturities + market bond redemptions + market coupons (two-sided from the first month-end of the register on file)")
     D["tender_settlements_next_4w"] = _cal_card("Tender settlements ahead (scheduled drain)", tf.get("tender_settlements_ahead", []), unit)
     D["bill_maturities_next_4w"] = _cal_card("Bill maturities ahead (scheduled injection)", tf.get("bill_maturities_ahead", []), unit)
     D["bond_redemptions_market_next_12m"] = _cal_card("Market-held bond redemptions, next 12 months", cal.get("bond_redemptions_market_ahead", []), unit, 365, 6)

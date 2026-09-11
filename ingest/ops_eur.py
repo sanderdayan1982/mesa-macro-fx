@@ -23,8 +23,11 @@ Sources verified 2026-09-10 (VERIFICACIONES_V04.md, ADJUDICACION_METRICAS_EUR.md
   ESM/EFSF  investor pages behind a login wall on 2026-09-10 → NOT WIRED (limitation written on the card).
 
 Reserve mechanics (+ = excess liquidity created): settlement of an auction −cash (nominal × price where the price is published, else nominal);
-bill maturities +nominal (market-held by construction); bond redemptions / coupons GROSS in the calendar (Eurosystem APP/PEPP holdings are not
-published by line). Flows cut at today; the FR monthly file is bridged by the HTML months; IT/ES/EU archives grow with each run (history/eur/*.csv).
+bill maturities +nominal (market-held by construction); bond redemptions + coupons GROSS (Eurosystem APP/PEPP holdings are not published by
+line) for the issuers whose full outstanding per line is primary: DE (emissionshistorie_en.xlsx since 1999, de_lines) and EU (Qlik operations
+since 2020, ops_eu_qlik.eu_lines). FR/ES/IT/ESM stay ONE-SIDED (auction files miss pre-window tranches, syndications and buybacks; the ESM
+export lists alive lines only) → their redemptions / coupons are NOT in the flow. Flows cut at today; the FR monthly file is bridged by the HTML
+months; IT/ES/EU archives grow with each run (history/eur/*.csv).
 Nothing here decides a regime (shadow components only)."""
 from __future__ import annotations
 import csv
@@ -52,6 +55,7 @@ IT_INDEX = IT_BASE + "/en/debito_pubblico/emissioni_titoli_di_stato_interni/risu
 EU_BASE = "https://commission.europa.eu"
 EU_YEAR = EU_BASE + "/eu-%s-%d_en"  # bills|bonds, year
 DE_OUTSTANDING = "https://www.deutsche-finanzagentur.de/fileadmin/user_upload/Institutionelle-investoren/berichtswesen/einzelaufstellung_en.xlsx"
+DE_HISTORY_XLSX = "https://www.deutsche-finanzagentur.de/fileadmin/user_upload/Institutionelle-investoren/auktionen/emissionshistorie_en.xlsx"  # config/eur.json finanzagentur.files.history_xlsx (verified 2026-09-09)
 DE_CALENDAR_PAGE = "https://www.deutsche-finanzagentur.de/en/federal-securities/issuances/issuance-calendar"
 
 _MON_EN = {m: i for i, m in enumerate(["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"], 1)}
@@ -109,6 +113,14 @@ def bd_add(d: str, n: int) -> str:
         x += timedelta(days=1)
         if x.weekday() < 5:
             k += 1
+    return x.isoformat()
+
+
+def roll_bd(d: str) -> str:
+    """payment date convention: Saturday / Sunday → next Monday (TARGET holidays not modelled, like business_days)"""
+    x = date.fromisoformat(d)
+    while x.weekday() >= 5:
+        x += timedelta(days=1)
     return x.isoformat()
 
 
@@ -230,6 +242,36 @@ def parse_de_calendar(cells: Dict[str, object]) -> List[dict]:
             continue
         out.append({"date": d, "security": str(row.get("C", "")).strip(), "term": str(row.get("D", "")).strip(), "type": str(row.get("E", "")).strip(),
                     "volume": _num(row.get("F")), "maturity": _serial(row.get("G")), "isin": str(row.get("H", "")).strip()})
+    return out
+
+
+def de_lines(hist_rows: List[dict], outstanding: List[dict]) -> List[dict]:
+    """Bond lines for bond_redemptions_coupons from the Finanzagentur issuance history (emissionshistorie_en.xlsx parsed by
+    FinanzagenturProvider.parse: every auction, syndication and tap into own holdings since 1999 with ISIN, coupon, maturity, issuance volume).
+    Outstanding of a line by date = Σ issuance volume (allotted + retention; the retention is sold later in the secondary market without
+    changing the nominal) by value date (auction + 2 bd). Verified 2026-09-11 against einzelaufstellung 2026-08-31: 84/84 lines whose
+    creation ('N' row) is in the file match to the euro. Lines created before 1999 (only 'R' rows): alive → constant nominal from the
+    outstanding list (3 × 30Y Bunds of 1997-98); matured → dropped, not fabricated (DE0001134922 6.25 % Bund 2024-01-04: only 2.5 bn of
+    2005/2020 taps in the file). Bubills excluded (their maturities come from the records), USD bonds excluded, ILB on the real coupon and
+    the nominal (indexation ignored, as in de_calendar). Coupon: annual (Bund/Bobl/Schatz/Green/ILB)."""
+    by: Dict[str, dict] = {}
+    for r in hist_rows:
+        isin, vol = str(r.get("isin") or "").strip(), r.get("volume")
+        if not isin or not vol or not r.get("date") or not r.get("maturity") or r.get("bond") in ("Bubill", "USD-Bond"):
+            continue
+        l = by.setdefault(isin, {"issuer": "DE", "isin": isin, "coupon": round((r.get("coupon") or 0.0) * 100.0, 4), "maturity": r["maturity"], "tranches": [], "created": False})
+        l["tranches"].append((bd_add(r["date"], 2), float(vol)))
+        if r.get("type") == "N":
+            l["created"] = True
+    alive = {o["isin"]: o for o in outstanding if o.get("nominal")}
+    out = []
+    for isin, l in by.items():
+        if not l.pop("created"):
+            if isin not in alive:
+                continue
+            l["tranches"] = [(min(d for d, _ in l["tranches"]), alive[isin]["nominal"])]
+        l["tranches"].sort()
+        out.append(l)
     return out
 
 
@@ -433,7 +475,59 @@ def eu_result_links(html: str) -> List[str]:
 
 
 # ═══════════════════════ flows ═══════════════════════
-def issuance_flows(recs: List[dict], days: List[str]) -> Dict[str, Series]:
+def bond_redemptions_coupons(lines: List[dict], days: List[str], today: Optional[str] = None) -> Dict[str, Series]:
+    """GROSS bond redemptions and coupons paid inside the grid (≤ today), from lines {issuer, isin, coupon (% p.a.), maturity,
+    tranches [(value_date, nominal)]}: outstanding(d) = Σ tranches settled ≤ d; redemption = outstanding at maturity; coupons ANNUAL on the
+    maturity day/month (all wired issuers pay annually — DE, EU), the first one pro-rata ACT/365 from the first value date (short first coupon;
+    a long-first-coupon line shifts that fraction of a coupon by one year); payment on the next weekday when the date is a weekend
+    (roll_bd). Zero-coupon lines pay no coupon. Nothing is netted of Eurosystem holdings (GBP desk decision: gross in this phase).
+    Returns bond_redeemed_all, coupons_paid_all and the per-issuer bond_redeemed_<iss> / coupons_paid_<iss>."""
+    if not days:
+        return {"bond_redeemed_all": [], "coupons_paid_all": []}
+    today = min(today or date.today().isoformat(), days[-1])
+    start = days[0]
+    red: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    cpn: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    for l in lines:
+        tr = sorted(l.get("tranches") or [])
+        m, c, iss = l.get("maturity"), l.get("coupon") or 0.0, l["issuer"]
+        if not tr or not m:
+            continue
+        outstanding = lambda d: sum(n for vd, n in tr if vd <= d)
+        pay = roll_bd(m)
+        if start <= pay <= today and outstanding(m):
+            red[iss][pay] += outstanding(m)
+        if not c:
+            continue
+        first, frac = tr[0][0], None
+        for yy in range(int(first[:4]), int(m[:4]) + 1):
+            try:
+                cd = date(yy, int(m[5:7]), int(m[8:10])).isoformat()
+            except ValueError:
+                continue
+            if not (first < cd <= m):
+                continue
+            frac = min(1.0, (date.fromisoformat(cd) - date.fromisoformat(first)).days / 365.0) if frac is None else 1.0  # first coupon pro-rata, then full
+            pay = roll_bd(cd)
+            if start <= pay <= today:
+                cpn[iss][pay] += outstanding(cd) * c / 100.0 * frac
+    out: Dict[str, Series] = {}
+    all_red: Dict[str, float] = defaultdict(float)
+    all_cpn: Dict[str, float] = defaultdict(float)
+    for iss, m_ in red.items():
+        out["bond_redeemed_%s" % iss] = _bucket(m_)
+        for d, v in m_.items():
+            all_red[d] += v
+    for iss, m_ in cpn.items():
+        out["coupons_paid_%s" % iss] = _bucket(m_)
+        for d, v in m_.items():
+            all_cpn[d] += v
+    out["bond_redeemed_all"], out["coupons_paid_all"] = _bucket(all_red), _bucket(all_cpn)
+    return out
+
+
+def issuance_flows(recs: List[dict], days: List[str], lines: Optional[List[dict]] = None) -> Dict[str, Series]:
+    """net_issuance_private_daily = − settled + bill maturities + bond redemptions + coupons (the last two from `lines`, GROSS, see bond_redemptions_coupons)"""
     today = min(date.today().isoformat(), days[-1]) if days else date.today().isoformat()  # the flow cut never runs past the grid
     settled: Dict[str, float] = defaultdict(float)
     by_iss: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
@@ -460,10 +554,15 @@ def issuance_flows(recs: List[dict], days: List[str]) -> Dict[str, Series]:
     for d, v in bill_mat.items():
         if d <= today:
             net[d] += v
+    bonds = bond_redemptions_coupons(lines or [], days, today)
+    for k in ("bond_redeemed_all", "coupons_paid_all"):
+        for d, v in bonds[k]:
+            net[d] += v
     out = {"settled_all": _bucket({d: -v for d, v in settled.items() if d <= today}), "bills_matured_all": _bucket({d: v for d, v in bill_mat.items() if d <= today}),
            "net_issuance_private_daily": _dense(_bucket(net), days), "settlements_ahead": _bucket({d: v for d, v in settled.items() if d > today}),
            "bill_maturities_ahead": _bucket({d: v for d, v in bill_mat.items() if d > today}),
            "tender_coverage": clean(sorted((d, round(sum(v) / len(v), 3)) for d, v in cov.items()))}
+    out.update(bonds)
     for iss, m in by_iss.items():
         out["settled_%s" % iss] = _bucket({d: -v for d, v in m.items() if d <= today})
     for iss, m in bill_by_iss.items():

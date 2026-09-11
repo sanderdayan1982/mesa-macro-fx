@@ -59,6 +59,19 @@ def main_gbp() -> int:
     res = G.exchequer_residual_weekly({"reserves": [("w1", 100.0), ("w2", 110.0)], "str": [("w1", 10.0), ("w2", 12.0)], "ltr": [("w1", 5.0), ("w2", 5.0)], "apf": [("w1", 50.0), ("w2", 48.0)],
                                        "tfsme": [("w1", 8.0), ("w2", 7.0)], "wm": [("w1", 0.0), ("w2", 0.0)], "notes": [("w1", 30.0), ("w2", 31.0)]})
     check(dict(res["exchequer_residual_weekly"]).get("w2") == 10.0 - 2.0 - 0.0 + 2.0 + 1.0 + 1.0, "Exchequer residual identity (ΔR − ΔSTR − ΔLTR − ΔAPF − ΔTFSME − ΔW&M + ΔNotes)", fails)
+    # seed before the D1A archive: D2.1E (fixtures/gbp_hist) + D1C xls + rule coupons, strictly before the first snapshot
+    hx = os.path.join(ROOT, "fixtures", "gbp_hist")
+    d21e = G.rows_from_csv(open(os.path.join(hx, "dmo_gilt_issuance_history_D21E_2018.csv"), encoding="utf-8").read())
+    d1c = G.parse_d1c_xls(open(os.path.join(hx, "dmo_redeemed_gilts_D1C.xls"), "rb").read())
+    snap = ("2026-09-09", {r["name"]: (float(r["amount_in_issue_m"]), r["redemption_date"]) for r in d1a})
+    seed, st = G.seed_flows(d21e, d1c, snap, G.business_days(G.SEED_START, "2026-09-08"))
+    gi_, cp_, rd_ = dict(seed["gilt_issued_daily"]), dict(seed["coupons_private_paid"]), dict(seed["gilt_redeemed_private"])
+    check(st.get("d21e_collateral", 0) == 372 and "2025-04-15" not in gi_ and "2024-07-16" not in gi_, "D2.1E price-N/A rows (NLF→DMA collateral, 62 on 2025-04-15) contribute 0 cash", fails)
+    check(gi_.get("2025-01-22") == 8500.0, "syndication 4 3/8% 2040 counted at settlement 2025-01-22 (8 500 nominal, not cash)", fails)
+    check(rd_.get("2025-10-22") == 36016.346 and rd_.get("2026-07-22") == 44673.738, "D1C redemption lands on its date (3½% 2025 on 2025-10-22 = 36 016.346, gross)", fails)
+    check(cp_ and all(G.next_business_day(d) == d for d in cp_) and G.coupon_dates("2025-06-07", "2025-01-01", "2025-12-31") == ["2025-06-09"], "coupon dates on business days (7-Jun-2025 Saturday → Monday 9-Jun), none after maturity", fails)
+    check(seed["net"] and seed["net"][0][0] == "2019-01-01" and seed["net"][-1][0] == "2026-09-08" and all(d < "2026-09-09" for d, _ in seed["gilt_issued_daily"]), "seed spans 2019-01-01 → the day before the first D1A snapshot (2026-09-09)", fails)
+    check(dict(G.splice([("a", 1.0), ("c", 2.0)], [("b", 5.0), ("c", 9.0)], "c")) == {"a": 1.0, "c": 9.0}, "splice: seed strictly before the cut, archive path from the cut on", fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
 
@@ -82,6 +95,23 @@ def main_nzd() -> int:
     bo = [{"month_end": r["month_end"], "maturity": r["maturity"], "coupon": float(r["coupon"]), "market": float(r["market"])} for r in rd("nzdm_bonds_on_issue.csv")]
     cal = N.bond_calendar(bo)
     check(dict(cal["bond_redemptions_market_ahead"]).get("2027-04-15") == 15980.0, "market-held redemption 2027-04-15 = 15 980 (total 16 330 − RBNZ 350)", fails)
+    # two-sided bond flows from every month-end: the fixture register has one month-end (2026-08-31) → add the 15-Apr-2025 line as it stood
+    # at 2025-03-31 (market 6 942 = D10 bond maturities Apr-2025) and a 2025-04-30 snapshot without it (matured)
+    snaps = bo + [{"month_end": "2025-03-31", "maturity": "2025-04-15", "coupon": 0.0275, "market": 6942.0}] + [dict(b, month_end="2025-04-30") for b in bo]
+    bf = N.bond_flows_history(snaps, days)
+    check(dict(bf["bond_redeemed_market"]).get("2025-04-15") == 6942.0, "15-Apr-2025 redemption lands on its date with the market nominal of the preceding month-end (6 942)", fails)
+    check(bf["two_sided_from"] == "2025-03-31" and all(d >= "2025-03-31" for d, _ in bf["coupons_market_paid"]), "no bond flow before the first month-end on file (two-sided from 2025-03-31, no fabrication)", fails)
+    want = sum(b["market"] * b["coupon"] / 2 for b in bo if b["maturity"][5:] == "04-15")
+    check(abs(dict(bf["coupons_market_paid"]).get("2026-04-15", 0.0) - want) < 0.01, "coupon 2026-04-15 = Σ market × coupon / 2 of the 15-Apr lines in the latest month-end ≤ that date (%.1f)" % want, fails)
+    check(all(N.date.fromisoformat(d).weekday() < 5 for d, _ in bf["coupons_market_paid"] + bf["bond_redeemed_market"]), "coupon and redemption dates fall on business days (rolled forward)", fails)
+    mm = sorted({d[5:7] for d, _ in bf["coupons_market_paid"]})
+    check(all(any(abs(int(a) - int(b)) in (6,) for b in mm) for a in mm), "coupon months come in semi-annual pairs (m, m+6)", fails)
+    days_t = N.business_days("2025-01-01", "2026-09-10")
+    tfx = N.tender_flows(rows)
+    ni = N.net_issuance_private(tfx["tender_settled"], tfx["bill_matured"], bf["coupons_market_paid"], days_t, bf["bond_redeemed_market"])
+    lhs = -sum(v for _, v in tfx["tender_settled"] if "2025-01-01" <= _ <= "2026-09-10") + sum(v for _, v in tfx["bill_matured"] if "2025-01-01" <= _ <= "2026-09-10") \
+        + sum(v for _, v in bf["bond_redeemed_market"]) + sum(v for _, v in bf["coupons_market_paid"])
+    check(abs(sum(v for _, v in ni) - lhs) < 0.01, "identity: Σ net = −tenders settled + bills matured + market redemptions + market coupons over the window", fails)
     res = N.reconcile_monthly([("2026-07-01", 100.0)] + [("2026-07-%02d" % d, 10.0) for d in range(2, 24)] + [("2026-07-31", 5.0)], [("2026-07-31", 300.0)])
     check(dict(res["error"]).get("2026-07-31") == 100.0 + 220.0 + 5.0 - 300.0, "monthly reconciliation error = Σ proxy − reference", fails)
     csa = N.read_csv_series(os.path.join(fx, "csa_daily_oia.csv"))
@@ -220,6 +250,9 @@ def main_eur() -> int:
     first = min(qr, key=lambda r: r["settlement"])
     check(len([r for r in qr if "#noncomp" not in r["source"]]) == 488 and len(syn) == 103 and first["isin"] == "EU000A28X702" and first["settlement"] == "2020-06-10",
           "EU Qlik seed: 488 operations (103 syndications) since 2020-06-03; first syndication settled 2020-06-10 (T+5)", fails)
+    dw8 = {r["settlement"]: r["nominal"] for r in qr if r["isin"] == "EU000A3K4DW8" and r["auction"] == "2025-10-20"}
+    check(dw8 == {"2025-10-22": 1798.0, "2025-10-23": 300.0} and sum(r["nominal"] for r in qr if r["isin"] == "EU000A3K4DW8" and r["settlement"] <= "2025-10-23") == 15704.0,
+          "EU Qlik NCB split: 'Volume issued' 2 098 = 1 798 competitive (T+2) + 300 NCB (T+3), once; Σ legs to 2025-10-23 = 'New o/s amounts' 15 704", fails)
     esm_rows = ESM.parse_esm_transactions_csv(open(os.path.join(hx, "esm", "esm_transactions_outstanding_2026-09-10.csv"), encoding="utf-8").read())
     ann = ESM.parse_esm_announcement(_pdf(os.path.join(hx, "esm", "esm_bill_announcement_2026-08-28.pdf")))
     res = ESM.parse_esm_result(_pdf(os.path.join(hx, "esm", "esm_bill_result_2026-09-01.pdf")))
@@ -248,6 +281,28 @@ def main_eur() -> int:
     fl = U.issuance_flows(de + fr + h + es + eu, days)
     check(len(fl["net_issuance_private_daily"]) == len(days) and all(d <= "2026-09-10" for d, _ in fl["net_issuance_private_daily"]) and dict(fl["settlements_ahead"]).get("2026-09-11") == 1446.18,
           "net issuance dense over business days; Letras settling 2026-09-11 in the calendar, not in the flows", fails)
+    # two-sided (DE + EU gross): lines from the issuance history / Qlik operations, redemptions + coupons into the net
+    hist = FinanzagenturProvider.parse(open(os.path.join(hx, "emissionshistorie_en.xlsx"), "rb").read())
+    dl = U.de_lines(hist, out)
+    alive = {o["isin"]: o["nominal"] for o in out if o["nominal"] and "strip" not in o["type"].lower() and "discount" not in o["type"].lower()}
+    full = {l["isin"]: sum(n for _, n in l["tranches"]) for l in dl}
+    last = {l["isin"]: max(d for d, _ in l["tranches"]) for l in dl}
+    diff = [i for i, n in alive.items() if i not in full or (abs(full[i] - n) > 1 and last[i] <= "2026-08-31")]
+    check(len(dl) == 285 and len(alive) == 80 and not diff, "DE lines (285): Σ issuance volume per ISIN = einzelaufstellung nominal 2026-08-31 for all 80 alive bond lines (taps after month-end excepted)", fails)
+    check("DE0001134922" not in full and full.get("DE0001135085") == 13750.0, "DE pre-1999 lines: matured 6.25 % Bund 2024 dropped (history incomplete, not fabricated); alive 4.75 % Bund 2028 constant at the outstanding-list nominal", fails)
+    one = U.bond_redemptions_coupons([l for l in dl if l["isin"] == "DE0001102374"], days, "2026-09-10")
+    check(one["bond_redeemed_DE"] == [("2025-02-17", 30500.0)] and one["coupons_paid_DE"] == [("2024-02-15", 152.5), ("2025-02-17", 152.5)],
+          "Bund 0.5 % 15-Feb-2025 (DE0001102374): 30 500 m (incl. 2015 tranches) redeemed Monday 2025-02-17 (weekend roll) with the last 152.5 m coupon; 2024-02-15 (Thursday) unrolled", fails)
+    one = U.bond_redemptions_coupons([l for l in dl if l["isin"] == "DE000BU2Z049"], days, "2026-09-10")
+    check(one["coupons_paid_DE"] == [("2025-02-17", 23.425), ("2026-02-16", 875.0)] and not one["bond_redeemed_all"],
+          "Bund 2.5 % 2035 (DE000BU2Z049, created 2025-01-10): first coupon pro-rata 36/365 on 9 500 m, then 875 m on 35 000 m (2026-02-15 Sunday → 02-16); no redemption in the grid", fails)
+    ql = Q.eu_lines(qr, Q.outstanding_from_fixture_csv(os.path.join(hx, "eu_outstanding_qlik_2026-09-10.csv")))
+    check(len(ql) == 58 and dict(U.bond_redemptions_coupons(ql, days, "2026-09-10")["bond_redeemed_EU"]).get("2025-07-04") == 18014.0,
+          "EU lines: 58 bonds; 0.8 % EU 04-Jul-2025 redeemed 18 014 m (Σ NEW + TAP volumes, NCB leg not double counted)", fails)
+    fl2 = U.issuance_flows(de + fr + h + es + eu, days, dl + ql)
+    parts = [dict(fl2[k]) for k in ("settled_all", "bills_matured_all", "bond_redeemed_all", "coupons_paid_all")]
+    ident = [d for d, v in fl2["net_issuance_private_daily"] if abs(v - sum(p.get(d, 0.0) for p in parts)) > 0.01]
+    check(not ident and fl2["bond_redeemed_all"] and fl2["coupons_paid_all"], "identity − settled + bills + bond redemptions + coupons = net on every day of the grid", fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
 
@@ -307,7 +362,95 @@ def main_jpy() -> int:
     return 1 if fails else 0
 
 
+def main_activation() -> int:
+    """activation v0.4 (2026-09-11): live print = replay print; the fixture-run JSONs read engine 0.4 on the approved blocks; revert restores v0.3"""
+    import json
+    from datetime import date, timedelta
+    from . import v04_component as V
+    from . import replay_v04 as R
+    from . import engine as E
+    from . import apply_v04 as A
+    fails = []
+    # 1 · value_asof parity with replay_v04 on a synthetic business-day series (gaps, holidays, lags 0/1/2/7)
+    ser, d = [], date(2026, 6, 1)
+    while d <= date(2026, 9, 10):
+        if d.weekday() < 5 and d != date(2026, 8, 3):
+            ser.append((d.isoformat(), float(((d.day * 7) % 11) - 5)))
+        d += timedelta(days=1)
+    wk = [(x, v) for x, v in ser if date.fromisoformat(x).weekday() == 4]
+    n = 0
+    for k in range(0, 110):
+        dd = (date(2026, 5, 25) + timedelta(days=k)).isoformat()
+        for lag in (0, 1, 2, 7, 35):
+            n += 1
+            if V.value_asof(ser, dd, "daily5", lag) != R._value_asof(ser, dd, "daily5", lag) or V.value_asof(wk, dd, "weekly", lag) != R._value_asof(wk, dd, "weekly", lag):
+                fails.append("value_asof parity %s lag %d" % (dd, lag))
+    check(not [f for f in fails if f.startswith("value_asof")], "value_asof daily5/weekly = replay_v04._value_asof on %d as-of/lag pairs" % n, fails)
+    check(V.value_asof(ser, "2026-09-10", "daily5", 0) == sum(v for _, v in ser[-5:]), "daily5 = sum of the last 5 sessions ≤ cutoff", fails)
+    check(V.value_asof(wk, "2026-09-11", "weekly", 7) == wk[-1][1] and V.value_asof(wk, "2026-09-25", "weekly", 7) is None, "weekly step: latest value ≤ cutoff, stale after 10 days", fails)
+    # 2 · classify_regime on the fixture-run JSONs: approved blocks read engine 0.4 with the v0.3 shadow beside them
+    for ccy, blocks_ok in A.APPROVED.items():
+        cfg = json.load(open(os.path.join(ROOT, "config", "%s.json" % ccy), encoding="utf-8"))
+        dd = os.path.join(ROOT, "data", ccy)
+        blocks = {b: json.load(open(os.path.join(dd, "%s.json" % b), encoding="utf-8")) for b in ("central_bank", "fiscal", "banking", "rates") if os.path.exists(os.path.join(dd, "%s.json" % b))}
+        check(cfg["regime"]["dual"].get("version") == "0.4" and set(cfg["regime"]["dual"].get("v04", {})) == set(blocks_ok), "%s config: dual.version 0.4 on %s" % (ccy, sorted(blocks_ok)), fails)
+        reg = E.classify_regime(cfg, blocks, None, hist_dir=os.path.join(ROOT, "history", ccy))
+        for b in ("central_bank", "fiscal"):
+            r = reg["regimes"][b]
+            if b in blocks_ok:
+                comp = r.get("component") or {}
+                ok = r.get("engine") == "0.4" and "v03_shadow" in r and r["v03_shadow"].get("regime") in E_BLOCK_ENUM and comp.get("name") == cfg["regime"]["dual"]["v04"][b]["component"]["name"] \
+                    and r.get("cuts") == cfg["regime"]["dual"]["v04"][b]["cuts"] and r["state"].get("engine") == "0.4"
+                if r["score"] is None:
+                    # a component not known as of today reads NO SIGNAL with the reason (never the v0.3 score under v0.4 cuts); CHF fx_proxy_w
+                    # is archived only for the weeks the monthly gmges amounts cover (~35 d after month-end) → structurally late vs lag 7 d
+                    ok = ok and r["regime"] == "NO SIGNAL" and bool((r.get("print") or {}).get("note"))
+                    print("note %s %s: v0.4 print unavailable — %s" % (ccy, b, r["print"]["note"]))
+                else:
+                    ok = ok and isinstance(r["score"], float) and r["regime"] in ("INJECTION", "DRAIN", "NEUTRAL") and abs(r["score"] - round(r["print"]["raw"] / r["print"]["denominator"] * 100, 4)) < 1e-9
+                check(ok, "%s %s: engine 0.4 · %s = %s → %s (v0.3 shadow %s %s)" % (ccy, b, comp.get("name"), r["score"], r["regime"], r["v03_shadow"].get("regime"), r["v03_shadow"].get("score")), fails)
+                check(blocks[b]["signals"]["score"] == r["v03_shadow"]["score"], "%s %s: signals.score untouched (v0.3 published)" % (ccy, b), fails)
+            else:
+                check(r.get("engine") is None and "v03_shadow" not in r and r["score"] == blocks[b]["signals"]["score"], "%s %s: stays v0.3" % (ccy, b), fails)
+        check(reg["regimes"]["general"]["engine"] == "0.3" and set(reg["regimes"]["general"]["v04_blocks"]) == set(blocks_ok), "%s general: agreement rule unchanged, v04_blocks %s" % (ccy, sorted(blocks_ok)), fails)
+        # first v0.4 run starts from confirmed NEUTRAL even when the previous regime.json carries a v0.3 state on another side
+        b0 = next((b for b in sorted(blocks_ok) if reg["regimes"][b]["score"] is not None), None)
+        if b0:
+            d0 = (date.fromisoformat(min(reg["regimes"][b0]["as_of"], reg["regimes"][b0]["v03_shadow"]["as_of"])) - timedelta(days=1)).isoformat()
+            prev = {"regimes": {b0: {"state": {"confirmed": "INJECTION", "recent": [[d0, 1e6]]}, "as_of": d0}}}  # a v0.3 state (no engine tag)
+            reg2 = E.classify_regime(cfg, blocks, prev, hist_dir=os.path.join(ROOT, "history", ccy))
+            r2 = reg2["regimes"][b0]
+            check([list(x) for x in r2["state"]["recent"]] == [[reg["regimes"][b0]["as_of"], r2["score"]]] and r2["regime"] == reg["regimes"][b0]["regime"] and 1e6 in [v for _, v in r2["v03_shadow"]["state"]["recent"]],
+                  "%s %s: a v0.3 state is not carried into the v0.4 hysteresis (first v0.4 run starts from NEUTRAL); the shadow continues it" % (ccy, b0), fails)
+            reg3 = E.classify_regime(cfg, blocks, reg2, hist_dir=os.path.join(ROOT, "history", ccy))
+            check([list(x) for x in reg3["regimes"][b0]["state"]["recent"]] == [list(x) for x in r2["state"]["recent"]] and reg3["regimes"][b0]["state"].get("engine") == "0.4", "%s %s: the v0.4 state continues from a v0.4 regime.json" % (ccy, b0), fails)
+        # without hist_dir the daily5/weekly prints are skipped with a note (dweekly needs no archive)
+        reg3 = E.classify_regime(cfg, blocks, None)
+        for b in blocks_ok:
+            r3 = reg3["regimes"][b]
+            if cfg["regime"]["dual"]["v04"][b]["component"]["kind"] != "dweekly":
+                check(r3["score"] is None and "history dir" in (r3["print"]["note"] or ""), "%s %s: no hist_dir → skipped with a note" % (ccy, b), fails)
+    # 3 · revert restores dual.version 0.3 (round trip on the file, restored byte for byte afterwards)
+    cp = os.path.join(ROOT, "config", "cad.json")
+    raw = open(cp, encoding="utf-8").read()
+    try:
+        A.apply("cad", revert=True)
+        c2 = json.load(open(cp, encoding="utf-8"))
+        check(c2["regime"]["dual"].get("version") == "0.3" and "v04" not in c2["regime"]["dual"] and "dual_v03" not in c2["regime"], "cad --revert: dual.version 0.3, v04 gone", fails)
+        check(c2["regime"]["dual"]["block_thresholds"]["fiscal"]["injection_enter"] == 0.55, "cad --revert: v0.3 fiscal cuts back", fails)
+    finally:
+        open(cp, "w", encoding="utf-8").write(raw)
+    check(open(cp, encoding="utf-8").read() == raw, "cad config restored after the revert test", fails)
+    print("%d failures" % len(fails))
+    return 1 if fails else 0
+
+
+E_BLOCK_ENUM = {"INJECTION", "DRAIN", "NEUTRAL", "NO SIGNAL"}
+
+
 def main() -> int:
+    if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "activation":
+        return main_activation()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "jpy":
         return main_jpy()
     if "--ccy" in sys.argv and sys.argv[sys.argv.index("--ccy") + 1] == "eur":

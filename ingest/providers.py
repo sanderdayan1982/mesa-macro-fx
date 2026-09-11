@@ -179,12 +179,21 @@ class DmoProvider:
         self.fixtures_dir, self.raw_dir = fixtures_dir, raw_dir
 
     def fetch(self, kind: str) -> List[dict]:
-        from .ops_gbp import DMO_D1A, DMO_D22D, FIXTURES, parse_d1a_xml, parse_d22d_xml, rows_from_csv
+        from .ops_gbp import DMO_D1A, DMO_D22D, DMO_D21E, DMO_D1C, FIXTURES, parse_d1a_xml, parse_d22d_xml, parse_d21e_xml, parse_d1c_xls, rows_from_csv
         if self.fixtures_dir:
             p = os.path.join(self.fixtures_dir, FIXTURES[kind])
-            return rows_from_csv(open(p, encoding="utf-8").read()) if os.path.exists(p) else []
+            if not os.path.exists(p):
+                return []
+            return parse_d1c_xls(open(p, "rb").read()) if kind == "d1c" else rows_from_csv(open(p, encoding="utf-8").read())
         from .providers_chf import _http, _snapshot
-        url = DMO_D1A if kind == "d1a" else DMO_D22D
+        if kind == "d1c":  # binary BIFF xls export (seed of redeemed gilts) — unverified from the sandbox (DMO unreachable there)
+            blob = _http(DMO_D1C, binary=True, timeout=180)
+            _snapshot(self.raw_dir, "dmo_d1c.xls", blob)
+            rows = parse_d1c_xls(blob)
+            if not rows:
+                raise ProviderError("dmo d1c: no rows parsed (STRUCTURE CHANGE?)")
+            return rows
+        url = {"d1a": DMO_D1A, "d22d": DMO_D22D, "d21e": DMO_D21E}[kind]
         txt, reason = "", ""
         # two passes: plain requests, then the Chrome-impersonating ladder (curl_cffi → curl) — 2026-09-11 the runner got a non-XML
         # answer for D2.2D right after a good D1A (same host), which looks like a bot challenge on the second request. Whatever
@@ -208,7 +217,7 @@ class DmoProvider:
         else:
             raise ProviderError("dmo %s: not an XML data report (bot challenge or STRUCTURE CHANGE?) — %s" % (kind, reason))
         _snapshot(self.raw_dir, "dmo_%s.xml" % kind, txt.encode("utf-8"))
-        rows = parse_d1a_xml(txt) if kind == "d1a" else parse_d22d_xml(txt)
+        rows = {"d1a": parse_d1a_xml, "d22d": parse_d22d_xml, "d21e": parse_d21e_xml}[kind](txt)
         if not rows:
             raise ProviderError("dmo %s: no rows parsed" % kind)
         return rows

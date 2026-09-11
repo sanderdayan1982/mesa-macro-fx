@@ -209,12 +209,17 @@ def transactions_from_rows(fields: List[str], rows: List[List[str]]) -> List[dic
         kind = "bill" if str(d.get("Instrument", "")).strip() == "Bills" else "bond"
         price = _val(d.get("Weighted average price")) if "Weighted average price" in d else None
         src = "eu_qlik:%s:%s:%s" % (isin, a, fmt.lower())
-        base = {"issuer": "EU", "kind": kind, "isin": isin, "auction": a, "settlement": s or "", "maturity": _iso(d.get("Maturity")) or "", "nominal": nom,
-                "cash": round(nom * price / 100.0, 3) if price else nom, "cover": _val(d.get("Cover ratio")) if "Cover ratio" in d else None,
+        # 'Volume issued' already INCLUDES the non-competitive leg (verified 2026-09-11 on EU000A3K4DW8: 'New o/s amounts' 13 606 + 2 098 = 15 704
+        # with 'Amount of NCB' 300 inside; the news page shows 1 798 competitive + 300 NCB) → the base record carries Volume − NCB on T+2 and the
+        # '#noncomp' record the NCB leg on its own settlement date (T+3), so the volume enters the flow exactly once
+        ncb, s2 = _val(d.get("Amount of NCB")), _iso(d.get("Settlement date NCB"))
+        has_ncb = bool(ncb and ncb > 0 and s2)
+        comp = round(nom - ncb, 3) if has_ncb else nom
+        base = {"issuer": "EU", "kind": kind, "isin": isin, "auction": a, "settlement": s or "", "maturity": _iso(d.get("Maturity")) or "", "nominal": comp,
+                "cash": round(comp * price / 100.0, 3) if price else comp, "cover": _val(d.get("Cover ratio")) if "Cover ratio" in d else None,
                 "yield": _val(d.get("Yield")) if "Yield" in d else None, "source": src}
         recs = [base]
-        ncb, s2 = _val(d.get("Amount of NCB")), _iso(d.get("Settlement date NCB"))
-        if ncb and ncb > 0 and s2:
+        if has_ncb:
             recs.append(dict(base, settlement=s2, nominal=ncb, cash=round(ncb * price / 100.0, 3) if price else ncb, cover=None, source=src + "#noncomp"))
         for r in recs:
             k = tuple(str(r[c]) for c in REC_COLS)
@@ -283,6 +288,23 @@ def eu_calendar(outstanding: List[dict], horizon_days: int = 365, back_days: int
     return {"eu_redemptions_gross_ahead": _bucket(red), "eu_bill_maturities_ahead": _bucket(bill),
             "eu_coupons_gross_paid": _bucket({d: v for d, v in cpn.items() if d <= tday}), "eu_coupons_gross_ahead": _bucket({d: v for d, v in cpn.items() if d > tday}),
             "eu_outstanding_total": [(asof or tday, round(tot, 3))] if outstanding else []}
+
+
+def eu_lines(records: List[dict], outstanding: List[dict]) -> List[dict]:
+    """Bond lines for ops_eur.bond_redemptions_coupons: tranches = every bond record (competitive leg + '#noncomp' leg, which together are the
+    Qlik 'Volume issued' — Σ per ISIN = 'New o/s amounts', e.g. EU000A3K4DW8 15 704), coupon from the outstanding table (present for matured
+    lines too; '0.13%' is the dashboard's 2-decimal rounding of 0.125). EU lines issued before June 2020 (EFSM / MFA / BoP, no operations and
+    no coupon in the app) are not covered. Coupon: annual on the maturity day/month."""
+    cpn = {o["isin"]: o.get("coupon") for o in outstanding}
+    by: Dict[str, dict] = {}
+    for r in records:
+        if r.get("kind") != "bond" or not r.get("settlement") or not r.get("maturity"):
+            continue
+        l = by.setdefault(r["isin"], {"issuer": "EU", "isin": r["isin"], "coupon": cpn.get(r["isin"]) or 0.0, "maturity": r["maturity"], "tranches": []})
+        l["tranches"].append((r["settlement"], float(r["nominal"])))
+    for l in by.values():
+        l["tranches"].sort()
+    return list(by.values())
 
 
 # ═══════════════════════ convenience ═══════════════════════

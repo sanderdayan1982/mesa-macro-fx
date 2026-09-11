@@ -1,6 +1,6 @@
 {
  "$schema": "../schema/config.schema.json",
- "config_version": "0.2.3",
+ "config_version": "0.2.4",
  "currency": "JPY",
  "name": "JPY Command Center",
  "jurisdiction": "Japan",
@@ -1398,6 +1398,105 @@
    }
   },
   "dual": {
+   "version": "0.4",
+   "status": "calibrated by replay 2026-09-09 (engine v0.3, era 2024-07-31, 102 weeks) · v0.4 active on fiscal (replay-v04 2026-09-11 (runner, 8-year archives)); other blocks v0.3",
+   "era_start": "2024-07-31",
+   "anchor_percentiles": true,
+   "level_weight": 1.0,
+   "persistence": {
+    "entry_days": 7,
+    "exit_days": 0,
+    "mode": "mean"
+   },
+   "agreement_only": true,
+   "agreement_only_until_weeks": 150,
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "block_thresholds": {
+    "central_bank": {
+     "injection_enter": 0.75,
+     "injection_exit": 0.75,
+     "drain_enter": 0.25,
+     "drain_exit": 0.25,
+     "level_weight": 1.0,
+     "evidence": {
+      "injection": "provisional_era_corta",
+      "drain": "provisional_era_corta"
+     },
+     "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+    },
+    "fiscal": {
+     "injection_enter": 0.24,
+     "injection_exit": 0.13,
+     "drain_enter": -0.32,
+     "drain_exit": -0.14,
+     "level_weight": 1.0,
+     "evidence": {
+      "injection": "provisional_era_corta",
+      "drain": "provisional_era_corta"
+     },
+     "rule": "era p80/p20 (exit p67/p33) of the 7-day mean score, nearest attainable, exit after 0 days inside"
+    }
+   },
+   "rule": "three regimes per currency (engine v0.3): central_bank and fiscal from their block score with era-calibrated entry/exit cuts on the 7-day mean score; general = agreement only (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN, partial or conflict → NEUTRAL labelled); percentile windows anchored to era_start; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "v04": {
+    "fiscal": {
+     "active": true,
+     "component": {
+      "name": "treasury_5d",
+      "source": "treasury_realized_daily",
+      "kind": "daily5",
+      "lag": 0,
+      "sign": 1,
+      "denominator": "central_bank.cab_daily",
+      "reconciliation": "財政等要因 realizado (速報/確報) = −Δ cuenta del gobierno"
+     },
+     "cuts": {
+      "injection_enter": 0.6459,
+      "injection_exit": 0.1934,
+      "drain_enter": -1.0505,
+      "drain_exit": -0.7651
+     },
+     "evidence": {
+      "injection": "frecuencia_de_era",
+      "drain": "frecuencia_de_era",
+      "stability": "estable",
+      "B12_rho": 0.098,
+      "B12_p_bootstrap": 0.3953,
+      "coverage_era": 1.0,
+      "sign_warning": false,
+      "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
+     },
+     "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
+     "unit": "% of the reserves stock, 5-session sum (weekly components enter as a step)",
+     "rule": "engine v0.4: treasury_5d → cuts = era p80/p20 (exit p67/p33) of the 2-print mean, hysteresis + persistence as v0.3; first v0.4 run starts from confirmed NEUTRAL"
+    }
+   }
+  },
+  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)",
+  "dual_v02": {
+   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
+   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
+   "block_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   },
+   "weights": {
+    "central_bank": 0.6,
+    "fiscal": 0.4
+   },
+   "general_thresholds": {
+    "injection": 0.5,
+    "drain": -0.5
+   }
+  },
+  "dual_v03": {
    "version": "0.3",
    "status": "calibrated by replay 2026-09-09 (engine v0.3, era 2024-07-31, 102 weeks)",
    "era_start": "2024-07-31",
@@ -1445,23 +1544,6 @@
     }
    },
    "rule": "three regimes per currency (engine v0.3): central_bank and fiscal from their block score with era-calibrated entry/exit cuts on the 7-day mean score; general = agreement only (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN, partial or conflict → NEUTRAL labelled); percentile windows anchored to era_start; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime"
-  },
-  "composite_note": "weights (4 blocks) now produce the desk composite score for context; the reported regime is the general regime (central bank + treasury)",
-  "dual_v02": {
-   "status": "provisional — per-currency thresholds pending (desk rule 2026-09-09)",
-   "rule": "three regimes per currency: central_bank (block score), fiscal (block score), general = agreement (both inject → LIQUIDITY_INJECTION, both drain → LIQUIDITY_DRAIN); a conflict is resolved by the dual-weighted score against general_thresholds; price gates (LIQUIDITY_SCARCITY, FLOOR_FRICTION) override the general regime",
-   "block_thresholds": {
-    "injection": 0.5,
-    "drain": -0.5
-   },
-   "weights": {
-    "central_bank": 0.6,
-    "fiscal": 0.4
-   },
-   "general_thresholds": {
-    "injection": 0.5,
-    "drain": -0.5
-   }
   }
  },
  "status_rules": {
@@ -1859,5 +1941,6 @@
   "Pending sources: BoJ USD funds-supplying operation results, JPX TONA futures, TIBOR PDF, xccy basis (vendor)",
   "Sander's OK on v0.2 → Fase 2 JPY"
  ],
- "version": "0.4.0"
+ "version": "0.4.0",
+ "note": "v0.4 activation (replay-v04 2026-09-11 (runner, 8-year archives)): fiscal=treasury_5d"
 }

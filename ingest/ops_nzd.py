@@ -7,7 +7,8 @@ Sources (VERIFICACIONES_V04.md, ADJUDICACION_METRICAS_NZD.md):
 
 Reserve mechanics (+ = settlement cash created):
   Tender settled (bills T+1, bonds T+3 business days unless the tender listing gives the settlement date) → −
-  Bill maturity → +; bond maturity: market-held part (bonds on issue: total − RBNZ − EQC − SRESL) → +; coupons × market share → +
+  Bill maturity → +; bond maturity: market-held part (bonds on issue: total − RBNZ − EQC − SRESL, month-end before maturity) → +;
+  coupons × market nominal (latest month-end ≤ coupon date) → + — both from EVERY month-end of the register (bond_flows_history)
   LSAP sales RBNZ → NZDM (NZ$415m/month): Crown pays the RBNZ from the CSA → NO settlement-cash effect (corrects N2 of the adjudication);
   they matter as the Crown's refinancing need, published as context.
   OMO reverse repo allocated → +; maturity (7/28 d) → − ; full allotment at OCR + 10 bp → allocated = demand.
@@ -155,13 +156,73 @@ def bond_calendar(bonds_on_issue: List[dict], horizon_days: int = 365, back_days
             "coupons_market_ahead": _bucket({d: v for d, v in cpn.items() if d > tday})}
 
 
-def net_issuance_private(tender_settled: Series, bill_matured: Series, coupons_paid: Series, days: List[str]) -> Series:
-    """− tenders settled + bill maturities + market coupons (bond redemptions are added when the line drops off the register;
-    first pass: they are in the calendar and in D10 monthly)"""
+def _roll_bd(d: str) -> str:
+    x = date.fromisoformat(d)
+    while x.weekday() >= 5:
+        x += timedelta(days=1)
+    return x.isoformat()
+
+
+def bond_flows_history(snapshots: List[dict], days: List[str]) -> dict:
+    """market-held bond redemptions and coupons over the window from EVERY month-end snapshot of the NZDM register (NZ$m).
+    House convention (as GBP/EUR): both GROSS to the market holder; the NZDM 'market' column (total − RBNZ − EQC − SRESL) is the holder.
+      bond_redeemed_market: market holding of the LAST month-end snapshot BEFORE the maturity, on the maturity rolled to the next business day
+      coupons_market_paid:  every semi-annual coupon date (maturity day-of-month, maturity month and six months earlier, ≤ maturity),
+                            rolled to the next business day, × market nominal of the latest month-end snapshot ≤ the coupon date ÷ 2
+    Coverage is honest, not filled: a date with no snapshot at or before it gets nothing (two-sided from the first month-end on file).
+    Inflation-indexed lines: nominal without indexation (understates the indexed principal/coupon; low confidence)."""
+    if not snapshots or not days:
+        return {"bond_redeemed_market": [], "coupons_market_paid": [], "two_sided_from": None}
+    by_me: Dict[str, Dict[str, dict]] = defaultdict(dict)
+    for b in snapshots:
+        me, m = str(b.get("month_end", "")), b.get("maturity")
+        if me and m:
+            by_me[me][m] = b
+    mes = sorted(by_me)
+    today = date.today().isoformat()
+    start, end = days[0], min(days[-1], today)
+
+    def snap_at(d: str, strict: bool) -> Optional[str]:  # latest month-end < d (strict) or ≤ d
+        prev = [me for me in mes if (me < d if strict else me <= d)]
+        return prev[-1] if prev else None
+
+    red: Dict[str, float] = defaultdict(float)
+    cpn: Dict[str, float] = defaultdict(float)
+    lines: Dict[str, dict] = {}
+    for me in mes:
+        for m, b in by_me[me].items():
+            lines[m] = b  # coupon of the line (constant across snapshots)
+    for m, b in lines.items():
+        pay = _roll_bd(m)
+        if start <= pay <= end:
+            s = snap_at(m, strict=True)
+            if s and m in by_me[s]:
+                red[pay] += _num(by_me[s][m].get("market")) or 0.0
+        c = _num(b.get("coupon")) or 0.0
+        y, mo, dd = int(m[:4]), int(m[5:7]), int(m[8:10])
+        for yy in range(int(start[:4]), int(end[:4]) + 1):
+            for mm in (mo, (mo + 5) % 12 + 1):
+                try:
+                    d = date(yy, mm, dd).isoformat()
+                except ValueError:
+                    continue
+                pay = _roll_bd(d)
+                if not (start <= pay <= end and d <= m):
+                    continue
+                s = snap_at(d, strict=False)
+                if s and m in by_me[s]:
+                    cpn[pay] += (_num(by_me[s][m].get("market")) or 0.0) * c / 2.0
+    return {"bond_redeemed_market": _bucket(red), "coupons_market_paid": _bucket(cpn), "two_sided_from": mes[0]}
+
+
+def net_issuance_private(tender_settled: Series, bill_matured: Series, coupons_paid: Series, days: List[str], bond_redeemed: Optional[Series] = None) -> Series:
+    """− tenders settled + bill maturities + market bond redemptions + market coupons (both from bond_flows_history)"""
     m: Dict[str, float] = defaultdict(float)
     for d, v in tender_settled:
         m[d] -= v
     for d, v in bill_matured:
+        m[d] += v
+    for d, v in bond_redeemed or []:
         m[d] += v
     for d, v in coupons_paid:
         m[d] += v

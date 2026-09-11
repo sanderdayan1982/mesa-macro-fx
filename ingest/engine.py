@@ -72,7 +72,9 @@ def block_regime_step(score: Optional[float], cuts: dict, prev_state: Optional[d
             "pending_days": ((datetime.fromisoformat(as_of[:10]) - datetime.fromisoformat(since[:10])).days if (as_of and since) else None)}
 
 
-def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[dict] = None) -> dict:
+def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[dict] = None, hist_dir: Optional[str] = None) -> dict:
+    """hist_dir = history/<ccy> (the append-only CSV archive); needed by the v0.4 daily5/weekly components — when None those prints are
+    skipped with a note and the block reads NO SIGNAL (never the v0.3 score under the v0.4 cuts)."""
     rc = cfg["regime"]
     w = rc["weights"]
     scores, used = {}, 0
@@ -107,22 +109,56 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
         return {"injection_enter": inj, "injection_exit": c.get("injection_exit", inj), "drain_enter": drn, "drain_exit": c.get("drain_exit", drn),
                 "evidence": c.get("evidence") or {}, "rule": c.get("rule")}
 
-    def _blk(name: str) -> dict:
+    # v0.4 (activation lot 2026-09-11): a block listed in dual.v04 with active=true reads ONE settlement/flow component (replay_v04 cuts)
+    # instead of its v0.3 score; the v0.3 reading is kept beside it as v03_shadow for continuity. Blocks not listed stay v0.3.
+    v04 = dual.get("v04") or {}
+    CUT_KEYS = ("injection_enter", "injection_exit", "drain_enter", "drain_exit")
+
+    def _blk_v03(name: str, prev_state: dict) -> dict:
         b = blocks.get(name)
+        cuts = _cuts(name)
         if not b or b["signals"]["traffic_light"] == "NONE":
             # no print this run (source outage / lane without the series): the block reads NO SIGNAL but its hysteresis state is
             # carried forward untouched, so the confirmed regime resumes where it was when the data returns (v0.3.1 hotfix)
             return {"regime": "NO SIGNAL", "score": None, "label": None, "traffic_light": "NONE", "as_of": None,
-                    "state": (prev_regs.get(name) or {}).get("state") or {}, "cuts": {k: v for k, v in _cuts(name).items() if k in ("injection_enter", "injection_exit", "drain_enter", "drain_exit")},
-                    "last_confirmed": ((prev_regs.get(name) or {}).get("state") or {}).get("confirmed"), "last_as_of": (prev_regs.get(name) or {}).get("as_of")}
+                    "state": prev_state, "cuts": {k: cuts[k] for k in CUT_KEYS},
+                    "last_confirmed": prev_state.get("confirmed"), "last_as_of": (prev_regs.get(name) or {}).get("as_of")}
         sc = b["signals"]["score"]
-        cuts = _cuts(name)
-        prev_state = (prev_regs.get(name) or {}).get("state") or {}
         st = block_regime_step(sc, cuts, prev_state, b.get("as_of"), dual.get("persistence"))
         out = {"regime": st["confirmed"], "score": sc, "label": b["signals"]["label"], "traffic_light": b["signals"]["traffic_light"], "as_of": b.get("as_of"),
-               "detail": b["signals"].get("detail", ""), "raw_regime": st["raw"], "cuts": {k: cuts[k] for k in ("injection_enter", "injection_exit", "drain_enter", "drain_exit")},
+               "detail": b["signals"].get("detail", ""), "raw_regime": st["raw"], "cuts": {k: cuts[k] for k in CUT_KEYS},
                "evidence": cuts["evidence"], "state": st, "components": b["signals"].get("components")}
         return out
+
+    def _blk_v04(name: str, spec: dict, prev: dict) -> dict:
+        from .v04_component import compute_print  # local import: pure-python helper, kept out of the module import path
+        comp, cuts4 = spec.get("component") or {}, {k: spec["cuts"][k] for k in CUT_KEYS}
+        prev_state = prev.get("state") or {}
+        # the block state continues from the v0.4 print history only: the first v0.4 run starts from confirmed NEUTRAL (a v0.3 state
+        # is on another scale and is not carried into the v0.4 hysteresis); the v0.3 shadow keeps its own state under v03_shadow
+        if prev_state.get("engine") != "0.4":
+            shadow_prev, prev_state = prev_state, {}
+        else:
+            shadow_prev = (prev.get("v03_shadow") or {}).get("state") or {}
+        v3 = _blk_v03(name, shadow_prev)
+        pr = compute_print(comp, blocks, hist_dir)
+        st = block_regime_step(pr["score"], cuts4, prev_state, pr["as_of"], dual.get("persistence"))
+        st["engine"] = "0.4"
+        out = {"regime": st["confirmed"] if pr["score"] is not None else "NO SIGNAL", "score": pr["score"], "label": v3.get("label"), "traffic_light": v3.get("traffic_light"),
+               "as_of": pr["as_of"] or v3.get("as_of"), "detail": v3.get("detail", ""), "raw_regime": st["raw"], "cuts": cuts4, "evidence": spec.get("evidence") or {},
+               "state": st, "components": v3.get("components"), "engine": "0.4", "component": comp, "selected": spec.get("selected"),
+               "print": {k: pr[k] for k in ("raw", "denominator", "denominator_date", "today", "note")},
+               "v03_shadow": {"regime": v3["regime"], "score": v3["score"], "raw_regime": v3.get("raw_regime"), "cuts": v3.get("cuts"), "as_of": v3.get("as_of"), "state": v3.get("state")}}
+        if pr["score"] is None:
+            out["last_confirmed"], out["last_as_of"] = st["confirmed"], prev.get("as_of")
+        return out
+
+    def _blk(name: str) -> dict:
+        prev = prev_regs.get(name) or {}
+        spec = v04.get(name) if isinstance(v04.get(name), dict) else None
+        if spec and spec.get("active") and spec.get("cuts") and all(k in spec["cuts"] for k in CUT_KEYS):
+            return _blk_v04(name, spec, prev)
+        return _blk_v03(name, prev.get("state") or {})
 
     cbr, fir = _blk("central_bank"), _blk("fiscal")
     dw = dual.get("weights") or {"central_bank": 0.6, "fiscal": 0.4}
@@ -141,7 +177,9 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
         g_reg, g_score, rule = "NO SIGNAL", None, "no block available"
     else:
         tw = sum(dw[k] for k in avail) or 1.0
-        g_score = round(sum(dw[k] * v["score"] for k, v in avail.items()) / tw, 3)
+        # the dual score is context only and stays on the v0.3 scale: a v0.4 block contributes its v0.3 shadow score (its own print is in % of reserves)
+        _sc = lambda v: v["v03_shadow"]["score"] if (v.get("engine") == "0.4" and (v.get("v03_shadow") or {}).get("score") is not None) else v["score"]
+        g_score = round(sum(dw[k] * _sc(v) for k, v in avail.items()) / tw, 3)
         if len(avail) == 1 and agree_only:
             # agreement rule: with one dual block missing no agreement is possible → NEUTRAL, never the surviving block's side
             # (a source outage must not move the general regime; v0.3.1 hotfix)
@@ -176,7 +214,8 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     regimes = {"central_bank": cbr, "fiscal": fir,
                "general": {"regime": regime, "score": g_score, "rule": rule, "price_gate": gate, "dual_weights": dw, "thresholds": gth,
                            "block_thresholds": {"central_bank": cbr.get("cuts"), "fiscal": fir.get("cuts")} if v03 else (dual.get("block_thresholds") or {"injection": 0.5, "drain": -0.5}),
-                           "engine": "0.3" if v03 else "0.2", "agreement_only": agree_only, "era_start": era_start, "era_weeks": era_weeks,
+                           "engine": "0.3" if v03 else "0.2", "v04_blocks": [n for n, r in (("central_bank", cbr), ("fiscal", fir)) if r.get("engine") == "0.4"],
+                           "agreement_only": agree_only, "era_start": era_start, "era_weeks": era_weeks,
                            "persistence": dual.get("persistence"), "level_weight": dual.get("level_weight"),
                            "calibration": dual.get("status", "provisional — per-currency thresholds pending")}}
     flags = []

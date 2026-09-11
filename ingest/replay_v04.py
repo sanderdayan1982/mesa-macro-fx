@@ -53,10 +53,12 @@ SPEC: Dict[str, dict] = {
                              "B": {"omo_net_5d": ("hist", "omo_net_daily", "daily5", 1, +1, "OMO por operación (D3); settlement cash = conciliación")},
                              "C": {}},
             "fiscal": {"A": "v0.3 (R3 mensual + proxy)",
-                       "B": {"net_issuance_5d": ("hist", "net_issuance_private_daily", "daily5", 1, +1, "tenders por liquidación − letras vencidas − cupones al mercado (NZDM, D3 LSAP)")},
+                       "B": {"net_issuance_5d": ("hist", "net_issuance_private_daily", "daily5", 1, +1, "tenders por liquidación − letras vencidas − reembolsos y cupones BRUTOS al tenedor de mercado (NZDM bonds on issue, todos los cierres de mes; dos lados sólo desde el primer cierre de mes archivado)")},
                        "C": {"residual_5d": ("hist", "residual_flow_daily", "daily5", 1, +1, "proxy residual diario (conciliado D10 −7 mm)")}}},
     "chf": {"central_bank": {"A": "v0.3 (Δ GI semanal, cuota de absorción mensual)",
-                             "B": {"fx_proxy_w": ("hist", "fx_intervention_proxy_v04", "weekly", 7, +1, "ΔGI − operaciones − Confederación, semanas completas")},
+                             # publication lag 35 d (was 7): the proxy = ΔGI − ops − Confederation is only complete when the monthly gmges amounts
+                             # arrive (~35 d after month-end); the 7-day lag overstated its as-of coverage (activation review 2026-09-11)
+                             "B": {"fx_proxy_w": ("hist", "fx_intervention_proxy_v04", "weekly", 35, +1, "ΔGI − operaciones − Confederación, semanas completas")},
                              "C": {"ops_net_5d": ("hist", "ops_net_daily", "daily5", 35, +1, "Bills + repos por fecha; importes publicados ~35 días tras fin de mes (reloj de publicación)")}},
             "fiscal": {"A": "v0.3 (saldos de la Confederación mensuales)",
                        "B": {"net_issuance_5d": ("hist", "net_issuance_private_daily", "daily5", 2, +1, "MMDRC + bonos por liquidación T+2 (EFV)")},
@@ -69,7 +71,7 @@ SPEC: Dict[str, dict] = {
                        "C": {"net_issuance_v2_5d": ("hist", "net_issuance_private_v2_daily", "daily5", 1, +1, "v2: tenders AOFM por Date Settled (caja) − notas/indexados − recompras + reembolsos y cupones de TB NETOS de la cartera del RBA (A3.1)")}}},
     "eur": {"central_bank": {"A": "v0.3 (exceso de liquidez diario)", "B": {}, "C": {}, "note": "Δ cartera WFS semanal sin histórico archivado (monpol_wow) → empate 3-3 sin resolver aquí"},
             "fiscal": {"A": "v0.3 (déficit estructural GFS.Q + −ΔL050100)",
-                       "B": {"net_issuance_5d": ("hist", "net_issuance_private_daily", "daily5", 1, +1, "DE+FR+ES+IT+UE(+ESM) por liquidación; ES/IT sólo desde 2022 (cobertura parcial antes)")},
+                       "B": {"net_issuance_5d": ("hist", "net_issuance_private_daily", "daily5", 1, +1, "DE+FR+ES+IT+UE(+ESM) por liquidación + reembolsos y cupones BRUTOS de DE (historial Finanzagentur 1999→) y UE (Qlik 2020→); FR/ES/IT/ESM sólo un lado (sin saldo vivo por línea); ES/IT sólo desde 2022 (cobertura parcial antes)")},
                        "C": {}}},
     "jpy": {"central_bank": {"A": "v0.3 (CAB 20d, d/d, banda del balance)", "B": {}, "C": {}, "note": "operaciones por operación (ope) sólo desde el backfill del runner → replay pendiente de ese archivo"},
             "fiscal": {"A": "v0.3 (z del flujo del Tesoro)",
@@ -270,7 +272,7 @@ def _select(variants: Dict[str, dict], note: Optional[str]) -> dict:
         if best in cands:
             os_ = [c for c in ok[best].get("checks", []) if c.startswith("ONE_SIDED")]
             return {"decision": best, "reason": "método B a 12 s: ρ<0 con p_bootstrap ≤ 0,05 (%s); cobertura %.2f%s" % (best, ok[best]["coverage_era"],
-                    " · aviso: la serie es de un solo signo — el estado 'inyección' es sólo menos drenaje (reembolsos y cupones de bonos fuera del flujo)" if os_ else "")}
+                    " · aviso: la serie es de un solo signo — el estado 'inyección' es sólo menos drenaje (reembolsos y cupones de bonos fuera del flujo o cubiertos sólo en parte)" if os_ else "")}
     # no significant B: accounting truth decides — B (v0.4 base) when it covers the era, else A; C never by default
     if "B" in cands and ok["B"]["stability"].get("status") in ("estable", "provisional") and not any(c.startswith("ONE_SIDED") for c in ok["B"].get("checks", [])):
         rb = ok["B"]["B"].get("12", {})
@@ -353,6 +355,13 @@ def main(argv: Optional[List[str]] = None) -> int:
             json.dump(res, f, indent=1, ensure_ascii=False)
         with open(os.path.join(out_dir, "report.md"), "w", encoding="utf-8") as f:
             f.write(_md(res))
+        print("%s: %s" % (ccy, {k: v["selection"].get("decision") for k, v in res["blocks"].items()}))
+    # the summary is rebuilt from every currency's JSON on disk, so a partial run (replay-v04 gbp eur nzd) never drops the other rows
+    for ccy in SPEC:
+        p = os.path.join(ROOT, "calibration", "%s_v04" % ccy, "replay_v04.json")
+        if not os.path.exists(p):
+            continue
+        res = json.load(open(p, encoding="utf-8"))
         for block, b in res["blocks"].items():
             d = b["selection"].get("decision")
             v = b["variants"].get(d or "A", {})
@@ -361,7 +370,6 @@ def main(argv: Optional[List[str]] = None) -> int:
             summary.append("| %s | %s | %s | %s | %s / %s | %s / %s | %s | %s (%s) | %s |" % (
                 ccy.upper(), block, d, v.get("label", ""), c.get("injection_enter"), c.get("injection_exit"), c.get("drain_enter"), c.get("drain_exit"),
                 (v.get("stability") or {}).get("status"), b12.get("rho"), b12.get("p_block_bootstrap"), b["selection"].get("reason")))
-        print("%s: %s" % (ccy, {k: v["selection"].get("decision") for k, v in res["blocks"].items()}))
     with open(os.path.join(ROOT, "calibration", "REPLAY_V04.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(summary) + "\n")
     return 0

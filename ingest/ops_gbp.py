@@ -10,6 +10,9 @@ Sources verified 2026-09-10 (VERIFICACIONES_V04.md, ADJUDICACION_METRICAS_GBP.md
   DMO (XML)
     XmlDataReport?reportCode=D1A   gilts in issue at close of business: REDEMPTION_DATE, DIVIDEND_DATES, TOTAL_AMOUNT_IN_ISSUE (£mn), coupon in the name
     XmlDataReport?reportCode=D2.2D T-bill tenders: di(MATURITY_DATE) > dd(TENDER_DATE) > sdd(ISSUE_DATE, SIZE_MILLIONS) > far(COVER, yields)
+    XmlDataReport?reportCode=D2.1E gilt issuance history 2018→ (seed): INSTRUMENT_NAME, ISIN_CODE, ACTUAL_DATE (= settlement), ISSUANCE_TYPE,
+                                   NOMINAL_ISSUED, ISSUE_CLEAN_PRICE ("N/A" = NLF→DMA collateral), ISSUE_YIELD — element name unverified from the sandbox
+    GetDataExport?reportCode=D1C   redeemed gilts since 1981 (BIFF xls, seed): redemption date, gilt name, nominal outstanding at redemption (£mn)
   IADB weekly (already wired): reserves RPWB56A, STR RPWB67A, LTR RPWB69A, APF loan RPWZ4TM, notes RPWB55A, TFSME RPWZOQ4, W&M RPWB72A
 
 Reserve mechanics (+ = reserves created):
@@ -40,9 +43,15 @@ BOE_FILES = {
 }
 DMO_D1A = "https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D1A"
 DMO_D22D = "https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D2.2D"
+DMO_D21E = "https://www.dmo.gov.uk/data/XmlDataReport?reportCode=D2.1E"  # gilt issuance history by ISIN and settlement (2018→)
+DMO_D1C = "https://www.dmo.gov.uk/umbraco/surface/DataExport/GetDataExport?reportCode=D1C&exportFormatValue=xls"  # redeemed gilts (BIFF xls)
+# the seed sources live in fixtures/gbp_hist (single copy); the GBP fixture dir is fixtures/gbp, hence the relative reference
 FIXTURES = {"str": "boe_str_by_operation.csv", "iltr": "boe_iltr_by_operation.csv", "ctrf": "boe_ctrf_by_operation.csv",
             "apf_sales": "boe_apf_gilt_sales.csv", "apf_profile": "boe_apf_maturity_profile.csv",
-            "d1a": "dmo_gilts_in_issue_D1A.csv", "d22d": "dmo_tbill_tenders_D22D.csv"}
+            "d1a": "dmo_gilts_in_issue_D1A.csv", "d22d": "dmo_tbill_tenders_D22D.csv",
+            "d21e": os.path.join("..", "gbp_hist", "dmo_gilt_issuance_history_D21E_2018.csv"),
+            "d1c": os.path.join("..", "gbp_hist", "dmo_redeemed_gilts_D1C.xls")}
+SEED_START = "2019-01-01"  # first date of the seed (ADJUDICACION_GBP_EMISION.md, "Diseño del seed GBP")
 
 
 # ───────────────────────── helpers ─────────────────────────
@@ -215,6 +224,40 @@ def parse_d22d_xml(text: str) -> List[Row]:
                 out.append({"tender_date": td, "maturity_type": mt, "maturity_date": md, "issue_date": (sdd.get("ISSUE_DATE") or "")[:10],
                             "size_m": sdd.get("SIZE_MILLIONS", ""), "cover": far.get("COVER", "") if far is not None else "",
                             "avg_yield": far.get("AVERAGE_YIELD_PERCENT", "") if far is not None else "", "tail_bp": far.get("YIELD_TAIL_BP", "") if far is not None else ""})
+    return out
+
+
+def parse_d21e_xml(text: str) -> List[Row]:
+    """D2.1E gilt issuance history → the fixture columns (settlement, isin, type, nominal_m, clean_price, yield, name).
+    Element name unverified from the sandbox (the DMO is unreachable here): any element carrying ISIN_CODE + ACTUAL_DATE is a row.
+    ACTUAL_DATE is the settlement date for every ISSUANCE_TYPE, syndications included (pr080926: priced 8-Sep, settled 9-Sep)."""
+    root = ET.fromstring(text.strip())
+    out: List[Row] = []
+    for e in root.iter():
+        g = e.attrib
+        if "ISIN_CODE" not in g or "ACTUAL_DATE" not in g:
+            continue
+        out.append({"settlement": (g.get("ACTUAL_DATE") or "")[:10], "isin": (g.get("ISIN_CODE") or "").strip(), "type": (g.get("ISSUANCE_TYPE") or "").strip(),
+                    "nominal_m": g.get("NOMINAL_ISSUED", ""), "clean_price": g.get("ISSUE_CLEAN_PRICE", "N/A") or "N/A", "yield": g.get("ISSUE_YIELD", "N/A") or "N/A",
+                    "name": (g.get("INSTRUMENT_NAME") or "").strip()})
+    return out
+
+
+def parse_d1c_xls(blob: bytes) -> List[Row]:
+    """D1C redeemed gilts (BIFF xls via xlrd, already in requirements): rows after the 'Redemption Date' header →
+    redemption_date (ISO), name, nominal_m (nominal outstanding at redemption, £mn; index-linked = nominal, NOT the uplifted value)."""
+    import xlrd
+    sh = xlrd.open_workbook(file_contents=blob).sheet_by_index(0)
+    out: List[Row] = []
+    started = False
+    for i in range(sh.nrows):
+        c = sh.row(i)
+        if not started:
+            started = isinstance(c[0].value, str) and c[0].value.strip().lower().startswith("redemption date")
+            continue
+        d, n = _serial(c[0].value), _num(c[2].value)
+        if d and isinstance(c[1].value, str) and n is not None:
+            out.append({"redemption_date": d, "name": c[1].value.strip(), "nominal_m": str(n)})
     return out
 
 
@@ -487,6 +530,127 @@ def net_issuance_private(gilt_iss: Series, gilt_red_priv: Series, tb_iss: Series
     for d, v in coupons_paid:
         m[d] += v
     return _dense(_bucket(m), days)
+
+
+# ───────────────────────── seed before the D1A archive: D2.1E issuance + D1C redemptions + rule coupons ─────────────────────────
+# Design fixed in ADJUDICACION_GBP_EMISION.md ("Diseño del seed GBP"). Cash sign per D2.1E row (reserves, + = injection):
+#   Outright / Syndication (any priced type not listed below) → −nominal (issuance drains); nominal, not cash: D2.1E prices are rounded
+#   Reverse Auction → +nominal (the DMO buys back for cash)
+#   price "N/A" (collateral created NLF→DMA under the cash-management remit: 2018-10-16, 2020-04-21, 2022-04/07/10, 2024-07-16, 2025-04-15 …),
+#   Conversion, Switch Auction, Cancellation, Cancellation Adjustment → 0 cash (free of payment / book entries)
+# Private outstanding base for coupons: cumulative D2.1E by line EXCLUDING the N/A-price rows (DMA-held, not private; assumed held to
+# redemption) — they still count in the official amount in issue (D1C nominal, D1A amount), hence the back-solve below subtracts them.
+_NO_CASH_TYPES = ("conversion", "switch", "cancellation")
+
+
+def _d21e_kind(r: Row) -> str:
+    """'issue' (priced sale), 'buyback' (reverse auction), 'collateral' (price N/A), 'cancel', 'exchange' (conversion/switch)"""
+    t = (r.get("type") or "").lower()
+    if "reverse" in t:
+        return "buyback"
+    if "cancel" in t:
+        return "cancel"
+    if any(k in t for k in _NO_CASH_TYPES):
+        return "exchange"
+    return "collateral" if _num(r.get("clean_price")) is None else "issue"
+
+
+def next_business_day(d: str) -> str:
+    """weekend → following Monday (same calendar as business_days: weekdays only, UK bank holidays not modelled)"""
+    x = date.fromisoformat(d)
+    while x.weekday() >= 5:
+        x += timedelta(days=1)
+    return x.isoformat()
+
+
+def coupon_dates(maturity: str, start: str, end: str) -> List[str]:
+    """Semi-annual rule ('About gilts'): the day/month of maturity and six months earlier, next business day if not one; ≤ maturity."""
+    import calendar
+    m = date.fromisoformat(maturity)
+    months = sorted({m.month, (m.month + 6 - 1) % 12 + 1})
+    out = []
+    for y in range(int(start[:4]), int(end[:4]) + 1):
+        for mo in months:
+            nominal = date(y, mo, min(m.day, calendar.monthrange(y, mo)[1])).isoformat()
+            d = next_business_day(nominal)
+            if start <= d <= end and nominal <= maturity[:10]:
+                out.append(d)
+    return sorted(out)
+
+
+def seed_flows(d21e_rows: List[Row], d1c_rows: List[Row], first_snapshot: Tuple[str, Dict[str, Tuple[float, str]]], days: List[str]) -> Tuple[Dict[str, Series], Dict[str, int]]:
+    """Gilt flows (£mn) on `days` (business days strictly before the first D1A archive snapshot):
+      gilt_issued_daily      +priced D2.1E nominal at settlement (a Reverse Auction enters as negative issuance = cash buyback)
+      gilt_redeemed_private  D1C nominal outstanding at redemption, GROSS (no APF netting in this phase; index-linked at nominal, not uplift)
+      coupons_private_paid   coupon-rule dates × private outstanding at that date × coupon/200; index-linked at real coupon × nominal
+                             (the uplifted nominal is not available historically → understated; low confidence, stated)
+      net                    −issued + redeemed + coupons, dense on `days` (T-bills are added by the caller from D2.2D)
+    Every flow is dated on a business day (weekend dates roll forward) so the caller's dense grid keeps it.
+    first_snapshot = (date, {gilt name: (amount in issue, redemption date)}) — the first D1A archive snapshot.
+    Pre-2018 outstanding (D2.1E starts 2018-01): a line that redeemed is back-solved from D1C — base = D1C nominal − Σ official D2.1E
+    rows of the line (all types, N/A included) up to redemption; a line alive at the snapshot the same way from the snapshot amount.
+    Private outstanding(t) = base + Σ private rows settled ≤ t (priced issuance +, buyback/cancellation −, exchanges as given,
+    N/A rows excluded). A line with no D1C row and no snapshot amount cannot be based: its coupons are skipped and counted."""
+    from collections import Counter
+    empty = {"gilt_issued_daily": [], "gilt_redeemed_private": [], "coupons_private_paid": [], "net": []}
+    if not days:
+        return empty, {}
+    start, end = days[0], days[-1]
+    snap_date, snap_by_name = first_snapshot
+    stats: Dict[str, int] = Counter()
+    by_line: Dict[str, List[Tuple[str, float, str]]] = defaultdict(list)  # name → [(settlement, nominal, kind)]
+    iss: Dict[str, float] = defaultdict(float)
+    for r in d21e_rows:
+        d, n = _iso(r.get("settlement")), _num(r.get("nominal_m"))
+        if not d or n is None:
+            continue
+        k = _d21e_kind(r)
+        stats["d21e_%s" % k] += 1
+        by_line[_norm_name(r.get("name", ""))].append((d, n, k))
+        if start <= d <= end and k in ("issue", "buyback"):
+            iss[next_business_day(d)] += n if k == "issue" else -n
+    red: Dict[str, float] = defaultdict(float)
+    lines: Dict[str, Tuple[str, float, str]] = {}  # name → (maturity, official nominal, as-of date of that nominal)
+    for r in d1c_rows:
+        d, n = _iso(r.get("redemption_date")), _num(r.get("nominal_m"))
+        if not d or n is None:
+            continue
+        lines[_norm_name(r.get("name", ""))] = (d, n, d)
+        if start <= d <= end:
+            red[next_business_day(d)] += n  # a weekend redemption date pays on the next business day (7-Jun-2025 → 9-Jun)
+    for name, (amt, rd) in snap_by_name.items():
+        lines.setdefault(_norm_name(name), (rd, amt, snap_date))
+    official_sign = {"issue": 1.0, "collateral": 1.0, "exchange": 1.0, "buyback": -1.0, "cancel": -1.0}
+    private_sign = dict(official_sign, collateral=0.0)
+    cpn: Dict[str, float] = defaultdict(float)
+    for name, (mat, official, asof) in lines.items():
+        c = coupon_from_name(name)
+        if not mat or c is None or mat < start:
+            continue
+        rows = by_line.get(name, [])
+        base = official - sum(official_sign[k] * n for d, n, k in rows if d <= asof)
+        if base < -1.0:
+            stats["negative_base"] += 1
+        base = max(base, 0.0)
+        for dd in coupon_dates(mat, start, end):
+            out = base + sum(private_sign[k] * n for d, n, k in rows if d <= dd)
+            if out > 0.5:
+                cpn[dd] += out * c / 200.0
+    stats["lines_unbased"] = sum(1 for n in by_line if n not in lines)
+    stats["lines_based"] = len(lines)
+    net: Dict[str, float] = defaultdict(float)
+    for d, v in iss.items():
+        net[d] -= v
+    for d, v in red.items():
+        net[d] += v
+    for d, v in cpn.items():
+        net[d] += v
+    return ({"gilt_issued_daily": _bucket(iss), "gilt_redeemed_private": _bucket(red), "coupons_private_paid": _bucket(cpn), "net": _dense(_bucket(net), days)}, dict(stats))
+
+
+def splice(before: Series, after: Series, cut: str) -> Series:
+    """`before` strictly before `cut`, `after` from `cut` on (the seed never overrides the D1A-archive path)"""
+    return clean([(d, v) for d, v in before if d < cut] + [(d, v) for d, v in after if d >= cut])
 
 
 # ───────────────────────── Exchequer residual (weekly identity on the Weekly Report) ─────────────────────────

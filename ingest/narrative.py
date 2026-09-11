@@ -142,6 +142,7 @@ class Ledger:
         self.verbs: List[dict] = []
         self.glossary: List[str] = []
         self.degraded: List[str] = []
+        self.structural: List[str] = []  # digit-bearing labels that are names, not measurements (engine tag, component name)
 
     def num(self, value: float, field: str, kind: str, unit: str = "", decimals: Optional[int] = None) -> str:
         tok = _fmt(value, kind, decimals)
@@ -228,6 +229,16 @@ def header(blocks: dict) -> Tuple[str, dict]:
     return "Datos hasta %s (%s)." % (latest, "; ".join(parts)), meta
 
 
+def _engine_tag(regime: dict, block: str, L: Ledger) -> str:
+    """' (motor v0.4, componente <name>)' for a block read by engine v0.4; the tag and the component name are structural labels for the gate."""
+    r = (regime.get("regimes", {}).get(block) or {})
+    if r.get("engine") != "0.4":
+        return ""
+    name = (r.get("component") or {}).get("name") or "—"
+    L.structural += ["v0.4", name]
+    return " (motor v0.4, componente %s)" % name
+
+
 def f1_reserves(ccy: str, blocks: dict, regime: dict, streak: int, L: Ledger, spec: dict) -> str:
     e = _get(blocks, spec["reserves"])
     label = spec["reserves"][3]
@@ -235,7 +246,7 @@ def f1_reserves(ccy: str, blocks: dict, regime: dict, streak: int, L: Ledger, sp
     reg = (regime.get("regimes", {}).get("central_bank") or {}).get("regime", "NO DATA")
     if not e or e.get("value") is None:
         L.degraded.append("F1: reserves unavailable")
-        return "F1. %s: sin dato publicado en el JSON de hoy; régimen del BC %s (%s lectura consecutiva)." % (label.capitalize(), REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.central_bank"))
+        return "F1. %s: sin dato publicado en el JSON de hoy; régimen del BC %s (%s lectura consecutiva)%s." % (label.capitalize(), REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.central_bank"), _engine_tag(regime, "central_bank", L))
     fq = _freq(e)
     w1, w2, n1, n2 = WINDOWS[fq]
     d1, d2 = _delta(e, n1), _delta(e, n2)
@@ -253,7 +264,7 @@ def f1_reserves(ccy: str, blocks: dict, regime: dict, streak: int, L: Ledger, sp
             s += " y %s en %s" % (_money(L, d2, spec, fld + ".delta_%d" % n2), w2)
         s += ", hasta %s %s (%s)" % (lvl, unit, e.get("date"))
     st = (regime.get("regimes", {}).get("central_bank") or {}).get("state") or {}
-    s += "; régimen del BC: %s, %s lectura consecutiva" % (REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.central_bank"))
+    s += "; régimen del BC: %s, %s lectura consecutiva%s" % (REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.central_bank"), _engine_tag(regime, "central_bank", L))
     if st.get("candidate") and st.get("candidate") != reg:
         s += " (candidato %s desde %s, pendiente %s días)" % (REG_ES.get(st["candidate"], st["candidate"]), st.get("candidate_since"), L.num(st.get("pending_days") or 0, "regime.central_bank.state.pending_days", "int"))
     return s + "."
@@ -340,7 +351,7 @@ def f3_treasury(ccy: str, blocks: dict, regime: dict, streak: int, L: Ledger, sp
     if fi.get("monthly_only"):
         L.degraded.append("F3: monthly fiscal series only")
     parts.append("%s: %s" % (fi["label"], ", ".join(fl)))
-    parts.append("régimen del Tesoro: %s, %s lectura consecutiva" % (REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.fiscal")))
+    parts.append("régimen del Tesoro: %s, %s lectura consecutiva%s" % (REG_ES.get(reg, reg), _ordinal(streak, L, "streaks.fiscal"), _engine_tag(regime, "fiscal", L)))
     return "F3. %s — %s." % (spec["tsy"], "; ".join(parts))
 
 
@@ -549,7 +560,7 @@ def build(ccy: str, blocks: dict, regime: dict, prev_agent: Optional[dict], jefe
            "streaks": streaks, "ledger": led, "numbers": L.numbers, "verbs": L.verbs, "glossary_used": L.glossary, "glossary": spec["glossary"],
            "degraded": L.degraded, "blocks_meta": meta, "calendar_next": upcoming, "alerts_active": active,
            "jefe": {k: v for k, v in (jefe or {}).items() if k != "ranking"} | {"ranking": (jefe or {}).get("ranking")} if jefe else None,
-           "structural": sorted({p[3] for p in [spec["fiscal"].get(k) for k in ("week", "month", "q13")] if p} | {spec["issuance"].get("gross_label", "")} - {""}),
+           "structural": sorted(({p[3] for p in [spec["fiscal"].get(k) for k in ("week", "month", "q13")] if p} | {spec["issuance"].get("gross_label", "")} | set(L.structural)) - {""}),
            "prohibitions": PROHIBITIONS, "closing_rules": CLOSING_RULES}
     out["hash"] = hashlib.sha256(out["narrative"].encode("utf-8")).hexdigest()[:16]
     out["operator_takeaway"] = None  # the model's 2–3 closing lines go here (no digits except the calendar); the engine never writes them

@@ -466,6 +466,14 @@ class _Tables(HTMLParser):
             self._atext += data
 
 
+def latest_month_end(recs: List[dict]) -> List[dict]:
+    """the lines of the most recent month-end snapshot (the register as the blocks read it)"""
+    if not recs:
+        return []
+    mx = max(str(x.get("month_end", "")) for x in recs)
+    return [x for x in recs if str(x.get("month_end", "")) == mx]
+
+
 class NzdmProvider:
     """Tender results (HTML same-day + XLSX history), listings (dates, upcoming), bonds on issue (coupon/maturity calendar)."""
     MIN_GAP_S = 1.0
@@ -640,10 +648,15 @@ class NzdmProvider:
         return sorted(out, key=lambda x: (x["tender_date"], x["maturity"] or ""))
 
     def bonds_on_issue(self, links: Optional[Dict[str, str]] = None) -> List[dict]:
-        """latest month-end lines: [{maturity, coupon, type, total_outstanding, market}] (NZ$m)"""
+        """latest month-end lines: [{month_end, maturity, coupon, type, total, market}] (NZ$m)"""
+        return latest_month_end(self.bonds_on_issue_all(links))
+
+    def bonds_on_issue_all(self, links: Optional[Dict[str, str]] = None, since: str = "2018-12-01") -> List[dict]:
+        """every month-end snapshot ≥ since (sheet 'Month_end'): the register history behind market-held redemptions and coupons
+        (ops_nzd.bond_flows_history); market = total − RBNZ − EQC − SRESL as published by the NZDM"""
         if self.fixtures_dir:
             return [{"month_end": r["month_end"], "maturity": r["maturity"], "coupon": float(r["coupon"]), "type": r["type"], "total": float(r["total_outstanding"]), "market": float(r["market"] or 0)}
-                    for r in _read_rows_csv(os.path.join(self.fixtures_dir, "nzdm_bonds_on_issue.csv"))]
+                    for r in _read_rows_csv(os.path.join(self.fixtures_dir, "nzdm_bonds_on_issue.csv")) if r["month_end"] >= since]
         links = links or self.data_links()
         if "bonds_on_issue" not in links:
             raise ProviderError("NZDM data page: no bonds-on-issue link")
@@ -655,14 +668,11 @@ class NzdmProvider:
         recs = []
         for r in sorted(rows):
             d, m = _serial(rows[r].get("A")), _serial(rows[r].get("E"))
-            if d and m:
+            if d and m and d >= since:
                 cp = rows[r].get("D")
                 cpv = _num(cp) if not (isinstance(cp, str) and "%" in cp) else (_num(cp) or 0) / 100
                 recs.append({"month_end": d, "maturity": m, "coupon": cpv or 0.0, "type": rows[r].get("F"), "total": _num(rows[r].get("G")) or 0.0, "market": _num(rows[r].get("K")) or 0.0})
-        if not recs:
-            return []
-        mx = max(x["month_end"] for x in recs)
-        return [x for x in recs if x["month_end"] == mx]
+        return recs
 
     @staticmethod
     def tender_series(rows: List[dict]) -> Dict[str, Series]:
