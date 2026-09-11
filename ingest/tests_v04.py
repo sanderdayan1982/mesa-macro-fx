@@ -576,8 +576,8 @@ def main_jefe_v2(fails: list) -> None:
         j = json.load(open(p, encoding="utf-8"))
         T = j.get("treasury") or {}
         ok = T.get("status") == "ok" and [r["rank"] for r in T["ranking"]] == list(range(1, T["n"] + 1)) and all(r["z"] >= r2["z"] for r, r2 in zip(T["ranking"], T["ranking"][1:])) \
-            and abs(sum(r["z"] for r in T["ranking"])) < 0.05 * T["n"] and set(j.get("labels", {}).values()) <= set(J.LABELS) and all(r["proxy"] == (r["ccy"].lower() in J.PROXY) for r in T["ranking"])
-        check(ok, "data/mesa/jefe.json: treasury ranking ordered by Z, demeaned, proxy flags, labels in the enum", fails)
+            and abs(sum(r["z"] for r in T["ranking"])) < 0.05 * T["n"] and set(j.get("labels", {}).values()) <= set(J.LABELS) and j.get("stamp") == J.stamp(j) and len(j.get("stamp", "")) == 12 and bool(j.get("generated_at")) and (not j.get("low_dispersion") or set(j["labels"].values()) == {J.COMPRESSED}) and all(r["proxy"] == (r["ccy"].lower() in J.PROXY) for r in T["ranking"])
+        check(ok, "data/mesa/jefe.json: treasury ranking ordered by Z, demeaned, proxy flags, labels in the enum, stamp recomputable, compression withholds labels", fails)
 
 
 E_BLOCK_ENUM = {"INJECTION", "DRAIN", "NEUTRAL", "NO SIGNAL"}

@@ -488,9 +488,13 @@ def f7_jefe(ccy: str, jefe: dict, L: Ledger, spec: dict) -> str:
         s += "; fuera del ranking: %s" % ", ".join(jefe["missing"])
     s += ". " + f7_treasury(me, jefe.get("treasury") or {}, L)
     lab = (jefe.get("labels") or {}).get(me)
-    if lab:
+    if lab and jefe.get("low_dispersion"):
+        s += ". Lectura de fontanería: %s (etiqueta retenida por compresión transversal; lectura por terciles %s)" % (lab, (jefe.get("labels_tercile") or {}).get(me, "—"))
+    elif lab:
         s += ". Lectura de fontanería: %s, por terciles de BC y Tesoro y puerta de precio" % lab
-    return s + "; sin par neto (BC y Tesoro se leen en paralelo)."
+    # single truth (adjudication 2026-09-11, idea A): this is the ranking at the close of this daily_log; the stamp travels in
+    # agent.jefe.stamp and ESTADO compares it with the published data/mesa/jefe.json
+    return s + "; ranking al cierre de este daily_log (sello en jefe.stamp; el vigente, en ESTADO); sin par neto (BC y Tesoro se leen en paralelo)."
 
 
 def f7_treasury(me: str, T: dict, L: Ledger) -> str:
@@ -519,6 +523,8 @@ def f7_treasury(me: str, T: dict, L: Ledger) -> str:
 
 
 # ───────────────────────────── glossary expansion (first use per text) ─────────────────────────────
+UNIT_GLOSSARY = {"mm": "mil millones", "bn": "mil millones", "tn": "billones, millones de millones"}  # adjudication 2026-09-11 (idea E): «mm» is ambiguous between ES and EN
+
 def expand_acronyms(text: str, glossary: Dict[str, str], L: Ledger) -> str:
     seen = set()
     for ac in sorted(glossary, key=len, reverse=True):
@@ -583,14 +589,15 @@ def build(ccy: str, blocks: dict, regime: dict, prev_agent: Optional[dict], jefe
          f4_issuance(ccy, blocks, L, spec)]
     f5, glabel = f5_regime(ccy, regime, streaks["general"], L, spec)
     F += [f5, f6_price(ccy, blocks, L, spec), f7_jefe(ccy, jefe, L, spec)]
-    text = expand_acronyms("\n".join([head] + F), spec["glossary"], L)
+    gl = {**spec["glossary"], **UNIT_GLOSSARY}  # units are expanded at first use like any sigla («mm» = mil millones, never millones)
+    text = expand_acronyms("\n".join([head] + F), gl, L)
     lines = text.split("\n")
     upcoming = [{"date": x.get("date"), "type": x.get("type"), "title": x.get("title")} for x in (calendar or {}).get("upcoming", [])[:5]]
     active = [{"rule_id": a.get("rule_id"), "severity": a.get("severity"), "metric": a.get("metric")} for a in (alerts or {}).get("alerts", []) if a.get("status") == "active"][:10]
     out = {"currency": ccy.upper(), "template": "1.0 (ronda 3, 2026-09-09)", "generated_at": regime.get("generated_at"), "as_of": regime.get("as_of"),
            "regime": glabel, "regime_enum": sorted(GEN_ENUM), "block_regime_enum": sorted(BLOCK_ENUM),
            "header": lines[0], "daily_log": {"F%d" % (i + 1): lines[i + 1] for i in range(7)}, "narrative": "\n".join(lines),
-           "streaks": streaks, "ledger": led, "numbers": L.numbers, "verbs": L.verbs, "glossary_used": L.glossary, "glossary": spec["glossary"],
+           "streaks": streaks, "ledger": led, "numbers": L.numbers, "verbs": L.verbs, "glossary_used": L.glossary, "glossary": gl,
            "degraded": L.degraded, "blocks_meta": meta, "calendar_next": upcoming, "alerts_active": active,
            "jefe": {k: v for k, v in (jefe or {}).items() if k != "ranking"} | {"ranking": (jefe or {}).get("ranking")} if jefe else None,
            "structural": sorted(({p[3] for p in [spec["fiscal"].get(k) for k in ("week", "month", "q13")] if p} | {spec["issuance"].get("gross_label", "")} | set(L.structural)) - {""}),

@@ -427,7 +427,8 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None,
     fc = bool(v is not None and lvl != "SAFE" and sum(1 for x in tail[:-1] if x > watch_a) >= 1)
     D["estr_minus_dfr_bps"].update({"friction_confirmed": fc, "anchor_regime": regime_txt,
                                     "badge": "NO DATA" if v is None else "CRISIS" if lvl == "CRISIS" else "STRESS" if lvl == "STRESS" else "AT THE FLOOR" if lvl == "WATCH" else "ABUNDANCE SIGNATURE" if v <= -10 else "NORMAL",
-                                    "fx_signal": "NO DATA" if v is None else "EUR BULLISH (funding)" if lvl in ("STRESS", "CRISIS") else "EUR WATCH" if lvl == "WATCH" else "NEUTRAL"})
+                                    "fx_signal": "NO DATA" if v is None else "FUNDING STRESS" if lvl in ("STRESS", "CRISIS") else "FUNDING WATCH" if lvl == "WATCH" else "NEUTRAL",
+                                    "fx_signal_note": "heurística heredada (niveles del spread, sin replay): describe tensión de financiación, no dirección del EUR; la mesa no publica dirección"})
     D["friction_confirmed"] = {"label": "€STR − DFR ≥ WATCH on the latest print and ≥ 1 of the 2 prior sessions", "value": fc, "status": "fresh" if sp else "unavailable", "date": sp[-1][0] if sp else None}
     # history stats of the spread (verified min −12.0 on 2023-09-29)
     lo = min(sp, key=lambda x: x[1]) if sp else None
@@ -481,7 +482,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None,
     score = _clamp(sum(comps) / len(comps) * 2) if sp else 0.0
     if lvl == "CRISIS":
         score = -2.0
-    alerts = [_alert("estr_minus_dfr_bps", D["estr_minus_dfr_bps"], "compression to the DFR = floor no longer leaky = liquidity turning scarce (EUR bullish funding)"),
+    alerts = [_alert("estr_minus_dfr_bps", D["estr_minus_dfr_bps"], "compression to the DFR = floor no longer leaky = liquidity turning scarce (funding scarcity; sin dirección)"),
               _alert("periphery_premium_bps", D["periphery_premium_bps"], "≥ p85 / 60 bp fragmentation watch"),
               _alert("btp_bund_bps", D["btp_bund_bps"], "150 / 180 / 250 (v5 anchors)"),
               _alert("curve_10y_2y_bps", D["curve_10y_2y_bps"], "negative = inverted")]

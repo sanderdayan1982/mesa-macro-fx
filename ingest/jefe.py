@@ -12,9 +12,10 @@ Output: dict published as data/mesa/jefe.json and embedded in every data/<ccy>/a
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple
 
 import bisect
@@ -144,7 +145,7 @@ PROXY = {"gbp", "nzd", "chf"}   # fiscal driver is a proxy/band (adjudication 20
 LABEL = "momento de flujo de reservas a un trimestre, 8–13 s"
 LABEL_T = "impulso fiscal a un trimestre, 13–26 s (más firme a 26)"
 SIGNATURE_T = "T1/T2 2026-09-11: IC +0.125 (13 s, q 0.013) / +0.177 (26 s, q 0.0006); T3 y T4 no pasan"
-LABELS = ("abundante", "escasa", "vulnerable", "sin señal")
+LABELS = ("abundante", "escasa", "vulnerable", "sin señal", "sin señal (compresión)")
 SIGNATURE = "firma ICL 1.0 (2026-09-09): IC(8) > 0, IC(13) > 0, IC(26) ≤ 0; IC 13 s +0,124 (q BH 0,006), tercil que más inyecta pierde 0,46 % por trimestre frente al que más drena (divisa por USD)"
 NAMES = {"usd": "USD", "eur": "EUR", "gbp": "GBP", "jpy": "JPY", "chf": "CHF", "cad": "CAD", "aud": "AUD", "nzd": "NZD"}
 
@@ -284,11 +285,38 @@ def compute(as_of: Optional[str] = None, root: str = ROOT) -> dict:
         if pg is None:
             no_gate.append(NAMES[c])
         labels[NAMES[c]] = plumbing_label(bc.get(NAMES[c]), out.get("n", 0), tr.get(NAMES[c]), T.get("n", 0), bool(pg))
-    out["labels"] = labels
-    out["labels_rule"] = "terciles (techo de n/3) de las Z de BC y Tesoro + puerta de precio (regimes.general.price_gate); vulnerable sólo con puerta activa"
+    out["labels_tercile"] = labels  # the tercile reading, always published (no metric hidden)
+    if out.get("low_dispersion"):
+        # Adjudication 2026-09-11 (institutionality round, idea B): with the cross-section compressed (this week's σ below the
+        # as-of p20 of the era, a cut that already existed as a flag) the terciles rank noise, so the plumbing label is withheld;
+        # the tercile reading stays visible in labels_tercile. No new threshold.
+        out["labels"] = {c: COMPRESSED for c in labels}
+        out["labels_rule"] = ("sin señal (compresión): σ semanal %s < p20 de la era %s; la lectura por terciles queda en labels_tercile"
+                              % (out.get("sigma_week"), out.get("sigma_week_p20_era")))
+    else:
+        out["labels"] = labels
+        out["labels_rule"] = "terciles (techo de n/3) de las Z de BC y Tesoro + puerta de precio (regimes.general.price_gate); vulnerable sólo con puerta activa"
     if no_gate:
         out["labels_no_price_gate"] = no_gate  # label stays «escasa» for these: no price-gate field in regime.json
+    # Single truth (idea A): the jefe is recomputed inside every lane, so each daily_log freezes the ranking it saw while
+    # data/mesa/jefe.json holds the last one written. The stamp identifies the ranking content (rows and labels); a daily_log
+    # whose stamp differs from the published one carries an earlier reading, and says so.
+    out["generated_at"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    out["stamp"] = stamp(out)
     return out
+
+
+COMPRESSED = "sin señal (compresión)"
+
+
+def stamp(j: dict) -> str:
+    """12 hex of sha256 over the published rankings and labels (content, not time): same panel → same stamp in every lane."""
+    core = {"bc": [(r["ccy"], r["d13_pct"], r["z"]) for r in j.get("ranking", [])],
+            "as_of": j.get("as_of_friday"),
+            "tr": [(r["ccy"], r["v13"], r["z"]) for r in (j.get("treasury") or {}).get("ranking", [])],
+            "tr_as_of": (j.get("treasury") or {}).get("as_of_friday"),
+            "labels": sorted((j.get("labels") or {}).items())}
+    return hashlib.sha256(json.dumps(core, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:12]
 
 
 def compute_bc(as_of: Optional[str] = None, root: str = ROOT) -> dict:

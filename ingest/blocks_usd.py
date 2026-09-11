@@ -137,7 +137,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     score = C.score()
     alerts = [_alert("reserves", E["reserves"], "H.4.1: < 3.0T tensions in repo / fed funds; < 2.5T crisis — Fed pauses QT"),
               _alert("primary_credit_wow_pct", D["primary_credit_wow_pct"], "+20% weekly = a bank in trouble"),
-              _alert("tga", E["tga"], "> 800B rising = active drain (bearish risk)"),
+              _alert("tga", E["tga"], "> 800B rising = active drain"),
               _alert("on_rrp", E["on_rrp"], "rebound > 200B = liquidity retreating")]
     label = "NO SIGNAL" if not res else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not res else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
@@ -448,7 +448,8 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None,
     tail = [x for _, x in sp[-3:]]
     fc = bool(v is not None and v > 15 and sum(1 for x in tail[:-1] if x > 15) >= 1)
     D["sofr_minus_iorb_bps"].update({"friction_confirmed": fc, "badge": "NO DATA" if v is None else "CRITICAL" if v > 30 else "STRESS" if v > 15 else "NORMAL",
-                                     "fx_signal": "NO DATA" if v is None else "USD BULLISH" if v > 30 else "USD WATCH" if v > 15 else "NEUTRAL"})
+                                     "fx_signal": "NO DATA" if v is None else "FUNDING STRESS" if v > 30 else "FUNDING WATCH" if v > 15 else "NEUTRAL",
+                                     "fx_signal_note": "heurística heredada de la suite USD (cortes 15/30 pb sin replay): describe tensión de financiación, no dirección del USD; la mesa no publica dirección"})
     D["friction_confirmed"] = {"label": "SOFR − IORB > 15 bp on the latest print and ≥ 1 of the 2 prior sessions", "value": fc, "status": "fresh" if sp else "unavailable", "date": sp[-1][0] if sp else None}
     c102 = S.merge_series(y10, y2, lambda a, c: (a - c) * 100)
     D["curve_10y_2y_bps"] = entry("curve_10y_2y_bps", c102, "10Y − 2Y spread (bps)", "daily", "bps", cfg, status="fresh" if c102 else "unavailable", spec=th["curve_10y_2y_bps"], prev_level=pl.get("curve_10y_2y_bps"), z_window=30)
@@ -485,7 +486,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None,
     nlsig = ((cb.get("derived") or {}).get("net_liquidity_wow_pct") or {}).get("signal")
     rsv = ((cb.get("series") or {}).get("reserves") or {}).get("value")
     tgv = ((cb.get("series") or {}).get("tga") or {}).get("value")
-    D["forex_signal_matrix"] = {"label": "Forex Signal Matrix (H.4.1)", "value": None, "status": "fresh" if cb else "unavailable", "date": sp[-1][0] if sp else None,
+    D["forex_signal_matrix"] = {"label": "Forex Signal Matrix (H.4.1)", "note": "heurística heredada (cortes ±2 %, 15/30 pb, sin replay): estados de tensión, no dirección del USD", "value": None, "status": "fresh" if cb else "unavailable", "date": sp[-1][0] if sp else None,
                                 "cells": {"nl_wow": {"RISK_ON": "RISK-ON", "RISK_OFF": "RISK-OFF", "NEUTRAL": "NEUTRAL"}.get(nlsig, "—"),
                                           "sofr_iorb": D["sofr_minus_iorb_bps"]["fx_signal"],
                                           "wresbal": "—" if rsv is None else "NERVOUS" if rsv < 3000000 else "AMPLE",
@@ -499,7 +500,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None,
     score = _clamp(sum(comps) / len(comps) * 2) if sp else 0.0
     if lvl == "CRISIS":
         score = -2.0
-    alerts = [_alert("sofr_minus_iorb_bps", D["sofr_minus_iorb_bps"], "> 15 bp interbank stress · > 30 bp liquidity crisis (USD bullish)"),
+    alerts = [_alert("sofr_minus_iorb_bps", D["sofr_minus_iorb_bps"], "> 15 bp interbank stress · > 30 bp liquidity crisis (heurística heredada, sin dirección)"),
               _alert("curve_10y_2y_bps", D["curve_10y_2y_bps"], "negative = inverted = recession signal"),
               _alert("ff_minus_3m_bps", D["ff_minus_3m_bps"], "> 30 bp tight; FF above 3M = cuts priced")]
     label = "NO SIGNAL" if not sp else "FUNDING CRISIS" if lvl == "CRISIS" else "FUNDING STRESS" if lvl == "STRESS" else "FLOOR WATCH" if lvl == "WATCH" else {"GREEN": "CURVE IMPROVING", "RED": "RESTRICTIVE", "YELLOW": "MIXED", "NONE": "CORRIDOR CALM"}[hsig]
