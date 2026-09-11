@@ -3,13 +3,13 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-09-11T13:43:31+00:00",
+ "generated_at": "2026-09-11T20:13:42+00:00",
  "as_of": "2026-09-11",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
  "source_health": {
-  "status": "stale",
-  "series_loaded": 16,
+  "status": "fresh",
+  "series_loaded": 17,
   "series_expected": 17,
   "last_fetch_ok": true,
   "errors": [],
@@ -624,14 +624,65 @@
    "label": "JGB auction calendar — next coupon auctions (MoF monthly HTML)",
    "unit": "days",
    "frequency": "event",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
-   "next": null,
-   "next_superlong": null,
-   "days_to_superlong": null,
-   "upcoming": [],
-   "level": "NO DATA",
+   "status": "fresh",
+   "value": 5,
+   "date": "2026-09-10",
+   "next": {
+    "date": "2026-09-15",
+    "issue": "20-year",
+    "tenor": "20y",
+    "result_href": null
+   },
+   "next_superlong": {
+    "date": "2026-09-15",
+    "issue": "20-year",
+    "tenor": "20y",
+    "result_href": null
+   },
+   "days_to_superlong": 5,
+   "upcoming": [
+    {
+     "date": "2026-09-15",
+     "tenor": "20y",
+     "issue": "20-year"
+    },
+    {
+     "date": "2026-09-29",
+     "tenor": "40y",
+     "issue": "40-year"
+    },
+    {
+     "date": "2026-09-30",
+     "tenor": "2y",
+     "issue": "2-year"
+    },
+    {
+     "date": "2026-10-06",
+     "tenor": "10y",
+     "issue": "10-year"
+    },
+    {
+     "date": "2026-10-08",
+     "tenor": "30y",
+     "issue": "30-year"
+    },
+    {
+     "date": "2026-10-14",
+     "tenor": "5y",
+     "issue": "5-year"
+    },
+    {
+     "date": "2026-10-20",
+     "tenor": "20y",
+     "issue": "20-year"
+    },
+    {
+     "date": "2026-10-29",
+     "tenor": "2y",
+     "issue": "2-year"
+    }
+   ],
+   "level": "SAFE",
    "note": "supply event: super-long auction within 3 days = WATCH (position for the tail / QT_STRESS read)"
   },
   "auction_results": {
@@ -3352,11 +3403,11 @@
    },
    {
     "metric": "auction_calendar",
-    "level": "NO DATA",
-    "value": null,
+    "level": "SAFE",
+    "value": 5,
     "threshold": null,
-    "status": "unavailable",
-    "action_hint": "no super-long auction in the published calendar"
+    "status": "fresh",
+    "action_hint": "next super-long: 2026-09-15 20y"
    }
   ],
   "components_v04": {
@@ -4474,6 +4525,11 @@
     "date": "2026-09-09",
     "label": "NEUTRAL",
     "score": -0.95
+   },
+   {
+    "date": "2026-09-10",
+    "label": "NEUTRAL",
+    "score": 0.24
    },
    {
     "date": "2026-09-10",
