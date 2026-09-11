@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-09-11T00:49:32+00:00",
+ "generated_at": "2026-09-11T05:18:51+00:00",
  "as_of": "2026-07-31",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily/weekly Exchequer account is published in machine-readable form (DMO daily cash flow is PDF). ONS Public Sector Finances give central government cash requirement, expenditure and receipts monthly (~3-week lag). Gilt/T-bill issuance from DMO by event (pending).",
@@ -12,7 +12,9 @@
   "series_loaded": 5,
   "series_expected": 5,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "dmo[d1c]: Unsupported format, or corrupt file: Expected BOF record; found b'<head><t'"
+  ],
   "series_pending": 3
  },
  "series": {
@@ -1211,10 +1213,10 @@
    "status": "fresh",
    "value": 3880.168,
    "date": "2026-09-07",
-   "prev_value": 55.295,
+   "prev_value": 55.307,
    "prev_date": "2026-08-10",
-   "change_abs": 3824.873,
-   "change_pct": 6917.2131,
+   "change_abs": 3824.861,
+   "change_pct": 6915.6906,
    "zscore": null,
    "percentile": null,
    "window": null,
@@ -1224,13 +1226,13 @@
     212.657,
     668.414,
     3957.245,
-    55.295,
+    55.307,
     3880.168
    ],
    "high_low": {
     "high": 3957.245,
     "high_date": "2026-07-31",
-    "low": 55.295,
+    "low": 55.307,
     "low_date": "2026-08-10"
    },
    "age_days": 4,
@@ -1282,7 +1284,7 @@
     0.0,
     0.0,
     0.0,
-    55.289,
+    55.301,
     0.0,
     0.0,
     0.0,
@@ -1363,11 +1365,11 @@
     3457.245,
     3457.245,
     -500.0,
-    55.289,
-    55.289,
-    55.289,
-    55.289,
-    55.289,
+    55.301,
+    55.301,
+    55.301,
+    55.301,
+    55.301,
     -0.003,
     -0.003,
     -0.003,
@@ -1410,14 +1412,14 @@
   },
   "gilt_coupons_private_next_4w": {
    "label": "Coupons to private holders, next 4 weeks",
-   "value": 485.87,
+   "value": 485.97,
    "unit": "GBP millions",
    "status": "fresh",
    "date": "2026-09-11",
    "calendar": [
     [
      "2026-09-22",
-     485.87
+     485.97
     ]
    ]
   },
@@ -1975,6 +1977,11 @@
    ]
   },
   "signal_log": [
+   {
+    "date": "2026-07-31",
+    "label": "NEUTRAL",
+    "score": 0.0
+   },
    {
     "date": "2026-07-31",
     "label": "NEUTRAL",
