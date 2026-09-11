@@ -475,11 +475,24 @@ class NzdmProvider:
     def __init__(self, base: str = NZDM, fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
         self.base, self.fixtures_dir, self.raw_dir = base.rstrip("/"), fixtures_dir, raw_dir
         self._last = 0.0
+        self.fallbacks: List[str] = []  # "tag (snapshot YYYY-MM-DD)" for every payload served from the last good copy
 
     def _get(self, path: str, tag: str, binary: bool = False):
         self._last = _sleep_gap(self._last, self.MIN_GAP_S)
         url = path if path.startswith("http") else self.base + path
-        payload = _http(url, binary=binary)
+        try:
+            payload = _http(url, binary=binary)
+        except ProviderError as e:
+            # Cloudflare in front of debtmanagement.treasury.govt.nz challenged the runner with 403 on 2026-09-11 (NZD #15) after
+            # serving the same pages minutes earlier: use the committed raw snapshot (logs/nzd/raw, last good copy) and say so —
+            # the block then carries known data with a label, never nothing and never an invention
+            snap = os.path.join(self.raw_dir, tag) if self.raw_dir else None
+            if snap and os.path.exists(snap) and "403" in str(e):
+                stamp = _dt.date.fromtimestamp(os.path.getmtime(snap)).isoformat()
+                self.fallbacks.append("%s (snapshot %s)" % (tag, stamp))
+                with open(snap, "rb" if binary else "r", encoding=None if binary else "utf-8") as f:
+                    return f.read()
+            raise
         _snapshot(self.raw_dir, tag, payload)
         return payload
 

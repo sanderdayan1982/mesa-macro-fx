@@ -1360,6 +1360,8 @@ def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
             data["_bonds_on_issue"] = N.bonds_on_issue(links)  # type: ignore
         except Exception as e:  # noqa
             _err("nzdm_history", e)
+    if getattr(N, "fallbacks", None):
+        _err("nzdm_last_good_copy", ProviderError("NZDM blocked (HTTP 403): served from the committed raw snapshots — " + "; ".join(N.fallbacks)))
     # persist tender rows / upcoming / bonds on issue as JSON side files (not Series)
     side = os.path.join(hist_dir, "_side.json")
     prev_side = load_json(side) or {}
