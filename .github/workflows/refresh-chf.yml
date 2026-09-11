@@ -71,5 +71,20 @@ jobs:
           git add data/chf history/chf logs/chf data/mesa
           if git diff --cached --quiet; then echo "no changes"; exit 0; fi
           git commit -m "data(chf): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
-          git pull --rebase origin ${{ github.ref_name }} || true
-          git push
+          # eight workflows push to main concurrently and all write data/mesa/*: a plain pull --rebase leaves a conflict behind and
+          # the push fails ("Commit data: failure", NZD #15 2026-09-11). Rebase favouring this run's files (-X theirs = the commit
+          # being replayed = ours), abort cleanly on anything else, retry the push up to 4 times.
+          MSG="$(git log -1 --pretty=%s)"; OURS="$(git rev-parse HEAD)"
+          for i in 1 2 3 4; do
+            if ! git pull --rebase -X theirs origin ${{ github.ref_name }}; then
+              # rebase could not complete: rebuild this run's commit on top of the remote, touching only this run's own paths
+              git rebase --abort 2>/dev/null || true
+              git fetch origin ${{ github.ref_name }}
+              git reset --hard origin/${{ github.ref_name }}
+              git checkout "$OURS" -- data/chf history/chf logs/chf data/mesa
+              git commit -m "$MSG" || true
+            fi
+            if git push; then exit 0; fi
+            sleep $((10 * i))
+          done
+          echo "::error::push failed after 4 attempts"; exit 1
