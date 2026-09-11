@@ -1,6 +1,304 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-11T13:52:17+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-11T13:52:17+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "2051a7d450f6f72e",
+    "degraded": [
+     "F2: monthly stock only (app_pepp_total)",
+     "F2: monthly flow only (app_pepp_redemptions)"
+    ],
+    "streaks": {
+     "central_bank": 4,
+     "fiscal": 2,
+     "general": 4
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-11T13:52:17+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-11T13:52:17+00:00",
+   "type": "EUR_V04",
+   "category": "system",
+   "details": {
+    "records": 10875,
+    "by_issuer": {
+     "DE": 2171,
+     "FR": 6360,
+     "ES": 574,
+     "IT": 920,
+     "EU": 516,
+     "ESM": 334
+    },
+    "last_settlement": {
+     "FR": "2026-09-09",
+     "DE": "2026-09-11",
+     "ESM": "2026-09-03",
+     "EU": "2026-09-04",
+     "ES": "2026-09-11",
+     "IT": "2026-09-15"
+    },
+    "de_lines": 273,
+    "de_calendar": 80,
+    "weeks": 36,
+    "notes": {
+     "DE": "history file to 2026-09-09 (2320 rows) + 0 current-year rows",
+     "FR": "history file to 2026-08-26; HTML months 2026-08,2026-09",
+     "tls": {
+      "www.tesoro.es": "server chain incomplete; intermediate completed via AIA, verified against certifi"
+     },
+     "ES": "0 new auction pages",
+     "IT": "0 new PDFs, 920 records",
+     "EU_qlik": "engine: 2633 rows / 238 outstanding",
+     "EU": "qlik 502 records; news archive 164 (0 new pages; 0 news records not in qlik)",
+     "ESM": "334 bill records (0 new); outstanding list 119 issues",
+     "FR_buybacks": "89 review months archived (0 new PDFs this run)",
+     "IT_scadenze": "8 CSV links, 0 new snapshots []",
+     "ES_amort": "13.xlsx 9 rows; archive 2025-01\u21922026-07",
+     "bonds": "redemptions + coupons GROSS from 285 DE (1999\u2192) + 58 EU (2020\u2192) + 200 FR (1999\u2192; buybacks by month from 69 reviews, 50/59 alive lines reconciled \u00b11 % to the AFT list of 2026-09-11) + 251 IT lines (MEF snapshots 2020-12-31\u21922026-08-31; BOT via the bill records, EMTN/GLOBAL excluded, 21 CCTeu without coupons); ES 9 redemption dates 2025-01\u21922026-07 (Bonos + Oblig. + Index., coupons NOT derived: 69 maturities without a known nominal); ESM one-sided"
+    },
+    "fr_recon": {
+     "asof": "2026-09-11",
+     "alive": 59,
+     "matched": 50,
+     "snapped": 1,
+     "rows": [
+      [
+       "FR001400NBC6",
+       40397.0,
+       34732.0,
+       -5665.0,
+       -14.02
+      ],
+      [
+       "FR001400PM68",
+       60789.0,
+       55618.0,
+       -5171.0,
+       -8.51
+      ],
+      [
+       "FR001400FYQ4",
+       24030.0,
+       26468.0,
+       2438.0,
+       10.15
+      ],
+      [
+       "FR0010371401",
+       29884.0,
+       28517.0,
+       -1367.0,
+       -4.57
+      ],
+      [
+       "FR0014003513",
+       38448.0,
+       39753.0,
+       1305.0,
+       3.39
+      ],
+      [
+       "FR0000187635",
+       35192.323,
+       36321.0,
+       1128.677,
+       3.21
+      ],
+      [
+       "FR0011317783",
+       61013.0,
+       60301.0,
+       -712.0,
+       -1.17
+      ],
+      [
+       "FR0013250560",
+       40908.0,
+       40338.0,
+       -570.0,
+       -1.39
+      ],
+      [
+       "FR001400AIN5",
+       51178.0,
+       50978.0,
+       -200.0,
+       -0.39
+      ],
+      [
+       "FR0000571226",
+       46.233,
+       0.0,
+       -46.233,
+       -100.0
+      ]
+     ],
+     "unmapped_buybacks": [
+      "OAT 8.25% 25/04/2022",
+      "OAT 8.50% 25/04/2023",
+      "OAT 8.50% 25/04/2023",
+      "OAT 8,50% 25/04/2023",
+      "OAT 8,50% 25/04/2023",
+      "OAT 8.50% 25/04/2023",
+      "OAT 8.50% 25/04/2023",
+      "OATei 0,25% 07/25/2024"
+     ],
+     "buyback_months": [
+      "2019-01",
+      "2019-02",
+      "2019-03",
+      "2019-04",
+      "2019-05",
+      "2019-06",
+      "2019-08",
+      "2019-09",
+      "2019-10",
+      "2019-11",
+      "2019-12",
+      "2020-02",
+      "2020-03",
+      "2020-07",
+      "2020-08",
+      "2020-09",
+      "2020-12",
+      "2021-01",
+      "2021-02",
+      "2021-03",
+      "2021-04",
+      "2021-05",
+      "2021-10",
+      "2021-11",
+      "2021-12",
+      "2022-01",
+      "2022-02",
+      "2022-03",
+      "2022-04",
+      "2022-05",
+      "2022-06",
+      "2022-08",
+      "2022-09",
+      "2022-10",
+      "2022-11",
+      "2023-08",
+      "2023-09",
+      "2023-10",
+      "2023-11",
+      "2023-12",
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12",
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04",
+      "2026-05",
+      "2026-06",
+      "2026-07"
+     ]
+    },
+    "it_lines": {
+     "snapshots": [
+      "2020-12-31",
+      "2021-12-31",
+      "2022-12-31",
+      "2023-12-31",
+      "2024-12-31",
+      "2025-01-31",
+      "2025-02-28",
+      "2025-03-31",
+      "2025-04-30",
+      "2025-05-31",
+      "2025-06-30",
+      "2025-07-31",
+      "2025-08-31",
+      "2025-09-30",
+      "2025-10-31",
+      "2025-11-30",
+      "2025-12-31",
+      "2026-01-31",
+      "2026-02-28",
+      "2026-03-31",
+      "2026-04-30",
+      "2026-05-31",
+      "2026-06-30",
+      "2026-07-31",
+      "2026-08-31"
+     ],
+     "lines": 251,
+     "excluded": {
+      "BOT": 674,
+      "EMTN": 1159,
+      "GLOBAL": 137,
+      "EUROBOND": 48,
+      "Ispa": 130
+     },
+     "cct_no_coupon": 21,
+     "applied_from": "2022-03-14"
+    },
+    "es_redemptions": {
+     "from": "2025-01",
+     "to": "2026-07",
+     "months": 9,
+     "dated_by_records": 5,
+     "dated_month_end": 3,
+     "skipped_coupon_maturities": 69
+    }
+   }
+  },
+  {
    "timestamp": "2026-09-11T13:31:29+00:00",
    "type": "NOTIFY",
    "category": "system",
