@@ -105,10 +105,11 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
 <div class="hdr">
   <div class="hdr-left"><div class="hdr-logo">EUR</div><div><span class="hdr-title">EUR COMMAND CENTER</span><span class="hdr-sub">Eurosystem excess liquidity & deposit-facility floor (ILM daily, WFS weekly, APP/PEPP run-off) · Treasury equivalent: government deposits at the Eurosystem, Finanzagentur auctions, TARGET, GFS deficit · BSI/MIR/BLS transmission · €STR − DFR compression spread, AAA curve, periphery premium — MMT/Mosler desk, incomplete monetary sovereignty (Desk Standard v0.3, config v0.2)</span></div></div>
   <div class="hdr-right">
-    <div id="regimePill" class="regime NONE">LOADING</div>
+    <div id="regimePill" class="regime NONE" title="Señal: régimen general del motor (acuerdo BC/Tesoro con puertas de precio). No es calidad de datos ni confianza del modelo.">LOADING</div>
     <div id="asOf" class="pill">as of —</div>
     <div id="genAt" class="pill">gen —</div>
     <div id="confPill" class="pill" title="Calidad media de los datos (quality.system.average, 0–100): cobertura y frescura de las series. No es confianza del modelo ni probabilidad; la mesa no publica confianza numérica.">CALIDAD DATOS —</div>
+    <div id="modelPill" class="pill" title="Confianza del modelo: de qué está hecha cada pata (motor v0.3/v0.4 y verdad contable / proxy / unilateral, de data/mesa/jefe.json.completeness). Marca, no probabilidad.">MODELO —</div>
     <div id="wat" class="pill">WAT --:--</div>
     <button class="btn" onclick="exportJSON()">JSON</button>
     <button class="btn" onclick="loadAll()">RELOAD</button>
@@ -149,7 +150,7 @@ const DATA_ROOT='https://raw.githubusercontent.com/sanderdayan1982/mesa-macro-fx
 function tfetch(u,ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); return fetch(u,{cache:'no-store',signal:c.signal}).finally(()=>clearTimeout(t)); }
 function getJSON(f){ return tfetch(BASE+f+'.json'+VQ,6000).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
   .catch(()=>fetch(BASE_LOCAL+f+'.json'+VQ,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)); }
-const FILES=['central_bank','fiscal','banking','rates','regime','calendar','quality','alerts','revisions','regime_history','news','oplog','agent'];
+const FILES=['central_bank','fiscal','banking','rates','regime','calendar','quality','alerts','revisions','regime_history','news','oplog','agent','regime_changelog'];
 const $=id=>document.getElementById(id);
 let D={};
 
@@ -248,6 +249,7 @@ function render(){
   $('regimePill').className='regime '+(R.traffic_light||'NONE'); $('regimePill').textContent=(R.regime||'NO DATA').replace(/_/g,' ');
   $('asOf').textContent='as of '+(R.as_of||'—'); $('genAt').textContent='gen '+(R.generated_at||'').replace('T',' ').slice(0,16)+'Z';
   const conf=(Q.system||{}).average; $('confPill').textContent='CALIDAD DATOS '+(conf==null?'—':conf); $('confPill').className='pill '+(conf>=90?'ok':conf>=70?'warn':'err');
+  (cp=>{const el=$('modelPill');if(!el)return;if(!cp){el.textContent='MODELO —';el.className='pill';return;}const leg=x=>x.engine+' '+x.truth;el.textContent='MODELO BC '+leg(cp.bc)+' · TESORO '+leg(cp.treasury);el.className='pill '+((cp.bc.truth==='contable'&&cp.treasury.truth==='contable')?'ok':'warn');})(D.mesa_jefe&&D.mesa_jefe.completeness&&D.mesa_jefe.completeness[CCY.toUpperCase()]);
   const errs=(R.heartbeat||{}).errors||[]; const ageH=R.generated_at?(Date.now()-new Date(R.generated_at))/36e5:null;
   const stale=ageH!=null&&ageH>48;
   // a source served from its last good copy (note tagged *_last_good_copy) is a warning, not an error: the data is current, the source is blocked
@@ -336,7 +338,7 @@ function render(){
       <div class="note" style="margin-top:10px">${Object.entries(R.rules||{}).map(([k,v])=>`<b>${k}</b>: ${v}`).join('<br>')}</div>`,'g7')}
     ${textCard('Scenarios (liquidity-only)',`<div class="scn">${sc.map(s=>`<div class="scn-chip ${s.active?'on':'off'}" title="${s.details.map(d=>d.condition+' → '+d.met).join('\n')}">${s.active?'▲':'·'} ${s.id} ${s.name} (${s.conditions_met}/${s.total})${s.active?' — '+s.bias:''}</div>`).join('')}</div><div class="card-src" style="margin-top:8px">hover a chip to see its conditions · price-based scenarios live in the Desk cross-market tab</div>`,'g5')}
     ${textCard('52-week heatmap (block scores → regime)',hm,'g12')}
-    ${textCard('Regime changelog',(RH.changelog||[]).length?RH.changelog.map(c=>`<div class="alert-item INFO"><span class="alert-ts">${c.timestamp}</span><span>${c.old} → ${c.new}</span><span style="color:var(--text2)">${c.cause} · score ${c.score}</span></div>`).join(''):'<div style="color:var(--text3);font-size:13px">no regime changes recorded yet</div>','g12')}`;
+    ${textCard('Regime changelog',`<div class="note" style="margin-bottom:6px"><b>Live (since the record began):</b></div>${(RH.changelog||[]).length?RH.changelog.map(c=>`<div class="alert-item INFO"><span class="alert-ts">${c.timestamp}</span><span>${c.old} → ${c.new}</span><span style="color:var(--text2)">${c.cause} · score ${c.score}</span></div>`).join(''):'<div style="color:var(--text3);font-size:13px">no regime changes recorded yet</div>'}${(RC=>RC&&RC.status==='ok'?`<div class="note" style="margin:10px 0 6px"><b>Reconstrucción por replay v0.3</b> (${RC.first} → ${RC.last}, ${RC.weeks} semanas de era): en cada bloque, régimen actual y desde cuándo, cambios en la era, racha media y semanas sostenidas por la histéresis (el score estaba dentro de la banda salida–entrada: un motor sin memoria habría cambiado).</div><table><thead><tr><th>Bloque</th><th>Motor hoy</th><th>Régimen</th><th>Desde</th><th>Semanas</th><th>Cambios</th><th>Racha media</th><th>Sostenidas por histéresis</th><th>Últimos cambios</th></tr></thead><tbody>${Object.entries(RC.blocks).map(([b,s])=>`<tr><td>${({central_bank:'BC',fiscal:'Tesoro',general:'General'})[b]||b}</td><td>${s.engine_today||'acuerdo'}</td><td>${(s.current||'—').replace(/_/g,' ')}</td><td>${s.since||'—'}</td><td>${s.weeks_in_current??'—'}</td><td>${s.switches??'—'}</td><td>${s.mean_spell_weeks??'—'} s</td><td>${s.hysteresis_band_weeks??'—'}</td><td style="white-space:normal;color:var(--text2)">${(s.transitions||[]).slice(-4).map(t=>t.date+' '+t.old.replace(/_/g,' ')+' → '+t.new.replace(/_/g,' ')).join(' · ')||'—'}</td></tr>`).join('')}</tbody></table><div class="card-src">${RC.source} · ${RC.deviation}</div>`:'<div class="card-src" style="margin-top:8px">reconstrucción por replay no disponible (regime_changelog.json pendiente de refresco)</div>')(D.regime_changelog)}`,'g12')}`;
 
   // ── ALERTS TAB ──
   const AL=(D.alerts&&D.alerts.alerts)||[]; const act=AL.filter(a=>a.status==='active'), resd=AL.filter(a=>a.status!=='active').slice(-20).reverse();
