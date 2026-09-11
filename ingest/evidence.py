@@ -13,6 +13,7 @@ CCYS = ["cad", "gbp", "aud", "jpy", "chf", "nzd", "usd", "eur"]
 NAMES = {"usd": "USD", "eur": "EUR", "gbp": "GBP", "jpy": "JPY", "chf": "CHF", "cad": "CAD", "aud": "AUD", "nzd": "NZD"}
 PROXY_T = {"gbp", "nzd", "chf"}  # jefe.PROXY: Treasury driver is a proxy/band (no government account)
 # decisions recorded in the adjudications where the engine deliberately differs from the replay selection
+NO_REPLAY = {"usd": "sin replay v0.4 por diseño: el USD es la migración exacta de los tres dashboards (H.4.1, DTS, H.8/H.15) con sus anclas absolutas; sigue en v0.3"}
 NOTES = {("chf", "central_bank"): "replay B pero no activado: la impresión completa (repos y SNB Bills) llega con 35 días de retraso; v0.3 semanal (3 días) manda",
          ("nzd", "fiscal"): "se queda v0.3: ONE_SIDED por economía (sin pata del gasto; el Tesoro NZ no publica cuenta diaria/semanal)",
          ("gbp", "fiscal"): "proxy: residual BoE + emisión neta DMO anclados al CGNCR; sin cuenta del gobierno pública"}
@@ -39,7 +40,7 @@ def _replay_checks(rep: Optional[dict], block: str) -> dict:
     blk = ((rep.get("blocks") or {}).get(block)) or {}
     B = ((blk.get("variants") or {}).get("B")) or {}
     sel = blk.get("selection") or {}
-    return {"replay": rep.get("generated_at"), "checks": B.get("checks") or [], "coverage_era": B.get("coverage_era"),
+    return {"replay": rep.get("generated_at"), "checks": B.get("checks") or [], "coverage_era": B.get("coverage_era"), "reason": sel.get("reason"),
             "stability": ((B.get("stability") or {}).get("status")), "selected": sel.get("decision"),
             "B_rho_12w": ((B.get("B") or {}).get("12") or {}).get("rho"), "B_p_12w": ((B.get("B") or {}).get("12") or {}).get("p_block_bootstrap")}
 
@@ -90,6 +91,9 @@ def evidence(root: str) -> dict:
                           "preregistered": "2026-09-09 (ronda 2, diseño 1.0)", "run": "2026-09-09", "horizon_weeks": int(h), "ic": _ic(r),
                           "q_bh": r.get("q_bh_family"), "first_half": r.get("first_half"), "second_half": r.get("second_half"),
                           "status": "validado" if (r.get("q_bh_family") is not None and r["q_bh_family"] < 0.05) else "no pasa"})
+    if not absR:
+        tests.append({"id": "ICL-BC", "column": "BC", "hypothesis": "Δ13 s de reservas del BC en % del stock (ICL 1.0, brazo secundario)", "preregistered": "2026-09-09", "run": "2026-09-09",
+                      "horizon_weeks": None, "ic": None, "q_bh": None, "status": "no disponible: calibration/conviction/results.json no está en el repo (la firma vive en jefe.signature)"})
     prim = ((R.get("primary") or {}).get("tests")) or []
     if prim:
         best = min(prim, key=lambda t: (t.get("q_bh") if t.get("q_bh") is not None else 9))
@@ -113,7 +117,7 @@ def evidence(root: str) -> dict:
         cfg = _rj(os.path.join(root, "config", "%s.json" % c))
         for block in ("central_bank", "fiscal"):
             rc = _replay_checks(rep, block)
-            acts.append({"ccy": NAMES[c], "block": block, "engine": _engine(cfg, block), "replay_selected": rc.get("selected"), "checks": rc.get("checks"), "note": NOTES.get((c, block)),
+            acts.append({"ccy": NAMES[c], "block": block, "engine": _engine(cfg, block), "replay_selected": rc.get("selected"), "checks": rc.get("checks"), "note": NOTES.get((c, block)) or (rc.get("reason") if rep else NO_REPLAY.get(c)),
                          "coverage_era": rc.get("coverage_era"), "stability": rc.get("stability"), "B_rho_12w": rc.get("B_rho_12w"), "B_p_12w": rc.get("B_p_12w"),
                          "replay_generated_at": rc.get("replay")})
     return {"rule": "una mirada por prerregistro; BH (Benjamini–Hochberg) por familia; bootstrap por bloques; nada entra en el ranking sin pasar su test; los cortes v0.4 salen del replay (escalera: verdad contable → B marginal → robustez), no de la predicción",
