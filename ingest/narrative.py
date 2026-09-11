@@ -519,6 +519,10 @@ def update_ledger(prev: Optional[dict], regime: dict, blocks: dict) -> Tuple[dic
     for k, (d, reg) in entries.items():
         seq = [tuple(x) for x in led.get(k, [])]
         if d and reg:
+            # as-of regression (engine switch v0.3 → v0.4, source revision): the ledger cannot hold a date the block no longer
+            # asserts — JPY 2026-09-11 kept (09-11, DRAIN) from the v0.3 run while v0.4 printed NEUTRAL as-of 09-10 → gate A3 1 vs 2
+            while seq and seq[-1][0] > d:
+                seq.pop()
             if seq and seq[-1][0] == d:
                 seq[-1] = (d, reg)
             elif not seq or seq[-1][0] < d:

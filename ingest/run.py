@@ -432,6 +432,9 @@ def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "dmo_xml", "kind": kind, "error": str(e)})
         if not a.fixtures:
             _t.sleep(2.5)
+    for note in dmo.fallbacks:  # last good copy served: visible as a source error, never silent
+        errors.append(note)
+        E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "dmo_xml", "kind": "d1c", "error": note})
     from datetime import date, timedelta
     today = date.today().isoformat()
     days = O.business_days((date.today() - timedelta(days=_v04_window_days(a))).isoformat(), today)
@@ -542,9 +545,10 @@ def fetch_aud(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, ser)
     # builders (daily lane rebuilds rates + central bank; weekly adds fiscal; monthly adds banking)
     if "daily" in lanes or "weekly" in lanes:
-        blocks["rates"] = BA.build_rates(cfg, data, prev.get("rates"))
-        if "weekly" not in lanes and not a.fixtures:  # daily lane: weekly A1 series from history so the block stays complete
+        if "weekly" not in lanes and not a.fixtures:  # daily lane: weekly A1/F2 series from history so the blocks stay complete
+            # (the merge ran after build_rates until 2026-09-11: the daily lane rebuilt rates without the F2 bonds → 9/13 → "stale")
             data = _merge_hist(hist_dir, data, _ids("central_bank", "a1") + _ids("fiscal", "a1") + _ids("rates", "f2"))
+        blocks["rates"] = BA.build_rates(cfg, data, prev.get("rates"))
         blocks["central_bank"] = BA.build_central_bank(cfg, data, prev.get("central_bank"))
     if "weekly" in lanes:
         blocks["fiscal"] = BA.build_fiscal(cfg, data, prev.get("fiscal"))
@@ -1997,7 +2001,9 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
                 esm_rows = ESM.parse_esm_transactions_csv(open(p if os.path.exists(p) else os.path.join(esm_fx, "esm_transactions_outstanding_2026-09-10.csv"), encoding="utf-8").read())
             old_esm = O.read_records(esm_arch)
             seen_isin = {r["isin"] for r in old_esm}
-            pages = range(0, 113) if (a.backfill or not old_esm) else range(0, 2)
+            # full crawl (113 pages, ~1,100 PDFs) only when the archive is empty: the Bundesbank releases are static, and re-reading
+            # them on every --backfill made the EUR lane take 22–27 min (runs #15/#18/#19, 2026-09-11) for zero new records
+            pages = range(0, 113) if not old_esm else range(0, 2)
             ann, res = [], []
             for pg in pages:
                 try:
@@ -2016,10 +2022,10 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
                     except Exception as e:  # noqa
                         errors.append("bbk_esm_pdf(%s): %s" % (it["date"], str(e)[:60]))
                     _time.sleep(0.4)
-                if not a.backfill and old_esm and all((r.get("isin") in seen_isin) for r in res if r.get("isin")):
+                if old_esm and all((r.get("isin") in seen_isin) for r in res if r.get("isin")):
                     break
                 _time.sleep(0.6)
-            new_esm = [r for r in ESM.esm_bill_records(ann, res) if r["isin"] not in seen_isin or a.backfill]
+            new_esm = [r for r in ESM.esm_bill_records(ann, res) if r["isin"] not in seen_isin]
             esm_recs = O.merge_records(esm_arch, new_esm) if new_esm else old_esm
             notes["ESM"] = "%d bill records (%d new); outstanding list %d issues" % (len(esm_recs), len(new_esm), len(esm_rows))
         recs += esm_recs

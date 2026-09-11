@@ -5,8 +5,11 @@ import csv
 import io
 import os
 import time
+from datetime import datetime
 from typing import Dict, List, Optional
 from .series import Series, clean
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 try:
     import requests  # type: ignore
@@ -177,6 +180,7 @@ class DmoProvider:
 
     def __init__(self, fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
         self.fixtures_dir, self.raw_dir = fixtures_dir, raw_dir
+        self.fallbacks: List[str] = []  # last-good-copy notes, reported by the lane as source errors (never silent)
 
     def fetch(self, kind: str) -> List[dict]:
         from .ops_gbp import DMO_D1A, DMO_D22D, DMO_D21E, DMO_D1C, FIXTURES, parse_d1a_xml, parse_d22d_xml, parse_d21e_xml, parse_d1c_xls, rows_from_csv
@@ -186,9 +190,40 @@ class DmoProvider:
                 return []
             return parse_d1c_xls(open(p, "rb").read()) if kind == "d1c" else rows_from_csv(open(p, encoding="utf-8").read())
         from .providers_chf import _http, _snapshot
-        if kind == "d1c":  # binary BIFF xls export (seed of redeemed gilts) — unverified from the sandbox (DMO unreachable there)
-            blob = _http(DMO_D1C, binary=True, timeout=180)
-            _snapshot(self.raw_dir, "dmo_d1c.xls", blob)
+        if kind == "d1c":  # binary BIFF xls export (seed of redeemed gilts)
+            # 2026-09-11 run #12: the export answered an HTML page ("<head><t…", xlrd: "Expected BOF record") — same bot challenge as
+            # D2.2D. Two passes (requests → Chrome ladder), BOF check, rejected body snapshotted; if both fail, the last good copy
+            # (logs/gbp/raw/dmo_d1c.xls, else the committed fixture) is served and labelled: D1C only changes on a redemption day.
+            blob, reason = b"", ""
+            for attempt in range(2):
+                try:
+                    if attempt == 0:
+                        blob = _http(DMO_D1C, binary=True, timeout=180)
+                    else:
+                        from .providers_nzd import _http as _ladder
+                        blob = _ladder(DMO_D1C, timeout=120, retries=2, binary=True)
+                except Exception as e:  # noqa
+                    reason, blob = str(e), b""
+                if blob[:4] == b"\xd0\xcf\x11\xe0":
+                    break
+                if blob:
+                    reason = "non-xls answer: %r" % blob[:80]
+                    _snapshot(self.raw_dir, "dmo_d1c_rejected_%d.txt" % attempt, blob[:20000])
+                    blob = b""
+                time.sleep(5)
+            if blob:
+                _snapshot(self.raw_dir, "dmo_d1c.xls", blob)
+            else:
+                cands = [os.path.join(self.raw_dir, "dmo_d1c.xls")] if self.raw_dir else []
+                cands.append(os.path.join(ROOT, "fixtures", "gbp_hist", "dmo_redeemed_gilts_D1C.xls"))
+                for c in cands:
+                    if os.path.exists(c) and open(c, "rb").read(4) == b"\xd0\xcf\x11\xe0":
+                        blob = open(c, "rb").read()
+                        self.fallbacks.append("dmo_d1c_last_good_copy: D1C export blocked (%s) — served from %s (mtime %s); D1C only changes on a redemption day"
+                                              % (reason[:100], os.path.relpath(c, ROOT), datetime.utcfromtimestamp(os.path.getmtime(c)).date().isoformat()))
+                        break
+                if not blob:
+                    raise ProviderError("dmo d1c: not an xls export and no last good copy — %s" % reason)
             rows = parse_d1c_xls(blob)
             if not rows:
                 raise ProviderError("dmo d1c: no rows parsed (STRUCTURE CHANGE?)")

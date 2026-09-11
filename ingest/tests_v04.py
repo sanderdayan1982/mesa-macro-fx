@@ -441,6 +441,12 @@ def main_activation() -> int:
     finally:
         open(cp, "w", encoding="utf-8").write(raw)
     check(open(cp, encoding="utf-8").read() == raw, "cad config restored after the revert test", fails)
+    # ledger as-of regression (JPY 2026-09-11: v0.3 run wrote (09-11, DRAIN), v0.4 printed NEUTRAL as-of 09-10 → gate A3 1 vs 2)
+    from .narrative import update_ledger
+    prev = {"ledger": {"fiscal": [["2026-09-07", "INJECTION"], ["2026-09-10", "DRAIN"], ["2026-09-11", "DRAIN"]]}}
+    reg = {"as_of": "2026-09-10", "regimes": {"fiscal": {"as_of": "2026-09-10", "regime": "NEUTRAL"}, "central_bank": {"as_of": "2026-09-10", "regime": "NEUTRAL"}, "general": {"regime": "NEUTRAL"}}}
+    led, st = update_ledger(prev, reg, {})
+    check(led["fiscal"] == [["2026-09-07", "INJECTION"], ["2026-09-10", "NEUTRAL"]] and st["fiscal"] == 1, "ledger: an as-of regression drops the later entry and the streak equals the ledger run (gate A3)", fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
 
