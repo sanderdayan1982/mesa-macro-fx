@@ -258,7 +258,7 @@ def issuance_flows(recs: Dict[str, List[dict]], buybacks: Dict[str, List[dict]],
     tail: Dict[str, List[float]] = defaultdict(list)
     tn_yield: Dict[str, List[float]] = defaultdict(list)
     tb_yield: Dict[str, List[float]] = defaultdict(list)
-    today = date.today().isoformat()
+    today = min(date.today().isoformat(), days[-1]) if days else date.today().isoformat()  # the flow cut never runs past the grid
     for kind, rs in recs.items():
         for r in rs:
             allot = _num(r.get("amount allotted"))

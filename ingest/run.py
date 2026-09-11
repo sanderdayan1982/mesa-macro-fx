@@ -890,6 +890,8 @@ def _jpy_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
         if r.status_code == 404:
             return None
         if r.status_code != 200:
+            if "mof.go.jp" in url and r.status_code >= 500:
+                return PJ.mof_ladder(url, timeout=timeout, binary=True)  # runner blocked with 503 while browsers get 200 (2026-09-11)
             raise ProviderError("HTTP %s for %s" % (r.status_code, url))
         return r.content
 

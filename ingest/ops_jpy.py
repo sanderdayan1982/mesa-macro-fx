@@ -230,8 +230,18 @@ def parse_daily_file(blob, filename: str) -> dict:
 
 # ───────────────────────── 2. wide series / 3. archive ─────────────────────────
 def daily_records_to_wide(recs: List[dict]) -> Dict[str, Dict[str, Series]]:
+    """Accepts both record shapes: nested {date, proj: {...}, prov: {...}, final: {...}} from parse_daily_file, and the flat archive
+    rows {date, version, <keys>} returned by read_daily_archive / merge_daily_archive (the runner path — 2026-09-11 the flat rows
+    were silently ignored, so proj/prov were empty in production while the fixture run, which passes nested records, was fine)."""
     out: Dict[str, Dict[str, List]] = {v: {} for v in VERSIONS}
     for rec in recs:
+        ver = rec.get("version")
+        if ver in VERSIONS:
+            for k in DAILY_KEYS:
+                v = rec.get(k)
+                if v is not None:
+                    out[ver].setdefault(k, []).append((rec["date"], v))
+            continue
         for ver in VERSIONS:
             for k, v in (rec.get(ver) or {}).items():
                 if v is not None:

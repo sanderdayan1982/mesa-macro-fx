@@ -39,7 +39,7 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], unit: str, pl: Dict
         fq = _freq(sc.get("freq", "weekly"))
         st = None if sc.get("id") else "unavailable"
         e = entry(key, ser, sc["label"], fq, sc.get("unit", unit), cfg, sc.get("id"), sc.get("usd_analog"), status=st, spec=th.get(key), prev_level=pl.get(key),
-                  z_window=30 if fq == "daily" else 26 if fq == "weekly" else 12)
+                  z_window=30 if fq == "daily" else 26 if fq == "weekly" else 12, lag_days=int(sc.get("lag_days", 0) or 0))
         if sc.get("display_only"):
             e["display_only"] = True
         if sc.get("note") or sc.get("role"):

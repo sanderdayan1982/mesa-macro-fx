@@ -103,7 +103,8 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], MAP: Dict[str, Opti
         if "pct" in key or key.endswith("_yoy"):
             u = "%"
         e = entry(key, ser, sc["label"] if "label" in sc else key, fq, u, cfg, sc.get("id"), sc.get("usd_analog"), status=None if dk else "unavailable",
-                  spec=_spec(th, key), prev_level=pl.get(key), z_window=30 if fq == "daily" else 12 if fq == "monthly" else 9 if fq == "ten_day" else 26)
+                  spec=_spec(th, key), prev_level=pl.get(key), z_window=30 if fq == "daily" else 12 if fq == "monthly" else 9 if fq == "ten_day" else 26,
+                  lag_days=int(sc.get("lag_days", 0) or 0))
         if key in zero_if_empty and dk and latest and (not ser or ser[-1][0] < latest):
             e.update({"status": "fresh", "value": 0.0, "prev_value": ser[-1][1] if ser else None, "prev_date": ser[-1][0] if ser else None, "change_abs": None,
                       "change_pct": None, "level": "SAFE", "confidence": 100, "date": latest, "age_days": 0,

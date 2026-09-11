@@ -78,8 +78,12 @@ def _health(entries: Dict[str, dict], expected: int) -> dict:
 
 def _base(ccy: str, block: str, cfg: dict, bcfg: dict, entries: dict, derived: dict, signals: dict, history: dict) -> dict:
     dates = [e["date"] for e in list(entries.values()) + list(derived.values()) if isinstance(e, dict) and e.get("date")]
+    # the block's as-of is the last OBSERVED date: calendar-type entries dated in the future (announced settlements, horizons)
+    # must not push it forward (NZD showed "as of 2026-09-14" on 2026-09-10 and the fiscal horizon cascaded from it)
+    today = datetime.now(timezone.utc).date().isoformat()
+    past = [d for d in dates if d <= today] or dates
     return {"currency": ccy, "block": block, "schema_version": SCHEMA_VERSION, "config_version": cfg.get("config_version"),
-            "generated_at": now_iso(), "as_of": max(dates) if dates else None,
+            "generated_at": now_iso(), "as_of": max(past) if past else None,
             "equivalence_quality": bcfg.get("equivalence_quality"), "equivalence_note": bcfg.get("equivalence_note", ""),
             "source_health": _health(entries, len(bcfg.get("series", {}))), "series": entries, "derived": derived,
             "signals": signals, "history": history}

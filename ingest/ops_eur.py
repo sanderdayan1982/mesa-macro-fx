@@ -434,7 +434,7 @@ def eu_result_links(html: str) -> List[str]:
 
 # ═══════════════════════ flows ═══════════════════════
 def issuance_flows(recs: List[dict], days: List[str]) -> Dict[str, Series]:
-    today = date.today().isoformat()
+    today = min(date.today().isoformat(), days[-1]) if days else date.today().isoformat()  # the flow cut never runs past the grid
     settled: Dict[str, float] = defaultdict(float)
     by_iss: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
     bill_mat: Dict[str, float] = defaultdict(float)

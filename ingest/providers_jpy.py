@@ -38,9 +38,29 @@ def _sleep_gap(last: float, gap: float) -> float:
     return time.time()
 
 
+def mof_ladder(url: str, timeout: int = 60, binary: bool = False):
+    """mof.go.jp answered HTTP 503 to every request from the GitHub runner on 2026-09-10/11 while the same URLs served 200 (Apache)
+    from a browser → the block is on the client fingerprint / address, not an outage. Second pass through the Chrome-impersonating
+    ladder (curl_cffi → curl → requests with browser headers, providers_nzd). If this also fails the caller keeps the last good copy."""
+    from .providers_nzd import _http as _ladder
+    return _ladder(url, timeout=timeout, retries=2, binary=binary)
+
+
 def _http(url: str, timeout: int = 60, retries: int = 3, binary: bool = False, encoding: Optional[str] = None):
     if requests is None:
         raise ProviderError("requests not installed")
+    try:
+        return _http_plain(url, timeout, retries, binary, encoding)
+    except ProviderError as e:
+        if "mof.go.jp" in url and "HTTP 5" in str(e):
+            out = mof_ladder(url, timeout=timeout, binary=binary)
+            if binary:
+                return out
+            return out if isinstance(out, str) else out.decode(encoding or "utf-8", errors="replace")
+        raise
+
+
+def _http_plain(url: str, timeout: int = 60, retries: int = 3, binary: bool = False, encoding: Optional[str] = None):
     last_err: Optional[Exception] = None
     for i in range(retries):
         try:

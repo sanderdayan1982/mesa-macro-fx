@@ -265,6 +265,12 @@ def main_jpy() -> int:
     check(jd["final"]["cab"] == 4116600 and jd["final"]["reserve_bal"] == 3811200, "jd stocks: 当座預金残高 4 116 600, 準備預金残高 3 811 200 (100m)", fails)
     jp = J.parse_daily_file(rd("jp20260911.xlsx"), "jp20260911.xlsx")
     check(jp["date"] == "2026-09-11" and jp["proj"]["treasury"] == -10400 and jp["prov"].get("treasury") is None, "jp 2026-09-11: projection only (−10 400), no provisional/final", fails)
+    import tempfile
+    _ap = tempfile.mktemp(suffix=".csv")
+    _rows = J.merge_daily_archive(_ap, [jd, jp])
+    _w = J.daily_records_to_wide(_rows)
+    check(_w["proj"].get("treasury", [])[-1:] == [("2026-09-11", -10400.0)] and _w["prov"].get("treasury", [])[-1:] == [("2026-09-09", -35900.0)],
+          "runner path: flat archive rows (merge/read_daily_archive) → wide keeps proj/prov/final (2026-09-11 the flat rows were ignored → projection unavailable in production)", fails)
     jx = J.parse_daily_file(rd("jx20260910.xlsx"), "jx20260910.xlsx")
     check(jx["prov"]["jgb_purch"] == 7200 and jx["proj"]["treasury"] == 2200 and jx["prov"]["treasury"] == 3400, "jx 2026-09-10: 国債買入 cash 7 200; treasury surprise 3 400 − 2 200", fails)
     ops = J.parse_ope_file(rd("ope20260909.xlsx"), "ope20260909.xlsx")

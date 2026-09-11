@@ -32,6 +32,13 @@ def enrich_central_bank(block: dict, cfg: dict, omo: Dict[str, Series], recon: S
         D[k] = entry(k, ser, label, "daily" if "takeup" not in k else "weekly", unit, cfg, src, status="fresh" if ser else "unavailable", lag_days=lag)
     n5 = S.rolling_sum(omo.get("omo_net_daily", []), 5)
     D["omo_net_5d"] = entry("omo_net_5d", n5, "OMO net flow, 5 sessions", "daily", unit, cfg, src, status="fresh" if n5 else "unavailable")
+    # the v0.3 placeholder "OMO weekly take-up" (pending parser) is now served by the operations file: 7-day + 28-day allotted per operation day
+    if (D.get("omo_takeup_weekly") or {}).get("status") in (None, "unavailable"):
+        m7, m28 = dict(omo.get("omo_takeup_7d", [])), dict(omo.get("omo_takeup_28d", []))
+        tk = S.clean([(d, round(m7.get(d, 0.0) + m28.get(d, 0.0), 3)) for d in sorted(set(m7) | set(m28))])
+        if tk:
+            D["omo_takeup_weekly"] = entry("omo_takeup_weekly", tk, "OMO weekly take-up (allotted, 7-day + 28-day terms; from operations)", "weekly", unit, cfg, src,
+                                           status="fresh", lag_days=lag, equivalence_note="v0.4: per-operation file replaces the pending v0.3 parser; surge vs its own history = demand-driven friction (RBA indicator #2)")
     sp = omo.get("omo_wa_spread_bp", [])
     D["omo_wa_spread_bp"] = entry("omo_wa_spread_bp", sp, "OMO weighted-average spread to the cash rate target (bp; full allotment at +10 since 2025-04-09)", "weekly", "bps", cfg, src,
                                   status="fresh" if sp else "unavailable", equivalence_note="A3: a spread above the fixed +10 bp would mean the fixed-price full-allotment framework changed")

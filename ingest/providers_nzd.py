@@ -118,7 +118,7 @@ def _http(url: str, timeout: int = 60, retries: int = 3, binary: bool = False):
                 raise ProviderError("HTTP %s (blocked/throttled) for %s — %s" % (r.status_code, url, _LAST_403[url]))
             if r.status_code != 200:
                 raise ProviderError("HTTP %s for %s" % (r.status_code, url))
-            if binary and r.content[:2] != b"PK":
+            if binary and url.lower().endswith(".xlsx") and r.content[:2] != b"PK":
                 raise ProviderError("not an XLSX (got %s bytes starting %r) for %s" % (len(r.content), r.content[:12], url))
             return r.content if binary else r.text
         except FileNotFoundError:

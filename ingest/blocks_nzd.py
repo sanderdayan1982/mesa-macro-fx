@@ -87,7 +87,8 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     th = b["thresholds"]
     sc = S.clean(data.get("D12:settlement_cash", []))
     # monthly LSAP sales from the per-settlement series
-    ls = S.clean(data.get("D3:lsap_sales", []))
+    _today = _dt.date.today().isoformat()
+    ls = [(d, v) for d, v in S.clean(data.get("D3:lsap_sales", [])) if d <= _today]  # announced (future-settling) sales belong to the calendar, not the flow
     mon: Dict[str, float] = {}
     last_d: Dict[str, str] = {}
     for d, v in ls:
