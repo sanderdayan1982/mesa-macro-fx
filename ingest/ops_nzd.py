@@ -163,16 +163,97 @@ def _roll_bd(d: str) -> str:
     return x.isoformat()
 
 
-def bond_flows_history(snapshots: List[dict], days: List[str]) -> dict:
-    """market-held bond redemptions and coupons over the window from EVERY month-end snapshot of the NZDM register (NZ$m).
-    House convention (as GBP/EUR): both GROSS to the market holder; the NZDM 'market' column (total − RBNZ − EQC − SRESL) is the holder.
-      bond_redeemed_market: market holding of the LAST month-end snapshot BEFORE the maturity, on the maturity rolled to the next business day
-      coupons_market_paid:  every semi-annual coupon date (maturity day-of-month, maturity month and six months earlier, ≤ maturity),
-                            rolled to the next business day, × market nominal of the latest month-end snapshot ≤ the coupon date ÷ 2
+_MON = {m: i for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), 1)}
+
+
+def register_lines(snapshots: List[dict]) -> Dict[str, str]:
+    """{'YYYY-MM': maturity ISO} of every register line — month + year identifies a line (nominals mature 14/15 Apr/May, IIBs 20 Sep)"""
+    out: Dict[str, str] = {}
+    for b in snapshots:
+        m = b.get("maturity")
+        if m:
+            out[m[:7]] = m
+    return out
+
+
+def _line_key(v, lines: Dict[str, str]) -> Optional[str]:
+    """a D3 bond reference → register maturity (ISO). Accepts ISO / Excel serial / '15-May-2041' / the LSAP tender label 'May 2021'"""
+    s = _iso(v)
+    if s:
+        return s
+    t = str(v or "").strip()
+    m = re.match(r"^(\d{1,2})[- ]([A-Za-z]{3})[a-z]*[- ](\d{4})$", t)
+    if m and m.group(2).lower() in _MON:
+        return date(int(m.group(3)), _MON[m.group(2).lower()], int(m.group(1))).isoformat()
+    m = re.match(r"^([A-Za-z]{3})[a-z]*\s+(\d{4})$", t)
+    if m and m.group(1).lower() in _MON:
+        return lines.get("%s-%02d" % (m.group(2), _MON[m.group(1).lower()]))
+    return None
+
+
+def lsap_holdings_by_line(purchases: List[dict], sales: List[dict], snapshots: List[dict]) -> dict:
+    """RBNZ LSAP nominal held per NZGB line as a dated step series {maturity: [(date, NZ$m held after that day's events)]}:
+    + purchases on the date held (D3 'LSAP - NZGBs', $m; nominals AND the four Sep IIB lines), − sales to the NZDM on settlement
+    (D3 'LSAP bond sales', face/1e6), − the whole line on its maturity. The register's 'RBNZ' column only carries bonds ISSUED to
+    the RBNZ; LSAP bonds bought in the secondary market sit inside 'Market Bonds', so market-held = register market − this holding.
+    Returns {'holdings': {...}, 'unmapped': [labels that match no register line]}."""
+    lines = register_lines(snapshots)
+    ev: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    unmapped: List[str] = []
+    for p in purchases or []:
+        d, a = _iso(p.get("date")), _num(p.get("amount_m"))
+        m = _line_key(p.get("line"), lines)
+        if not d or not a:
+            continue
+        if not m:
+            unmapped.append(str(p.get("line")))
+            continue
+        ev[m][d] += a
+    for s in sales or []:
+        d, a = _iso(s.get("settlement") or s.get("date")), _num(s.get("face_m"))
+        m = _line_key(s.get("bond_maturity"), lines)
+        if d and a and m and m in ev:
+            ev[m][d] -= a
+    hold: Dict[str, Series] = {}
+    for m, e in ev.items():
+        lvl, out = 0.0, []
+        for d in sorted(e):
+            if d >= m:
+                break
+            lvl = max(0.0, lvl + e[d])
+            out.append((d, round(lvl, 3)))
+        if out:
+            out.append((m, 0.0))  # matured: paid to the RBNZ, not the market
+        hold[m] = out
+    return {"holdings": hold, "unmapped": sorted(set(unmapped))}
+
+
+def _level_at(steps: Series, d: str, strict: bool = False) -> float:
+    lvl = 0.0
+    for sd, v in steps:
+        if (sd < d) if strict else (sd <= d):
+            lvl = v
+        else:
+            break
+    return lvl
+
+
+def bond_flows_history(snapshots: List[dict], days: List[str], lsap: Optional[dict] = None, repurchases: Optional[List[dict]] = None) -> dict:
+    """market-held bond redemptions, coupons and NZDM repurchases over the window from EVERY month-end snapshot of the NZDM register (NZ$m).
+    House convention (as GBP/EUR): GROSS to the market holder. Market-held nominal of a line at date d =
+      register 'market' (total − RBNZ-issued − EQC − SRESL, latest month-end ≤ d) − RBNZ LSAP holding at d (lsap_holdings_by_line)
+      − D3 'Govt Bond Repurchases' of the line settled ≤ d (verified on the register: the NZDM keeps repurchased bonds until maturity —
+        'total' does not fall with a D3 repurchase; 15-Mar-2019: 9 237 − 4 728 repurchased = 4 509 = D10 bond maturities Mar-2019).
+      bond_redeemed_market:    market-held at the last month-end BEFORE maturity (LSAP at that month-end, repurchases ≤ maturity),
+                               on the maturity rolled to the next business day
+      bond_repurchased_market: repurchase face value on its settlement date (cash to the seller before maturity)
+      coupons_market_paid:     every semi-annual coupon date (maturity day-of-month, maturity month and six months earlier, ≤ maturity),
+                               rolled to the next business day, × market-held at the coupon date ÷ 2
+    Without `lsap`/`repurchases` the v1 figures come out (register market only — overstates redemptions ~2× in 2019–2025).
     Coverage is honest, not filled: a date with no snapshot at or before it gets nothing (two-sided from the first month-end on file).
     Inflation-indexed lines: nominal without indexation (understates the indexed principal/coupon; low confidence)."""
     if not snapshots or not days:
-        return {"bond_redeemed_market": [], "coupons_market_paid": [], "two_sided_from": None}
+        return {"bond_redeemed_market": [], "coupons_market_paid": [], "bond_repurchased_market": [], "two_sided_from": None}
     by_me: Dict[str, Dict[str, dict]] = defaultdict(dict)
     for b in snapshots:
         me, m = str(b.get("month_end", "")), b.get("maturity")
@@ -181,10 +262,26 @@ def bond_flows_history(snapshots: List[dict], days: List[str]) -> dict:
     mes = sorted(by_me)
     today = date.today().isoformat()
     start, end = days[0], min(days[-1], today)
+    hold = (lsap or {}).get("holdings", {})
+    reg = register_lines(snapshots)
+    rp_line: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    rp: Dict[str, float] = defaultdict(float)
+    for r in repurchases or []:
+        d, a = _iso(r.get("settlement") or r.get("date")), _num(r.get("face_m"))
+        m = _line_key(r.get("bond_maturity"), reg)
+        if d and a:
+            if m:
+                rp_line[m][d] += a
+            if start <= d <= end:
+                rp[d] += a
 
     def snap_at(d: str, strict: bool) -> Optional[str]:  # latest month-end < d (strict) or ≤ d
         prev = [me for me in mes if (me < d if strict else me <= d)]
         return prev[-1] if prev else None
+
+    def market_held(m: str, s: str, d: str) -> float:  # register market at snapshot s − LSAP held at s − repurchases of the line settled ≤ d
+        v = (_num(by_me[s][m].get("market")) or 0.0) - _level_at(hold.get(m, []), s) - sum(x for dd, x in rp_line.get(m, {}).items() if dd <= d)
+        return max(0.0, v)
 
     red: Dict[str, float] = defaultdict(float)
     cpn: Dict[str, float] = defaultdict(float)
@@ -197,7 +294,7 @@ def bond_flows_history(snapshots: List[dict], days: List[str]) -> dict:
         if start <= pay <= end:
             s = snap_at(m, strict=True)
             if s and m in by_me[s]:
-                red[pay] += _num(by_me[s][m].get("market")) or 0.0
+                red[pay] += market_held(m, s, m)
         c = _num(b.get("coupon")) or 0.0
         y, mo, dd = int(m[:4]), int(m[5:7]), int(m[8:10])
         for yy in range(int(start[:4]), int(end[:4]) + 1):
@@ -211,12 +308,31 @@ def bond_flows_history(snapshots: List[dict], days: List[str]) -> dict:
                     continue
                 s = snap_at(d, strict=False)
                 if s and m in by_me[s]:
-                    cpn[pay] += (_num(by_me[s][m].get("market")) or 0.0) * c / 2.0
-    return {"bond_redeemed_market": _bucket(red), "coupons_market_paid": _bucket(cpn), "two_sided_from": mes[0]}
+                    cpn[pay] += market_held(m, s, d) * c / 2.0
+    return {"bond_redeemed_market": _bucket(red), "coupons_market_paid": _bucket(cpn), "bond_repurchased_market": _bucket(rp), "two_sided_from": mes[0]}
 
 
-def net_issuance_private(tender_settled: Series, bill_matured: Series, coupons_paid: Series, days: List[str], bond_redeemed: Optional[Series] = None) -> Series:
-    """− tenders settled + bill maturities + market bond redemptions + market coupons (both from bond_flows_history)"""
+def reconcile_redemptions_d10(bond_redeemed: Series, d10_bond_maturities: Series, repurchased: Optional[Series] = None) -> List[dict]:
+    """per month with D10 'bond maturities' > 0: D10 (cash paid at maturity, primary) vs Σ bond_redeemed_market of the month
+    (+ repurchases settled that month, shown separately): [{month, d10, redeemed, repurchased, pct}] — pct = (redeemed − d10) / d10 × 100"""
+    rd: Dict[str, float] = defaultdict(float)
+    for d, v in bond_redeemed:
+        rd[d[:7]] += v
+    rq: Dict[str, float] = defaultdict(float)
+    for d, v in repurchased or []:
+        rq[d[:7]] += v
+    out = []
+    for d, v in d10_bond_maturities:
+        k = d[:7]
+        if v and v > 0 and (k in rd or k in rq):
+            out.append({"month": k, "d10": round(v, 1), "redeemed": round(rd.get(k, 0.0), 1), "repurchased": round(rq.get(k, 0.0), 1),
+                        "pct": round((rd.get(k, 0.0) - v) / v * 100, 1)})
+    return out
+
+
+def net_issuance_private(tender_settled: Series, bill_matured: Series, coupons_paid: Series, days: List[str], bond_redeemed: Optional[Series] = None,
+                         bond_repurchased: Optional[Series] = None) -> Series:
+    """− tenders settled + bill maturities + market bond redemptions + market coupons + NZDM repurchases (all from bond_flows_history)"""
     m: Dict[str, float] = defaultdict(float)
     for d, v in tender_settled:
         m[d] -= v
@@ -225,6 +341,8 @@ def net_issuance_private(tender_settled: Series, bill_matured: Series, coupons_p
     for d, v in bond_redeemed or []:
         m[d] += v
     for d, v in coupons_paid:
+        m[d] += v
+    for d, v in bond_repurchased or []:
         m[d] += v
     return _dense(_bucket(m), days)
 

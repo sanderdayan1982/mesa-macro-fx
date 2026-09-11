@@ -71,7 +71,7 @@ SPEC: Dict[str, dict] = {
                        "C": {"net_issuance_v2_5d": ("hist", "net_issuance_private_v2_daily", "daily5", 1, +1, "v2: tenders AOFM por Date Settled (caja) − notas/indexados − recompras + reembolsos y cupones de TB NETOS de la cartera del RBA (A3.1)")}}},
     "eur": {"central_bank": {"A": "v0.3 (exceso de liquidez diario)", "B": {}, "C": {}, "note": "Δ cartera WFS semanal sin histórico archivado (monpol_wow) → empate 3-3 sin resolver aquí"},
             "fiscal": {"A": "v0.3 (déficit estructural GFS.Q + −ΔL050100)",
-                       "B": {"net_issuance_5d": ("hist", "net_issuance_private_daily", "daily5", 1, +1, "DE+FR+ES+IT+UE(+ESM) por liquidación + reembolsos y cupones BRUTOS de DE (historial Finanzagentur 1999→) y UE (Qlik 2020→); FR/ES/IT/ESM sólo un lado (sin saldo vivo por línea); ES/IT sólo desde 2022 (cobertura parcial antes)")},
+                       "B": {"net_issuance_5d": ("hist", "net_issuance_private_daily", "daily5", 1, +1, "DE+FR+ES+IT+UE(+ESM) por liquidación + reembolsos y cupones BRUTOS: DE 1999→, EU 2020→, FR 2019→ (recompras por mes), IT 2020→, ES 2025→ (sólo reembolsos, sin cupones); IT aplicado desde el primer registro de emisión del archivo MEF (2022 en el runner) para que el flujo sea de dos lados desde la misma fecha; ESM sólo un lado; ES/IT emisión sólo desde 2022")},
                        "C": {}}},
     "jpy": {"central_bank": {"A": "v0.3 (CAB 20d, d/d, banda del balance)", "B": {}, "C": {}, "note": "operaciones por operación (ope) sólo desde el backfill del runner → replay pendiente de ese archivo"},
             "fiscal": {"A": "v0.3 (z del flujo del Tesoro)",

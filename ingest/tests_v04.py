@@ -106,6 +106,27 @@ def main_nzd() -> int:
     check(all(N.date.fromisoformat(d).weekday() < 5 for d, _ in bf["coupons_market_paid"] + bf["bond_redeemed_market"]), "coupon and redemption dates fall on business days (rolled forward)", fails)
     mm = sorted({d[5:7] for d, _ in bf["coupons_market_paid"]})
     check(all(any(abs(int(a) - int(b)) in (6,) for b in mm) for a in mm), "coupon months come in semi-annual pairs (m, m+6)", fails)
+    # v2: LSAP holding by line + NZDM repurchases (fixtures/nzd_hist raw D3 sheets + every month-end of the register) reconciled to D10 bond maturities
+    from . import providers_nzd as PN
+    d3 = PN.RbnzD3Provider(fixtures_dir=fx).fetch_d3()
+    snaps = PN.NzdmProvider(fixtures_dir=fx).bonds_on_issue_all()
+    lsap = N.lsap_holdings_by_line(d3.get("lsap_purchases", []), d3.get("lsap", []), snaps)
+    check(not lsap["unmapped"] and "2025-09-20" in lsap["holdings"] and "2023-04-15" in lsap["holdings"], "every LSAP tender label maps to a register line ('Apr 2023' → 2023-04-15, 'Sep 2025' → the IIB 2025-09-20)", fails)
+    check(dict(lsap["holdings"]["2023-04-15"]).get("2021-07-12") == 7471.0 and lsap["holdings"]["2023-04-15"][-1] == ("2023-04-15", 0.0), "LSAP 2023-04-15 line peaks at 7 471 (2021-07-12) and is written off at maturity", fails)
+    peak = max(sum(N._level_at(st, d) for st in lsap["holdings"].values()) for d in ("2021-07-21", "2021-07-31"))
+    check(50000 <= peak <= 54000, "total NZGB LSAP holding peaks ≈ NZ$52 bn in July 2021 (public ~53 bn)", fails)
+    days_h = N.business_days("2019-01-01", "2026-09-10")
+    bf2 = N.bond_flows_history(snaps, days_h, lsap, d3.get("repurchases", []))
+    d10 = N.read_csv_series(os.path.join(ROOT, "history", "nzd", "D10:bond_maturities.csv"))
+    rec = {r["month"]: r for r in N.reconcile_redemptions_d10(bf2["bond_redeemed_market"], d10, bf2["bond_repurchased_market"])}
+    check(abs(rec["2023-04"]["redeemed"] - 7010) <= 70 and abs(rec["2025-04"]["redeemed"] - 6942) <= 70 and abs(rec["2019-03"]["redeemed"] - 4509) <= 5,
+          "redemptions to market vs D10 bond maturities: 2023-04 ≈ 7 010, 2025-04 ≈ 6 942 (±1 %), 2019-03 = 4 509 (repurchases only, pre-LSAP)", fails)
+    nominal = [r for k, r in rec.items() if k not in ("2025-09", "2026-05")]  # IIB (indexation) and 2026-05 (D10 = whole register total) explained apart
+    check(nominal and all(abs(r["pct"]) <= 10 for r in nominal), "every nominal maturity 2019-03 → 2025-04 within ±10 %% of D10 (%s)" % [(r["month"], r["pct"]) for r in nominal], fails)
+    rp2 = dict(bf2["bond_repurchased_market"])
+    check(rp2.get("2024-03-04") == 100.0 and all(v > 0 for v in rp2.values()), "repurchases enter as injections (+) on settlement (2024-03-04 = 100)", fails)
+    ni2 = N.net_issuance_private([], [], [], ["2024-03-04"], [], bf2["bond_repurchased_market"])
+    check(dict(ni2).get("2024-03-04") == 100.0, "net_issuance_private adds repurchases with + sign", fails)
     days_t = N.business_days("2025-01-01", "2026-09-10")
     tfx = N.tender_flows(rows)
     ni = N.net_issuance_private(tfx["tender_settled"], tfx["bill_matured"], bf["coupons_market_paid"], days_t, bf["bond_redeemed_market"])
@@ -303,6 +324,72 @@ def main_eur() -> int:
     parts = [dict(fl2[k]) for k in ("settled_all", "bills_matured_all", "bond_redeemed_all", "coupons_paid_all")]
     ident = [d for d, v in fl2["net_issuance_private_daily"] if abs(v - sum(p.get(d, 0.0) for p in parts)) > 0.01]
     check(not ident and fl2["bond_redeemed_all"] and fl2["coupons_paid_all"], "identity − settled + bills + bond redemptions + coupons = net on every day of the grid", fails)
+    # ── FR / IT / ES lines (ops_eur_lines, sources captured 2026-09-11) ──
+    from . import ops_eur_lines as L
+    import glob as _glob
+    fr_hist = U.fr_records_from_xlsx(open(os.path.join(hx, "aft_hist_mlt_2026-09.xlsx"), "rb").read(), None)
+    fr_html = h + U.fr_records_from_html(open(os.path.join(hx, "aft_latest_auctions_2026-08.html"), encoding="utf-8").read())
+    synd = L.fr_parse_syndications(open(os.path.join(hx, "aft_syndications_1999_2026.xlsx"), "rb").read())
+    check(len(fr_hist) == 2299 and fr_hist[0]["settlement"] == "1999-01-14" and len(synd) == 45 and synd[-1] == {"settlement": "2026-04-21", "isin": "FR0014017Z10", "line": "OAT 3,8% 25 juin 2037", "volume": 10000.0}
+          and any(s["volume"] < 0 for s in synd), "FR history XLSX 1999→ (2 299 auction rows, first settled 1999-01-14) + 45 syndications (last: 10 000 m Green OAT 2037 on 2026-04-21; buybacks negative)", fails)
+    bb = []
+    try:
+        for fn, exp in (("aft_ops_mensuelles_0726_UK.pdf", ("2026-07", "2026-07-31", 8677.0, 130.0, "OAT 2,50% 24/09/2027", 5665.0, 7)),
+                        ("aft_ops_mensuelles_0119_UK.pdf", ("2019-01", "2019-01-31", 1000.0, 0.0, "OAT 3.50% 25 April 2020", 1000.0, 1))):
+            p = L.fr_parse_buyback_pdf(_pdf(os.path.join(hx, fn)), fn)
+            got = {i["line"]: i["amount"] for i in p["items"]}
+            check(p["month"] == exp[0] and p["date"] == exp[1] and p["total"] == exp[2] and p["bills"] == exp[3] and got.get(exp[4]) == exp[5] and len(p["items"]) == exp[6]
+                  and abs(sum(got.values()) + p["bills"] - p["total"]) < 0.01,
+                  "FR review %s: month %s → dated %s (last business day), OTC total %s = Σ lines + BTF %s; '%s' → %s €m (%d OAT lines)" % ((fn,) + exp), fails)
+            bb += [dict(i, date=p["date"], month=p["month"]) for i in p["items"]]
+    except ImportError:
+        print("skip FR review PDF checks (pdfplumber missing)")
+    asof, enc = L.fr_encours_from_csv(os.path.join(hx, "aft_encours_oat_2026-09-11.csv"))
+    frl, recon = L.fr_lines(fr_hist + fr_html, synd, bb, enc, asof)
+    t20 = dict(next(l for l in frl if l["isin"] == "FR0010854182")["tranches"])
+    t27 = dict(next(l for l in frl if l["isin"] == "FR001400NBC6")["tranches"])
+    check(bb == [] or (t20.get("2019-01-31") == -1000.0 and t27.get("2026-07-31") == -5665.0), "FR buybacks mapped by coupon + maturity: 2019 format → FR0010854182 −1 000 m on 2019-01-31; 2026 format → FR001400NBC6 −5 665 m on 2026-07-31", fails)
+    print("FR reconciliation vs AFT outstanding list %s: %d/%d alive lines within ±1 %%, %d pre-1999 line snapped, %d buyback months in the archive" % (asof, recon["matched"], recon["alive"], recon["snapped"], len(recon["buyback_months"])))
+    for r in recon["rows"][:8]:
+        print("   %s list %10.1f calc %10.1f diff %9.1f (%s %%)" % r)
+    strict = len(recon["buyback_months"]) >= 24  # runner: the review archive is complete → every alive line must reconcile; offline: two reviews only
+    check(recon["alive"] == 59 and not recon["unmapped_buybacks"] and recon["snapped"] == 1 and (recon["matched"] == recon["alive"] if strict else recon["matched"] >= 45),
+          "FR lines reconcile to the AFT list (%s): 43 lines to the euro from auctions + syndications alone; the rest are bought-back lines (buyback archive: %d months locally, tolerant) + OAT 5.5 %% 2029 (pre-1999, snapped)" % ("strict" if strict else "tolerant", len(recon["buyback_months"])), fails)
+    snaps = [L.it_parse_scadenze(open(f, encoding="utf-8").read()) for f in sorted(_glob.glob(os.path.join(hx, "mef_scadenze", "scadenze_*.csv")))]
+    itl, iti = L.it_lines(snaps)
+    check([s[0] for s in snaps] == ["2020-12-31", "2021-12-31", "2022-12-31", "2023-12-31", "2024-12-31", "2025-12-31", "2026-08-31"] and all(len(s[1]) >= 239 for s in snaps) and iti["excluded"].get("BOT", 0) == 252,
+          "IT scadenze snapshots: 7 files (2020-12-31 … 2026-08-31), ≥ 239 market-held rows each (repo-portfolio section cut), BOT rows excluded (bills via the auction records)", fails)
+    b25 = U.bond_redemptions_coupons([l for l in itl if l["isin"] == "IT0004513641"], days, "2026-09-10")
+    check(dict(b25["bond_redeemed_IT"]) == {"2025-03-03": 23403.793} and dict(b25["coupons_paid_IT"]).get("2024-09-02") == round(24718.669 * 0.025, 3) and dict(b25["coupons_paid_IT"]).get("2025-03-03") == round(23403.793 * 0.025, 3),
+          "BTP 5 % 01-Mar-2025 (IT0004513641): 23 403.793 m redeemed Monday 2025-03-03 (2025 file, weekend roll); semi-annual 2.5 % coupons on 1 Mar / 1 Sep — Sep-2024 on the 2023 snapshot (24 718.669), Mar-2025 on the 2024 one (1 314.876 bought back in 2024)", fails)
+    l30 = next(l for l in itl if l["isin"] == "IT0005024234")
+    check(l30["coupon_months"] == 6 and l30["tranches"][0] == ("2014-03-01", 25156.449) and ("2022-12-31", 1250.0) in l30["tranches"] and sum(n for _, n in l30["tranches"]) == 28206.449,
+          "BTP 3.5 % 2030 (IT0005024234): first tranche at the issue date with the 2020 nominal, later snapshots as deltas (28 206.449 today; the 1 000 m repo-portfolio tranche excluded)", fails)
+    lv = next(l for l in itl if l["isin"] == "IT0005547390")
+    cct = [l for l in itl if l["isin"] == "IT0005451361"]
+    check(lv["coupon_months"] == 3 and lv["coupon"] == 3.25 and cct and cct[0]["coupon"] == 0.0 and cct[0]["maturity"] == "2029-04-15", "BTP Valore Jun-2027 quarterly on the first step (3.25 %); CCTeu Apr-2029 kept for the redemption, no coupon (spread field)", fails)
+    from .providers_chf import xlsx_sheets, _rows_of
+    blob = open(os.path.join(hx, "tesoro_13_financiacion_neta.xlsx"), "rb").read()
+    am = L.es_parse_financiacion(blob, "2026-09")
+    tot25 = None
+    for cells in xlsx_sheets(blob).values():
+        rows_ = _rows_of(cells)
+        if any("2025" in str(v) for v in rows_[min(rows_)].values()) and any("acumulados" not in str(v).lower() and "(importes efectivos)" in str(v).lower() for r in sorted(rows_)[:3] for v in rows_[r].values()):
+            tr = next(r for r in sorted(rows_) if str(rows_[r].get("B", "")).strip().upper().startswith("TOTAL A"))
+            tot25 = sum(U._num(rows_[tr].get(c)) or 0.0 for c in ("P", "Q", "R"))  # AMORTIZACIONES: Bonos, Oblig., Bonos y Oblig. Index.
+    s25 = sum(r["bonos"] + r["oblig"] + r["index"] for r in am if r["year"] == 2025)
+    check(tot25 is not None and abs(s25 - tot25) < 0.01 and abs(tot25 - (41115.12 + 72461.78)) < 0.01 and len([r for r in am if r["year"] == 2025]) == 5,
+          "ES 13.xlsx 2025: Σ monthly Bonos + Oblig. + Index. = TOTAL AÑO %.2f (41 115.12 + 72 461.78 + Index. empty; 'Resto y asumidas' excluded); 5 months with bond redemptions" % (tot25 or 0), fails)
+    esl, esi = L.es_lines(am, es)
+    check(dict((l["maturity"], l["tranches"][0][1]) for l in esl).get("2026-07-30") == 24608.597 and esi["from"] == "2025-01" and esi["to"] == "2026-07" and esi["skipped_coupon_maturities"] > 0,
+          "ES daily row 30-Jul-2026 → 24 608.6 m on the day; coverage 2025-01 → 2026-07; coupons not derived (%d maturities without a known nominal)" % esi["skipped_coupon_maturities"], fails)
+    for l in itl:
+        l["from"] = "2024-01-01"
+    fl3 = U.issuance_flows(de + fr + h + es + eu, days, dl + ql + frl + itl + esl)
+    parts = [dict(fl3[k]) for k in ("settled_all", "bills_matured_all", "bond_redeemed_all", "coupons_paid_all")]
+    ident = [d for d, v in fl3["net_issuance_private_daily"] if abs(v - sum(p.get(d, 0.0) for p in parts)) > 0.01]
+    check(not ident and all(fl3.get("bond_redeemed_%s" % i) for i in ("DE", "EU", "FR", "IT", "ES")) and all(fl3.get("coupons_paid_%s" % i) for i in ("DE", "EU", "FR", "IT")) and "coupons_paid_ES" not in fl3,
+          "identity holds with the five issuers' lines; redemptions DE/EU/FR/IT/ES and coupons DE/EU/FR/IT in the flow, no ES coupons", fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
 

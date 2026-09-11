@@ -169,6 +169,28 @@ def _read_rows_csv(path: str) -> List[dict]:
         return [dict(r) for r in csv.DictReader(f)]
 
 
+def _read_raw_txt(path: str) -> List[dict]:
+    """fixtures/nzd_hist/*_raw.txt: one sheet row per line, cells 'COL:value' joined by ';' (numeric strings → numbers, as xlsx cells)"""
+    if not os.path.exists(path):
+        return []
+    out = []
+    with open(path, encoding="utf-8") as f:
+        for ln in f:
+            cells = {}
+            for part in ln.rstrip("\n").split(";"):
+                if ":" in part:
+                    k, v = part.split(":", 1)
+                    n = _num(v) if re.match(r"^-?[\d.E+-]+$", v.strip()) else None
+                    cells[k.strip()] = n if n is not None else v
+            if cells:
+                out.append(cells)
+    return out
+
+
+def _hist_dir(fixtures_dir: str) -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(fixtures_dir)), "nzd_hist")
+
+
 # ───────────────────────── generic RBNZ 'Data' sheet (Series Id row) ─────────────────────────
 class RbnzTableProvider:
     MIN_GAP_S = 1.0
@@ -279,14 +301,17 @@ class RbnzD3Provider(RbnzTableProvider):
     def fetch_d3(self, since: str = "2024-01-01") -> Dict[str, List[dict]]:
         """{'rr': [{date_held, maturity, allocated, spread}], 'rr_old': [...], 'lsap': [...], 'repurchases': [...], 'bmls': [...]}"""
         if self.fixtures_dir:
-            fx = self.fixtures_dir
+            fx, hx = self.fixtures_dir, _hist_dir(self.fixtures_dir)
             rr = [{"date_held": r["date_held"], "maturity": r["maturity"], "allocated": float(r["allocated"] or 0), "spread": float(r["spread_to_ocr"] or 0)} for r in _read_rows_csv(os.path.join(fx, "d3_rr_omo.csv"))]
             old = [{"date_held": r["date_held"], "maturity": r["maturity"], "allocated": float(r["allocated"] or 0), "wavg": float(r["wavg"]) if r.get("wavg") else None} for r in _read_rows_csv(os.path.join(fx, "d3_rr_omo_old.csv"))]
-            ls = [{"date": r["date"], "settlement": r["settlement"], "bond_maturity": r["bond_maturity"], "face_m": float(r["face_value"]) / 1e6, "yield": float(r["yield"]) * 100 if r.get("yield") else None, "total_m": float(r["total_to_date"]) / 1e6} for r in _read_rows_csv(os.path.join(fx, "d3_lsap_sales.csv"))]
-            rp = [{"date": r["date"], "settlement": r["settlement"], "bond_maturity": r["bond_maturity"], "face_m": float(r["face_value"]) / 1e6, "total_m": float(r["total_to_date"]) / 1e6} for r in _read_rows_csv(os.path.join(fx, "d3_repurchases.csv"))]
+            # full-history raw sheets (fixtures/nzd_hist, extracted from the runner's D3.xlsx) when present; else the 2024→ CSV captures
+            ls = self._lsap_sales(_read_raw_txt(os.path.join(hx, "d3_lsap_sales_raw.txt")), "NZGB") or \
+                [{"date": r["date"], "settlement": r["settlement"], "bond_maturity": r["bond_maturity"], "face_m": float(r["face_value"]) / 1e6, "yield": float(r["yield"]) * 100 if r.get("yield") else None, "total_m": float(r["total_to_date"]) / 1e6} for r in _read_rows_csv(os.path.join(fx, "d3_lsap_sales.csv"))]
+            rp = self._repurchases(_read_raw_txt(os.path.join(hx, "d3_repurchases_raw.txt"))) or \
+                [{"date": r["date"], "settlement": r["settlement"], "bond_maturity": r["bond_maturity"], "face_m": float(r["face_value"]) / 1e6, "total_m": float(r["total_to_date"]) / 1e6} for r in _read_rows_csv(os.path.join(fx, "d3_repurchases.csv"))]
             bm = read_fixture(os.path.join(fx, "d3_bmls.csv"))
             bmls = [{"date": d, "nzgb_m": v} for d, v in bm.get("D3:bmls_nzgb", [])]
-            return {"rr": rr, "rr_old": old, "lsap": ls, "repurchases": rp, "bmls": bmls}
+            return {"rr": rr, "rr_old": old, "lsap": ls, "repurchases": rp, "bmls": bmls, "lsap_purchases": self._lsap_purchases(_read_raw_txt(os.path.join(hx, "d3_lsap_purchases_raw.txt")))}
         sheets = xlsx_sheets(self._blob(self.PATH, "D3"))
 
         def rows(name: str, *alts: str, optional: bool = False):
@@ -321,25 +346,52 @@ class RbnzD3Provider(RbnzTableProvider):
         if lg and any("face" in str(o.get("D", "")).lower() for o in lg[:6]):
             lsap_src.append(("LGFA", lg))
         for issuer, src in lsap_src:
-            for o in src:
-                d = _serial(o.get("A"))
-                fv = _num(o.get("D"))
-                if d and fv:
-                    ls.append({"date": d, "settlement": _serial(o.get("B")), "bond_maturity": _serial(o.get("C")) or str(o.get("C")), "face_m": fv / 1e6,
-                               "yield": (_num(o.get("E")) or 0) * 100, "total_m": (_num(o.get("F")) or 0) / 1e6, "issuer": issuer})
+            ls += self._lsap_sales(src, issuer)
         ls.sort(key=lambda x: (x["date"], x["issuer"]))
-        rp = []
-        for o in rows("Govt Bond Repurchases"):
-            d = _serial(o.get("A"))
-            fv = _num(o.get("D"))
-            if d and fv and d >= since:
-                rp.append({"date": d, "settlement": _serial(o.get("B")), "bond_maturity": _serial(o.get("C")), "face_m": fv / 1e6, "total_m": (_num(o.get("E")) or 0) / 1e6})
+        # repurchases: FULL history (2009→) — bond_flows_history needs every repurchase of a line before its maturity, whatever `since`
+        rp = self._repurchases(rows("Govt Bond Repurchases"))
         bmls = []
         for o in rows("BMLS"):
             d = _serial(o.get("A"))
             if d and d >= since and _num(o.get("B")) is not None:
                 bmls.append({"date": d, "nzgb_m": (_num(o.get("B")) or 0) / 1e6, "lgfa_m": (_num(o.get("C")) or 0) / 1e6})
-        return {"rr": rr, "rr_old": old, "lsap": ls, "repurchases": rp, "bmls": bmls}
+        # LSAP purchases per operation (2020-03 → 2021-07): the RBNZ's secondary-market holding by line (ops_nzd.lsap_holdings_by_line)
+        lp = self._lsap_purchases(rows("LSAP - NZGBs", "LSAP - NZGB", "LSAP", optional=True))
+        return {"rr": rr, "rr_old": old, "lsap": ls, "repurchases": rp, "bmls": bmls, "lsap_purchases": lp}
+
+    @staticmethod
+    def _lsap_sales(src: List[dict], issuer: str) -> List[dict]:
+        """'LSAP bond sales' rows: A transaction date | B settlement | C bond sold (serial or '15-May-2041') | D face value NZ$ | E yield | F total"""
+        out = []
+        for o in src:
+            d = _serial(o.get("A"))
+            fv = _num(o.get("D"))
+            if d and fv:
+                out.append({"date": d, "settlement": _serial(o.get("B")), "bond_maturity": _serial(o.get("C")) or str(o.get("C")), "face_m": fv / 1e6,
+                            "yield": (_num(o.get("E")) or 0) * 100, "total_m": (_num(o.get("F")) or 0) / 1e6, "issuer": issuer})
+        return out
+
+    @staticmethod
+    def _repurchases(src: List[dict]) -> List[dict]:
+        """'Govt Bond Repurchases' rows: A transaction date | B settlement | C bond repurchased (serial or '15-Apr-2020') | D face value NZ$ | E total"""
+        out = []
+        for o in src:
+            d = _serial(o.get("A"))
+            fv = _num(o.get("D"))
+            if d and fv:
+                out.append({"date": d, "settlement": _serial(o.get("B")), "bond_maturity": _serial(o.get("C")) or str(o.get("C")), "face_m": fv / 1e6, "total_m": (_num(o.get("E")) or 0) / 1e6})
+        return out
+
+    @staticmethod
+    def _lsap_purchases(src: List[dict]) -> List[dict]:
+        """'LSAP - NZGBs' rows: A date held | B line label ('May 2021' = maturity month/year) | F total successful offers ($m) = bought"""
+        out = []
+        for o in src:
+            d = _serial(o.get("A"))
+            a = _num(o.get("F"))
+            if d and a:
+                out.append({"date": d, "line": str(o.get("B", "")).strip(), "amount_m": a})
+        return out
 
     @staticmethod
     def omo_series(d3: Dict[str, List[dict]], business_days: List[str]) -> Dict[str, Series]:
@@ -655,6 +707,15 @@ class NzdmProvider:
         """every month-end snapshot ≥ since (sheet 'Month_end'): the register history behind market-held redemptions and coupons
         (ops_nzd.bond_flows_history); market = total − RBNZ − EQC − SRESL as published by the NZDM"""
         if self.fixtures_dir:
+            hp = os.path.join(_hist_dir(self.fixtures_dir), "nzdm_bonds_on_issue_month_end_history.csv")
+            if os.path.exists(hp):  # every month-end of the register (runner extract; 2nd line = original header) → the two-sided history in fixture runs
+                recs = []
+                for r in list(csv.reader(open(hp, encoding="utf-8")))[2:]:
+                    d, m = _serial(_num(r[0])), _serial(_num(r[4]) if _num(r[4]) is not None else r[4])
+                    if d and m and d >= since:
+                        cp = _num(r[3]) or 0.0
+                        recs.append({"month_end": d, "maturity": m, "coupon": cp / 100 if "%" in r[3] else cp, "type": r[5], "total": _num(r[6]) or 0.0, "market": _num(r[10]) or 0.0})
+                return recs
             return [{"month_end": r["month_end"], "maturity": r["maturity"], "coupon": float(r["coupon"]), "type": r["type"], "total": float(r["total_outstanding"]), "market": float(r["market"] or 0)}
                     for r in _read_rows_csv(os.path.join(self.fixtures_dir, "nzdm_bonds_on_issue.csv")) if r["month_end"] >= since]
         links = links or self.data_links()

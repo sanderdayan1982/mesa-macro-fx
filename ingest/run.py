@@ -1471,10 +1471,14 @@ def _nzd_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, d3_rows, hist_di
     days = O.business_days((date.today() - timedelta(days=_v04_window_days(a))).isoformat(), today)
     tf = O.tender_flows(data.get("_tender_rows") or [], data.get("_upcoming_tenders") or [])
     cal = O.bond_calendar(data.get("_bonds_on_issue") or [])
-    # two-sided over the window: market-held redemptions + coupons from every month-end of the register (not only the latest one)
-    bf = O.bond_flows_history(data.get("_bonds_on_issue_all") or data.get("_bonds_on_issue") or [], days)
+    # two-sided over the window: market-held redemptions + coupons from every month-end of the register (not only the latest one),
+    # v2: net of the RBNZ LSAP holding by line (D3 purchases − sales) and of the NZDM repurchases of each line (D3; injections when settled)
+    snaps = data.get("_bonds_on_issue_all") or data.get("_bonds_on_issue") or []
+    lsap = O.lsap_holdings_by_line((d3_rows or {}).get("lsap_purchases") or [], (d3_rows or {}).get("lsap") or [], snaps)
+    bf = O.bond_flows_history(snaps, days, lsap, (d3_rows or {}).get("repurchases") or [])
     cal["coupons_market_paid"], cal["bond_redeemed_market"] = bf["coupons_market_paid"], bf["bond_redeemed_market"]
-    ni = O.net_issuance_private(tf["tender_settled"], tf["bill_matured"], bf["coupons_market_paid"], days, bf["bond_redeemed_market"])
+    ni = O.net_issuance_private(tf["tender_settled"], tf["bill_matured"], bf["coupons_market_paid"], days, bf["bond_redeemed_market"], bf["bond_repurchased_market"])
+    recon_red = O.reconcile_redemptions_d10(bf["bond_redeemed_market"], S.clean(data.get("D10:bond_maturities", [])), bf["bond_repurchased_market"])
     tf["tender_settled"], tf["bill_matured"] = O._dense(tf["tender_settled"], days), O._dense(tf["bill_matured"], days)  # true sessions for 5-day sums
     omo = O.omo_flows((d3_rows or {}).get("rr") or [], days)
     # daily residual proxy recomputed on the full history (the block keeps only a window)
@@ -1516,11 +1520,13 @@ def _nzd_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, d3_rows, hist_di
     V4.enrich_central_bank(blocks["central_bank"], cfg, omo, recon_d10, recon_oia, csa)
     V4.enrich_fiscal(blocks["fiscal"], cfg, tf, cal, ni, ecp, res, sc_level)
     for k, ser in (("net_issuance_private_daily", ni), ("omo_net_daily", omo.get("omo_net_daily", [])), ("residual_flow_daily", res), ("ecp_on_issue", ecp),
-                   ("bond_redeemed_market", bf["bond_redeemed_market"]), ("coupons_market_paid", bf["coupons_market_paid"])):
+                   ("bond_redeemed_market", bf["bond_redeemed_market"]), ("coupons_market_paid", bf["coupons_market_paid"]), ("bond_repurchases_market", bf["bond_repurchased_market"])):
         if ser:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
     E.log_event(oplog, "NZD_V04", "system", {"tenders": len(data.get("_tender_rows") or []), "omo_ops": len((d3_rows or {}).get("rr") or []), "csa_days": len(csa),
                                              "bond_flows_two_sided_from": bf.get("two_sided_from"), "bond_month_ends": len({b.get("month_end") for b in data.get("_bonds_on_issue_all") or []}),
+                                             "lsap_lines": len(lsap["holdings"]), "lsap_unmapped": lsap["unmapped"],
+                                             "redemptions_vs_d10": [(r["month"], r["d10"], r["redeemed"], r["pct"]) for r in recon_red],
                                              "d10_recon_months": len(recon_d10.get("error", [])), "oia_recon_months": len(recon_oia.get("error", [])) if recon_oia else 0})
 
 
@@ -1821,10 +1827,14 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
         except Exception as e:  # noqa
             errors.append("de_calendar: %s" % e)
     # ── FR ──
+    fr_hist: List[dict] = []  # 1999→ history file records (the flow records below are the same rows; kept apart for ops_eur_lines.fr_lines)
+    fr_html: List[dict] = []
     if fx:
         recs += O.fr_records_from_csv(os.path.join(hx, "aft_oat_auctions.csv"), os.path.join(hx, "aft_btf_auctions.csv"))
         for fn in ("aft_latest_auctions_2026-08.html", "aft_latest_auctions_2026-09.html"):
-            recs += O.fr_records_from_html(open(os.path.join(hx, fn), encoding="utf-8").read())
+            fr_html += O.fr_records_from_html(open(os.path.join(hx, fn), encoding="utf-8").read())
+        recs += fr_html
+        fr_hist = O.fr_records_from_xlsx(open(os.path.join(hx, "aft_hist_mlt_2026-09.xlsx"), "rb").read(), None)
     else:
         try:
             links = {}
@@ -1846,8 +1856,9 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
                     y, mth = y + 1, 1
             for (yy, mm) in months[-4:]:
                 html = _get(O.AFT_LATEST, post={"op": "ok", "period_textfield[month]": str(mm), "period_textfield[year]": str(yy)})
-                recs += O.fr_records_from_html(html)
+                fr_html += O.fr_records_from_html(html)
                 _time.sleep(1.0)
+            recs += fr_html
             notes["FR"] = "history file to %s; HTML months %s" % (last_x, ",".join("%d-%02d" % m for m in months[-4:]))
         except Exception as e:  # noqa
             errors.append("aft_v04: %s" % e)
@@ -2056,11 +2067,19 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
     # ── flows ──
     if not fx:
         recs = O.merge_records(arch, recs)
-    # GROSS bond redemptions + coupons enter the net for the issuers whose outstanding per line is primary (DE history file, EU Qlik operations);
-    # FR / ES / IT / ESM stay one-sided (no per-line outstanding source wired) — see ops_eur module docstring
+    # GROSS bond redemptions + coupons enter the net for the issuers whose outstanding per line is primary: DE (history file 1999→), EU (Qlik
+    # 2020→), FR (AFT auctions + syndications − monthly buybacks, 1999→), IT (MEF year-end snapshots 2020→) and ES redemptions only (Tesoro
+    # 13.xlsx 2025→, no coupons); ESM stays one-sided — see ops_eur / ops_eur_lines module docstrings
     lines = O.de_lines(de_hist, outstanding) + Q.eu_lines(eu_q_recs, eu_out)
+    fr_recon, it_info, es_info = _eur_lines_fr_it_es(lines, fx, hx, hist_dir, raw_dir, a, fr_hist, fr_html, recs, _get, _pdf_text, errors, notes)
     fl = O.issuance_flows(recs, days, lines)
-    notes["bonds"] = "redemptions + coupons GROSS from %d DE lines + %d EU lines; FR/ES/IT/ESM one-sided" % (sum(1 for l in lines if l["issuer"] == "DE"), sum(1 for l in lines if l["issuer"] == "EU"))
+    n_by = {iss: sum(1 for l in lines if l["issuer"] == iss) for iss in ("DE", "EU", "FR", "IT", "ES")}
+    notes["bonds"] = ("redemptions + coupons GROSS from %d DE (1999→) + %d EU (2020→) + %d FR (1999→; buybacks by month from %d reviews, %d/%d alive lines "
+                      "reconciled ±1 %% to the AFT list of %s) + %d IT lines (MEF snapshots %s→%s; BOT via the bill records, EMTN/GLOBAL excluded, %d CCTeu without coupons); "
+                      "ES %d redemption dates %s→%s (Bonos + Oblig. + Index., coupons NOT derived: %d maturities without a known nominal); ESM one-sided"
+                      % (n_by["DE"], n_by["EU"], n_by["FR"], len(fr_recon.get("buyback_months", [])), fr_recon.get("matched", 0), fr_recon.get("alive", 0), fr_recon.get("asof"),
+                         n_by["IT"], (it_info.get("snapshots") or ["?"])[0], (it_info.get("snapshots") or ["?"])[-1], it_info.get("cct_no_coupon", 0),
+                         n_by["ES"], es_info.get("from"), es_info.get("to"), es_info.get("skipped_coupon_maturities", 0)))
     cal = O.de_calendar(outstanding)
     de_ahead = O.de_supply_ahead(de_cal)
     gd = S.clean(data.get("ILM.W.U2.C.L050100.U2.EUR", []))
@@ -2088,7 +2107,155 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
         if ser:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, ser)
     E.log_event(oplog, "EUR_V04", "system", {"records": len(recs), "by_issuer": {iss: sum(1 for r in recs if r["issuer"] == iss) for iss in ("DE", "FR", "ES", "IT", "EU", "ESM")},
-                                             "last_settlement": last_by, "de_lines": len(outstanding), "de_calendar": len(de_cal), "weeks": len(ni_weekly), "notes": notes})
+                                             "last_settlement": last_by, "de_lines": len(outstanding), "de_calendar": len(de_cal), "weeks": len(ni_weekly), "notes": notes,
+                                             # FR reconciliation vs the AFT outstanding list: strict on the runner (full buyback archive) — a line beyond ±1 % there is a
+                                             # missing operation, not a tolerance; the fixture run carries two reviews only, so the local test is tolerant
+                                             "fr_recon": {k: (v[:10] if k == "rows" else v) for k, v in fr_recon.items()}, "it_lines": it_info, "es_redemptions": es_info})
+
+
+def _eur_lines_fr_it_es(lines: List[dict], fx, hx: str, hist_dir: str, raw_dir, a, fr_hist: List[dict], fr_html: List[dict], recs: List[dict], _get, _pdf_text, errors: List[str], notes: Dict[str, str]):
+    """appends the FR / IT / ES bond lines to `lines` (ops_eur_lines); returns (fr_recon, it_info, es_info). Every source falls back to the
+    fixture capture of 2026-09-11 and reports the fallback in errors/notes; nothing is fabricated when a fetch fails."""
+    from . import ops_eur as O
+    from . import ops_eur_lines as L
+    from .providers_jpy import _snapshot
+    from datetime import date
+    import glob as _glob
+    import re as _re
+    import shutil
+    import time as _time
+    today = date.today()
+    # ── FR: syndications + monthly buybacks + AFT outstanding list ──
+    fr_recon: dict = {}
+    try:
+        synd_fx = os.path.join(hx, "aft_syndications_1999_2026.xlsx")
+        if fx:
+            synd = L.fr_parse_syndications(open(synd_fx, "rb").read())
+        else:
+            try:
+                blob = _get(L.AFT_SYND_XLSX, binary=True)
+                _snapshot(raw_dir, "aft_syndications.xlsx", blob)
+                synd = L.fr_parse_syndications(blob)
+                if not synd:
+                    raise ProviderError("empty syndication sheet")
+            except Exception as e:  # noqa
+                errors.append("aft_syndications: %s (fixture 2026-09-11)" % str(e)[:100])
+                synd = L.fr_parse_syndications(open(synd_fx, "rb").read())
+        bb_path = os.path.join(hist_dir, "fr_buybacks.csv")
+        bb = [] if fx else L.fr_buybacks_from_csv(bb_path)
+        if not bb:
+            new = []
+            for fn in sorted(_glob.glob(os.path.join(hx, "aft_ops_mensuelles_*_UK.pdf"))):
+                p = L.fr_parse_buyback_pdf(_pdf_text(open(fn, "rb").read()), os.path.basename(fn))
+                new += [dict(i, date=p["date"], month=p["month"], source=os.path.basename(fn)) for i in p["items"] if p["month"]]
+            bb = new if fx else L.fr_buybacks_to_csv(bb_path, new)
+        if not fx:
+            # discover the review PDFs (2024→ on the main page; yearly archives on --backfill); one fetch per month not yet archived
+            have = {b["month"] for b in bb}
+            pages = [L.AFT_REVIEW_PAGE] + ([L.AFT_REVIEW_PAGE + "-%d" % y for y in range(2019, 2024)] if a.backfill else [])
+            new, seen_src = [], {b.get("source") for b in bb}
+            for pg in pages:
+                try:
+                    links = L.fr_review_links(_get(pg))
+                except Exception as e:  # noqa
+                    errors.append("aft_reviews(%s): %s" % (pg.rsplit("/", 1)[-1], str(e)[:80]))
+                    continue
+                for h in links:
+                    name = os.path.basename(h)
+                    m = _re.match(r"^(\d{2})(\d{2})_", name)
+                    month = "20%s-%s" % (m.group(2), m.group(1)) if m else None
+                    if name in seen_src or (month and month in have and month < "%04d-%02d" % (today.year, today.month)):
+                        continue
+                    try:
+                        p = L.fr_parse_buyback_pdf(_pdf_text(_get(h if h.startswith("http") else "https://www.aft.gouv.fr" + h, binary=True, timeout=60)), name)
+                    except Exception as e:  # noqa
+                        errors.append("aft_review_pdf(%s): %s" % (name, str(e)[:80]))
+                        continue
+                    if p["month"]:
+                        new += [dict(i, date=p["date"], month=p["month"], source=name) for i in p["items"]] or [{"line": "", "family": "", "coupon": None, "maturity": "", "amount": 0.0, "date": p["date"], "month": p["month"], "source": name}]
+                    _time.sleep(0.5)
+                _time.sleep(0.8)
+            if new:
+                bb = L.fr_buybacks_to_csv(bb_path, new)
+            notes["FR_buybacks"] = "%d review months archived (%d new PDFs this run)" % (len({b["month"] for b in bb}), len({n["source"] for n in new}))
+        asof, enc = L.fr_encours_from_csv(os.path.join(hx, "aft_encours_oat_2026-09-11.csv"))  # AFT 'OATs debt outstanding' page: capture only (page URL not wired)
+        fr_lines, fr_recon = L.fr_lines(fr_hist + fr_html, synd, bb, enc, asof)
+        lines += fr_lines
+    except Exception as e:  # noqa
+        errors.append("fr_lines: %s" % e)
+    # ── IT: MEF 'Scadenze suddivise per anno' snapshots ──
+    it_info: dict = {}
+    try:
+        it_dir = os.path.join(hist_dir, "mef_scadenze")
+        fx_dir = os.path.join(hx, "mef_scadenze")
+        files = sorted(_glob.glob(os.path.join(fx_dir, "scadenze_*.csv")))
+        if not fx:
+            os.makedirs(it_dir, exist_ok=True)
+            for f in files:  # seed the year-end archive with the 2020–2025 captures
+                if not os.path.exists(os.path.join(it_dir, os.path.basename(f))):
+                    shutil.copy(f, os.path.join(it_dir, os.path.basename(f)))
+            try:
+                # every CSV linked on the year page is a snapshot (monthly updates): fetched once, archived under its own name; the year-end
+                # one (asof 12-31) is also saved as scadenze_<year>.csv (the long-term archive); snapshots are deduped by asof in it_lines
+                links = []
+                for yy in ([today.year - 1, today.year] if a.backfill else [today.year]):
+                    links += L.it_scadenze_links(_get(L.MEF_SCADENZE_INDEX % yy))
+                    _time.sleep(0.8)
+                if not links:
+                    raise ProviderError("no scadenze CSV link on the MEF page")
+                got = []
+                for u in links:
+                    name = "mef_" + u.rsplit("/", 1)[-1]
+                    if os.path.exists(os.path.join(it_dir, name)):
+                        continue
+                    txt = _get(u, binary=True).decode("utf-8", errors="replace")
+                    asof, rows = L.it_parse_scadenze(txt)
+                    if not rows:
+                        errors.append("mef_scadenze(%s): parsed to 0 rows" % name)
+                        continue
+                    open(os.path.join(it_dir, name), "w", encoding="utf-8").write(txt)
+                    if asof and asof.endswith("-12-31"):
+                        open(os.path.join(it_dir, "scadenze_%s.csv" % asof[:4]), "w", encoding="utf-8").write(txt)
+                    got.append(asof)
+                    _time.sleep(0.6)
+                notes["IT_scadenze"] = "%d CSV links, %d new snapshots %s" % (len(links), len(got), got)
+            except Exception as e:  # noqa
+                errors.append("mef_scadenze: %s (archive only)" % str(e)[:100])
+            files = sorted(_glob.glob(os.path.join(it_dir, "*.csv")))
+        snaps = [L.it_parse_scadenze(open(f, encoding="utf-8").read()) for f in files]
+        it_lines, it_info = L.it_lines([s for s in snaps if s[0]])
+        # two-sided from the same date on both sides: the snapshots reach back to 2020 but the MEF auction archive (issuance side) starts
+        # with its first record (2022 on the runner, the two fixture PDFs of 2026-08 offline) → redemptions / coupons before it are left out
+        it_from = min((r["settlement"] for r in recs if r.get("issuer") == "IT" and r.get("settlement")), default=None)
+        for l in it_lines:
+            l["from"] = it_from
+        it_info["applied_from"] = it_from
+        lines += it_lines
+    except Exception as e:  # noqa
+        errors.append("it_lines: %s" % e)
+    # ── ES: Tesoro 13.xlsx amortizations (Bonos + Oblig. + Index.) ──
+    es_info: dict = {}
+    try:
+        es_path = os.path.join(hist_dir, "es_amortizaciones.csv")
+        upto = "%04d-%02d" % (today.year, today.month)
+        if fx:
+            am = L.es_parse_financiacion(open(os.path.join(hx, "tesoro_13_financiacion_neta.xlsx"), "rb").read(), upto)
+        else:
+            try:
+                blob = _get(L.TESORO_13_XLSX, binary=True)
+                rows = L.es_parse_financiacion(blob, upto)
+                if not rows:
+                    raise ProviderError("13.xlsx parsed to 0 rows")
+                am = L.es_amort_to_csv(es_path, rows)
+                notes["ES_amort"] = "13.xlsx %d rows; archive %s→%s" % (len(rows), "%04d-%02d" % (am[0]["year"], am[0]["month"]), "%04d-%02d" % (am[-1]["year"], am[-1]["month"]))
+            except Exception as e:  # noqa
+                errors.append("tesoro_13: %s (archive/fixture)" % str(e)[:100])
+                am = L.es_amort_from_csv(es_path) or L.es_parse_financiacion(open(os.path.join(hx, "tesoro_13_financiacion_neta.xlsx"), "rb").read(), upto)
+        es_lines, es_info = L.es_lines(am, recs)
+        lines += es_lines
+    except Exception as e:  # noqa
+        errors.append("es_lines: %s" % e)
+    return fr_recon, it_info, es_info
 
 
 def main(argv: Optional[List[str]] = None) -> int:

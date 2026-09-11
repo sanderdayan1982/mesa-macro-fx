@@ -24,10 +24,11 @@ Sources verified 2026-09-10 (VERIFICACIONES_V04.md, ADJUDICACION_METRICAS_EUR.md
 
 Reserve mechanics (+ = excess liquidity created): settlement of an auction −cash (nominal × price where the price is published, else nominal);
 bill maturities +nominal (market-held by construction); bond redemptions + coupons GROSS (Eurosystem APP/PEPP holdings are not published by
-line) for the issuers whose full outstanding per line is primary: DE (emissionshistorie_en.xlsx since 1999, de_lines) and EU (Qlik operations
-since 2020, ops_eu_qlik.eu_lines). FR/ES/IT/ESM stay ONE-SIDED (auction files miss pre-window tranches, syndications and buybacks; the ESM
-export lists alive lines only) → their redemptions / coupons are NOT in the flow. Flows cut at today; the FR monthly file is bridged by the HTML
-months; IT/ES/EU archives grow with each run (history/eur/*.csv).
+line) for the issuers whose outstanding per line is primary: DE (emissionshistorie_en.xlsx since 1999, de_lines), EU (Qlik operations since
+2020, ops_eu_qlik.eu_lines), FR (auctions + syndications − monthly buybacks since 1999, reconciled to the AFT outstanding list), IT (MEF
+year-end snapshots since 2020, applied from the first MEF auction record so both sides start together) and ES redemptions only (Tesoro
+13.xlsx amortizations since 2025, no coupons) — ops_eur_lines. ESM stays ONE-SIDED (the export lists alive lines only). Flows cut at today;
+the FR monthly file is bridged by the HTML months; IT/ES/EU archives grow with each run (history/eur/*.csv).
 Nothing here decides a regime (shadow components only)."""
 from __future__ import annotations
 import csv
@@ -291,7 +292,8 @@ def fr_records_from_csv(oat_path: str, btf_path: str) -> List[dict]:
             continue
         price = _num(r.get("wa_price"))
         out.append({"issuer": "FR", "kind": "bond", "isin": r.get("isin", ""), "auction": r["auction"], "settlement": r["settlement"], "maturity": _fr_line_maturity(r.get("line", "")) or "",
-                    "nominal": tot, "cash": round(tot * price, 3) if price else tot, "cover": _num(r.get("btc")), "yield": round((_num(r.get("wa_rate")) or 0.0) * 100, 4), "source": "aft_hist_mlt"})
+                    "nominal": tot, "cash": round(tot * price, 3) if price else tot, "cover": _num(r.get("btc")), "yield": round((_num(r.get("wa_rate")) or 0.0) * 100, 4), "source": "aft_hist_mlt",
+                    "line": r.get("line", "")})  # line name (not a REC_COL: dropped by merge_records) → ops_eur_lines.fr_lines maps buybacks by coupon + maturity
     for r in csv.DictReader(open(btf_path, encoding="utf-8")) if os.path.exists(btf_path) else []:
         tot = _num(r.get("total"))
         if not tot:
@@ -313,7 +315,8 @@ def fr_records_from_xlsx(oat_blob: Optional[bytes], btf_blob: Optional[bytes]) -
                 continue
             price = _num(row.get("N"))
             out.append({"issuer": "FR", "kind": "bond", "isin": str(row.get("F", "")).strip(), "auction": a, "settlement": s, "maturity": _fr_line_maturity(row.get("G", "")) or "",
-                        "nominal": tot, "cash": round(tot * price, 3) if price else tot, "cover": _num(row.get("J")), "yield": round((_num(row.get("M")) or 0.0) * 100, 4), "source": "aft_hist_mlt"})
+                        "nominal": tot, "cash": round(tot * price, 3) if price else tot, "cover": _num(row.get("J")), "yield": round((_num(row.get("M")) or 0.0) * 100, 4), "source": "aft_hist_mlt",
+                        "line": str(row.get("G", "")).strip()})
     if btf_blob:
         rows = _rows_of(next(iter(xlsx_sheets(btf_blob).values())))
         for r in sorted(rows):
@@ -359,7 +362,7 @@ def fr_records_from_html(html: str) -> List[dict]:
             price = _num(g("weighted average price"))
             out.append({"issuer": "FR", "kind": "bill" if is_btf else "bond", "isin": (isins + [""] * n)[i], "auction": a, "settlement": s, "maturity": mat or "",
                         "nominal": tot, "cash": round(tot * price / 100.0, 3) if price else tot, "cover": _num(g("bid to cover ratio**")) or _num(g("bid to cover ratio")),
-                        "yield": _num(g("weighted average rate")), "source": "aft_html"})
+                        "yield": _num(g("weighted average rate")), "source": "aft_html", "line": "" if is_btf or i >= len(head) else head[i]})
     return out
 
 
@@ -477,15 +480,17 @@ def eu_result_links(html: str) -> List[str]:
 # ═══════════════════════ flows ═══════════════════════
 def bond_redemptions_coupons(lines: List[dict], days: List[str], today: Optional[str] = None) -> Dict[str, Series]:
     """GROSS bond redemptions and coupons paid inside the grid (≤ today), from lines {issuer, isin, coupon (% p.a.), maturity,
-    tranches [(value_date, nominal)]}: outstanding(d) = Σ tranches settled ≤ d; redemption = outstanding at maturity; coupons ANNUAL on the
-    maturity day/month (all wired issuers pay annually — DE, EU), the first one pro-rata ACT/365 from the first value date (short first coupon;
-    a long-first-coupon line shifts that fraction of a coupon by one year); payment on the next weekday when the date is a weekend
-    (roll_bd). Zero-coupon lines pay no coupon. Nothing is netted of Eurosystem holdings (GBP desk decision: gross in this phase).
-    Returns bond_redeemed_all, coupons_paid_all and the per-issuer bond_redeemed_<iss> / coupons_paid_<iss>."""
+    tranches [(value_date, nominal)], coupon_months (optional: 12 annual — DE, EU, FR, ES —, 6 semi-annual — IT BTP —, 3 quarterly),
+    from (optional: payments before this date are left out — an issuer whose issuance records start later than its lines, so the flow
+    stays two-sided from the same date on both sides)}:
+    outstanding(d) = Σ tranches settled ≤ d; redemption = outstanding at maturity; coupons on the maturity day/month and every coupon_months
+    before it within the year, each = outstanding × coupon × coupon_months/12, the first one pro-rata ACT/365 from the first value date
+    (short first coupon; a long-first-coupon line shifts that fraction of a coupon by one period); payment on the next weekday when the
+    date is a weekend (roll_bd). Zero-coupon lines pay no coupon. Nothing is netted of Eurosystem holdings (GBP desk decision: gross in this
+    phase). Returns bond_redeemed_all, coupons_paid_all and the per-issuer bond_redeemed_<iss> / coupons_paid_<iss>."""
     if not days:
         return {"bond_redeemed_all": [], "coupons_paid_all": []}
     today = min(today or date.today().isoformat(), days[-1])
-    start = days[0]
     red: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
     cpn: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
     for l in lines:
@@ -493,24 +498,30 @@ def bond_redemptions_coupons(lines: List[dict], days: List[str], today: Optional
         m, c, iss = l.get("maturity"), l.get("coupon") or 0.0, l["issuer"]
         if not tr or not m:
             continue
+        start = max(days[0], l.get("from") or "")
         outstanding = lambda d: sum(n for vd, n in tr if vd <= d)
         pay = roll_bd(m)
         if start <= pay <= today and outstanding(m):
             red[iss][pay] += outstanding(m)
         if not c:
             continue
+        months = int(l.get("coupon_months") or 12)
         first, frac = tr[0][0], None
+        dates = set()
         for yy in range(int(first[:4]), int(m[:4]) + 1):
-            try:
-                cd = date(yy, int(m[5:7]), int(m[8:10])).isoformat()
-            except ValueError:
-                continue
+            for k in range(12 // months):
+                mo = int(m[5:7]) - k * months
+                try:
+                    dates.add(date(yy - (mo <= 0), mo + 12 * (mo <= 0), int(m[8:10])).isoformat())
+                except ValueError:
+                    continue
+        for cd in sorted(dates):
             if not (first < cd <= m):
                 continue
-            frac = min(1.0, (date.fromisoformat(cd) - date.fromisoformat(first)).days / 365.0) if frac is None else 1.0  # first coupon pro-rata, then full
+            frac = min(1.0, (date.fromisoformat(cd) - date.fromisoformat(first)).days / (365.0 * months / 12.0)) if frac is None else 1.0  # first coupon pro-rata, then full
             pay = roll_bd(cd)
             if start <= pay <= today:
-                cpn[iss][pay] += outstanding(cd) * c / 100.0 * frac
+                cpn[iss][pay] += outstanding(cd) * c / 100.0 * months / 12.0 * frac
     out: Dict[str, Series] = {}
     all_red: Dict[str, float] = defaultdict(float)
     all_cpn: Dict[str, float] = defaultdict(float)
