@@ -301,6 +301,13 @@ def compute(as_of: Optional[str] = None, root: str = ROOT) -> dict:
     # Single truth (idea A): the jefe is recomputed inside every lane, so each daily_log freezes the ranking it saw while
     # data/mesa/jefe.json holds the last one written. The stamp identifies the ranking content (rows and labels); a daily_log
     # whose stamp differs from the published one carries an earlier reading, and says so.
+    # completeness of each leg (idea C) and the published evidence (idea D): read-only views of config/ and calibration/
+    try:
+        from . import evidence as EV
+        out["completeness"] = EV.completeness(root)
+        out["evidence"] = EV.evidence(root)
+    except Exception as e:  # never withholds the ranking
+        out["completeness_error"] = str(e)
     out["generated_at"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     out["stamp"] = stamp(out)
     return out

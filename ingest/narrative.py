@@ -599,7 +599,7 @@ def build(ccy: str, blocks: dict, regime: dict, prev_agent: Optional[dict], jefe
            "header": lines[0], "daily_log": {"F%d" % (i + 1): lines[i + 1] for i in range(7)}, "narrative": "\n".join(lines),
            "streaks": streaks, "ledger": led, "numbers": L.numbers, "verbs": L.verbs, "glossary_used": L.glossary, "glossary": gl,
            "degraded": L.degraded, "blocks_meta": meta, "calendar_next": upcoming, "alerts_active": active,
-           "jefe": {k: v for k, v in (jefe or {}).items() if k != "ranking"} | {"ranking": (jefe or {}).get("ranking")} if jefe else None,
+           "jefe": {k: v for k, v in (jefe or {}).items() if k not in ("ranking", "evidence", "completeness")} | {"ranking": (jefe or {}).get("ranking")} if jefe else None,  # evidence/completeness live in data/mesa/jefe.json only
            "structural": sorted(({p[3] for p in [spec["fiscal"].get(k) for k in ("week", "month", "q13")] if p} | {spec["issuance"].get("gross_label", "")} | set(L.structural)) - {""}),
            "prohibitions": PROHIBITIONS, "closing_rules": CLOSING_RULES}
     out["hash"] = hashlib.sha256(out["narrative"].encode("utf-8")).hexdigest()[:16]
