@@ -651,7 +651,7 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
                     os.makedirs(hist_dir, exist_ok=True)
                     open(cache, "wb").write(blob)  # last good copy for the next timeout
                 except Exception as e:  # noqa
-                    errors.append("aofm_%s: %s (using the last good copy)" % (key, e))
+                    errors.append("aofm_%s_last_good_copy: %s (using the last good copy)" % (key, e))
                     src_path = cache if os.path.exists(cache) else os.path.join(hist_fx, fn)
                     blob = open(src_path, "rb").read()
                     fallback_used.append("%s←%s" % (key, "history" if src_path == cache else "fixture 2026-09-10"))
@@ -681,7 +681,7 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
                     for l in lines:
                         w.writerow(l)
             except Exception as e:  # noqa
-                errors.append("aofm_tb_portfolio: %s (using the last good copy)" % e)
+                errors.append("aofm_tb_portfolio_last_good_copy: %s (using the last good copy)" % e)
                 cache = os.path.join(hist_dir, "aofm_tb_face_value_by_line.csv")
                 lines = O.face_value_from_csv(cache if os.path.exists(cache) else os.path.join(hist_fx, "aofm_tb_face_value_by_line.csv"))
     except Exception as e:  # noqa
@@ -1942,7 +1942,7 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
             eu_out = Q.outstanding_from_rows(Q.OUT_FIELDS, rows_out)
             notes["EU_qlik"] = "engine: %d rows / %d outstanding" % (len(rows_tx), len(rows_out))
         except Exception as e:  # noqa
-            errors.append("eu_qlik: %s (using the last good copy)" % str(e)[:160])
+            errors.append("eu_qlik_last_good_copy: %s (using the last good copy)" % str(e)[:160])
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "eu_qlik", "error": str(e)[:300]})
             eu_q_recs = Q.records_from_fixture_csv(q_tx_path if os.path.exists(q_tx_path) else seed_tx)
             eu_out = Q.outstanding_from_fixture_csv(q_out_path if os.path.exists(q_out_path) else seed_out)

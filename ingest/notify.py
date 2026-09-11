@@ -15,7 +15,7 @@ import html
 import json
 import os
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Tuple, Dict, List, Optional
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CCYS = ["usd", "eur", "gbp", "jpy", "chf", "cad", "aud", "nzd"]
@@ -85,6 +85,12 @@ def jefe_snapshot(root: str = ROOT) -> dict:
 
 
 # ───────────────────────────── event detection ─────────────────────────────
+def _split_errors(errs: list) -> Tuple[List[str], List[str]]:
+    """(hard errors, last-good-copy notes)"""
+    e = [str(x) for x in errs or []]
+    return [x for x in e if "last_good_copy" not in x], [x for x in e if "last_good_copy" in x]
+
+
 def events_for(ccy: str, cur: dict, prev: Optional[dict], jefe: dict, jefe_prev: Optional[dict], cfg: dict) -> List[str]:
     ev = cfg.get("events", {})
     on = lambda k: ev.get(k, {}).get("enabled", True)
@@ -116,11 +122,20 @@ def events_for(ccy: str, cur: dict, prev: Optional[dict], jefe: dict, jefe_prev:
                 out.append("<b>%s · %s %s</b> (as-of %s): el bloque deja de estar fresco." % (C, BN.get(b, b), esc(ST_ES.get(st, st)), esc(cur["blocks_asof"].get(b))))
             elif ps != "fresh":
                 out.append("<b>%s · %s fresco</b> de nuevo (as-of %s)." % (C, BN.get(b, b), esc(cur["blocks_asof"].get(b))))
-    if on("refresh_error") and bool(cur["errors"]) != bool(prev.get("errors")):
-        if cur["errors"]:
-            out.append("<b>%s · ERRORES DE FUENTE</b> en el refresco: %s" % (C, esc("; ".join(str(x) for x in cur["errors"])[:600])))
+    # a note tagged *_last_good_copy means the source is blocked but the data is current (served from the committed copy):
+    # it is an AVISO, separate from real source errors, and each class notifies on its own transition
+    hard, copies = _split_errors(cur["errors"])
+    phard, pcopies = _split_errors(prev.get("errors") or [])
+    if on("refresh_error") and bool(hard) != bool(phard):
+        if hard:
+            out.append("<b>%s · ERRORES DE FUENTE</b> en el refresco: %s" % (C, esc("; ".join(hard)[:600])))
         else:
             out.append("<b>%s</b> · el refresco vuelve a completarse sin errores de fuente." % C)
+    if on("refresh_error") and bool(copies) != bool(pcopies):
+        if copies:
+            out.append("<b>%s · AVISO · fuente bloqueada</b>, dato vigente servido desde la copia buena: %s" % (C, esc("; ".join(copies)[:600])))
+        else:
+            out.append("<b>%s</b> · la fuente bloqueada vuelve a responder." % C)
     if on("jefe_ranking_change") and jefe.get("friday") and jefe_prev is not None and jefe.get("friday") != jefe_prev.get("friday"):
         order, porder = jefe.get("order", []), jefe_prev.get("order", [])
         mine = order.index(C) + 1 if C in order else None
@@ -154,8 +169,11 @@ def digest(root: str = ROOT) -> List[str]:
                 inc.append("%s · %s: %s (as-of %s)" % (c.upper(), BN.get(b, b), ST_ES.get(st, st), s["blocks_asof"].get(b)))
         if s["gate"] is False:
             inc.append("%s · puerta RETIENE: %s" % (c.upper(), "; ".join(s["gate_failures"])))
-        if s["errors"]:
+        hard, copies = _split_errors(s["errors"])
+        if hard:
             inc.append("%s · errores de fuente en el último refresco" % c.upper())
+        if copies:
+            inc.append("%s · fuente bloqueada, dato servido desde la copia buena" % c.upper())
         if s["generated_at"]:
             try:
                 h = (datetime.now(timezone.utc) - datetime.fromisoformat(s["generated_at"].replace("Z", "+00:00"))).total_seconds() / 3600
