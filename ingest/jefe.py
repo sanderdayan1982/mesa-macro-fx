@@ -215,7 +215,18 @@ def compute_treasury(grid: List[str], root: str = ROOT) -> dict:
     return {"status": "ok", "as_of_friday": use, "measure": "media de 13 semanas del score de flujos del bloque fiscal (v0.3, sólo flujos) → Φ⁻¹ del percentil as-of de la era (mín. 26 s) → recorte ±2,5; demeaned entre las divisas disponibles; Z = valor / σ agrupada de la era (as-of)",
             "label": LABEL_T, "ranking": rows, "missing": [NAMES[c] for c in CCYS if c not in rk], "n": len(rk), "signature": SIGNATURE_T,
             "sigma_pooled": round(meta[use]["sd_pooled"], 3) if meta[use].get("sd_pooled") else None,
+            "z_weekly": _z_weekly(Z, grid[:gi + 1]),
             "panel": {"replay_end": max(P["weekly"][c][-1][0] for c in CCYS if P["weekly"].get(c)), "live_extension": {NAMES[c]: P["definition"][c]["live_points_used"] for c in CCYS}}}
+
+
+HIST_WEEKS = 52
+
+
+def _z_weekly(Z: Dict[str, Dict[str, float]], grid: List[str]) -> Dict[str, List[list]]:
+    """last HIST_WEEKS Fridays of the cross-sectional Z per currency (null where the currency has no value) — for the ESTADO
+    chart (two bars per currency, BC and Tesoro, with their path backwards); presentation only, nothing new is measured."""
+    g = grid[-HIST_WEEKS:]
+    return {"fridays": g, **{NAMES[c]: [round(Z[c][d], 2) if Z[c].get(d) is not None else None for d in g] for c in CCYS}}
 
 
 def _tercile(rank: Optional[int], n: int) -> Optional[str]:
@@ -261,6 +272,10 @@ def compute(as_of: Optional[str] = None, root: str = ROOT) -> dict:
     except Exception as e:  # the Treasury column never withholds the BC ranking
         T = {"status": "unavailable", "reason": "treasury error: %s" % e, "label": LABEL_T, "signature": SIGNATURE_T}
     out["treasury"] = T
+    # chart feed (ESTADO): the two Z paths per currency, last HIST_WEEKS Fridays, one grid
+    hb, ht = out.pop("z_weekly", None), T.pop("z_weekly", None) if isinstance(T, dict) else None
+    if hb:
+        out["history"] = {"weeks": HIST_WEEKS, "bc": hb, "treasury": ht}
     bc = {r["ccy"]: r["rank"] for r in out.get("ranking", [])}
     tr = {r["ccy"]: r["rank"] for r in T.get("ranking", [])}
     labels, no_gate = {}, []
@@ -325,6 +340,7 @@ def compute_bc(as_of: Optional[str] = None, root: str = ROOT) -> dict:
             "n": len(rk), "missing": missing, "ranking": rows, "sigma_week": round(sd_week, 3) if sd_week else None, "sigma_pooled": round(meta[use]["sd_pooled"], 3) if meta[use].get("sd_pooled") else None,
             "sigma_week_p20_era": round(p20, 3) if p20 else None, "low_dispersion": low, "sigma_history_weeks": len(sd_hist),
             "pair_max_conviction": {"reserves_growth": rows[0]["ccy"], "reserves_drain": rows[-1]["ccy"], "z_gap": round(rows[0]["z"] - rows[-1]["z"], 2)} if len(rows) >= 2 else None,
+            "z_weekly": _z_weekly(Z, grid[:gi + 1]),
             "label": LABEL, "signature": SIGNATURE, "bootstrap_by_position": "no calculable con una sola sección transversal; pendiente (Kimi, ronda 3)",
             "panel": {"replay_end": max(P["weekly"][c][-1][0] for c in CCYS if P["weekly"].get(c)), "live_extension": {NAMES[c]: P["definition"][c]["live_points_used"] for c in CCYS}}}
 
