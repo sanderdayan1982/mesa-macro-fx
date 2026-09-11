@@ -108,7 +108,7 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
     <div id="regimePill" class="regime NONE">LOADING</div>
     <div id="asOf" class="pill">as of —</div>
     <div id="genAt" class="pill">gen —</div>
-    <div id="confPill" class="pill">CONF —</div>
+    <div id="confPill" class="pill" title="Calidad media de los datos (quality.system.average, 0–100): cobertura y frescura de las series. No es confianza del modelo ni probabilidad; la mesa no publica confianza numérica.">CALIDAD DATOS —</div>
     <div id="wat" class="pill">WAT --:--</div>
     <button class="btn" onclick="exportJSON()">JSON</button>
     <button class="btn" onclick="loadAll()">RELOAD</button>
@@ -124,7 +124,6 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
   <div class="tab" data-tab="history">HISTORY</div>
   <div class="tab" data-tab="system">SYSTEM</div>
 </div>
-<div class="wire"><b>WIRE</b><span id="wire">—</span></div>
 <div id="msg" class="msg info">Loading data/gbp/*.json…</div>
 <div class="main">
   <section class="section active" id="sec-command">
@@ -232,7 +231,7 @@ function render(){
   // header
   $('regimePill').className='regime '+(R.traffic_light||'NONE'); $('regimePill').textContent=(R.regime||'NO DATA').replace(/_/g,' ');
   $('asOf').textContent='as of '+(R.as_of||'—'); $('genAt').textContent='gen '+(R.generated_at||'').replace('T',' ').slice(0,16)+'Z';
-  const conf=(Q.system||{}).average; $('confPill').textContent='CONF '+(conf==null?'—':conf); $('confPill').className='pill '+(conf>=90?'ok':conf>=70?'warn':'err');
+  const conf=(Q.system||{}).average; $('confPill').textContent='CALIDAD DATOS '+(conf==null?'—':conf); $('confPill').className='pill '+(conf>=90?'ok':conf>=70?'warn':'err');
   const errs=(R.heartbeat||{}).errors||[]; const ageH=R.generated_at?(Date.now()-new Date(R.generated_at))/36e5:null;
   const stale=ageH!=null&&ageH>48;
   // a source served from its last good copy (note tagged *_last_good_copy) is a warning, not an error: the data is current, the source is blocked
@@ -240,7 +239,7 @@ function render(){
   $('msg').className='msg '+(hard.length?'alert':(copies.length||stale)?'warn':'ok');
   $('msg').textContent=hard.length?'⚠ source errors: '+hard.join(' | ')+(copies.length?' · last good copy: '+copies.join(' | '):''):copies.length?'ⓘ source blocked · last good copy served (data current): '+copies.join(' | '):stale?`⚠ data generated ${ageH.toFixed(0)}h ago — check the refresh workflow`:`All blocks loaded · regime ${R.regime} · flags ${(R.flags||[]).join(', ')||'none'} · weighted score ${R.weighted_score}`;
   // wire
-  const news=(D.news&&D.news.items)||[]; $('wire').innerHTML=news.length?news.slice(0,6).map(n=>`<a href="${n.link}" target="_blank" rel="noopener">${n.title}</a>`).join(''):'no headlines (RSS disabled or offline)';
+  const news=(D.news&&D.news.items)||[]; const _w=$('wire'); if(_w)_w.innerHTML=news.length?news.slice(0,6).map(n=>`<a href="${n.link}" target="_blank" rel="noopener">${n.title}</a>`).join(''):'no headlines (RSS disabled or offline)';
 
   // ── EXECUTIVE HEADER ──
   const res=e('central_bank','reserves'), spr=e('rates','overnight_minus_policy_bps'), pb=e('central_bank','policy_balance_sheet_wow_pct'), ns=e('fiscal','net_spending'), pm=e('central_bank','reserves_vs_pmrr_ceiling');
@@ -320,7 +319,7 @@ function render(){
     const gateTag=G?badge(G.pass?'PUERTA: PASA':'PUERTA: RETENIDO',G.pass?'SAFE':'STRESS'):'';
     const streaks=A.streaks?Object.entries(A.streaks).map(([k,v])=>k.replace('central_bank','BC').replace('fiscal','Tesoro')+' '+v+'.ª').join(' · '):'';
     const fr=['F1','F2','F3','F4','F5','F6','F7'].map(k=>`<div style="margin:6px 0"><span class="mono" style="color:var(--text2)">${k}</span> ${(DL[k]||'').replace(/^F\d\.\s*/,'')}</div>`).join('');
-    const rk=JF&&JF.ranking?`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th></tr></thead><tbody>${JF.ranking.map(r=>`<tr${r.ccy===A.currency?' style="font-weight:600"':''}><td>${r.rank}</td><td>${r.ccy}</td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td></tr>`).join('')}</tbody></table><div class="card-src">viernes ${JF.as_of_friday} · ${JF.label} · ${JF.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(JF.sigma_week)} · p20 era ${fN(JF.sigma_week_p20_era)})</div><div class="card-src">${(t=>t?'Tesoro '+t.rank+'.º de '+JF.treasury.n+(t.proxy?' (proxy)':'')+' · V13 '+fN(t.v13)+' · Z '+fN(t.z)+' · viernes '+JF.treasury.as_of_friday+' · '+JF.treasury.label:'Tesoro: no calculable')(JF.treasury&&JF.treasury.ranking?JF.treasury.ranking.find(r=>r.ccy===A.currency):null)} · etiqueta: <span style="color:${({abundante:'var(--green)',escasa:'var(--amber)',vulnerable:'var(--red)'})[JF.labels&&JF.labels[A.currency]]||'var(--text3)'}">${(JF.labels&&JF.labels[A.currency])||'—'}</span></div>`:'<div class="note">ranking no calculable</div>';
+    const rk=JF&&JF.ranking?`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th></tr></thead><tbody>${JF.ranking.map(r=>`<tr${r.ccy===A.currency?' style="font-weight:600"':''}><td>${r.rank}</td><td>${r.ccy}</td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td></tr>`).join('')}</tbody></table><div class="card-src">viernes ${JF.as_of_friday} · ${JF.label} · ${JF.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(JF.sigma_week)} · p20 era ${fN(JF.sigma_week_p20_era)})</div><div class="card-src">sello del ranking ${JF.stamp||'—'} · ${(M=>!M||!M.stamp||!JF.stamp?'ranking vigente no comprobable (data/mesa/jefe.json no disponible)':M.stamp===JF.stamp?'coincide con el vigente en ESTADO':'<span style="color:var(--amber)">anterior al vigente en ESTADO (sello '+M.stamp+', generado '+(M.generated_at||'—').slice(0,16).replace('T',' ')+'Z); manda ESTADO</span>')(D.mesa_jefe)}</div><div class="card-src">${(t=>t?'Tesoro '+t.rank+'.º de '+JF.treasury.n+(t.proxy?' (proxy)':'')+' · V13 '+fN(t.v13)+' · Z '+fN(t.z)+' · viernes '+JF.treasury.as_of_friday+' · '+JF.treasury.label:'Tesoro: no calculable')(JF.treasury&&JF.treasury.ranking?JF.treasury.ranking.find(r=>r.ccy===A.currency):null)} · etiqueta: <span style="color:${({abundante:'var(--green)',escasa:'var(--amber)',vulnerable:'var(--red)'})[JF.labels&&JF.labels[A.currency]]||'var(--text3)'}">${(JF.labels&&JF.labels[A.currency])||'—'}</span>${JF.low_dispersion&&JF.labels_tercile?' (retenida por compresión transversal; terciles: '+JF.labels_tercile[A.currency]+')':''}</div>`:'<div class="note">ranking no calculable</div>';
     $('agentGrid').innerHTML=textCard('daily_log — '+(A.header||''),`<div class="take">${A.published===false?'<b>'+A.narrative+'</b>':fr}</div><div class="card-src">plantilla ${A.template||''} · hash ${A.hash||''} · rachas: ${streaks} · degradado: ${(A.degraded||[]).join('; ')||'ninguno'}</div>`,'g8',badge((A.regime||'').replace(/_/g,' '),'blue')+gateTag)
       +textCard('Jefe de mesa — BC y Tesoro en paralelo',rk,'g4')
       +textCard('Cierre del modelo (2–3 líneas, sin cifras)',`<div class="take">${Array.isArray(take)?take.map(t=>'▸ '+t).join('<br>'):(take||'— pendiente: el cierre lo escribe el agente sobre este daily_log; el motor no lo redacta')}</div><div class="card-src">prohibiciones: ${(A.prohibitions||[]).join(' · ')}</div>`,'g8')
@@ -362,6 +361,7 @@ async function loadAll(){
   $('msg').className='msg info'; $('msg').textContent='Loading…';
   const results=await Promise.allSettled(FILES.map(f=>getJSON(f)));
   D={}; results.forEach((r,i)=>{ D[FILES[i]]=r.status==='fulfilled'?r.value:null; });
+  D.mesa_jefe=await tfetch(DATA_ROOT+'data/mesa/jefe.json'+VQ,6000).then(r=>r.ok?r.json():null).catch(()=>fetch('../data/mesa/jefe.json'+VQ,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)); // verdad única del jefe (sello)
   if(!D.regime&&!D.central_bank){ $('msg').className='msg alert'; $('msg').textContent='No data files found under '+BASE+' — run the ingestion workflow first.'; return; }
   try{ render(); }catch(err){ $('msg').className='msg alert'; $('msg').textContent='Render error: '+err.message; console.error(err); }
 }

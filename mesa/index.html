@@ -79,7 +79,7 @@ const CCYS=['usd','eur','gbp','jpy','chf','cad','aud','nzd'];
 const $=id=>document.getElementById(id);
 const fN=(v,d=2)=>v==null?'—':Number(v).toLocaleString('es-ES',{maximumFractionDigits:d,minimumFractionDigits:d});
 const BN={central_bank:'BC',fiscal:'TESORO',rates:'TIPOS',banking:'BANCA'};
-const LABC={abundante:'var(--green)',escasa:'var(--amber)',vulnerable:'var(--red)','sin señal':'var(--text3)'};
+const LABC={abundante:'var(--green)',escasa:'var(--amber)',vulnerable:'var(--red)','sin señal':'var(--text3)','sin señal (compresión)':'var(--text3)'};
 const ES={fresh:'fresco',stale:'stale',proxy:'proxy',unavailable:'no disp.',degraded:'degradado'};
 const STALE_H=30; // a refresh older than this (hours) is flagged
 function age(iso){if(!iso)return null;const h=(Date.now()-new Date(iso).getTime())/36e5;return h;}
@@ -111,6 +111,7 @@ async function load(){
     const R=r.regimes||{};const cb=(R.central_bank||{}).regime||'—',fi=(R.fiscal||{}).regime||'—';const s=(a&&a.streaks)||{};
     const deg=(a&&a.degraded)||[];
     const rank=J&&J.ranking?J.ranking.find(x=>x.ccy===C):null;
+    if(a&&a.jefe&&a.jefe.stamp&&J&&J.stamp&&a.jefe.stamp!==J.stamp)issues.push({lvl:'warn',t:`${C}: el F7 del daily_log lleva un ranking del jefe anterior al vigente (sello ${a.jefe.stamp} ≠ ${J.stamp}); manda ESTADO`});
     const trk=J&&J.treasury&&J.treasury.ranking?J.treasury.ranking.find(x=>x.ccy===C):null; const lab=J&&J.labels?J.labels[C]:null;
     return `<a class="card" href="../${c}/"><div class="top"><span class="ccy">${C}</span><span class="regime ${r.traffic_light||'NONE'}">${(r.regime||'—').replace(/_/g,' ')}</span></div>
       <div class="blocks">${blocks}</div>
@@ -144,8 +145,8 @@ async function load(){
         <div class="lg"><span><i style="background:var(--blue)"></i>BC Δ13 s reservas (Z)</span><span><i style="background:var(--gold)"></i>Tesoro flujo fiscal 13 s (Z)</span><span>${fr[0]} → ${fr[fr.length-1]}</span></div></div>`;}).join('');}
   else $('plumb').innerHTML='<div class="issue err">sin historia en data/mesa/jefe.json (lote jefe v2 pendiente de refresco)</div>';
   if(J&&J.ranking){const T=J.treasury&&J.treasury.ranking?J.treasury:null;const TR=c=>T?T.ranking.find(x=>x.ccy===c):null;const LB=c=>J.labels?J.labels[c]:null;
-    $('jefe').innerHTML=`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th><th>Tesoro #</th><th>V13</th><th>Z Tesoro</th><th>Etiqueta</th></tr></thead><tbody>${J.ranking.map(r=>{const t=TR(r.ccy),l=LB(r.ccy);return `<tr><td>${r.rank}</td><td><a style="color:var(--gold);text-decoration:none" href="../${r.ccy.toLowerCase()}/">${r.ccy}</a></td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td><td>${t?t.rank+(t.proxy?' (proxy)':''):'—'}</td><td>${t?fN(t.v13):'—'}</td><td>${t?fN(t.z):'—'}</td><td style="color:${l?LABC[l]:'var(--text3)'}">${l||'—'}</td></tr>`;}).join('')}</tbody></table>
-    <div class="src">viernes ${J.as_of_friday} · BC: ${J.label} · ${J.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(J.sigma_week,3)} · p20 era ${fN(J.sigma_week_p20_era,3)}) · par BC: ${J.pair_max_conviction?J.pair_max_conviction.reserves_growth+' / '+J.pair_max_conviction.reserves_drain+' (brecha Z '+fN(J.pair_max_conviction.z_gap)+')':'—'}${T?' · Tesoro (viernes '+T.as_of_friday+'): '+T.label+'; V13 = media 13 s del flujo fiscal; (proxy) GBP/NZD/CHF':' · Tesoro: no calculable'} · etiqueta por terciles de BC y Tesoro y puerta de precio; sin par neto</div>`;}
+    $('jefe').innerHTML=`<table><thead><tr><th>#</th><th>Divisa</th><th>Δ13 s reservas % stock</th><th>Z</th><th>sem. ant.</th><th>hace 4 s</th><th>Tesoro #</th><th>V13</th><th>Z Tesoro</th><th>Etiqueta</th></tr></thead><tbody>${J.ranking.map(r=>{const t=TR(r.ccy),l=LB(r.ccy);return `<tr><td>${r.rank}</td><td><a style="color:var(--gold);text-decoration:none" href="../${r.ccy.toLowerCase()}/">${r.ccy}</a></td><td>${fN(r.d13_pct)}</td><td>${fN(r.z)}</td><td>${r.rank_prev_week??'—'}</td><td>${r.rank_4w_ago??'—'}</td><td>${t?t.rank+(t.proxy?' (proxy)':''):'—'}</td><td>${t?fN(t.v13):'—'}</td><td>${t?fN(t.z):'—'}</td><td style="color:${l?LABC[l]:'var(--text3)'}" title="${J.labels_tercile&&J.labels_tercile[r.ccy]?'terciles: '+J.labels_tercile[r.ccy]:''}">${l||'—'}</td></tr>`;}).join('')}</tbody></table>
+    <div class="src">sello ${J.stamp||'—'} · generado ${J.generated_at?J.generated_at.slice(0,16).replace('T',' ')+'Z':'—'} (verdad única: el ranking vigente es este; los F7 de cada divisa citan el sello que vieron) · viernes ${J.as_of_friday} · BC: ${J.label} · ${J.low_dispersion?'dispersión transversal baja':'dispersión normal'} (σ semanal ${fN(J.sigma_week,3)} · p20 era ${fN(J.sigma_week_p20_era,3)}) · par BC: ${J.pair_max_conviction?J.pair_max_conviction.reserves_growth+' / '+J.pair_max_conviction.reserves_drain+' (brecha Z '+fN(J.pair_max_conviction.z_gap)+')':'—'}${T?' · Tesoro (viernes '+T.as_of_friday+'): '+T.label+'; V13 = media 13 s del flujo fiscal; (proxy) GBP/NZD/CHF':' · Tesoro: no calculable'} · ${J.low_dispersion?'etiqueta retenida por compresión transversal (σ semanal < p20 de la era); lectura por terciles en labels_tercile':'etiqueta por terciles de BC y Tesoro y puerta de precio'}; sin par neto</div>`;}
   else $('jefe').innerHTML='<div class="issue err">data/mesa/jefe.json no disponible</div>';
   const bad=issues.filter(i=>i.lvl==='err').length;
   $('msg').className='msg '+(bad?'err':issues.length?'warn':'ok');
