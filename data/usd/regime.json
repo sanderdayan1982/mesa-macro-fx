@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-11T01:28:50+00:00",
- "as_of": "2026-09-10",
+ "generated_at": "2026-09-11T21:26:42+00:00",
+ "as_of": "2026-09-11",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.912,
+ "weighted_score": 0.79,
  "block_scores": {
   "central_bank": -0.1,
   "rates": 1.5,
-  "fiscal": 1.51,
+  "fiscal": 1.02,
   "banking": 2.0
  },
  "weights": {
@@ -25,7 +25,7 @@
    "score": -0.1,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-10",
+   "as_of": "2026-09-11",
    "detail": "WRESBAL NERVOUS · NL Δ% 1.5273 (RISK_ON) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "DRAIN",
    "cuts": {
@@ -41,10 +41,10 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.5,
+    "effective_score": -0.4,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "recent": [
      [
       "2026-09-08",
@@ -56,6 +56,10 @@
      ],
      [
       "2026-09-10",
+      -0.1
+     ],
+     [
+      "2026-09-11",
       -0.1
      ]
     ],
@@ -84,11 +88,11 @@
   },
   "fiscal": {
    "regime": "NEUTRAL",
-   "score": 1.51,
+   "score": 1.02,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-09",
-   "detail": "NTF 37169.0 (within normal range) · Z 0.6883 · 7d 163908.0 · 60d 779883.0 (Z250 2.4562) · FYTD 1802541.0 vs prior FY 5.75% · structural 2.0 · surprise 1.02 · TGA close 843705.0 · −ΔTGA 36314.0",
+   "as_of": "2026-09-10",
+   "detail": "NTF -2172.0 (within normal range) · Z -0.5978 · 7d 140967.0 · 60d 801095.0 (Z250 2.56) · FYTD 1800369.0 vs prior FY 4.21% · structural 2.0 · surprise 0.05 · TGA close 818110.0 · −ΔTGA 25595.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.215,
@@ -103,10 +107,10 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 1.0,
+    "effective_score": 1.005,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-09",
+    "as_of": "2026-09-10",
     "recent": [
      [
       "2026-09-04",
@@ -119,6 +123,10 @@
      [
       "2026-09-09",
       1.51
+     ],
+     [
+      "2026-09-10",
+      1.02
      ]
     ],
     "pending_days": null
@@ -127,7 +135,7 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "daily_surprise": 1.02
+     "daily_surprise": 0.05
     },
     "level": {
      "structural_ntf_60d": 2.0
@@ -140,14 +148,14 @@
      -2.0,
      2.0
     ],
-    "score_v02": 1.51,
-    "score_flows_only": 0.51
+    "score_v02": 1.02,
+    "score_flows_only": 0.03
    }
   },
   "general": {
    "regime": "NEUTRAL",
-   "score": 0.544,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.54 shown for context",
+   "score": 0.348,
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.35 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -172,6 +180,7 @@
     }
    },
    "engine": "0.3",
+   "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-06-01",
    "era_weeks": 223,
@@ -195,7 +204,7 @@
   "reserves_in_range": false,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -1.0,
+  "spread_bps": -3.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -231,7 +240,7 @@
   {
    "id": "L2",
    "name": "Reserve scarcity building (Sept-2019 pattern)",
-   "bias": "USD-BULLISH",
+   "bias": "RESERVE SCARCITY",
    "active": true,
    "conditions_met": 2,
    "total": 3,
@@ -340,7 +349,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }

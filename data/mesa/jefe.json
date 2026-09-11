@@ -147,7 +147,7 @@
     "rank": 1,
     "v13": 0.4,
     "pct_era": 0.883,
-    "z": 1.32,
+    "z": 1.33,
     "rank_prev_week": 2,
     "rank_4w_ago": 5,
     "zero_cross": true,
@@ -190,8 +190,8 @@
     "ccy": "USD",
     "rank": 5,
     "v13": 0.34,
-    "pct_era": 0.471,
-    "z": 0.09,
+    "pct_era": 0.46,
+    "z": 0.07,
     "rank_prev_week": 4,
     "rank_4w_ago": 3,
     "zero_cross": false,
@@ -213,7 +213,7 @@
     "rank": 7,
     "v13": -0.38,
     "pct_era": 0.129,
-    "z": -0.94,
+    "z": -0.93,
     "rank_prev_week": 7,
     "rank_4w_ago": 6,
     "zero_cross": true,
@@ -224,7 +224,7 @@
     "rank": 8,
     "v13": -0.22,
     "pct_era": 0.005,
-    "z": -2.27,
+    "z": -2.26,
     "rank_prev_week": 8,
     "rank_4w_ago": 4,
     "zero_cross": true,
@@ -244,7 +244,7 @@
     "JPY": 1,
     "CHF": 1,
     "NZD": 1,
-    "USD": 0,
+    "USD": 1,
     "EUR": 1
    }
   }
@@ -846,7 +846,7 @@
     0.5,
     0.07,
     0.95,
-    1.32
+    1.33
    ],
    "GBP": [
     0.83,
@@ -900,7 +900,7 @@
     -0.81,
     -1.0,
     -1.01,
-    -0.94
+    -0.93
    ],
    "AUD": [
     null,
@@ -1008,7 +1008,7 @@
     -0.29,
     -0.04,
     -1.59,
-    -2.27
+    -2.26
    ],
    "CHF": [
     0.14,
@@ -1170,7 +1170,7 @@
     0.51,
     0.48,
     0.36,
-    0.09
+    0.07
    ],
    "EUR": [
     -0.59,
@@ -1228,7 +1228,7 @@
    ]
   }
  },
- "labels": {
+ "labels_tercile": {
   "CAD": "abundante",
   "GBP": "sin señal",
   "AUD": "abundante",
@@ -1238,5 +1238,17 @@
   "USD": "sin señal",
   "EUR": "sin señal"
  },
- "labels_rule": "terciles (techo de n/3) de las Z de BC y Tesoro + puerta de precio (regimes.general.price_gate); vulnerable sólo con puerta activa"
+ "labels": {
+  "CAD": "sin señal (compresión)",
+  "GBP": "sin señal (compresión)",
+  "AUD": "sin señal (compresión)",
+  "JPY": "sin señal (compresión)",
+  "CHF": "sin señal (compresión)",
+  "NZD": "sin señal (compresión)",
+  "USD": "sin señal (compresión)",
+  "EUR": "sin señal (compresión)"
+ },
+ "labels_rule": "sin señal (compresión): σ semanal 4.301 < p20 de la era 4.442; la lectura por terciles queda en labels_tercile",
+ "generated_at": "2026-09-11T21:26:42+00:00",
+ "stamp": "f1424974fc58"
 }
