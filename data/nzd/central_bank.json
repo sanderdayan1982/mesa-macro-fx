@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-09-11T05:21:03+00:00",
+ "generated_at": "2026-09-11T08:36:47+00:00",
  "as_of": "2026-09-10",
  "equivalence_quality": "high",
  "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
@@ -13,7 +13,7 @@
   "series_expected": 24,
   "last_fetch_ok": true,
   "errors": [
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-11); nzdm_tbill_1887.html (snapshot 2026-09-11); nzdm_tbill_1886.html (snapshot 2026-09-11); nzdm_tbill_1885.html (snapshot 2026-09-11)"
+   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a39558689ea82de1-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name"
   ],
   "series_pending": 0
  },
@@ -5636,6 +5636,8 @@
     "2026-09-14"
    ],
    "settlement": [
+    "2026-09-09",
+    "2026-09-15",
     "2026-09-16",
     "2026-09-22",
     "2026-09-23",
@@ -5715,6 +5717,11 @@
     "date": "2026-09-09",
     "label": "NEUTRAL",
     "score": -0.5
+   },
+   {
+    "date": "2026-09-10",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-09-10",
