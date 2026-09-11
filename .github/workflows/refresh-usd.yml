@@ -66,7 +66,9 @@ jobs:
       - name: Validate JSON against schema
         run: python -m ingest.validate --ccy usd
       - name: Test gate (jefe v2, activation v0.4, changelog) — blocks publication if the suite fails
-        run: python -m ingest.tests_v04 --ccy activation
+        run: |
+          pip install -q numpy scipy   # the activation checks compare the live print with replay_v04 (numpy) and Φ⁻¹ with scipy
+          python -m ingest.tests_v04 --ccy activation
       - name: Anti-invention gate (daily_log)
         run: python -m ingest.gate --ccy usd || echo "::warning::daily_log withheld by the anti-invention gate (see data/usd/agent.json)"
       - name: Commit data
