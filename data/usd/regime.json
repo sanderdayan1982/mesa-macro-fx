@@ -1,16 +1,16 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-11T21:26:42+00:00",
+ "generated_at": "2026-09-11T21:49:42+00:00",
  "as_of": "2026-09-11",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.79,
+ "weighted_score": 0.67,
  "block_scores": {
   "central_bank": -0.1,
   "rates": 1.5,
   "fiscal": 1.02,
-  "banking": 2.0
+  "banking": 0.8
  },
  "weights": {
   "central_bank": 0.4,
@@ -330,7 +330,7 @@
    "name": "Credit contraction",
    "bias": "RISK-OFF",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "details": [
     {
@@ -343,13 +343,13 @@
     },
     {
      "condition": "banking.borrowings_wow_pct level >= WATCH",
-     "met": false
+     "met": true
     }
    ]
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "all",
   "backfill": false,
   "errors": []
  }

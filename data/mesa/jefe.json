@@ -1249,6 +1249,586 @@
   "EUR": "sin señal"
  },
  "labels_rule": "terciles (techo de n/3) de las Z de BC y Tesoro + puerta de precio (regimes.general.price_gate); vulnerable sólo con puerta activa",
- "generated_at": "2026-09-11T21:34:45+00:00",
+ "completeness": {
+  "CAD": {
+   "bc": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "A",
+    "replay_stability": null,
+    "replay_coverage_era": 0.0,
+    "replay_generated_at": "2026-09-11T14:18:12Z"
+   },
+   "treasury": {
+    "engine": "v0.4",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "medium-high",
+    "replay_checks": [],
+    "replay_selected": "B",
+    "replay_stability": "estable",
+    "replay_coverage_era": 0.997,
+    "replay_generated_at": "2026-09-11T14:18:12Z"
+   }
+  },
+  "GBP": {
+   "bc": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "A",
+    "replay_stability": null,
+    "replay_coverage_era": 0.0,
+    "replay_generated_at": "2026-09-11T14:18:19Z"
+   },
+   "treasury": {
+    "engine": "v0.3",
+    "truth": "proxy",
+    "proxy": true,
+    "one_sided": false,
+    "equivalence_quality": "medium",
+    "replay_checks": [
+     "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
+    ],
+    "replay_selected": "A",
+    "replay_stability": "estable",
+    "replay_coverage_era": 1.0,
+    "replay_generated_at": "2026-09-11T14:18:19Z"
+   }
+  },
+  "AUD": {
+   "bc": {
+    "engine": "v0.4",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "B",
+    "replay_stability": "estable",
+    "replay_coverage_era": 1.0,
+    "replay_generated_at": "2026-09-11T14:18:37Z"
+   },
+   "treasury": {
+    "engine": "v0.4",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "medium-high",
+    "replay_checks": [],
+    "replay_selected": "B",
+    "replay_stability": "estable",
+    "replay_coverage_era": 0.986,
+    "replay_generated_at": "2026-09-11T14:18:37Z"
+   }
+  },
+  "JPY": {
+   "bc": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "A",
+    "replay_stability": null,
+    "replay_coverage_era": null,
+    "replay_generated_at": "2026-09-11T14:18:46Z"
+   },
+   "treasury": {
+    "engine": "v0.4",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "B",
+    "replay_stability": "estable",
+    "replay_coverage_era": 1.0,
+    "replay_generated_at": "2026-09-11T14:18:46Z"
+   }
+  },
+  "CHF": {
+   "bc": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "B",
+    "replay_stability": "estable",
+    "replay_coverage_era": 1.0,
+    "replay_generated_at": "2026-09-11T14:18:33Z"
+   },
+   "treasury": {
+    "engine": "v0.4",
+    "truth": "proxy",
+    "proxy": true,
+    "one_sided": false,
+    "equivalence_quality": "medium-low",
+    "replay_checks": [],
+    "replay_selected": "B",
+    "replay_stability": "estable",
+    "replay_coverage_era": 1.0,
+    "replay_generated_at": "2026-09-11T14:18:33Z"
+   }
+  },
+  "NZD": {
+   "bc": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "A",
+    "replay_stability": null,
+    "replay_coverage_era": 0.1,
+    "replay_generated_at": "2026-09-11T14:18:26Z"
+   },
+   "treasury": {
+    "engine": "v0.3",
+    "truth": "proxy",
+    "proxy": true,
+    "one_sided": false,
+    "equivalence_quality": "medium",
+    "replay_checks": [
+     "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
+    ],
+    "replay_selected": "A",
+    "replay_stability": "estable",
+    "replay_coverage_era": 1.0,
+    "replay_generated_at": "2026-09-11T14:18:26Z"
+   }
+  },
+  "USD": {
+   "bc": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": null,
+    "replay_stability": null,
+    "replay_coverage_era": null,
+    "replay_generated_at": null
+   },
+   "treasury": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": null,
+    "replay_stability": null,
+    "replay_coverage_era": null,
+    "replay_generated_at": null
+   }
+  },
+  "EUR": {
+   "bc": {
+    "engine": "v0.3",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "high",
+    "replay_checks": [],
+    "replay_selected": "A",
+    "replay_stability": null,
+    "replay_coverage_era": null,
+    "replay_generated_at": "2026-09-11T14:18:41Z"
+   },
+   "treasury": {
+    "engine": "v0.4",
+    "truth": "contable",
+    "proxy": false,
+    "one_sided": false,
+    "equivalence_quality": "medium-low",
+    "replay_checks": [],
+    "replay_selected": "B",
+    "replay_stability": "estable",
+    "replay_coverage_era": 1.0,
+    "replay_generated_at": "2026-09-11T14:18:41Z"
+   }
+  }
+ },
+ "evidence": {
+  "rule": "una mirada por prerregistro; BH (Benjamini–Hochberg) por familia; bootstrap por bloques; nada entra en el ranking sin pasar su test; los cortes v0.4 salen del replay (escalera: verdad contable → B marginal → robustez), no de la predicción",
+  "tests": [
+   {
+    "id": "T1",
+    "column": "Tesoro",
+    "hypothesis": "Φ⁻¹ del percentil de era de la media 13 s del flujo fiscal predice el retorno residual a 13 s",
+    "preregistered": "2026-09-09 (adjudicación ronda 3 §3)",
+    "run": "2026-09-11",
+    "horizon_weeks": 13,
+    "ic": {
+     "mean": 0.1248,
+     "ci95": [
+      0.0287,
+      0.2152
+     ],
+     "p": 0.0084,
+     "n": 163,
+     "block": 3
+    },
+    "q_bh": 0.0126,
+    "first_half": 0.1262,
+    "second_half": 0.1233,
+    "tercile_spread_pct": {
+     "mean": 0.0989,
+     "ci95": [
+      -0.4652,
+      0.642
+     ],
+     "p": 0.727,
+     "n": 163,
+     "block": 3
+    },
+    "excluded": [],
+    "status": "validado"
+   },
+   {
+    "id": "T2",
+    "column": "Tesoro",
+    "hypothesis": "misma medida a 26 s",
+    "preregistered": "2026-09-09 (adjudicación ronda 3 §3)",
+    "run": "2026-09-11",
+    "horizon_weeks": 26,
+    "ic": {
+     "mean": 0.1771,
+     "ci95": [
+      0.0797,
+      0.2751
+     ],
+     "p": 0.0002,
+     "n": 150,
+     "block": 4
+    },
+    "q_bh": 0.0006,
+    "first_half": 0.2424,
+    "second_half": 0.1118,
+    "tercile_spread_pct": {
+     "mean": 1.1348,
+     "ci95": [
+      0.4816,
+      1.8228
+     ],
+     "p": 0.001,
+     "n": 150,
+     "block": 3
+    },
+    "excluded": [],
+    "status": "validado"
+   },
+   {
+    "id": "T3",
+    "column": "Tesoro",
+    "hypothesis": "−Δ13 s de la cuenta del gobierno en % de reservas, a 13 s (GBP excluido: sin cuenta)",
+    "preregistered": "2026-09-09 (adjudicación ronda 3 §3)",
+    "run": "2026-09-11",
+    "horizon_weeks": 13,
+    "ic": {
+     "mean": 0.0471,
+     "ci95": [
+      -0.0246,
+      0.117
+     ],
+     "p": 0.21,
+     "n": 319,
+     "block": 3
+    },
+    "q_bh": 0.21,
+    "first_half": 0.0553,
+    "second_half": 0.0388,
+    "tercile_spread_pct": {
+     "mean": 0.6626,
+     "ci95": [
+      -0.0349,
+      1.354
+     ],
+     "p": 0.0598,
+     "n": 319,
+     "block": 3
+    },
+    "excluded": [
+     "gbp"
+    ],
+    "status": "no pasa"
+   },
+   {
+    "id": "T4-13",
+    "column": "Tesoro (aceleración)",
+    "hypothesis": "la aceleración (Δ de la media 13 s) añade IC parcial sobre la velocidad a 13 s",
+    "preregistered": "2026-09-11 (adjudicación fontanería §2)",
+    "run": "2026-09-11",
+    "horizon_weeks": 13,
+    "ic": {
+     "mean": -0.055,
+     "ci95": [
+      -0.1259,
+      0.0169
+     ],
+     "p": 0.1368,
+     "n": 146,
+     "block": 1
+    },
+    "q_bh": 0.1368,
+    "status": "no pasa → sólo marca de cruce por cero (zero_cross)"
+   },
+   {
+    "id": "T4-26",
+    "column": "Tesoro (aceleración)",
+    "hypothesis": "la aceleración (Δ de la media 13 s) añade IC parcial sobre la velocidad a 26 s",
+    "preregistered": "2026-09-11 (adjudicación fontanería §2)",
+    "run": "2026-09-11",
+    "horizon_weeks": 26,
+    "ic": {
+     "mean": 0.0741,
+     "ci95": [
+      -0.0214,
+      0.1674
+     ],
+     "p": 0.1294,
+     "n": 137,
+     "block": 2
+    },
+    "q_bh": 0.1368,
+    "status": "no pasa → sólo marca de cruce por cero (zero_cross)"
+   }
+  ],
+  "activations": [
+   {
+    "ccy": "CAD",
+    "block": "central_bank",
+    "engine": "v0.3",
+    "replay_selected": "A",
+    "checks": [],
+    "note": null,
+    "coverage_era": 0.0,
+    "stability": null,
+    "B_rho_12w": null,
+    "B_p_12w": null,
+    "replay_generated_at": "2026-09-11T14:18:12Z"
+   },
+   {
+    "ccy": "CAD",
+    "block": "fiscal",
+    "engine": "v0.4",
+    "replay_selected": "B",
+    "checks": [],
+    "note": null,
+    "coverage_era": 0.997,
+    "stability": "estable",
+    "B_rho_12w": -0.103,
+    "B_p_12w": 0.088,
+    "replay_generated_at": "2026-09-11T14:18:12Z"
+   },
+   {
+    "ccy": "GBP",
+    "block": "central_bank",
+    "engine": "v0.3",
+    "replay_selected": "A",
+    "checks": [],
+    "note": null,
+    "coverage_era": 0.0,
+    "stability": null,
+    "B_rho_12w": null,
+    "B_p_12w": null,
+    "replay_generated_at": "2026-09-11T14:18:19Z"
+   },
+   {
+    "ccy": "GBP",
+    "block": "fiscal",
+    "engine": "v0.3",
+    "replay_selected": "A",
+    "checks": [
+     "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
+    ],
+    "note": "proxy: residual BoE + emisión neta DMO anclados al CGNCR; sin cuenta del gobierno pública",
+    "coverage_era": 1.0,
+    "stability": "estable",
+    "B_rho_12w": -0.145,
+    "B_p_12w": 0.0965,
+    "replay_generated_at": "2026-09-11T14:18:19Z"
+   },
+   {
+    "ccy": "AUD",
+    "block": "central_bank",
+    "engine": "v0.4",
+    "replay_selected": "B",
+    "checks": [],
+    "note": null,
+    "coverage_era": 1.0,
+    "stability": "estable",
+    "B_rho_12w": 0.021,
+    "B_p_12w": 0.8876,
+    "replay_generated_at": "2026-09-11T14:18:37Z"
+   },
+   {
+    "ccy": "AUD",
+    "block": "fiscal",
+    "engine": "v0.4",
+    "replay_selected": "B",
+    "checks": [],
+    "note": null,
+    "coverage_era": 0.986,
+    "stability": "estable",
+    "B_rho_12w": -0.077,
+    "B_p_12w": 0.5842,
+    "replay_generated_at": "2026-09-11T14:18:37Z"
+   },
+   {
+    "ccy": "JPY",
+    "block": "central_bank",
+    "engine": "v0.3",
+    "replay_selected": "A",
+    "checks": [],
+    "note": null,
+    "coverage_era": null,
+    "stability": null,
+    "B_rho_12w": null,
+    "B_p_12w": null,
+    "replay_generated_at": "2026-09-11T14:18:46Z"
+   },
+   {
+    "ccy": "JPY",
+    "block": "fiscal",
+    "engine": "v0.4",
+    "replay_selected": "B",
+    "checks": [],
+    "note": null,
+    "coverage_era": 1.0,
+    "stability": "estable",
+    "B_rho_12w": 0.098,
+    "B_p_12w": 0.3953,
+    "replay_generated_at": "2026-09-11T14:18:46Z"
+   },
+   {
+    "ccy": "CHF",
+    "block": "central_bank",
+    "engine": "v0.3",
+    "replay_selected": "B",
+    "checks": [],
+    "note": "replay B pero no activado: la impresión completa (repos y SNB Bills) llega con 35 días de retraso; v0.3 semanal (3 días) manda",
+    "coverage_era": 1.0,
+    "stability": "estable",
+    "B_rho_12w": 0.085,
+    "B_p_12w": 0.2899,
+    "replay_generated_at": "2026-09-11T14:18:33Z"
+   },
+   {
+    "ccy": "CHF",
+    "block": "fiscal",
+    "engine": "v0.4",
+    "replay_selected": "B",
+    "checks": [],
+    "note": null,
+    "coverage_era": 1.0,
+    "stability": "estable",
+    "B_rho_12w": 0.182,
+    "B_p_12w": 0.1079,
+    "replay_generated_at": "2026-09-11T14:18:33Z"
+   },
+   {
+    "ccy": "NZD",
+    "block": "central_bank",
+    "engine": "v0.3",
+    "replay_selected": "A",
+    "checks": [],
+    "note": null,
+    "coverage_era": 0.1,
+    "stability": null,
+    "B_rho_12w": null,
+    "B_p_12w": null,
+    "replay_generated_at": "2026-09-11T14:18:26Z"
+   },
+   {
+    "ccy": "NZD",
+    "block": "fiscal",
+    "engine": "v0.3",
+    "replay_selected": "A",
+    "checks": [
+     "ONE_SIDED: el corte de inyección no cruza el cero (la serie no cambia de signo en la era; el 'régimen' opuesto sería sólo menos drenaje/inyección)"
+    ],
+    "note": "se queda v0.3: ONE_SIDED por economía (sin pata del gasto; el Tesoro NZ no publica cuenta diaria/semanal)",
+    "coverage_era": 1.0,
+    "stability": "estable",
+    "B_rho_12w": -0.045,
+    "B_p_12w": 0.5812,
+    "replay_generated_at": "2026-09-11T14:18:26Z"
+   },
+   {
+    "ccy": "USD",
+    "block": "central_bank",
+    "engine": "v0.3",
+    "replay_selected": null,
+    "checks": null,
+    "note": null,
+    "coverage_era": null,
+    "stability": null,
+    "B_rho_12w": null,
+    "B_p_12w": null,
+    "replay_generated_at": null
+   },
+   {
+    "ccy": "USD",
+    "block": "fiscal",
+    "engine": "v0.3",
+    "replay_selected": null,
+    "checks": null,
+    "note": null,
+    "coverage_era": null,
+    "stability": null,
+    "B_rho_12w": null,
+    "B_p_12w": null,
+    "replay_generated_at": null
+   },
+   {
+    "ccy": "EUR",
+    "block": "central_bank",
+    "engine": "v0.3",
+    "replay_selected": "A",
+    "checks": [],
+    "note": null,
+    "coverage_era": null,
+    "stability": null,
+    "B_rho_12w": null,
+    "B_p_12w": null,
+    "replay_generated_at": "2026-09-11T14:18:41Z"
+   },
+   {
+    "ccy": "EUR",
+    "block": "fiscal",
+    "engine": "v0.4",
+    "replay_selected": "B",
+    "checks": [],
+    "note": null,
+    "coverage_era": 1.0,
+    "stability": "estable",
+    "B_rho_12w": -0.071,
+    "B_p_12w": 0.3428,
+    "replay_generated_at": "2026-09-11T14:18:41Z"
+   }
+  ],
+  "files": [
+   "calibration/conviction/results.json",
+   "calibration/conviction/T123.json",
+   "calibration/conviction/T4.json",
+   "calibration/<ccy>_v04/replay_v04.json"
+  ]
+ },
+ "generated_at": "2026-09-11T21:49:42+00:00",
  "stamp": "00b723f4603b"
 }
