@@ -1,14 +1,14 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-11T01:52:42+00:00",
- "as_of": "2026-09-09",
- "config_version": "0.4.0",
+ "generated_at": "2026-09-11T05:27:14+00:00",
+ "as_of": "2026-09-10",
+ "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.233,
+ "weighted_score": 0.171,
  "block_scores": {
   "central_bank": 0.67,
-  "rates": 0.25,
+  "rates": 0.0,
   "fiscal": -0.39,
   "banking": 0.0
  },
@@ -22,40 +22,43 @@
  "regimes": {
   "central_bank": {
    "regime": "NEUTRAL",
-   "score": 0.67,
+   "score": -0.1077,
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-09-09",
-   "detail": "ES SAFE (above demand range) · ΔES d/d 775.0 · BS liq NEUTRAL · OMO/ES 0.2455 · SF+25 0.0",
+   "detail": "ES SAFE (above demand range) · ΔES d/d 595.0 · BS liq NEUTRAL · OMO/ES 0.2447 · SF+25 0.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
-    "injection_enter": 1.0,
-    "injection_exit": 1.0,
-    "drain_enter": 0.085,
-    "drain_exit": 0.335
+    "injection_enter": 0.466,
+    "injection_exit": 0.2928,
+    "drain_enter": -0.4831,
+    "drain_exit": -0.2075
    },
    "evidence": {
-    "injection": "provisional_era_corta",
-    "drain": "provisional_era_corta"
+    "injection": "frecuencia_de_era",
+    "drain": "frecuencia_de_era",
+    "stability": "estable",
+    "B12_rho": 0.021,
+    "B12_p_bootstrap": 0.8876,
+    "coverage_era": 1.0,
+    "sign_warning": false,
+    "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.67,
+    "effective_score": -0.1077,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-09",
     "recent": [
      [
-      "2026-09-08",
-      0.67
-     ],
-     [
       "2026-09-09",
-      0.67
+      -0.1077
      ]
     ],
-    "pending_days": null
+    "pending_days": null,
+    "engine": "0.4"
    },
    "components": {
     "mode": "mean2",
@@ -74,40 +77,100 @@
     ],
     "score_v02": 0.67,
     "score_flows_only": 0.17
+   },
+   "engine": "0.4",
+   "component": {
+    "name": "omo_net_5d",
+    "source": "omo_net_daily",
+    "kind": "daily5",
+    "lag": 1,
+    "sign": 1,
+    "denominator": "central_bank.reserves",
+    "reconciliation": "OMO por operación; stock = A3 AORROMO ±0,1 %"
+   },
+   "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
+   "print": {
+    "raw": -183.0,
+    "denominator": 169961.0,
+    "denominator_date": "2026-09-02",
+    "today": "2026-09-11",
+    "note": null
+   },
+   "v03_shadow": {
+    "regime": "NEUTRAL",
+    "score": 0.67,
+    "raw_regime": "NEUTRAL",
+    "cuts": {
+     "injection_enter": 1.0,
+     "injection_exit": 1.0,
+     "drain_enter": 0.085,
+     "drain_exit": 0.335
+    },
+    "as_of": "2026-09-10",
+    "state": {
+     "confirmed": "NEUTRAL",
+     "raw": "NEUTRAL",
+     "effective_score": 0.67,
+     "candidate": null,
+     "candidate_since": null,
+     "as_of": "2026-09-10",
+     "recent": [
+      [
+       "2026-09-08",
+       0.67
+      ],
+      [
+       "2026-09-09",
+       0.67
+      ],
+      [
+       "2026-09-10",
+       0.67
+      ]
+     ],
+     "pending_days": null
+    }
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
-   "score": -0.39,
+   "score": -2.1375,
    "label": "DRAIN",
    "traffic_light": "RED",
    "as_of": "2026-09-02",
    "detail": "flow -3633.0 (Z -0.3872) · 4w cum -27777.0 (RISK_OFF) · gov deposits 80294.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
-    "injection_enter": 0.53,
-    "injection_exit": 0.34,
-    "drain_enter": -0.555,
-    "drain_exit": -0.37
+    "injection_enter": 2.7248,
+    "injection_exit": 1.6897,
+    "drain_enter": -2.8347,
+    "drain_exit": -1.8796
    },
    "evidence": {
-    "injection": "provisional_era_corta",
-    "drain": "provisional_era_corta"
+    "injection": "frecuencia_de_era",
+    "drain": "frecuencia_de_era",
+    "stability": "estable",
+    "B12_rho": -0.077,
+    "B12_p_bootstrap": 0.5842,
+    "coverage_era": 0.986,
+    "sign_warning": false,
+    "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 0.99, corte estable)"
    },
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.39,
+    "effective_score": -2.1375,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-02",
     "recent": [
      [
       "2026-09-02",
-      -0.39
+      -2.1375
      ]
     ],
-    "pending_days": null
+    "pending_days": null,
+    "engine": "0.4"
    },
    "components": {
     "mode": "sum",
@@ -123,6 +186,51 @@
     ],
     "score_v02": -0.39,
     "score_flows_only": -0.39
+   },
+   "engine": "0.4",
+   "component": {
+    "name": "govt_delta",
+    "source": "central_bank.government_account",
+    "kind": "dweekly",
+    "lag": 0,
+    "sign": 1,
+    "denominator": "central_bank.reserves",
+    "reconciliation": "depósitos del gobierno semanales (A1) — identidad"
+   },
+   "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
+   "print": {
+    "raw": -3633.0,
+    "denominator": 169961.0,
+    "denominator_date": "2026-09-02",
+    "today": "2026-09-11",
+    "note": null
+   },
+   "v03_shadow": {
+    "regime": "NEUTRAL",
+    "score": -0.39,
+    "raw_regime": "NEUTRAL",
+    "cuts": {
+     "injection_enter": 0.53,
+     "injection_exit": 0.34,
+     "drain_enter": -0.555,
+     "drain_exit": -0.37
+    },
+    "as_of": "2026-09-02",
+    "state": {
+     "confirmed": "NEUTRAL",
+     "raw": "NEUTRAL",
+     "effective_score": -0.39,
+     "candidate": null,
+     "candidate_since": null,
+     "as_of": "2026-09-02",
+     "recent": [
+      [
+       "2026-09-02",
+       -0.39
+      ]
+     ],
+     "pending_days": null
+    }
    }
   },
   "general": {
@@ -140,19 +248,23 @@
    },
    "block_thresholds": {
     "central_bank": {
-     "injection_enter": 1.0,
-     "injection_exit": 1.0,
-     "drain_enter": 0.085,
-     "drain_exit": 0.335
+     "injection_enter": 0.466,
+     "injection_exit": 0.2928,
+     "drain_enter": -0.4831,
+     "drain_exit": -0.2075
     },
     "fiscal": {
-     "injection_enter": 0.53,
-     "injection_exit": 0.34,
-     "drain_enter": -0.555,
-     "drain_exit": -0.37
+     "injection_enter": 2.7248,
+     "injection_exit": 1.6897,
+     "drain_enter": -2.8347,
+     "drain_exit": -1.8796
     }
    },
    "engine": "0.3",
+   "v04_blocks": [
+    "central_bank",
+    "fiscal"
+   ],
    "agreement_only": true,
    "era_start": "2025-04-09",
    "era_weeks": 74,
@@ -162,7 +274,7 @@
     "mode": "mean"
    },
    "level_weight": 1.0,
-   "calibration": "calibrated by replay 2026-09-09 (engine v0.3, era 2025-04-09, 74 weeks)"
+   "calibration": "calibrated by replay 2026-09-09 (engine v0.3, era 2025-04-09, 74 weeks) · v0.4 active on central_bank, fiscal (replay-v04 2026-09-11 (runner, 8-year archives)); other blocks v0.3"
   }
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
@@ -321,7 +433,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
