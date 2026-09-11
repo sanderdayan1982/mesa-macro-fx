@@ -70,7 +70,7 @@ jobs:
         run: |
           git config user.name "mesa-macro-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add data/jpy history/jpy logs/jpy data/mesa
+          git add data/jpy history/jpy logs/jpy data/mesa history/mesa
           if git diff --cached --quiet; then echo "no changes"; exit 0; fi
           git commit -m "data(jpy): ${{ steps.lane.outputs.lane }} refresh $(date -u +%Y-%m-%dT%H:%MZ)"
           # eight workflows push to main concurrently and all write data/mesa/*: a plain pull --rebase leaves a conflict behind and
@@ -83,7 +83,7 @@ jobs:
               git rebase --abort 2>/dev/null || true
               git fetch origin ${{ github.ref_name }}
               git reset --hard origin/${{ github.ref_name }}
-              git checkout "$OURS" -- data/jpy history/jpy logs/jpy data/mesa
+              git checkout "$OURS" -- data/jpy history/jpy logs/jpy data/mesa history/mesa
               git commit -m "$MSG" || true
             fi
             if git push; then exit 0; fi
