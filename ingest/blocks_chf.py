@@ -111,6 +111,8 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     E, raw = _entries(cfg, "central_bank", data, MAP_CB, unit, pl, {}, zero_if_empty=ZERO_IF_EMPTY_CB, anchor=S.clean(data.get("snbbipo:ES", [])))
     for k in ("threshold_factor",):
         E[k]["unit"] = "x"
+        E[k]["frequency"] = "event"  # set at policy decisions (SNB), not a daily print: dated by the last cube row, never stale by age
+        E[k]["status"] = "fresh" if raw[k] else "unavailable"
     for k in ("policy_rate", "rate_up_to_threshold", "rate_above_threshold", "special_rate"):
         E[k]["unit"] = "%"
         E[k]["frequency"] = "event"

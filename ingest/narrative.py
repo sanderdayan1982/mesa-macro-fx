@@ -69,7 +69,7 @@ SPEC: Dict[str, dict] = {
     },
     "jpy": {
         "cb": "BoJ (Banco de Japón)", "tsy": "MoF (Ministerio de Finanzas)",
-        "unit": (10000.0, "tn JPY", 2), "unit_small": "×100 mn JPY", "glossary": {"BoJ": "Banco de Japón", "MoF": "Ministerio de Finanzas", "CAB": "Current Account Balances, saldos en cuenta corriente en el Banco de Japón", "JGB": "Japanese Government Bond", "TONA": "Tokyo Overnight Average Rate", "IOER": "Interest on Excess Reserves", "MMT": "Modern Monetary Theory", "BC": "banco central"},
+        "unit": (10000.0, "tn JPY", 2), "unit_small": (10.0, "bn JPY", 1), "glossary": {"BoJ": "Banco de Japón", "MoF": "Ministerio de Finanzas", "CAB": "Current Account Balances, saldos en cuenta corriente en el Banco de Japón", "JGB": "Japanese Government Bond", "TONA": "Tokyo Overnight Average Rate", "IOER": "Interest on Excess Reserves", "MMT": "Modern Monetary Theory", "BC": "banco central"},
         "reserves": ("central_bank", "series", "cab_daily", "los saldos CAB en el BoJ", True),
         "portfolio": [("central_bank", "series", "jgb_holdings", "cartera de JGB")],
         "ops": [("central_bank", "series", "jgb_purchases_daily", "compras de JGB del día", "flow"), ("central_bank", "series", "slf_daily", "facilidad de préstamo de valores (SLF) del día", "flow")],
@@ -187,9 +187,12 @@ def _delta(e: dict, n: int) -> Optional[float]:
 
 def _money(L: Ledger, v: float, spec: dict, field: str, signed: bool = True) -> str:
     div, unit, dec = spec["unit"]
-    if v != 0 and abs(v / div) < 0.05:  # below the display resolution: print the source unit instead of adding decimals
-        unit = spec.get("unit_small", "mn " + unit.split(" ")[-1])
-        tok = L.num(v, field, "money", unit, 0)
+    if v != 0 and abs(v / div) < 0.05:  # below the display resolution: print a smaller unit instead of adding decimals
+        small = spec.get("unit_small", "mn " + unit.split(" ")[-1])
+        # unit_small may be a (divisor, label, decimals) tuple; a bare label means the source unit (divisor 1, no decimals).
+        # The label must carry no digits: "×100 mn JPY" left an untraced '100' in the text and the gate withheld the daily_log (JPY 2026-09-11)
+        sdiv, unit, sdec = small if isinstance(small, (tuple, list)) else (1.0, small, 0)
+        tok = L.num(v / sdiv, field, "money", unit, sdec)
         if signed and v > 0:
             tok = "+" + tok
         return "%s %s" % (tok, unit)
