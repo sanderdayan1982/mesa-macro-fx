@@ -1,13 +1,13 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-11T02:29:14+00:00",
+ "generated_at": "2026-09-11T05:21:05+00:00",
  "as_of": "2026-09-10",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.1,
+ "weighted_score": 0.3,
  "block_scores": {
-  "central_bank": -0.5,
+  "central_bank": 0.0,
   "rates": 0.25,
   "fiscal": 0.5,
   "banking": 1.0
@@ -22,11 +22,11 @@
  "regimes": {
   "central_bank": {
    "regime": "DRAIN",
-   "score": -0.5,
+   "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-10",
-   "detail": "settlement cash 24606.0 (5d -2179.0, 20d -2857.0, SAFE) · OMO stock 8358.0 (34.0%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "detail": "settlement cash 26204.0 (5d 2029.0, 20d -913.0, SAFE) · OMO stock 9035.0 (34.5%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.375,
@@ -41,7 +41,7 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.5,
+    "effective_score": -0.25,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-10",
@@ -52,7 +52,7 @@
      ],
      [
       "2026-09-10",
-      -0.5
+      0.0
      ]
     ],
     "pending_days": null
@@ -61,7 +61,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "settlement_cash_wow": 0.0,
+     "settlement_cash_wow": 0.5,
      "settlement_cash_20d": -0.25,
      "orrf_used": 0.0
     },
@@ -74,8 +74,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": -0.5,
-    "score_flows_only": -0.25
+    "score_v02": 0.0,
+    "score_flows_only": 0.25
    }
   },
   "fiscal": {
@@ -133,8 +133,8 @@
   },
   "general": {
    "regime": "NEUTRAL",
-   "score": -0.1,
-   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.10 shown for context",
+   "score": 0.2,
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -159,6 +159,7 @@
     }
    },
    "engine": "0.3",
+   "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-07-01",
    "era_weeks": 218,
@@ -332,6 +333,8 @@
  "heartbeat": {
   "lane": "all",
   "backfill": true,
-  "errors": []
+  "errors": [
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-11); nzdm_tbill_1887.html (snapshot 2026-09-11); nzdm_tbill_1886.html (snapshot 2026-09-11); nzdm_tbill_1885.html (snapshot 2026-09-11)"
+  ]
  }
 }

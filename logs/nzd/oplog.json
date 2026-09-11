@@ -1,6 +1,80 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-11T05:21:06+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-09-11T05:21:05+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "c824bd45f3e6c989",
+    "degraded": [
+     "F2: monthly stock only (lsap_holdings)",
+     "F2: monthly flow only (lsap_sales_month)"
+    ],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 2,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-11T05:21:05+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": true,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots \u2014 nzdm_tbill_listing.html (snapshot 2026-09-11); nzdm_tbill_1887.html (snapshot 2026-09-11); nzdm_tbill_1886.html (snapshot 2026-09-11); nzdm_tbill_1885.html (snapshot 2026-09-11)"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-11T05:21:05+00:00",
+   "type": "NZD_V04",
+   "category": "system",
+   "details": {
+    "tenders": 1776,
+    "omo_ops": 48,
+    "csa_days": 7949,
+    "bond_flows_two_sided_from": "2018-12-28",
+    "bond_month_ends": 93,
+    "d10_recon_months": 31,
+    "oia_recon_months": 22
+   }
+  },
+  {
+   "timestamp": "2026-09-11T05:21:03+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_last_good_copy",
+    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots \u2014 nzdm_tbill_listing.html (snapshot 2026-09-11); nzdm_tbill_1887.html (snapshot 2026-09-11); nzdm_tbill_1886.html (snapshot 2026-09-11); nzdm_tbill_1885.html (snapshot 2026-09-11)"
+   }
+  },
+  {
    "timestamp": "2026-09-11T02:29:14+00:00",
    "type": "NOTIFY",
    "category": "system",

@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-09-11T02:29:12+00:00",
+ "generated_at": "2026-09-11T05:21:03+00:00",
  "as_of": "2026-09-10",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -12,7 +12,9 @@
   "series_loaded": 16,
   "series_expected": 17,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-11); nzdm_tbill_1887.html (snapshot 2026-09-11); nzdm_tbill_1886.html (snapshot 2026-09-11); nzdm_tbill_1885.html (snapshot 2026-09-11)"
+  ],
   "series_pending": 3
  },
  "series": {
@@ -2447,33 +2449,123 @@
    "confidence": 100,
    "latest_outlier": false
   },
-  "coupons_market_paid": {
-   "source_id": "NZDM bonds on issue",
-   "label": "Coupons to market holders (+; last 60 d, from bonds on issue)",
+  "bond_redeemed_market": {
+   "source_id": "NZDM bonds on issue, every month-end",
+   "label": "Bond redemptions to market holders (+; market holding of the month-end before maturity)",
    "usd_analog": null,
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
-   "prev_value": null,
-   "prev_date": null,
-   "change_abs": null,
-   "change_pct": null,
+   "status": "fresh",
+   "value": 7705.0,
+   "date": "2026-05-15",
+   "prev_value": 2994.0,
+   "prev_date": "2025-09-22",
+   "change_abs": 4711.0,
+   "change_pct": 157.348,
    "zscore": null,
    "percentile": null,
    "window": null,
-   "level": "NO DATA",
-   "sparkline": [],
+   "level": "SAFE",
+   "sparkline": [
+    9237.0,
+    5380.0,
+    11059.0,
+    15945.0,
+    13800.0,
+    14850.0,
+    2994.0,
+    7705.0
+   ],
    "high_low": {
-    "high": null,
-    "high_date": null,
-    "low": null,
-    "low_date": null
+    "high": 15945.0,
+    "high_date": "2023-04-17",
+    "low": 2994.0,
+    "low_date": "2025-09-22"
    },
-   "age_days": null,
-   "confidence": 0,
+   "age_days": 119,
+   "confidence": 70,
    "latest_outlier": false
+  },
+  "coupons_market_paid": {
+   "source_id": "NZDM bonds on issue, every month-end",
+   "label": "Coupons to market holders (+; semi-annual, market nominal of the latest month-end ≤ coupon date)",
+   "usd_analog": null,
+   "unit": "NZD millions (display: bn = 10^9)",
+   "frequency": "daily",
+   "status": "fresh",
+   "value": 1929.74,
+   "date": "2026-05-15",
+   "prev_value": 328.59,
+   "prev_date": "2026-04-20",
+   "change_abs": 1601.15,
+   "change_pct": 487.279,
+   "zscore": 3.5046,
+   "percentile": null,
+   "window": null,
+   "level": "SAFE",
+   "sparkline": [
+    123.375,
+    1002.55,
+    198.0,
+    495.395,
+    230.625,
+    142.625,
+    1024.55,
+    207.0,
+    255.375,
+    230.625,
+    144.375,
+    1044.05,
+    207.0,
+    295.5,
+    250.35,
+    149.625,
+    1092.612,
+    220.5,
+    311.1,
+    244.0,
+    177.433,
+    1122.211,
+    220.5,
+    495.062,
+    244.825,
+    942.613,
+    224.625,
+    583.156,
+    242.938,
+    977.69,
+    234.375,
+    860.5,
+    244.325,
+    261.87,
+    690.332,
+    270.0,
+    1209.779,
+    240.465,
+    268.783,
+    703.082,
+    296.25,
+    1463.385,
+    245.153,
+    274.908,
+    507.145,
+    331.125,
+    1654.715,
+    242.131,
+    287.595,
+    507.145,
+    328.59,
+    1929.74
+   ],
+   "high_low": {
+    "high": 1929.74,
+    "high_date": "2026-05-15",
+    "low": 123.375,
+    "low_date": "2021-04-14"
+   },
+   "age_days": 119,
+   "confidence": 55,
+   "latest_outlier": true
   },
   "tender_coverage": {
    "source_id": "NZDM tenders",
@@ -2717,7 +2809,7 @@
    "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "v0.4: tenders settled − bill maturities − market coupons; bond redemptions in the calendar and in D10 monthly"
+   "equivalence_note": "v0.4: −tenders settled + bill maturities + market bond redemptions + market coupons (two-sided from the first month-end of the register on file)"
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
@@ -2984,8 +3076,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": -2.7432,
-    "residual_5d_pct": 2.0849
+    "net_issuance_5d_pct": -2.5759,
+    "residual_5d_pct": 5.1595
    },
    "level": {},
    "weights": {},
@@ -2993,8 +3085,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": -0.66,
-   "score_flows_only": -0.66,
+   "score_v02": 2.0,
+   "score_flows_only": 2.0,
    "note": "shadow: daily residual proxy + weekly net issuance; D10 band stays live until the replay"
   }
  },
@@ -4111,6 +4203,11 @@
    }
   ],
   "signal_log": [
+   {
+    "date": "2026-07-31",
+    "label": "INJECTION",
+    "score": 0.5
+   },
    {
     "date": "2026-07-31",
     "label": "INJECTION",
