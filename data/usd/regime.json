@@ -1,6 +1,6 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-12T00:15:16+00:00",
+ "generated_at": "2026-09-12T00:44:52+00:00",
  "as_of": "2026-09-11",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
@@ -300,13 +300,17 @@
    "bias": "FISCAL DRAIN",
    "active": false,
    "conditions_met": 1,
-   "total": 3,
+   "total": 4,
    "unknown": 1,
    "required": [
-    "fiscal.fiscal_regime == DRAIN"
+    "regime.fiscal == DRAIN"
    ],
    "required_met": false,
    "details": [
+    {
+     "condition": "regime.fiscal == DRAIN",
+     "met": false
+    },
     {
      "condition": "fiscal.fiscal_regime == DRAIN",
      "met": null
@@ -316,7 +320,7 @@
      "met": true
     },
     {
-     "condition": "central_bank.net_liquidity_wow_pct <= risk_off",
+     "condition": "central_bank.net_liquidity_wow_pct <= band_low",
      "met": false
     }
    ]
@@ -327,19 +331,23 @@
    "bias": "FISCAL INJECTION",
    "active": false,
    "conditions_met": 1,
-   "total": 3,
+   "total": 4,
    "unknown": 1,
    "required": [
-    "fiscal.fiscal_regime == INJECTION"
+    "regime.fiscal == INJECTION"
    ],
    "required_met": false,
    "details": [
+    {
+     "condition": "regime.fiscal == INJECTION",
+     "met": false
+    },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
      "met": null
     },
     {
-     "condition": "central_bank.net_liquidity_wow_pct >= risk_on",
+     "condition": "central_bank.net_liquidity_wow_pct >= band_high",
      "met": true
     },
     {
