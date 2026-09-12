@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-12T00:52:04+00:00",
+ "generated_at": "2026-09-12T02:39:16+00:00",
  "as_of": "2026-09-10",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
@@ -22,6 +22,8 @@
  "regimes": {
   "central_bank": {
    "regime": "DRAIN",
+   "confirmed": "DRAIN",
+   "canonical": "confirmed",
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
@@ -80,6 +82,8 @@
   },
   "fiscal": {
    "regime": "INJECTION",
+   "confirmed": "INJECTION",
+   "canonical": "confirmed",
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
@@ -133,6 +137,8 @@
   },
   "general": {
    "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
+   "canonical": "confirmed",
    "score": 0.2,
    "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
    "price_gate": null,
