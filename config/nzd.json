@@ -1674,8 +1674,9 @@
    {
     "id": "L2",
     "name": "Reserve scarcity building",
-    "bias": "NZD-DEFENSIVE",
+    "bias": "RESERVE SCARCITY",
     "min": 2,
+    "required": ["rates.bank_bill_30d_minus_ocr_bps level >= WATCH"],
     "conditions": [
      "central_bank.settlement_cash_daily level >= WATCH",
      "rates.bank_bill_30d_minus_ocr_bps level >= WATCH",
@@ -1685,8 +1686,9 @@
    {
     "id": "L3",
     "name": "Funding stress",
-    "bias": "EMERGENCY",
+    "bias": "FUNDING STRESS",
     "min": 2,
+    "required": ["rates.bank_bill_30d_minus_ocr_bps level >= STRESS"],
     "conditions": [
      "rates.bank_bill_30d_minus_ocr_bps level >= STRESS",
      "central_bank.orrf_usage_daily > 0",
@@ -1696,8 +1698,9 @@
    {
     "id": "L4",
     "name": "Crown drain / supply indigestion",
-    "bias": "RISK-OFF",
+    "bias": "FISCAL DRAIN",
     "min": 2,
+    "required": ["fiscal.fiscal_regime == DRAIN"],
     "conditions": [
      "fiscal.fiscal_regime == DRAIN",
      "fiscal.bond_bid_to_cover level >= WATCH",
@@ -1707,8 +1710,9 @@
    {
     "id": "L5",
     "name": "Fiscal injection",
-    "bias": "NZD-SUPPORTIVE",
+    "bias": "FISCAL INJECTION",
     "min": 2,
+    "required": ["fiscal.fiscal_regime == INJECTION"],
     "conditions": [
      "fiscal.fiscal_regime == INJECTION",
      "central_bank.settlement_cash_wow level >= WATCH",
@@ -1718,7 +1722,7 @@
    {
     "id": "L6",
     "name": "Curve repricing (hiking cycle)",
-    "bias": "RISK-OFF",
+    "bias": "CURVE REPRICING",
     "min": 2,
     "conditions": [
      "rates.nzgb_10y_5d_change_bps level >= WATCH",

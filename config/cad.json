@@ -1334,8 +1334,9 @@
    {
     "id": "L1",
     "name": "CAD Liquidity Tightening",
-    "bias": "DEFENSIVE",
+    "bias": "LIQUIDITY TIGHTENING",
     "min": 2,
+    "required": ["rates.overnight_minus_policy_bps level >= WATCH"],
     "conditions": [
      "fiscal.fiscal_flow_7d_cum <= drain",
      "rates.overnight_minus_policy_bps level >= WATCH",
@@ -1345,8 +1346,9 @@
    {
     "id": "L2",
     "name": "Silent Fiscal Easing",
-    "bias": "CONSTRUCTIVE",
+    "bias": "FISCAL INJECTION",
     "min": 2,
+    "required": ["fiscal.fiscal_flow_7d_cum >= injection"],
     "conditions": [
      "fiscal.fiscal_flow_7d_cum >= injection",
      "rates.overnight_minus_policy_bps <= 0",
@@ -1356,7 +1358,7 @@
    {
     "id": "L3",
     "name": "QT Drag Intensifying",
-    "bias": "RISK-OFF",
+    "bias": "QT DRAIN",
     "min": 2,
     "conditions": [
      "central_bank.net_liquidity_wow_pct <= risk_off",
@@ -1367,8 +1369,9 @@
    {
     "id": "L4",
     "name": "Funding Stress",
-    "bias": "EMERGENCY",
+    "bias": "FUNDING STRESS",
     "min": 2,
+    "required": ["rates.overnight_minus_policy_bps level >= STRESS"],
     "conditions": [
      "rates.overnight_minus_policy_bps level >= STRESS",
      "central_bank.reserves level >= STRESS",
@@ -1378,7 +1381,7 @@
    {
     "id": "L5",
     "name": "Curve Normalization",
-    "bias": "DURATION",
+    "bias": "CURVE NORMALIZATION",
     "min": 2,
     "conditions": [
      "rates.curve_10y_2y_bps > 0",
@@ -1389,7 +1392,7 @@
    {
     "id": "L6",
     "name": "Transmission Break",
-    "bias": "CAUTION",
+    "bias": "TRANSMISSION BREAK",
     "min": 2,
     "conditions": [
      "banking.transmission_signal == RED",

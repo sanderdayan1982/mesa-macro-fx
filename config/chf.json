@@ -1539,8 +1539,9 @@
    {
     "id": "L2",
     "name": "Sterilisation Squeeze",
-    "bias": "DEFENSIVE",
+    "bias": "STERILISATION SQUEEZE",
     "min": 2,
+    "required": ["rates.saron_minus_absorption_rate_bps level >= WATCH"],
     "conditions": [
      "central_bank.absorption_share level >= WATCH",
      "rates.saron_minus_absorption_rate_bps level >= WATCH",
@@ -1561,8 +1562,9 @@
    {
     "id": "L4",
     "name": "Funding Stress",
-    "bias": "EMERGENCY",
+    "bias": "FUNDING STRESS",
     "min": 2,
+    "required": ["rates.saron_minus_absorption_rate_bps level >= STRESS"],
     "conditions": [
      "rates.saron_minus_absorption_rate_bps level >= STRESS",
      "central_bank.supplying_repos > 0",
@@ -1572,8 +1574,9 @@
    {
     "id": "L5",
     "name": "Confederation Drain",
-    "bias": "RISK-OFF",
+    "bias": "FISCAL DRAIN",
     "min": 2,
+    "required": ["fiscal.fiscal_regime == DRAIN"],
     "conditions": [
      "fiscal.confed_cash_mom >= p80",
      "central_bank.sight_deposits_4w_change <= p20",
@@ -1583,7 +1586,7 @@
    {
     "id": "L6",
     "name": "Curve Repricing",
-    "bias": "RISK-OFF",
+    "bias": "CURVE REPRICING",
     "min": 2,
     "conditions": [
      "rates.confed_10y_5d_change_bps level >= WATCH",

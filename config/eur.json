@@ -1171,6 +1171,7 @@
         "name": "Scarcity building (€STR drifting to the DFR, MRO take-up rising)",
         "bias": "FUNDING SCARCITY",
         "min": 2,
+        "required": ["rates.estr_minus_dfr_bps level >= WATCH"],
         "conditions": [
           "rates.estr_minus_dfr_bps level >= WATCH",
           "central_bank.omo_takeup level >= WATCH",
@@ -1182,6 +1183,7 @@
         "name": "Fragmentation stress",
         "bias": "FRAGMENTATION STRESS",
         "min": 2,
+        "required": ["rates.periphery_premium_bps level >= STRESS"],
         "conditions": [
           "rates.periphery_premium_bps level >= STRESS",
           "rates.btp_bund_bps level >= WATCH",
@@ -1191,8 +1193,9 @@
       {
         "id": "L4",
         "name": "Government cash drain",
-        "bias": "RISK-OFF",
+        "bias": "FISCAL DRAIN",
         "min": 2,
+        "required": ["fiscal.fiscal_regime == DRAIN"],
         "conditions": [
           "fiscal.fiscal_regime == DRAIN",
           "fiscal.govt_deposits_wow level >= WATCH",
@@ -1202,8 +1205,9 @@
       {
         "id": "L5",
         "name": "Fiscal injection into excess liquidity",
-        "bias": "RISK-ON",
+        "bias": "FISCAL INJECTION",
         "min": 2,
+        "required": ["fiscal.fiscal_regime == INJECTION"],
         "conditions": [
           "fiscal.fiscal_regime == INJECTION",
           "central_bank.excess_liquidity_wow level == SAFE",

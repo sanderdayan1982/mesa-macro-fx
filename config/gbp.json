@@ -1309,8 +1309,9 @@
    {
     "id": "L1",
     "name": "GBP Reserve Scarcity Approach",
-    "bias": "DEFENSIVE",
+    "bias": "RESERVE SCARCITY",
     "min": 2,
+    "required": ["rates.overnight_minus_policy_bps level >= WATCH"],
     "conditions": [
      "central_bank.reserves level >= WATCH",
      "rates.overnight_minus_policy_bps level >= WATCH",
@@ -1331,7 +1332,7 @@
    {
     "id": "L3",
     "name": "QT Drag Intensifying",
-    "bias": "RISK-OFF",
+    "bias": "QT DRAIN",
     "min": 2,
     "conditions": [
      "central_bank.qt_pace level >= WATCH",
@@ -1342,8 +1343,9 @@
    {
     "id": "L4",
     "name": "Funding Stress",
-    "bias": "EMERGENCY",
+    "bias": "FUNDING STRESS",
     "min": 2,
+    "required": ["rates.overnight_minus_policy_bps level >= STRESS"],
     "conditions": [
      "rates.overnight_minus_policy_bps level >= STRESS",
      "central_bank.reserves level >= STRESS",
@@ -1353,8 +1355,9 @@
    {
     "id": "L5",
     "name": "Fiscal Injection",
-    "bias": "CONSTRUCTIVE",
+    "bias": "FISCAL INJECTION",
     "min": 2,
+    "required": ["fiscal.net_spending_yoy >= injection"],
     "conditions": [
      "fiscal.net_spending_yoy >= injection",
      "fiscal.cgncr_zscore >= 1",
@@ -1364,7 +1367,7 @@
    {
     "id": "L6",
     "name": "Transmission Break",
-    "bias": "CAUTION",
+    "bias": "TRANSMISSION BREAK",
     "min": 2,
     "conditions": [
      "banking.transmission_signal == RED",

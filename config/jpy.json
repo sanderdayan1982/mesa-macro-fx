@@ -1736,8 +1736,9 @@
    {
     "id": "L1",
     "name": "Floor Friction under QT",
-    "bias": "DEFENSIVE",
+    "bias": "FLOOR FRICTION",
     "min": 2,
+    "required": ["rates.tona_minus_policy_bps level >= WATCH"],
     "conditions": [
      "rates.tona_minus_policy_bps level >= WATCH",
      "central_bank.cab_20d_change level >= WATCH",
@@ -1747,8 +1748,9 @@
    {
     "id": "L2",
     "name": "JGB Collateral Squeeze",
-    "bias": "DEFENSIVE",
+    "bias": "COLLATERAL SQUEEZE",
     "min": 2,
+    "required": ["rates.gc_minus_ioer_bps level >= WATCH"],
     "conditions": [
      "rates.gc_minus_ioer_bps level >= WATCH",
      "central_bank.slf_daily >= p95",
@@ -1758,8 +1760,9 @@
    {
     "id": "L3",
     "name": "Fiscal Drain (tax / issuance settlement)",
-    "bias": "RISK-OFF",
+    "bias": "FISCAL DRAIN",
     "min": 2,
+    "required": ["fiscal.fiscal_flow_20d_cum <= drain"],
     "conditions": [
      "fiscal.fiscal_flow_20d_cum <= drain",
      "fiscal.fiscal_flow_zscore <= -1.5",
@@ -1769,8 +1772,9 @@
    {
     "id": "L4",
     "name": "Funding Stress",
-    "bias": "EMERGENCY",
+    "bias": "FUNDING STRESS",
     "min": 2,
+    "required": ["rates.tona_minus_policy_bps level >= STRESS"],
     "conditions": [
      "rates.tona_minus_policy_bps level >= STRESS",
      "central_bank.clf_loans_daily > 0",
@@ -1780,7 +1784,7 @@
    {
     "id": "L5",
     "name": "Yield Spike / Nimble BoJ",
-    "bias": "RISK-OFF",
+    "bias": "YIELD REPRICING",
     "min": 2,
     "conditions": [
      "rates.jgb_10y_5d_change_bps level >= WATCH",
@@ -1791,8 +1795,9 @@
    {
     "id": "L6",
     "name": "Fiscal Injection + Ample",
-    "bias": "RISK-ON",
+    "bias": "FISCAL INJECTION",
     "min": 2,
+    "required": ["fiscal.fiscal_flow_20d_cum >= injection"],
     "conditions": [
      "fiscal.fiscal_flow_20d_cum >= injection",
      "central_bank.cab_20d_change > 0",

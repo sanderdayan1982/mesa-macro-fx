@@ -1233,8 +1233,9 @@
    {
     "id": "L1",
     "name": "ES Scarcity Approach",
-    "bias": "DEFENSIVE",
+    "bias": "RESERVE SCARCITY",
     "min": 2,
+    "required": ["rates.overnight_minus_target_bps level >= WATCH"],
     "conditions": [
      "central_bank.es_balances_dod level >= WATCH",
      "rates.overnight_minus_target_bps level >= WATCH",
@@ -1255,8 +1256,9 @@
    {
     "id": "L3",
     "name": "Fiscal Drain (tax week / issuance)",
-    "bias": "RISK-OFF",
+    "bias": "FISCAL DRAIN",
     "min": 2,
+    "required": ["fiscal.fiscal_flow_4w_cum <= drain"],
     "conditions": [
      "fiscal.fiscal_flow_4w_cum <= drain",
      "fiscal.fiscal_flow_zscore <= -1.5",
@@ -1266,8 +1268,9 @@
    {
     "id": "L4",
     "name": "Funding Stress",
-    "bias": "EMERGENCY",
+    "bias": "FUNDING STRESS",
     "min": 2,
+    "required": ["rates.overnight_minus_target_bps level >= STRESS"],
     "conditions": [
      "rates.overnight_minus_target_bps level >= STRESS",
      "rates.bbsw_minus_target_bps level >= STRESS",
@@ -1277,8 +1280,9 @@
    {
     "id": "L5",
     "name": "Fiscal Injection",
-    "bias": "CONSTRUCTIVE",
+    "bias": "FISCAL INJECTION",
     "min": 2,
+    "required": ["fiscal.fiscal_flow_4w_cum >= injection"],
     "conditions": [
      "fiscal.fiscal_flow_4w_cum >= injection",
      "fiscal.fiscal_flow_zscore >= 1",
@@ -1288,7 +1292,7 @@
    {
     "id": "L6",
     "name": "Transmission Break",
-    "bias": "CAUTION",
+    "bias": "TRANSMISSION BREAK",
     "min": 2,
     "conditions": [
      "banking.transmission_signal == RED",
