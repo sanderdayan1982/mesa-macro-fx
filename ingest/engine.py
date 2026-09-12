@@ -334,7 +334,12 @@ def evaluate_scenarios(cfg: dict, blocks: Dict[str, dict]) -> List[dict]:
             det.append({"condition": cnd, "met": met})
         n = sum(1 for d in det if d["met"])
         unknown = sum(1 for d in det if d["met"] is None)  # conditions without data are declared, not counted as met (round 2)
-        out.append({"id": sc["id"], "name": sc["name"], "bias": sc["bias"], "active": n >= sc["min"], "conditions_met": n, "total": len(det), "unknown": unknown, "details": det})
+        # required conditions (institutionality round 2, CURSOR): a scarcity scenario needs its price condition and a fiscal
+        # scenario its fiscal condition — «min of n» can never substitute them; null or false → the chip does not light
+        req = sc.get("required") or []
+        req_met = all(next((d["met"] for d in det if d["condition"] == r), None) is True for r in req)
+        out.append({"id": sc["id"], "name": sc["name"], "bias": sc["bias"], "active": bool(n >= sc["min"] and req_met), "conditions_met": n, "total": len(det),
+                    "unknown": unknown, "required": req, "required_met": req_met, "details": det})
     return out
 
 

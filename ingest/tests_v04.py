@@ -578,6 +578,23 @@ def main_jefe_v2(fails: list) -> None:
         ok = T.get("status") == "ok" and [r["rank"] for r in T["ranking"]] == list(range(1, T["n"] + 1)) and all(r["z"] >= r2["z"] for r, r2 in zip(T["ranking"], T["ranking"][1:])) \
             and abs(sum(r["z"] for r in T["ranking"])) < 0.05 * T["n"] and set(j.get("labels", {}).values()) <= set(J.LABELS) and j.get("stamp") == J.stamp(j) and len(j.get("stamp", "")) == 12 and bool(j.get("generated_at")) and (not j.get("low_dispersion") or set(j["labels"].values()) == {J.COMPRESSED}) and set((j.get("completeness") or {}).keys()) == set(J.NAMES.values()) and all(v["treasury"]["truth"] == "proxy" for k, v in j["completeness"].items() if k.lower() in J.PROXY) and len((j.get("evidence") or {}).get("tests", [])) >= 5 and any(t["id"] == "H2" for t in j["evidence"]["tests"]) and j.get("numeraire") and (j.get("live_tracking") or {}).get("started") == J.LIVE_TRACKING_START and (j.get("treasury") or {}).get("clock_note") and all(r["proxy"] == (r["ccy"].lower() in J.PROXY) for r in T["ranking"])
         check(ok, "data/mesa/jefe.json: treasury ranking ordered by Z, demeaned, proxy flags, labels in the enum, stamp recomputable, compression withholds labels, completeness for the eight (proxy legs marked), evidence published incl. H2, numeraire, live_tracking, clock_note", fails)
+    # round 2 (institutionality): required scenario conditions — «min of n» never substitutes the price/fiscal condition
+    from . import engine as EN
+    cfg_t = {"scenarios": {"items": [{"id": "T", "name": "t", "bias": "RESERVE SCARCITY", "min": 2, "required": ["rates.x level >= WATCH"],
+                                      "conditions": ["central_bank.a level >= WATCH", "central_bank.b level >= WATCH", "rates.x level >= WATCH"]}]}}
+    blk = {"central_bank": {"series": {}, "derived": {"a": {"level": "WATCH"}, "b": {"level": "WATCH"}}}, "rates": {"series": {}, "derived": {"x": {"level": "SAFE"}}}}
+    r1 = EN.evaluate_scenarios(cfg_t, blk)[0]
+    blk["rates"]["derived"]["x"]["level"] = "WATCH"
+    r2 = EN.evaluate_scenarios(cfg_t, blk)[0]
+    blk["rates"]["derived"] = {}
+    r3 = EN.evaluate_scenarios(cfg_t, blk)[0]
+    check(r1["conditions_met"] == 2 and not r1["active"] and not r1["required_met"] and r2["active"] and r2["required_met"] and not r3["active"] and r3["unknown"] == 1,
+          "scenarios: 2 of 3 without the required condition does not activate; with it, it does; null required → unknown, inactive", fails)
+    import re as _re
+    for c in ("usd", "eur", "gbp", "jpy", "chf", "cad", "aud", "nzd"):
+        items = json.load(open(os.path.join(ROOT, "config", "%s.json" % c), encoding="utf-8"))["scenarios"]["items"]
+        check(not any(_re.search(r"RISK|BULL|BEAR|DEFENSIVE|CONSTRUCTIVE|CAUTION|SUPPORTIVE", it["bias"]) for it in items) and all(all(r in it["conditions"] for r in it.get("required", [])) for it in items),
+              "config %s: scenario biases are liquidity states and every required condition exists in its scenario" % c.upper(), fails)
     from . import regime_changelog as RC
     for c in ("usd", "eur", "nzd"):
         r = RC.build(c)

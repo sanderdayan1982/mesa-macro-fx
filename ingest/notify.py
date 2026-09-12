@@ -209,7 +209,7 @@ def digest(root: str = ROOT) -> List[str]:
         msgs.append(line)
     if j.get("order"):
         msgs.append("<b>Jefe de mesa</b> · viernes %s · BC: Δ13 semanas de reservas del BC en %% del stock, Z transversal · Tesoro en paralelo (sin par neto)\n%s\n%s%s%s" % (
-            esc(j["friday"]), esc(jefe_rank_line(j)), ("par con más convicción relativa por la pata BC: %s (más reservas) frente a %s (más drenaje)" % (j["pair"]["reserves_growth"], j["pair"]["reserves_drain"])) if j.get("pair") else "",
+            esc(j["friday"]), esc(jefe_rank_line(j)), ("par con mayor brecha Z por la pata BC: %s (más reservas) frente a %s (más drenaje)" % (j["pair"]["reserves_growth"], j["pair"]["reserves_drain"])) if j.get("pair") else "",
             "\n⚠ dispersión transversal baja" if j.get("low_dispersion") else "", ("\n" + esc(jefe_treasury_line(j))) if jefe_treasury_line(j) else ""))
     return msgs
 

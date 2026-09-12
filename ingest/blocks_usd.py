@@ -20,6 +20,9 @@ from .blocks import entry, _prev_levels, _alert, _health, _base as _base0
 from .blocks_gbp import _ser
 
 
+# legacy net-liquidity band (±2 % w/w, H.4.1 suite): published as a liquidity state, never as a risk posture (round 2)
+NL_TXT = {"RISK_ON": "NL UP", "RISK_OFF": "NL DOWN", "NEUTRAL": "NEUTRAL"}
+
 def _base(ccy, block, cfg, bcfg, E, D, signals, history):
     out = _base0(ccy, block, cfg, bcfg, E, D, signals, history)
     wired = {k: e for k, e in E.items() if bcfg["series"].get(k, {}).get("id")}
@@ -89,7 +92,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     D["net_liquidity"] = entry("net_liquidity", nl, "Fed Net Liquidity = WALCL − TGA − ON RRP", "weekly", unit, cfg, usd_analog="WALCL − WTREGEN − RRPONTTLD",
                                status="fresh" if nl else "unavailable", equivalence_note=b["derived"]["net_liquidity"]["formula"])
     nlw = S.pct_change_series(nl)
-    D["net_liquidity_wow_pct"] = entry("net_liquidity_wow_pct", nlw, "Net Liquidity Δ% w/w (≥ +2% RISK-ON · ≤ −2% RISK-OFF)", "weekly", "%", cfg, status="fresh" if nlw else "unavailable")
+    D["net_liquidity_wow_pct"] = entry("net_liquidity_wow_pct", nlw, "Net Liquidity Δ% w/w (≥ +2% NL UP · ≤ −2% NL DOWN; heurística heredada, sin dirección)", "weekly", "%", cfg, status="fresh" if nlw else "unavailable")
     sb = signal_band(D["net_liquidity_wow_pct"]["value"], nlw, th["net_liquidity_wow_pct"], "weekly")
     D["net_liquidity_wow_pct"].update({"signal": sb["signal"], "percentile": sb["percentile"], "thresholds": sb.get("thresholds", {})})
     # H.4.1 status badges (exact rules)
@@ -143,7 +146,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     tl = "NONE" if not res else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
     signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": C.to_dict(),
                "detail": "WRESBAL %s · NL Δ%% %s (%s) · TGA %s · RRP %s · Primary credit %s · phase %s" % (
-                   r_status, D["net_liquidity_wow_pct"]["value"], sb["signal"], t_status, D["rrp_status"]["badge"], D["primary_credit_wow_pct"]["badge"], phase),
+                   r_status, D["net_liquidity_wow_pct"]["value"], NL_TXT.get(sb["signal"], sb["signal"]), t_status, D["rrp_status"]["badge"], D["primary_credit_wow_pct"]["badge"], phase),
                "alerts": alerts}
     # weekly record (H.4.1 historical table) — last 52 H.4.1 dates
     dates = [d for d, _ in wa][-52:]
@@ -156,7 +159,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
                                         "tga": col(tga), "on_rrp": col([], lambda d: _latest_at_or_before(rrp, d)), "reserves": col(res),
                                         "net_liquidity": [nlm.get(d) for d in dates], "net_liquidity_wow_pct": [nlwm.get(d) for d in dates],
                                         "total_assets_wow": col(waw)},
-               "signal_log": [{"date": d, "label": "RISK-ON" if v >= 2 else "RISK-OFF" if v <= -2 else "NEUTRAL", "score": v, "note": "NL Δ% w/w"} for d, v in nlw[-15:]][::-1]}
+               "signal_log": [{"date": d, "label": "NL UP" if v >= 2 else "NL DOWN" if v <= -2 else "NEUTRAL", "score": v, "note": "NL Δ% w/w"} for d, v in nlw[-15:]][::-1]}
     return _base("USD", "central_bank", cfg, b, E, D, signals, history)
 
 
@@ -487,7 +490,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None,
     rsv = ((cb.get("series") or {}).get("reserves") or {}).get("value")
     tgv = ((cb.get("series") or {}).get("tga") or {}).get("value")
     D["forex_signal_matrix"] = {"label": "Forex Signal Matrix (H.4.1)", "note": "heurística heredada (cortes ±2 %, 15/30 pb, sin replay): estados de tensión, no dirección del USD", "value": None, "status": "fresh" if cb else "unavailable", "date": sp[-1][0] if sp else None,
-                                "cells": {"nl_wow": {"RISK_ON": "RISK-ON", "RISK_OFF": "RISK-OFF", "NEUTRAL": "NEUTRAL"}.get(nlsig, "—"),
+                                "cells": {"nl_wow": NL_TXT.get(nlsig, "—"),
                                           "sofr_iorb": D["sofr_minus_iorb_bps"]["fx_signal"],
                                           "wresbal": "—" if rsv is None else "NERVOUS" if rsv < 3000000 else "AMPLE",
                                           "tga": "—" if tgv is None else "HIGH DRAIN" if tgv >= 800000 else "SAFE"}}

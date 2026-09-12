@@ -141,8 +141,22 @@ PANEL = os.path.join(ROOT, "calibration", "conviction", "reserves_panel.json")
 FISCAL_PANEL = os.path.join(ROOT, "calibration", "conviction", "fiscal_panel.json")
 MIN_SIGMA_HIST = 26
 WIN_T = 13                      # weeks of the Treasury flow mean (T1/T2)
-PROXY = {"gbp", "nzd", "chf"}   # fiscal driver is a proxy/band (adjudication 2026-09-11)
-LABEL = "momento de flujo de reservas a un trimestre, 8–13 s"
+def _proxy_from_config(root: str) -> set:
+    """Currencies whose v0.3 fiscal driver (the object the Treasury column reads) is a band/proxy: config/<ccy>.json →
+    regime.dual.block_thresholds.fiscal.evidence = banda_por_diseño (round 2: derived, not a hand-kept set)."""
+    out = set()
+    for c in CCYS:
+        try:
+            ev = json.load(open(os.path.join(root, "config", "%s.json" % c), encoding="utf-8"))["regime"]["dual"]["block_thresholds"]["fiscal"].get("evidence") or {}
+            if "banda_por_diseño" in (ev.get("injection"), ev.get("drain")):
+                out.add(c)
+        except Exception:
+            continue
+    return out
+
+
+PROXY = _proxy_from_config(ROOT)   # today {gbp, nzd, chf}: fiscal driver is a band/proxy (adjudication 2026-09-11)
+LABEL = "mapa de flujo de reservas a un trimestre, 8–13 s (IC pequeño y validado: mapa, no libro)"
 LABEL_T = "impulso fiscal a un trimestre, 13–26 s (más firme a 26)"
 SIGNATURE_T = "T1/T2 2026-09-11: IC +0.125 (13 s, q 0.013) / +0.177 (26 s, q 0.0006); T3 y T4 no pasan"
 LABELS = ("abundante", "escasa", "vulnerable", "sin señal", "sin señal (compresión)")
@@ -318,8 +332,9 @@ def compute(as_of: Optional[str] = None, root: str = ROOT) -> dict:
     # completeness of each leg (idea C) and the published evidence (idea D): read-only views of config/ and calibration/
     try:
         from . import evidence as EV
-        out["completeness"] = EV.completeness(root)
+        out["completeness"] = EV.completeness(root, PROXY)
         out["evidence"] = EV.evidence(root)
+        out["equivalence"] = EV.equivalence(root)
     except Exception as e:  # never withholds the ranking
         out["completeness_error"] = str(e)
     out["generated_at"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()

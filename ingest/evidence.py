@@ -46,7 +46,7 @@ def _replay_checks(rep: Optional[dict], block: str) -> dict:
             "B_rho_12w": ((B.get("B") or {}).get("12") or {}).get("rho"), "B_p_12w": ((B.get("B") or {}).get("12") or {}).get("p_block_bootstrap")}
 
 
-def completeness(root: str) -> Dict[str, dict]:
+def completeness(root: str, proxy_set: Optional[set] = None) -> Dict[str, dict]:
     """Per currency, per leg: what the number is made of. Marks only — nothing weights the ranking (weighting would need
     pre-registration). truth: «contable» (two-signed daily/weekly primary flow) · «proxy» (band/residual, jefe.PROXY) ·
     «unilateral» (replay check ONE_SIDED on the v0.4 base variant)."""
@@ -60,7 +60,7 @@ def completeness(root: str) -> Dict[str, dict]:
             rc = _replay_checks(rep, block)
             checks = rc.get("checks") or []
             one_sided = "ONE_SIDED" in checks
-            proxy = leg == "treasury" and c in PROXY_T
+            proxy = leg == "treasury" and c in (proxy_set if proxy_set is not None else PROXY_T)
             truth = "proxy" if proxy else "unilateral" if one_sided else "contable"
             legs[leg] = {"engine": _engine(cfg, block), "truth": truth, "proxy": proxy, "one_sided": one_sided,
                          "equivalence_quality": (blocks.get(block) or {}).get("equivalence_quality"),
@@ -130,3 +130,27 @@ def evidence(root: str) -> dict:
     return {"rule": "una mirada por prerregistro; BH (Benjamini–Hochberg) por familia; bootstrap por bloques; nada entra en el ranking sin pasar su test; los cortes v0.4 salen del replay (escalera: verdad contable → B marginal → robustez), no de la predicción",
             "tests": tests, "activations": acts,
             "files": ["calibration/conviction/results.json", "calibration/conviction/T123.json", "calibration/conviction/T4.json", "calibration/<ccy>_v04/replay_v04.json"]}
+
+
+def equivalence(root: str) -> Dict[str, dict]:
+    """One table of what «reservas» and «flujo fiscal» mean in each currency (round 2, CURSOR F-XS): the object each ranking
+    row is made of, its source column, the block's equivalence_quality and note from config/<ccy>.json, and the Treasury
+    driver (v0.3 evidence label; v0.4 component when active). Documentation gathered in one place, nothing measured."""
+    P = _rj(os.path.join(root, "calibration", "conviction", "reserves_panel.json")) or {}
+    out: Dict[str, dict] = {}
+    for c in CCYS:
+        cfg = _rj(os.path.join(root, "config", "%s.json" % c)) or {}
+        blocks = cfg.get("blocks") or {}
+        d = ((P.get("definition") or {}).get(c)) or {}
+        dual = ((cfg.get("regime") or {}).get("dual")) or {}
+        ev = ((dual.get("block_thresholds") or {}).get("fiscal") or {}).get("evidence") or {}
+        v04 = ((dual.get("v04") or {}).get("fiscal")) or {}
+        comp = (v04.get("component") or {}) if v04.get("active") else {}
+        out[NAMES[c]] = {"bc": {"object": d.get("field"), "column": d.get("column"), "era_start": d.get("era_start"),
+                                "equivalence_quality": (blocks.get("central_bank") or {}).get("equivalence_quality"),
+                                "note": (blocks.get("central_bank") or {}).get("equivalence_note") or ""},
+                         "treasury": {"driver_v03": "%s / %s" % (ev.get("injection", "—"), ev.get("drain", "—")), "component_v04": comp.get("name"),
+                                      "reconciliation_v04": comp.get("reconciliation"),
+                                      "equivalence_quality": (blocks.get("fiscal") or {}).get("equivalence_quality"),
+                                      "note": (blocks.get("fiscal") or {}).get("equivalence_note") or ""}}
+    return out
