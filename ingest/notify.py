@@ -115,6 +115,7 @@ def snapshot(ccy: str, root: str = ROOT) -> dict:
             "blocks": {b: (m or {}).get("status") for b, m in (a.get("blocks_meta") or {}).items()},
             "blocks_asof": {b: (m or {}).get("as_of") for b, m in (a.get("blocks_meta") or {}).items()},
             "blocks_cadence": {b: (m or {}).get("cadence") for b, m in (a.get("blocks_meta") or {}).items()},
+            "blocks_meta": a.get("blocks_meta") or {},
             "errors": (r.get("heartbeat") or {}).get("errors") or [], "F1": (a.get("daily_log") or {}).get("F1"), "F5": (a.get("daily_log") or {}).get("F5"),
             "degraded": a.get("degraded") or []}
 
@@ -278,7 +279,10 @@ def digest(root: str = ROOT) -> List[str]:
         # exceptions: the real ones, one line each, no HTML
         for b, bst in s["blocks"].items():
             if bst and bst != "fresh":
-                exc.append("%s %s %s (as-of %s)" % (C, BN.get(b, b), ST_ES.get(bst, bst), (s["blocks_asof"].get(b) or "—")[5:]))
+                m = (s.get("blocks_meta") or {}).get(b) or {}
+                inc = m.get("series_loaded") is not None and m.get("series_expected") is not None and m["series_loaded"] < m["series_expected"]
+                why = (" · sin reconstruir (%s/%s): %s" % (m["series_loaded"], m["series_expected"], ", ".join(m["series_missing"]))) if (inc and m.get("series_missing")) else ((" · %d serie%s stale" % (len(m["series_stale"]), "s" if len(m["series_stale"]) > 1 else "")) if m.get("series_stale") else "")
+                exc.append("%s %s %s (as-of %s)%s" % (C, BN.get(b, b), ST_ES.get(bst, bst), (s["blocks_asof"].get(b) or "—")[5:], why))
         if s["gate"] is False:
             exc.append("%s inventario RETIENE: %s" % (C, "; ".join(s["gate_failures"])[:120]))
         else:

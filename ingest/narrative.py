@@ -236,7 +236,13 @@ def header(blocks: dict) -> Tuple[str, dict]:
         if not blk:
             continue
         st = (blk.get("source_health") or {}).get("status", "unavailable")
-        meta[b] = {"as_of": blk.get("as_of"), "status": st, "cadence": _cadence(blk)}
+        sh = blk.get("source_health") or {}
+        ser = [v for v in (blk.get("series") or {}).values() if isinstance(v, dict)]
+        meta[b] = {"as_of": blk.get("as_of"), "status": st, "cadence": _cadence(blk),
+                   # why a block is not fresh (audit 2026-09-12: "NZD Tesoro stale at 2 days" was one missing monthly series, not age)
+                   "series_loaded": sh.get("series_loaded"), "series_expected": sh.get("series_expected"),
+                   "series_stale": sorted(k for k, v in (blk.get("series") or {}).items() if isinstance(v, dict) and v.get("status") == "stale"),
+                   "series_missing": sorted(k for k, v in (blk.get("series") or {}).items() if isinstance(v, dict) and v.get("status") == "unavailable")}
         parts.append("%s: as-of %s, %s" % (names[b], blk.get("as_of"), FRESH_ES.get(st, st)))
     latest = max([m["as_of"] for m in meta.values() if m.get("as_of")] or ["—"])
     return "Datos hasta %s (%s)." % (latest, "; ".join(parts)), meta
