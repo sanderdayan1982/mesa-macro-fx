@@ -1,6 +1,6 @@
 {
  "currency": "GBP",
- "generated_at": "2026-09-12T00:18:05+00:00",
+ "generated_at": "2026-09-12T00:52:09+00:00",
  "as_of": "2026-09-02",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
@@ -252,7 +252,7 @@
      "met": false
     },
     {
-     "condition": "central_bank.net_liquidity_wow_pct <= risk_off",
+     "condition": "central_bank.net_liquidity_wow_pct <= band_low",
      "met": false
     },
     {
@@ -294,13 +294,17 @@
    "bias": "FISCAL INJECTION",
    "active": false,
    "conditions_met": 0,
-   "total": 3,
+   "total": 4,
    "unknown": 0,
    "required": [
-    "fiscal.net_spending_yoy >= injection"
+    "regime.fiscal == INJECTION"
    ],
    "required_met": false,
    "details": [
+    {
+     "condition": "regime.fiscal == INJECTION",
+     "met": false
+    },
     {
      "condition": "fiscal.net_spending_yoy >= injection",
      "met": false
