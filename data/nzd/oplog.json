@@ -1,6 +1,108 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-12T06:30:41+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-09-12T06:30:41+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "d8815a7d96e4a285",
+    "degraded": [
+     "F2: monthly stock only (lsap_holdings)",
+     "F2: monthly flow only (lsap_sales_month)"
+    ],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 2,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-12T06:30:41+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_1887.html (snapshot 2026-09-12); nzdm_bond_listing.html (snapshot 2026-09-12); nzdm_bond_1008.html (snapshot 2026-09-12); nzdm_data.html (snapshot 2026-09-12)"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-12T06:30:41+00:00",
+   "type": "NZD_V04",
+   "category": "system",
+   "details": {
+    "tenders": 1776,
+    "omo_ops": 48,
+    "csa_days": 7949,
+    "bond_flows_two_sided_from": "2018-12-28",
+    "bond_month_ends": 93,
+    "lsap_lines": 16,
+    "lsap_unmapped": [],
+    "redemptions_vs_d10": [
+     [
+      "2024-05",
+      7391.0,
+      7391.0,
+      0.0
+     ],
+     [
+      "2025-04",
+      6942.0,
+      6982.0,
+      0.6
+     ],
+     [
+      "2025-09",
+      3066.9,
+      2244.0,
+      -26.8
+     ],
+     [
+      "2026-05",
+      7855.0,
+      6194.0,
+      -21.1
+     ]
+    ],
+    "d10_recon_months": 31,
+    "oia_recon_months": 22
+   }
+  },
+  {
+   "timestamp": "2026-09-12T06:30:21+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_last_good_copy",
+    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_1887.html (snapshot 2026-09-12); nzdm_bond_listing.html (snapshot 2026-09-12); nzdm_bond_1008.html (snapshot 2026-09-12); nzdm_data.html (snapshot 2026-09-12)"
+   }
+  },
+  {
    "timestamp": "2026-09-12T05:09:25+00:00",
    "type": "NOTIFY",
    "category": "system",
