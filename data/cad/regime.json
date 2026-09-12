@@ -1,6 +1,6 @@
 {
  "currency": "CAD",
- "generated_at": "2026-09-11T23:30:09+00:00",
+ "generated_at": "2026-09-12T00:16:32+00:00",
  "as_of": "2026-09-09",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
@@ -150,7 +150,7 @@
     "raw": 2360.0,
     "denominator": 66140.0,
     "denominator_date": "2026-09-09",
-    "today": "2026-09-11",
+    "today": "2026-09-12",
     "note": null
    },
    "v03_shadow": {
@@ -252,11 +252,15 @@
   {
    "id": "L1",
    "name": "CAD Liquidity Tightening",
-   "bias": "DEFENSIVE",
+   "bias": "LIQUIDITY TIGHTENING",
    "active": false,
    "conditions_met": 1,
    "total": 3,
    "unknown": 0,
+   "required": [
+    "rates.overnight_minus_policy_bps level >= WATCH"
+   ],
+   "required_met": true,
    "details": [
     {
      "condition": "fiscal.fiscal_flow_7d_cum <= drain",
@@ -275,11 +279,15 @@
   {
    "id": "L2",
    "name": "Silent Fiscal Easing",
-   "bias": "CONSTRUCTIVE",
+   "bias": "FISCAL INJECTION",
    "active": true,
    "conditions_met": 2,
    "total": 3,
    "unknown": 0,
+   "required": [
+    "fiscal.fiscal_flow_7d_cum >= injection"
+   ],
+   "required_met": true,
    "details": [
     {
      "condition": "fiscal.fiscal_flow_7d_cum >= injection",
@@ -298,11 +306,13 @@
   {
    "id": "L3",
    "name": "QT Drag Intensifying",
-   "bias": "RISK-OFF",
+   "bias": "QT DRAIN",
    "active": false,
    "conditions_met": 0,
    "total": 3,
    "unknown": 0,
+   "required": [],
+   "required_met": true,
    "details": [
     {
      "condition": "central_bank.net_liquidity_wow_pct <= risk_off",
@@ -321,11 +331,15 @@
   {
    "id": "L4",
    "name": "Funding Stress",
-   "bias": "EMERGENCY",
+   "bias": "FUNDING STRESS",
    "active": false,
    "conditions_met": 0,
    "total": 3,
    "unknown": 0,
+   "required": [
+    "rates.overnight_minus_policy_bps level >= STRESS"
+   ],
+   "required_met": false,
    "details": [
     {
      "condition": "rates.overnight_minus_policy_bps level >= STRESS",
@@ -344,11 +358,13 @@
   {
    "id": "L5",
    "name": "Curve Normalization",
-   "bias": "DURATION",
+   "bias": "CURVE NORMALIZATION",
    "active": false,
    "conditions_met": 1,
    "total": 3,
    "unknown": 0,
+   "required": [],
+   "required_met": true,
    "details": [
     {
      "condition": "rates.curve_10y_2y_bps > 0",
@@ -367,11 +383,13 @@
   {
    "id": "L6",
    "name": "Transmission Break",
-   "bias": "CAUTION",
+   "bias": "TRANSMISSION BREAK",
    "active": false,
    "conditions_met": 1,
    "total": 3,
    "unknown": 0,
+   "required": [],
+   "required_met": true,
    "details": [
     {
      "condition": "banking.transmission_signal == RED",
