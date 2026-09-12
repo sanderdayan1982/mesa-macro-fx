@@ -136,7 +136,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     # score & signals
     C = Comps(cfg, "mean2")
     sig = D["net_liquidity_wow_pct"]["signal"]
-    C.flow("net_liquidity_band", 1.0 if sig == "RISK_ON" else -1.0 if sig == "RISK_OFF" else 0.0)
+    C.flow("net_liquidity_band", 1.0 if sig == "BAND_HIGH" else -1.0 if sig == "BAND_LOW" else 0.0)
     lvl = E["reserves"]["level"]
     C.level("reserves_vs_range", {"SAFE": 0.5 if E["reserves"].get("in_range") else 0.0, "WATCH": -1.0, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
     if (E["emergency_lending"]["value"] or 0) > 0:
@@ -205,8 +205,8 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     if cum is None:
         reg, score = "NO DATA", 0.0
     else:
-        reg = "INJECTION" if pcts["signal"] == "RISK_ON" or (pcts["percentile"] is None and cum > 0 and (zv or 0) > 0.5) else \
-              "DRAIN" if pcts["signal"] == "RISK_OFF" or (pcts["percentile"] is None and cum < 0 and (zv or 0) < -0.5) else "NEUTRAL"
+        reg = "INJECTION" if pcts["signal"] == "BAND_HIGH" or (pcts["percentile"] is None and cum > 0 and (zv or 0) > 0.5) else \
+              "DRAIN" if pcts["signal"] == "BAND_LOW" or (pcts["percentile"] is None and cum < 0 and (zv or 0) < -0.5) else "NEUTRAL"
         score = round(max(-2.0, min(2.0, (zv or 0.0))), 2)
     CF = Comps(cfg, "sum").flow("fiscal_flow_z", score)
     D["fiscal_flow_7d_cum"]["percentile"] = pcts.get("percentile")

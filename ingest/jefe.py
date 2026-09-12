@@ -37,6 +37,17 @@ def _fridays(start: str, end: str) -> List[str]:
     return out
 
 
+def _asof_date(series: List[Tuple[str, float]], d: str, max_gap: int = 10) -> Optional[str]:
+    """date of the observation _asof() would return (for the as-of shown in the row)."""
+    if not series:
+        return None
+    ds = [x for x, _ in series]
+    i = bisect.bisect_right(ds, d) - 1
+    if i < 0 or (date.fromisoformat(d) - date.fromisoformat(ds[i])).days > max_gap:
+        return None
+    return ds[i]
+
+
 def _asof(series: List[Tuple[str, float]], d: str, max_gap: int = 10) -> Optional[float]:
     if not series:
         return None
@@ -173,6 +184,8 @@ NUMERAIRE = ("USD es el numerario: el retorno del test es el residual de cada di
 LIVE_TRACKING_START = "2026-09-11"  # jefe v2 activation: day zero of the frozen weekly archive (history/mesa/jefe_weekly.csv)
 SIGNATURE = "firma ICL 1.0 (2026-09-09): IC(8) > 0, IC(13) > 0, IC(26) ≤ 0; IC 13 s +0,124 (q BH 0,006), tercil que más inyecta pierde 0,46 % por trimestre frente al que más drena (divisa por USD)"
 NAMES = {"usd": "USD", "eur": "EUR", "gbp": "GBP", "jpy": "JPY", "chf": "CHF", "cad": "CAD", "aud": "AUD", "nzd": "NZD"}
+# human name of the object each BC row measures (round 2: shown in the row; the objects differ, see jefe.json.equivalence)
+OBJECT_LABEL = {"usd": "WRESBAL", "eur": "exceso ILM", "gbp": "reservas BoE", "jpy": "CAB", "chf": "GI (dep. a la vista)", "cad": "saldos liquidación B2", "aud": "ES (A1)", "nzd": "settlement cash D12"}
 
 
 def _read_hist(path: str, col: str) -> List[Tuple[str, float]]:
@@ -235,7 +248,7 @@ def compute_treasury(grid: List[str], root: str = ROOT) -> dict:
     rows = []
     for i, c in enumerate(rk):
         v13, v13_prev = V[c][use], V[c].get(grid[gi - WIN_T]) if gi >= WIN_T else None
-        rows.append({"ccy": NAMES[c], "rank": i + 1, "v13": round(v13, 2), "pct_era": round(PCT[c][use], 3), "z": round(Z[c][use], 2),
+        rows.append({"ccy": NAMES[c], "rank": i + 1, "v13": round(v13, 2), "pct_era": round(PCT[c][use], 3), "z": round(Z[c][use], 2), "as_of": _asof_date(S[c], use, 10),
                      "rank_prev_week": (prev.index(c) + 1) if c in prev else None, "rank_4w_ago": (ago4.index(c) + 1) if c in ago4 else None,
                      "zero_cross": bool(v13_prev is not None and (v13 > 0) != (v13_prev > 0) and v13 != 0 and v13_prev != 0), "proxy": c in PROXY})
     return {"status": "ok", "as_of_friday": use, "measure": "media de 13 semanas del score de flujos del bloque fiscal (v0.3, sólo flujos) → Φ⁻¹ del percentil as-of de la era (mín. 26 s) → recorte ±2,5; demeaned entre las divisas disponibles; Z = valor / σ agrupada de la era (as-of)",
@@ -441,12 +454,13 @@ def compute_bc(as_of: Optional[str] = None, root: str = ROOT) -> dict:
         rows.append({"ccy": NAMES[c], "rank": i + 1, "d13_pct": round(A[c][use], 2), "z": round(Z[c][use], 2),
                      "rank_prev_week": (prev.index(c) + 1) if c in prev else None, "rank_4w_ago": (ago4.index(c) + 1) if c in ago4 else None,
                      "reserves_now": v, "reserves_13w_ago": v0, "date_13w_ago": d0, "field": P["definition"][c]["field"],
+                     "object": OBJECT_LABEL.get(c, P["definition"][c]["field"]), "as_of": _asof_date(S[c], use, 10),
                      "source_column": P["definition"][c]["column"]})
     missing = [NAMES[c] for c in CCYS if c not in rk]
     return {"status": "ok", "as_of_friday": use, "measure": "Δ13 semanas de las reservas del banco central en % del stock de hace 13 semanas; demeaned entre las divisas disponibles; Z = valor / σ agrupada de la era (as-of)",
             "n": len(rk), "missing": missing, "ranking": rows, "sigma_week": round(sd_week, 3) if sd_week else None, "sigma_pooled": round(meta[use]["sd_pooled"], 3) if meta[use].get("sd_pooled") else None,
             "sigma_week_p20_era": round(p20, 3) if p20 else None, "low_dispersion": low, "sigma_history_weeks": len(sd_hist),
-            "pair_max_conviction": {"reserves_growth": rows[0]["ccy"], "reserves_drain": rows[-1]["ccy"], "z_gap": round(rows[0]["z"] - rows[-1]["z"], 2)} if len(rows) >= 2 else None,
+            "pair_max_z_gap": {"reserves_growth": rows[0]["ccy"], "reserves_drain": rows[-1]["ccy"], "z_gap": round(rows[0]["z"] - rows[-1]["z"], 2)} if len(rows) >= 2 else None,
             "z_weekly": _z_weekly(Z, grid[:gi + 1]),
             "label": LABEL, "signature": SIGNATURE, "bootstrap_by_position": "no calculable con una sola sección transversal; pendiente (Kimi, ronda 3)",
             "panel": {"replay_end": max(P["weekly"][c][-1][0] for c in CCYS if P["weekly"].get(c)), "live_extension": {NAMES[c]: P["definition"][c]["live_points_used"] for c in CCYS}}}

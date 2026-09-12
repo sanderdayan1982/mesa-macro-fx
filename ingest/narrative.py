@@ -481,9 +481,9 @@ def f7_jefe(ccy: str, jefe: dict, L: Ledger, spec: dict) -> str:
     else:
         s += ". %s no entra en el ranking de hoy (sin dato de reservas en la rejilla)" % me
         L.degraded.append("F7: own currency missing")
-    pm = jefe.get("pair_max_conviction")
+    pm = jefe.get("pair_max_z_gap")
     if pm:
-        s += "; par con mayor brecha Z por la pata BC (mapa, no convicción): %s (más reservas) frente a %s (más drenaje), brecha Z %s" % (pm["reserves_growth"], pm["reserves_drain"], L.num(pm["z_gap"], "jefe.pair_max_conviction.z_gap", "pct", "Z", 2))
+        s += "; par con mayor brecha Z por la pata BC (mapa, no convicción): %s (más reservas) frente a %s (más drenaje), brecha Z %s" % (pm["reserves_growth"], pm["reserves_drain"], L.num(pm["z_gap"], "jefe.pair_max_z_gap.z_gap", "pct", "Z", 2))
     if jefe.get("low_dispersion"):
         s += "; dispersión transversal baja (σ semanal %s < p20 de la era %s)" % (L.num(jefe["sigma_week"], "jefe.sigma_week", "pct", "σ", 3), L.num(jefe["sigma_week_p20_era"], "jefe.sigma_week_p20_era", "pct", "σ", 3))
     if jefe.get("missing"):

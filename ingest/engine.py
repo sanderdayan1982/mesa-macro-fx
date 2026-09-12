@@ -280,11 +280,17 @@ def _overlays(cfg: dict, blocks: Dict[str, dict], prev: Optional[Dict[str, objec
 
 
 # ───────────────────────────── scenarios ─────────────────────────────
-def _resolve_condition(cond: str, blocks: Dict[str, dict]) -> Optional[bool]:
+def _resolve_condition(cond: str, blocks: Dict[str, dict], regime: Optional[dict] = None) -> Optional[bool]:
     """Mini-language: '<path> level >= WATCH' | '<path> level == SAFE' | '<path> <= drain' | '<path> >= injection' |
-    '<path> <= p20' | '<path> > 0' | '<path> == RED' | '<path> mom_pct zscore >= 1'."""
+    '<path> <= p20' | '<path> > 0' | '<path> == RED' | '<path> mom_pct zscore >= 1' | 'regime.<block> == INJECTION'
+    (the engine's CONFIRMED block regime with hysteresis — round 2: fiscal scenarios require it, not the block heuristic)."""
     parts = cond.split()
     path = parts[0]
+    if path.startswith("regime."):
+        r = (((regime or {}).get("regimes") or {}).get(path.split(".", 1)[1]) or {}).get("regime")
+        if r in (None, "NO DATA", "NO SIGNAL"):
+            return None
+        return r == parts[2] if parts[1] == "==" else r != parts[2]
     e = _get(blocks, path)
     if parts[1] == "level":
         lvl = e.get("level", "NO DATA")
@@ -302,8 +308,9 @@ def _resolve_condition(cond: str, blocks: Dict[str, dict]) -> Optional[bool]:
     op, tgt = parts[1], parts[2]
     if tgt in ("RED", "GREEN", "YELLOW"):
         return (e.get("signal") == tgt) if e.get("signal") else None
-    if tgt in ("risk_off", "risk_on"):
-        return (e.get("signal") == tgt.upper()) if e.get("signal") not in (None, "NO DATA") else None
+    if tgt in ("band_low", "band_high", "risk_off", "risk_on"):  # era-band position (risk_* kept as aliases of old configs)
+        want = {"band_low": "BAND_LOW", "risk_off": "BAND_LOW", "band_high": "BAND_HIGH", "risk_on": "BAND_HIGH"}[tgt]
+        return (e.get("signal") == want) if e.get("signal") not in (None, "NO DATA") else None
     if tgt in ("drain", "injection"):
         reg = e.get("regime") or (blocks.get("fiscal", {}).get("derived", {}).get("fiscal_regime", {}).get("regime"))
         if reg in (None, "NO DATA"):
@@ -322,13 +329,13 @@ def _resolve_condition(cond: str, blocks: Dict[str, dict]) -> Optional[bool]:
     return {">": v > t, "<": v < t, ">=": v >= t, "<=": v <= t, "==": v == t}[op]
 
 
-def evaluate_scenarios(cfg: dict, blocks: Dict[str, dict]) -> List[dict]:
+def evaluate_scenarios(cfg: dict, blocks: Dict[str, dict], regime: Optional[dict] = None) -> List[dict]:
     out = []
     for sc in cfg.get("scenarios", {}).get("items", []):
         det = []
         for cnd in sc["conditions"]:
             try:
-                met = _resolve_condition(cnd, blocks)
+                met = _resolve_condition(cnd, blocks, regime)
             except Exception:
                 met = None
             det.append({"condition": cnd, "met": met})
@@ -356,8 +363,8 @@ def _rule_hit(rule: dict, blocks: Dict[str, dict], quality: dict) -> Optional[bo
             return None
         op, tgt = when.split()[1], when.split()[2]
         return LEVEL_RANK[lvl] >= LEVEL_RANK[tgt] if op == ">=" else LEVEL_RANK[lvl] == LEVEL_RANK[tgt]
-    if when == "<= risk_off":
-        return None if not e.get("signal") else e["signal"] == "RISK_OFF"
+    if when in ("<= risk_off", "<= band_low"):
+        return None if not e.get("signal") else e["signal"] == "BAND_LOW"
     if when == "<= drain":
         reg = blocks.get("fiscal", {}).get("derived", {}).get("fiscal_regime", {}).get("regime")
         return None if reg in (None, "NO DATA") else reg == "DRAIN"

@@ -247,7 +247,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     C.level("excess_to_required", {"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
     C.flow("cab_20d_level", {"SAFE": 0.25, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["cab_20d_change"].get("level"), 0.0))
     C.flow("cab_dod_level", {"SAFE": 0.0, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["cab_dod"].get("level"), 0.0))
-    C.flow("balance_sheet_band", 1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0)
+    C.flow("balance_sheet_band", 1.0 if sb["signal"] == "BAND_HIGH" else -1.0 if sb["signal"] == "BAND_LOW" else 0.0)
     if clf > 0:
         C.event("clf", -2.0)
     score = C.score()
@@ -361,7 +361,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     if E["auction_calendar"]["status"] == "fresh":
         E["auction_calendar"].pop("pending_by_design", None)
     supply_ahead = E["auction_calendar"]["level"] == "WATCH"
-    reg = "NO DATA" if not c20 else "INJECTION" if sb["signal"] == "RISK_ON" else "DRAIN" if sb["signal"] == "RISK_OFF" else "NEUTRAL"
+    reg = "NO DATA" if not c20 else "INJECTION" if sb["signal"] == "BAND_HIGH" else "DRAIN" if sb["signal"] == "BAND_LOW" else "NEUTRAL"
     score = 0.0 if reg == "NO DATA" else round(max(-1.5, min(1.5, (zv or 0.0) * 0.75)), 2)
     CF = Comps(cfg, "sum", -1.5, 1.5).flow("fiscal_flow_z", score)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": reg, "status": "fresh" if c20 else "unavailable", "date": D["fiscal_flow_daily"]["date"]}

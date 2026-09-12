@@ -82,7 +82,7 @@ def jefe_snapshot(root: str = ROOT) -> dict:
     j = _rj(os.path.join(root, "data", "mesa", "jefe.json")) or {}
     t = j.get("treasury") or {}
     return {"friday": j.get("as_of_friday"), "order": [x["ccy"] for x in j.get("ranking", [])], "ranking": j.get("ranking", []),
-            "low_dispersion": j.get("low_dispersion"), "pair": j.get("pair_max_conviction"),
+            "low_dispersion": j.get("low_dispersion"), "pair": j.get("pair_max_z_gap"),
             "treasury": {"friday": t.get("as_of_friday"), "ranking": t.get("ranking", [])} if t.get("status") == "ok" else None, "labels": j.get("labels") or {}}
 
 

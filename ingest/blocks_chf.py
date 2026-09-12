@@ -236,7 +236,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     if (byms and abs(byms[-1][1]) > 3) or (bb and bb[-1][1] < 1.0):
         flags.append("SNB_BILLS_AUCTION_ANOMALY")
     C = Comps(cfg, "sum", -1.5, 1.5)
-    C.flow("sight_deposits_13w_band", 1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0)
+    C.flow("sight_deposits_13w_band", 1.0 if sb["signal"] == "BAND_HIGH" else -1.0 if sb["signal"] == "BAND_LOW" else 0.0)
     lv = D["absorption_share"].get("level")
     C.level("absorption_share_level", -0.5 if lv == "WATCH" else -1.0 if lv in ("STRESS", "CRISIS") else 0.0)
     if "SNB_SUPPLYING" in flags:
@@ -282,8 +282,8 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     D["confed_cash_mom"] = entry("confed_cash_mom", mom, "Confederation cash at the SNB — month-on-month (− = spent into reserves, + = drain)", "monthly", unit, cfg, z_window=12)
     sp = _spec(th, "confed_cash_mom") or {}
     sb = signal_band(mom[-1][1] if mom else None, mom, dict(sp, risk_on_below=None, risk_on_above=sp.get("drain_above"), risk_off_below=sp.get("injection_below")), "monthly")
-    # note: signal_band's RISK_ON = high side; for fiscal, high = DRAIN
-    fr = "NO DATA" if not mom else "DRAIN" if sb["signal"] == "RISK_ON" else "INJECTION" if sb["signal"] == "RISK_OFF" else "NEUTRAL"
+    # note: signal_band's BAND_HIGH = high side; for fiscal, high = DRAIN
+    fr = "NO DATA" if not mom else "DRAIN" if sb["signal"] == "BAND_HIGH" else "INJECTION" if sb["signal"] == "BAND_LOW" else "NEUTRAL"
     big = bool(mom) and abs(D["confed_cash_mom"].get("zscore") or 0) >= 1.5
     D["confed_cash_mom"]["level"] = "WATCH" if (fr == "DRAIN" or big) else "SAFE" if mom else "NO DATA"
     D["confed_cash_mom"]["side"] = ("drain" if (mom and mom[-1][1] > 0) else "injection") if big else None

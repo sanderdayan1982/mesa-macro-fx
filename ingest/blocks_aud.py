@@ -118,7 +118,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     C = Comps(cfg, "mean2")
     C.level("es_vs_range", {"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
     C.flow("es_dod_level", {"SAFE": 0.25, "WATCH": -0.5, "STRESS": -1.0, "CRISIS": -1.5}.get(D["es_balances_dod"].get("level"), 0.0))
-    C.flow("balance_sheet_band", 1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0)
+    C.flow("balance_sheet_band", 1.0 if sb["signal"] == "BAND_HIGH" else -1.0 if sb["signal"] == "BAND_LOW" else 0.0)
     if sfm > 0:
         C.event("standing_facility", -2.0)
     score = C.score()
@@ -166,7 +166,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     big = (fv is not None and abs(fv) >= 15000) or (zv is not None and abs(zv) >= 2)
     D["fiscal_big_week"] = {"label": "FISCAL_BIG_WEEK (|flow| ≥ 15bn or |Z| ≥ 2)", "value": bool(big), "direction": ("DRAIN" if (fv or 0) < 0 else "INJECTION") if big else None,
                             "status": "fresh" if fv is not None else "unavailable", "date": D["fiscal_flow_weekly"]["date"], "note": b["derived"]["fiscal_big_week"]["note"]}
-    reg = "NO DATA" if not c4 else "INJECTION" if sb["signal"] == "RISK_ON" else "DRAIN" if sb["signal"] == "RISK_OFF" else "NEUTRAL"
+    reg = "NO DATA" if not c4 else "INJECTION" if sb["signal"] == "BAND_HIGH" else "DRAIN" if sb["signal"] == "BAND_LOW" else "NEUTRAL"
     score = 0.0 if reg == "NO DATA" else round(max(-2.0, min(2.0, (zv or 0.0))), 2)
     CF = Comps(cfg, "sum").flow("fiscal_flow_z", score)
     D["fiscal_regime"] = {"label": "Fiscal regime", "value": None, "regime": reg, "status": "fresh" if c4 else "unavailable", "date": D["fiscal_flow_weekly"]["date"]}

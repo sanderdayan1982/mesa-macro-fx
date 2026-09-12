@@ -576,7 +576,7 @@ def main_jefe_v2(fails: list) -> None:
         j = json.load(open(p, encoding="utf-8"))
         T = j.get("treasury") or {}
         ok = T.get("status") == "ok" and [r["rank"] for r in T["ranking"]] == list(range(1, T["n"] + 1)) and all(r["z"] >= r2["z"] for r, r2 in zip(T["ranking"], T["ranking"][1:])) \
-            and abs(sum(r["z"] for r in T["ranking"])) < 0.05 * T["n"] and set(j.get("labels", {}).values()) <= set(J.LABELS) and j.get("stamp") == J.stamp(j) and len(j.get("stamp", "")) == 12 and bool(j.get("generated_at")) and (not j.get("low_dispersion") or set(j["labels"].values()) == {J.COMPRESSED}) and set((j.get("completeness") or {}).keys()) == set(J.NAMES.values()) and all(v["treasury"]["truth"] == "proxy" for k, v in j["completeness"].items() if k.lower() in J.PROXY) and len((j.get("evidence") or {}).get("tests", [])) >= 5 and any(t["id"] == "H2" for t in j["evidence"]["tests"]) and j.get("numeraire") and (j.get("live_tracking") or {}).get("started") == J.LIVE_TRACKING_START and (j.get("treasury") or {}).get("clock_note") and all(r["proxy"] == (r["ccy"].lower() in J.PROXY) for r in T["ranking"])
+            and abs(sum(r["z"] for r in T["ranking"])) < 0.05 * T["n"] and set(j.get("labels", {}).values()) <= set(J.LABELS) and j.get("stamp") == J.stamp(j) and len(j.get("stamp", "")) == 12 and bool(j.get("generated_at")) and (not j.get("low_dispersion") or set(j["labels"].values()) == {J.COMPRESSED}) and set((j.get("completeness") or {}).keys()) == set(J.NAMES.values()) and all(v["treasury"]["truth"] == "proxy" for k, v in j["completeness"].items() if k.lower() in J.PROXY) and len((j.get("evidence") or {}).get("tests", [])) >= 5 and any(t["id"] == "H2" for t in j["evidence"]["tests"]) and j.get("numeraire") and (j.get("live_tracking") or {}).get("started") == J.LIVE_TRACKING_START and (j.get("treasury") or {}).get("clock_note") and all(r.get("object") and r.get("as_of") for r in j["ranking"]) and j.get("pair_max_z_gap") is not None and all(r["proxy"] == (r["ccy"].lower() in J.PROXY) for r in T["ranking"])
         check(ok, "data/mesa/jefe.json: treasury ranking ordered by Z, demeaned, proxy flags, labels in the enum, stamp recomputable, compression withholds labels, completeness for the eight (proxy legs marked), evidence published incl. H2, numeraire, live_tracking, clock_note", fails)
     # round 2 (institutionality): required scenario conditions — «min of n» never substitutes the price/fiscal condition
     from . import engine as EN
@@ -590,6 +590,13 @@ def main_jefe_v2(fails: list) -> None:
     r3 = EN.evaluate_scenarios(cfg_t, blk)[0]
     check(r1["conditions_met"] == 2 and not r1["active"] and not r1["required_met"] and r2["active"] and r2["required_met"] and not r3["active"] and r3["unknown"] == 1,
           "scenarios: 2 of 3 without the required condition does not activate; with it, it does; null required → unknown, inactive", fails)
+    cfg_f = {"scenarios": {"items": [{"id": "F", "name": "f", "bias": "FISCAL INJECTION", "min": 2, "required": ["regime.fiscal == INJECTION"],
+                                      "conditions": ["regime.fiscal == INJECTION", "central_bank.a level >= WATCH", "central_bank.b level >= WATCH"]}]}}
+    blk_f = {"central_bank": {"series": {}, "derived": {"a": {"level": "WATCH"}, "b": {"level": "WATCH"}}}}
+    f1 = EN.evaluate_scenarios(cfg_f, blk_f, {"regimes": {"fiscal": {"regime": "NEUTRAL"}}})[0]
+    f2 = EN.evaluate_scenarios(cfg_f, blk_f, {"regimes": {"fiscal": {"regime": "INJECTION"}}})[0]
+    f3 = EN.evaluate_scenarios(cfg_f, blk_f, None)[0]
+    check(not f1["active"] and f2["active"] and not f3["active"] and f3["unknown"] == 1, "scenarios: fiscal scenarios require the CONFIRMED fiscal regime (regime.fiscal), not the block heuristic", fails)
     import re as _re
     for c in ("usd", "eur", "gbp", "jpy", "chf", "cad", "aud", "nzd"):
         items = json.load(open(os.path.join(ROOT, "config", "%s.json" % c), encoding="utf-8"))["scenarios"]["items"]

@@ -21,7 +21,7 @@ from .blocks_gbp import _ser
 
 
 # legacy net-liquidity band (±2 % w/w, H.4.1 suite): published as a liquidity state, never as a risk posture (round 2)
-NL_TXT = {"RISK_ON": "NL UP", "RISK_OFF": "NL DOWN", "NEUTRAL": "NEUTRAL"}
+NL_TXT = {"BAND_HIGH": "NL UP", "BAND_LOW": "NL DOWN", "NEUTRAL": "NEUTRAL"}
 
 def _base(ccy, block, cfg, bcfg, E, D, signals, history):
     out = _base0(ccy, block, cfg, bcfg, E, D, signals, history)
@@ -131,7 +131,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
         flags.append("TGA_HEAVY_DRAIN")
     C = Comps(cfg, "mean2")
     C.level("reserves_status", {"AMPLE": 0.5, "NERVOUS": -1.0, "CRITICAL": -2.0}.get(r_status, 0.0))
-    C.flow("net_liquidity_band", 1.0 if sb["signal"] == "RISK_ON" else -1.0 if sb["signal"] == "RISK_OFF" else 0.0)
+    C.flow("net_liquidity_band", 1.0 if sb["signal"] == "BAND_HIGH" else -1.0 if sb["signal"] == "BAND_LOW" else 0.0)
     C.flow("tga_status", {"SAFE": 0.25, "DRAIN WATCH": -0.5, "HEAVY DRAIN": -1.0}.get(t_status, 0.0))
     C.level("rrp_status", -0.5 if D["rrp_status"]["badge"] == "WATCH" else 0.25)
     C.level("phase", {"QT": -0.25, "QE": 0.5}.get(phase, 0.0))

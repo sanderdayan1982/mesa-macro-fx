@@ -116,7 +116,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     above = E["reserves"].get("above_range")
     C.level("reserves_vs_pmrr", {"SAFE": 0.75 if above else 0.25, "WATCH": -0.5, "STRESS": -1.5, "CRISIS": -2.0}.get(lvl, 0.0))
     sig = D["policy_balance_sheet_wow_pct"]["signal"]
-    C.flow("balance_sheet_band", 1.0 if sig == "RISK_ON" else -1.0 if sig == "RISK_OFF" else 0.0)
+    C.flow("balance_sheet_band", 1.0 if sig == "BAND_HIGH" else -1.0 if sig == "BAND_LOW" else 0.0)
     C.level("qt_pace_level", {"SAFE": 0.0, "WATCH": -0.5, "STRESS": -1.0}.get(D["qt_pace"].get("level"), 0.0))
     if ctrf and ctrf > 0:
         C.event("ctrf", -2.0)
@@ -172,7 +172,7 @@ def build_fiscal(cfg: dict, ons: Dict[str, Series], prev: Optional[dict] = None)
     nz = nsz[-1][1] if nsz and nsz[-1][1] is not None else None
     big = nz is not None and abs(nz) >= 2
     D["fiscal_big_month"] = {"label": "FISCAL_BIG_MONTH (|Z net spending 24m| ≥ 2)", "value": big, "zscore": nz, "status": "fresh" if nz is not None else "unavailable", "date": D["net_spending"]["date"]}
-    reg = "NO DATA" if not yoy else "INJECTION" if sb["signal"] == "RISK_ON" else "DRAIN" if sb["signal"] == "RISK_OFF" else "NEUTRAL"
+    reg = "NO DATA" if not yoy else "INJECTION" if sb["signal"] == "BAND_HIGH" else "DRAIN" if sb["signal"] == "BAND_LOW" else "NEUTRAL"
     cap = b.get("influence_cap", {}).get("cap", 0.5)
     raw_score = 0.0 if reg == "NO DATA" else (1.0 if reg == "INJECTION" else -1.0 if reg == "DRAIN" else 0.0) * (1.0 + min(1.0, abs(nz or 0) / 2))
     score = round(max(-cap * 2, min(cap * 2, raw_score)), 2)  # capped: monthly layer cannot flip the regime alone

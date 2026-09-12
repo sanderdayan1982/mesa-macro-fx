@@ -184,14 +184,14 @@ def signal_band(value: Optional[float], series: Series, spec: dict, freq: str) -
     on, off = _pct_num(spec.get("risk_on_above")), _pct_num(spec.get("risk_off_below"))
     if r is not None:
         if on is not None and r >= on:
-            sig = "RISK_ON"
+            sig = "BAND_HIGH"
         elif off is not None and r <= off:
-            sig = "RISK_OFF"
+            sig = "BAND_LOW"
     sec = spec.get("secondary_absolute") or {}
     if sec.get("risk_on") is not None and value >= sec["risk_on"]:
-        sig = "RISK_ON"
+        sig = "BAND_HIGH"
     if sec.get("risk_off") is not None and value <= sec["risk_off"]:
-        sig = "RISK_OFF"
+        sig = "BAND_LOW"
     return {"signal": sig, "percentile": r, "n": len(sample), "era_anchor": (_ERA["start"] if (_ERA["start"] and spec.get("era_anchor", True) and not era_thin) else None), "era_thin": era_thin,
             "thresholds": {"risk_on_pct": on, "risk_off_pct": off, "abs": sec,
             "resolved": {"risk_on": percentile_value(sample, on) if (r is not None and on) else None,

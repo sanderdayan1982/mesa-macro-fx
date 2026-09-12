@@ -2311,7 +2311,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     pt = fiscal_flows_score_point(regime)  # jefe de mesa v2 (Treasury column): archive the v0.3 fiscal flows-only score
     if pt:
         append_history_csv(os.path.join(hist_dir, "fiscal_flows_score.csv"), "fiscal_flows_score", [pt])
-    scenarios = E.evaluate_scenarios(cfg, blocks)
+    scenarios = E.evaluate_scenarios(cfg, blocks, regime)  # confirmed regimes available to «regime.<block> == X» conditions
     alerts_path = os.path.join(log_dir, "alerts.json")
     existing = (load_json(alerts_path) or {}).get("alerts", [])
     alerts = E.evaluate_alerts(cfg, blocks, quality, existing)
