@@ -1,6 +1,6 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-12T00:18:12+00:00",
+ "generated_at": "2026-09-12T00:52:11+00:00",
  "as_of": "2026-09-10",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
@@ -318,14 +318,18 @@
    "name": "Fiscal Drain (tax / issuance settlement)",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 0,
-   "total": 3,
+   "conditions_met": 1,
+   "total": 4,
    "unknown": 0,
    "required": [
-    "fiscal.fiscal_flow_20d_cum <= drain"
+    "regime.fiscal == DRAIN"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
+    {
+     "condition": "regime.fiscal == DRAIN",
+     "met": true
+    },
     {
      "condition": "fiscal.fiscal_flow_20d_cum <= drain",
      "met": false
@@ -398,13 +402,17 @@
    "bias": "FISCAL INJECTION",
    "active": false,
    "conditions_met": 1,
-   "total": 3,
+   "total": 4,
    "unknown": 0,
    "required": [
-    "fiscal.fiscal_flow_20d_cum >= injection"
+    "regime.fiscal == INJECTION"
    ],
    "required_met": false,
    "details": [
+    {
+     "condition": "regime.fiscal == INJECTION",
+     "met": false
+    },
     {
      "condition": "fiscal.fiscal_flow_20d_cum >= injection",
      "met": false
