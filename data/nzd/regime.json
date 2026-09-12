@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-12T00:18:10+00:00",
+ "generated_at": "2026-09-12T00:52:04+00:00",
  "as_of": "2026-09-10",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
@@ -201,12 +201,14 @@
    "id": "L1",
    "name": "OMO-supplied ample (LSAP unwind absorbed)",
    "bias": "NEUTRAL",
-   "active": true,
+   "active": false,
    "conditions_met": 2,
    "total": 3,
    "unknown": 0,
-   "required": [],
-   "required_met": true,
+   "required": [
+    "rates.bank_bill_30d_minus_ocr_bps level == SAFE"
+   ],
+   "required_met": false,
    "details": [
     {
      "condition": "central_bank.omo_reliance_share level >= WATCH",
@@ -282,13 +284,17 @@
    "bias": "FISCAL DRAIN",
    "active": false,
    "conditions_met": 0,
-   "total": 3,
+   "total": 4,
    "unknown": 1,
    "required": [
-    "fiscal.fiscal_regime == DRAIN"
+    "regime.fiscal == DRAIN"
    ],
    "required_met": false,
    "details": [
+    {
+     "condition": "regime.fiscal == DRAIN",
+     "met": false
+    },
     {
      "condition": "fiscal.fiscal_regime == DRAIN",
      "met": null
@@ -308,14 +314,18 @@
    "name": "Fiscal injection",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 0,
-   "total": 3,
+   "conditions_met": 1,
+   "total": 4,
    "unknown": 1,
    "required": [
-    "fiscal.fiscal_regime == INJECTION"
+    "regime.fiscal == INJECTION"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
+    {
+     "condition": "regime.fiscal == INJECTION",
+     "met": true
+    },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
      "met": null
