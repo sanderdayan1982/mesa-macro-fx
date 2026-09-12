@@ -245,7 +245,8 @@ function renderBlotter(){ const el=$('blotter'); if(!el) return; const R=D.regim
   const days=d=>{if(!d)return null;const t=(Date.now()-new Date(d+'T00:00:00Z'))/864e5;return Math.floor(t);};
   // LAG por cadencia declarada del bloque (agent.json blocks_meta.cadence): diaria 3 d · semanal 10 d · decenal 14 d · mensual 25 d · trimestral 100 d; evento sin LAG
   const LAGD={daily:3,weekly:10,ten_day:14,monthly:25,quarterly:100}; const CADES={daily:'diaria',weekly:'semanal',ten_day:'decenal',monthly:'mensual',quarterly:'trimestral',event:'por evento'};
-  const lag=(asof,m)=>{m=m||{};const st=m.status,n=days(asof);if(n==null)return '';if(st==='stale'||st==='unavailable')return `<span class="lag red" title="bloque ${st} según su cadencia declarada · as-of ${asof}">${st==='stale'?'STALE':'SIN DATO'} ${n} d</span>`;const thr=m.cadence?LAGD[m.cadence]:10;if(thr==null)return '';return n>thr?`<span class="lag amber" title="fresco según la fuente, pero el dato es de hace ${n} días con cadencia ${CADES[m.cadence]||'no declarada (umbral semanal)'} (umbral ${thr} d) · as-of ${asof}">LAG ${n} d</span>`:'';};
+  const why=m=>{m=m||{};if(m.status!=='stale')return '';const L=m.series_loaded,E=m.series_expected;if(L!=null&&E!=null&&L<E)return `<span class="lag red" title="series no reconstruidas: ${(m.series_missing||[]).join(', ')||'—'}">INCOMPLETO ${L}/${E}</span>`;const n=(m.series_stale||[]).length;return n?`<span class="lag red" title="series stale según su cadencia: ${m.series_stale.join(', ')}">STALE ${n} serie${n>1?'s':''}</span>`:'';};
+  const lag=(asof,m)=>{m=m||{};const st=m.status,n=days(asof);if(n==null)return '';if(st==='stale')return why(m)||`<span class="lag red" title="bloque stale según source_health · as-of ${asof}">STALE</span>`;if(st==='unavailable'||st==='degraded')return `<span class="lag red" title="bloque ${st} según source_health · as-of ${asof}">${st==='unavailable'?'SIN DATO':'DEGRADADO'} ${n} d</span>`;const thr=m.cadence?LAGD[m.cadence]:10;if(thr==null)return '';return n>thr?`<span class="lag amber" title="fresco según la fuente, pero el dato es de hace ${n} días con cadencia ${CADES[m.cadence]||'no declarada (umbral semanal)'} (umbral ${thr} d) · as-of ${asof}">LAG ${n} d</span>`:'';};
   const reg=(r,b)=>{const x=(r.confirmed||r.regime||'NO DATA');return `<span class="regime ${rc(x)}" title="régimen confirmado por el motor ${r.engine==='0.4'?'v0.4':'v0.3'} (canónico)">${x.replace(/_/g,' ')}${S[b]?' · '+S[b]+'.ª':''}</span>`;};
   // cambio de régimen esta semana (≤ 7 d): bloques desde regime_changelog.json (replay v0.3, rejilla semanal); general desde regime_history.json (vivo)
   const wk=d=>{const n=days((d||'').slice(0,10));return n!=null&&n>=0&&n<=7;};
@@ -276,7 +277,8 @@ function render(){
   const errs=(R.heartbeat||{}).errors||[]; const ageH=R.generated_at?(Date.now()-new Date(R.generated_at))/36e5:null;
   const stale=ageH!=null&&ageH>48;
   // a source served from its last good copy (note tagged *_last_good_copy) is a warning, not an error: the data is current, the source is blocked
-  const copies=errs.filter(x=>/last_good_copy/.test(x)), hard=errs.filter(x=>!/last_good_copy/.test(x));
+  const cleanErr=x=>{let t=String(x);for(const m of ['<!DOCTYPE','<!doctype','<html','<HTML']){const i=t.indexOf(m);if(i>=0)t=t.slice(0,i)+' [HTML omitido]';}t=t.replace(/\s+/g,' ').trim();return t.length>220?t.slice(0,219)+'…':t;};
+  const copies=errs.filter(x=>/last_good_copy/.test(x)).map(cleanErr), hard=errs.filter(x=>!/last_good_copy/.test(x)).map(cleanErr);
   $('msg').className='msg '+(hard.length?'alert':(copies.length||stale)?'warn':'ok');
   $('msg').textContent=hard.length?'⚠ source errors: '+hard.join(' | ')+(copies.length?' · last good copy: '+copies.join(' | '):''):copies.length?'ⓘ source blocked · last good copy served (data current): '+copies.join(' | '):stale?`⚠ data generated ${ageH.toFixed(0)}h ago — check the refresh workflow`:`All blocks loaded · regime ${R.regime} · flags ${(R.flags||[]).join(', ')||'none'}`;
   // wire
@@ -284,12 +286,10 @@ function render(){
 
   // ── EXECUTIVE HEADER ──
   const res=e('central_bank','reserves'), spr=e('rates','overnight_minus_deposit_bps'), nl=e('central_bank','net_liquidity_wow_pct'), ff=e('fiscal','fiscal_flow_7d_cum');
-  const flags=(R.flags||[]).map(f=>badge(f.replace('PHASE_','phase: '),'blue')).join(' ');
   $('execHeader').innerHTML=`
-    <div class="card g3"><div class="card-title">Liquidity regime</div><div class="kpi" style="font-size:18px;margin-top:8px"><span class="regime ${R.traffic_light||'NONE'}">${(R.regime||'—').replace(/_/g,' ')}</span></div><div class="card-src">blocks ${R.blocks_used||0}/4 · ${flags}</div></div>
-    <div class="card g2"><div class="card-title">Reserves</div><div class="kpi sm">${fB(res&&res.value)}</div>${delta(res)}<div class="card-src">${res&&res.in_range?'inside BoC 50–70B range':'OUTSIDE BoC range'} ${res?lvlBadge(res.level):''}</div></div>
-    <div class="card g2"><div class="card-title">CORRA − deposit</div><div class="kpi sm">${fBps(spr&&spr.value)}</div><div class="card-src">${spr?lvlBadge(spr.level):''} band ${fX(e('rates','band_position')&&e('rates','band_position').value)} · ${spr?pct(spr.percentile):''}</div></div>
-    <div class="card g2"><div class="card-title">Net Liquidity Δ w/w</div><div class="kpi sm">${fP(nl&&nl.value)}</div><div class="card-src">${nl?badge(nl.signal):''} ${nl?pct(nl.percentile):''}</div></div>
+        <div class="card g3"><div class="card-title">Reserves</div><div class="kpi sm">${fB(res&&res.value)}</div>${delta(res)}<div class="card-src">${res&&res.in_range?'inside BoC 50–70B range':'OUTSIDE BoC range'} ${res?lvlBadge(res.level):''}</div></div>
+    <div class="card g3"><div class="card-title">CORRA − deposit</div><div class="kpi sm">${fBps(spr&&spr.value)}</div><div class="card-src">${spr?lvlBadge(spr.level):''} band ${fX(e('rates','band_position')&&e('rates','band_position').value)} · ${spr?pct(spr.percentile):''}</div></div>
+    <div class="card g3"><div class="card-title">Net Liquidity Δ w/w</div><div class="kpi sm">${fP(nl&&nl.value)}</div><div class="card-src">${nl?badge(nl.signal):''} ${nl?pct(nl.percentile):''}</div></div>
     <div class="card g3"><div class="card-title">Fiscal flow 7d</div><div class="kpi sm">${fM(ff&&ff.value)}</div><div class="card-src">${fi?badge(fi.signals.label,fi.signals.traffic_light==='GREEN'?'SAFE':fi.signals.traffic_light==='RED'?'STRESS':'WATCH'):''} Z ${fZ(e('fiscal','fiscal_flow_zscore')&&e('fiscal','fiscal_flow_zscore').value)} · ${ff?badge(ff.status):''}</div></div>`;
 
   // ── LAYERS ──

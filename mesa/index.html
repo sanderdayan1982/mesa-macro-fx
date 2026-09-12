@@ -91,6 +91,8 @@ const STALE_H=30; // a refresh older than this (hours) is flagged
 // LAG por cadencia declarada del bloque (agent.json blocks_meta.cadence): diaria 3 d · semanal 10 d · decenal 14 d · mensual 25 d · trimestral 100 d; evento sin LAG; sin cadencia → umbral semanal
 const LAGD={daily:3,weekly:10,ten_day:14,monthly:25,quarterly:100}; const CADES={daily:'diaria',weekly:'semanal',ten_day:'decenal',monthly:'mensual',quarterly:'trimestral',event:'por evento'};
 function dAge(d){if(!d)return null;return Math.floor((Date.now()-new Date(d+'T00:00:00Z'))/864e5);}
+const cleanErr=x=>{let t=String(x);for(const m of ['<!DOCTYPE','<!doctype','<html','<HTML']){const i=t.indexOf(m);if(i>=0)t=t.slice(0,i)+' [HTML omitido]';}t=t.replace(/\s+/g,' ').trim();return t.length>220?t.slice(0,219)+'…':t;};
+function whyBadge(m){m=m||{};if(m.status!=='stale')return '';const L=m.series_loaded,E=m.series_expected;if(L!=null&&E!=null&&L<E)return `<span class="badge err" title="series no reconstruidas: ${(m.series_missing||[]).join(', ')||'—'}">INCOMPLETO ${L}/${E}</span>`;const n=(m.series_stale||[]).length;return n?`<span class="badge warn" title="series stale según su cadencia: ${m.series_stale.join(', ')}">${n} SERIE${n>1?'S':''} STALE</span>`:'';}
 function lagBadge(m){m=m||{};if(m.status!=='fresh')return '';const n=dAge(m.as_of);if(n==null)return '';const thr=m.cadence?LAGD[m.cadence]:10;if(thr==null||n<=thr)return '';return `<span class="badge warn" title="fresco según la fuente, pero el dato es de hace ${n} días con cadencia ${CADES[m.cadence]||'no declarada (umbral semanal)'} (umbral ${thr} d)">LAG ${n} d</span>`;}
 const inWeek=d=>{const n=dAge((d||'').slice(0,10));return n!=null&&n>=0&&n<=7;};
 function age(iso){if(!iso)return null;const h=(Date.now()-new Date(iso).getTime())/36e5;return h;}
@@ -115,8 +117,8 @@ async function load(){
     if(!r){missing++;issues.push({lvl:'err',t:C+': regime.json no disponible'});return `<a class="card" href="../${c}/"><div class="top"><span class="ccy">${C}</span><span class="regime NONE">SIN DATOS</span></div></a>`;}
     const bm=(a&&a.blocks_meta)||{};
     const blocks=['central_bank','fiscal','rates','banking'].map(b=>{const m=bm[b]||{};const st=m.status||'unavailable';if(st==='fresh')fresh++;else if(st==='stale')stale++;else unav++;
-      if(st!=='fresh')issues.push({lvl:st==='stale'?'warn':'err',t:`${C} · ${BN[b]}: ${ES[st]||st} (as-of ${m.as_of||'—'})`});
-      const lg=lagBadge(m);if(lg)lagN++;
+      if(st!=='fresh')issues.push({lvl:st==='stale'?'warn':'err',t:`${C} · ${BN[b]}: ${ES[st]||st} (as-of ${m.as_of||'—'})${(m.series_missing||[]).length&&m.series_loaded<m.series_expected?' · sin reconstruir ('+m.series_loaded+'/'+m.series_expected+'): '+m.series_missing.join(', '):''}${(m.series_stale||[]).length?' · '+m.series_stale.length+' serie'+(m.series_stale.length>1?'s':'')+' stale: '+m.series_stale.slice(0,4).join(', ')+(m.series_stale.length>4?' …':''):''}`});
+      const lg=lagBadge(m)||whyBadge(m);if(lagBadge(m))lagN++;
       return `<div class="blk ${st}"><b>${BN[b]}</b>${ES[st]||st}${lg?' '+lg:''}<br>${m.as_of||'—'}</div>`;}).join('');
     const h=age(r.generated_at);if(h!=null&&h>STALE_H){old++;issues.push({lvl:'warn',t:`${C}: último refresco hace ${ageTxt(h)} (> ${STALE_H} h)`});}
     let gate='<span class="badge dim">SIN AGENT</span>';
@@ -127,7 +129,7 @@ async function load(){
     if(a&&a.jefe&&a.jefe.stamp&&J&&J.stamp&&a.jefe.stamp!==J.stamp)issues.push({lvl:'warn',t:`${C}: el F7 del daily_log lleva un ranking del jefe anterior al vigente (sello ${a.jefe.stamp} ≠ ${J.stamp}); manda ESTADO`});
     const trk=J&&J.treasury&&J.treasury.ranking?J.treasury.ranking.find(x=>x.ccy===C):null; const lab=J&&J.labels?J.labels[C]:null;
     // excepciones del último refresco: errores duros y copias last-good del heartbeat (regime.json.heartbeat.errors), con el nombre de la fuente
-    const hb=r.heartbeat||{};(hb.errors||[]).forEach(e=>{const src=String(e).split(':')[0];const lg=/last_good_copy/.test(e);issues.push({lvl:lg?'warn':'err',t:`${C} · ${lg?'copia last-good servida (fuente bloqueada, dato vigente)':'error de fuente'}: <b>${src.replace(/_last_good_copy$/,'')}</b> — ${String(e).slice(src.length+1).trim().slice(0,220)} <span style="color:var(--text3)">(lane ${hb.lane||'—'})</span>`});});
+    const hb=r.heartbeat||{};(hb.errors||[]).forEach(e=>{const src=String(e).split(':')[0];const lg=/last_good_copy/.test(e);issues.push({lvl:lg?'warn':'err',t:`${C} · ${lg?'copia last-good servida (fuente bloqueada, dato vigente)':'error de fuente'}: <b>${src.replace(/_last_good_copy$/,'')}</b> — ${cleanErr(String(e).slice(src.length+1))} <span style="color:var(--text3)">(lane ${hb.lane||'—'})</span>`});});
     // ⧗ otro reloj: la columna Tesoro del jefe (media 13 s del score v0.3) apunta al otro lado del régimen fiscal vivo v0.4
     const fiL=(R.fiscal||{});const liveF=fiL.engine==='0.4'?(fiL.confirmed||fiL.regime):null;const clashC=trk&&liveF&&((liveF==='DRAIN'&&trk.z>0)||(liveF==='INJECTION'&&trk.z<0));
     // cambio de régimen general esta semana (regime_history.json, changelog vivo)
