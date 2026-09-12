@@ -120,12 +120,12 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
         if not b or b["signals"]["traffic_light"] == "NONE":
             # no print this run (source outage / lane without the series): the block reads NO SIGNAL but its hysteresis state is
             # carried forward untouched, so the confirmed regime resumes where it was when the data returns (v0.3.1 hotfix)
-            return {"regime": "NO SIGNAL", "score": None, "label": None, "traffic_light": "NONE", "as_of": None,
+            return {"regime": "NO SIGNAL", "confirmed": "NO SIGNAL", "canonical": "confirmed", "score": None, "label": None, "traffic_light": "NONE", "as_of": None,
                     "state": prev_state, "cuts": {k: cuts[k] for k in CUT_KEYS},
                     "last_confirmed": prev_state.get("confirmed"), "last_as_of": (prev_regs.get(name) or {}).get("as_of")}
         sc = b["signals"]["score"]
         st = block_regime_step(sc, cuts, prev_state, b.get("as_of"), dual.get("persistence"))
-        out = {"regime": st["confirmed"], "score": sc, "label": b["signals"]["label"], "traffic_light": b["signals"]["traffic_light"], "as_of": b.get("as_of"),
+        out = {"regime": st["confirmed"], "confirmed": st["confirmed"], "canonical": "confirmed", "score": sc, "label": b["signals"]["label"], "traffic_light": b["signals"]["traffic_light"], "as_of": b.get("as_of"),
                "detail": b["signals"].get("detail", ""), "raw_regime": st["raw"], "cuts": {k: cuts[k] for k in CUT_KEYS},
                "evidence": cuts["evidence"], "state": st, "components": b["signals"].get("components")}
         return out
@@ -144,7 +144,8 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
         pr = compute_print(comp, blocks, hist_dir)
         st = block_regime_step(pr["score"], cuts4, prev_state, pr["as_of"], dual.get("persistence"))
         st["engine"] = "0.4"
-        out = {"regime": st["confirmed"] if pr["score"] is not None else "NO SIGNAL", "score": pr["score"], "label": v3.get("label"), "traffic_light": v3.get("traffic_light"),
+        out = {"regime": st["confirmed"] if pr["score"] is not None else "NO SIGNAL", "confirmed": st["confirmed"] if pr["score"] is not None else "NO SIGNAL", "canonical": "confirmed",
+               "score": pr["score"], "label": v3.get("label"), "traffic_light": v3.get("traffic_light"),
                "as_of": pr["as_of"] or v3.get("as_of"), "detail": v3.get("detail", ""), "raw_regime": st["raw"], "cuts": cuts4, "evidence": spec.get("evidence") or {},
                "state": st, "components": v3.get("components"), "engine": "0.4", "component": comp, "selected": spec.get("selected"),
                "print": {k: pr[k] for k in ("raw", "denominator", "denominator_date", "today", "note")},
@@ -212,7 +213,7 @@ def classify_regime(cfg: dict, blocks: Dict[str, dict], prev_regime: Optional[di
     else:
         regime = g_reg
     regimes = {"central_bank": cbr, "fiscal": fir,
-               "general": {"regime": regime, "score": g_score, "rule": rule, "price_gate": gate, "dual_weights": dw, "thresholds": gth,
+               "general": {"regime": regime, "confirmed": regime, "canonical": "confirmed", "score": g_score, "rule": rule, "price_gate": gate, "dual_weights": dw, "thresholds": gth,
                            "block_thresholds": {"central_bank": cbr.get("cuts"), "fiscal": fir.get("cuts")} if v03 else (dual.get("block_thresholds") or {"injection": 0.5, "drain": -0.5}),
                            "engine": "0.3" if v03 else "0.2", "v04_blocks": [n for n, r in (("central_bank", cbr), ("fiscal", fir)) if r.get("engine") == "0.4"],
                            "agreement_only": agree_only, "era_start": era_start, "era_weeks": era_weeks,

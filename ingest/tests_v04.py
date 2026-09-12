@@ -602,6 +602,12 @@ def main_jefe_v2(fails: list) -> None:
         items = json.load(open(os.path.join(ROOT, "config", "%s.json" % c), encoding="utf-8"))["scenarios"]["items"]
         check(not any(_re.search(r"RISK|BULL|BEAR|DEFENSIVE|CONSTRUCTIVE|CAUTION|SUPPORTIVE", it["bias"]) for it in items) and all(all(r in it["conditions"] for r in it.get("required", [])) for it in items),
               "config %s: scenario biases are liquidity states and every required condition exists in its scenario" % c.upper(), fails)
+    for c in ("usd", "eur"):  # lote blotter: the canonical state is explicit in the JSON (confirmed == regime, canonical = "confirmed")
+        rp = os.path.join(ROOT, "data", c, "regime.json")
+        if os.path.exists(rp):
+            rg = json.load(open(rp, encoding="utf-8"))["regimes"]
+            check(all(rg[b].get("confirmed") == rg[b].get("regime") and rg[b].get("canonical") == "confirmed" for b in ("central_bank", "fiscal", "general")),
+                  "regime.json %s: confirmed == regime and canonical = confirmed on the three regimes" % c.upper(), fails)
     from . import regime_changelog as RC
     for c in ("usd", "eur", "nzd"):
         r = RC.build(c)
