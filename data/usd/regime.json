@@ -1,6 +1,6 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-11T23:30:15+00:00",
+ "generated_at": "2026-09-12T00:15:16+00:00",
  "as_of": "2026-09-11",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
@@ -26,7 +26,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-11",
-   "detail": "WRESBAL NERVOUS · NL Δ% 1.5273 (RISK_ON) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
+   "detail": "WRESBAL NERVOUS · NL Δ% 1.5273 (NL UP) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.11,
@@ -223,6 +223,8 @@
    "conditions_met": 2,
    "total": 3,
    "unknown": 0,
+   "required": [],
+   "required_met": true,
    "details": [
     {
      "condition": "central_bank.reserves level == SAFE",
@@ -242,10 +244,14 @@
    "id": "L2",
    "name": "Reserve scarcity building (Sept-2019 pattern)",
    "bias": "RESERVE SCARCITY",
-   "active": true,
+   "active": false,
    "conditions_met": 2,
    "total": 3,
    "unknown": 0,
+   "required": [
+    "rates.sofr_minus_iorb_bps level >= WATCH"
+   ],
+   "required_met": false,
    "details": [
     {
      "condition": "central_bank.reserves level >= WATCH",
@@ -264,11 +270,15 @@
   {
    "id": "L3",
    "name": "Funding stress",
-   "bias": "EMERGENCY",
+   "bias": "FUNDING STRESS",
    "active": false,
    "conditions_met": 0,
    "total": 3,
    "unknown": 1,
+   "required": [
+    "rates.sofr_minus_iorb_bps level >= STRESS"
+   ],
+   "required_met": false,
    "details": [
     {
      "condition": "rates.sofr_minus_iorb_bps level >= STRESS",
@@ -287,11 +297,15 @@
   {
    "id": "L4",
    "name": "Treasury drain (TGA rebuild)",
-   "bias": "RISK-OFF",
+   "bias": "FISCAL DRAIN",
    "active": false,
    "conditions_met": 1,
    "total": 3,
    "unknown": 1,
+   "required": [
+    "fiscal.fiscal_regime == DRAIN"
+   ],
+   "required_met": false,
    "details": [
     {
      "condition": "fiscal.fiscal_regime == DRAIN",
@@ -310,11 +324,15 @@
   {
    "id": "L5",
    "name": "Fiscal injection / TGA drawdown",
-   "bias": "RISK-ON",
+   "bias": "FISCAL INJECTION",
    "active": false,
    "conditions_met": 1,
    "total": 3,
    "unknown": 1,
+   "required": [
+    "fiscal.fiscal_regime == INJECTION"
+   ],
+   "required_met": false,
    "details": [
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
@@ -333,11 +351,13 @@
   {
    "id": "L6",
    "name": "Credit contraction",
-   "bias": "RISK-OFF",
+   "bias": "CREDIT CONTRACTION",
    "active": false,
    "conditions_met": 1,
    "total": 3,
    "unknown": 0,
+   "required": [],
+   "required_met": true,
    "details": [
     {
      "condition": "banking.transmission_signal == RED",

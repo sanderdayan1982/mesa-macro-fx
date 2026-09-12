@@ -120,7 +120,7 @@
   "reserves_drain": "NZD",
   "z_gap": 2.23
  },
- "label": "momento de flujo de reservas a un trimestre, 8–13 s",
+ "label": "mapa de flujo de reservas a un trimestre, 8–13 s (IC pequeño y validado: mapa, no libro)",
  "signature": "firma ICL 1.0 (2026-09-09): IC(8) > 0, IC(13) > 0, IC(26) ≤ 0; IC 13 s +0,124 (q BH 0,006), tercil que más inyecta pierde 0,46 % por trimestre frente al que más drena (divisa por USD)",
  "bootstrap_by_position": "no calculable con una sola sección transversal; pendiente (Kimi, ronda 3)",
  "panel": {
@@ -1233,9 +1233,9 @@
  "live_tracking": {
   "started": "2026-09-11",
   "archive": "history/mesa/jefe_weekly.csv",
-  "fridays_archived": 0,
-  "first": null,
-  "last": null,
+  "fridays_archived": 1,
+  "first": "2026-09-11",
+  "last": "2026-09-11",
   "oos_test_at_fridays": 26,
   "rule": "ranking congelado cada viernes (última escritura del día); test fuera de muestra prerregistrado (PREREGISTRO_T1T2_V04_Y_OOS.md) a las 26 semanas: IC de las Z archivadas contra el retorno residual a 13 s, mismo método, una mirada"
  },
@@ -1943,6 +1943,136 @@
    "calibration/<ccy>_v04/replay_v04.json"
   ]
  },
- "generated_at": "2026-09-11T23:30:15+00:00",
+ "equivalence": {
+  "CAD": {
+   "bc": {
+    "object": "reserves",
+    "column": "V36636",
+    "era_start": "2020-03-23",
+    "equivalence_quality": "high",
+    "note": ""
+   },
+   "treasury": {
+    "driver_v03": "frecuencia_de_era / frecuencia_de_era",
+    "component_v04": "govt_delta",
+    "reconciliation_v04": "cuenta del gobierno (Valet) — identidad",
+    "equivalence_quality": "medium-high",
+    "note": "Canada has no DTS with receipts/withdrawals, but the Receiver General publishes a DAILY closing cash balance at the BoC plus term deposits placed with banks (found in triangulation, verified 2026-09-08). Daily -dBalance is the analog of -dTGA; term deposits capture cash moved from the BoC to banks (reserve-adding without fiscal meaning). Issuance/redemption from auctions; net spending from monthly Fiscal Monitor (deferred)."
+   }
+  },
+  "GBP": {
+   "bc": {
+    "object": "reserves",
+    "column": "RPWB56A",
+    "era_start": "2022-11-01",
+    "equivalence_quality": "high",
+    "note": ""
+   },
+   "treasury": {
+    "driver_v03": "banda_por_diseño / banda_por_diseño",
+    "component_v04": null,
+    "reconciliation_v04": null,
+    "equivalence_quality": "medium",
+    "note": "No daily/weekly Exchequer account is published in machine-readable form (DMO daily cash flow is PDF). ONS Public Sector Finances give central government cash requirement, expenditure and receipts monthly (~3-week lag). Gilt/T-bill issuance from DMO by event (pending)."
+   }
+  },
+  "AUD": {
+   "bc": {
+    "object": "reserves",
+    "column": "ARBALESBW",
+    "era_start": "2025-04-09",
+    "equivalence_quality": "high",
+    "note": "Weekly A1 balance sheet + DAILY ES balances (A3): the AUD has a daily reserves series, closer to the Fed's H.4.1/daily data than CAD or GBP."
+   },
+   "treasury": {
+    "driver_v03": "provisional_era_corta / provisional_era_corta",
+    "component_v04": "govt_delta",
+    "reconciliation_v04": "depósitos del gobierno semanales (A1) — identidad",
+    "equivalence_quality": "medium-high",
+    "note": "Government deposits at the RBA are WEEKLY (A1) — a true TGA analogue at weekly resolution (better than GBP, worse than CAD's daily Receiver General). Issuance/tenders from AOFM (event). Monthly financial statements from Finance for the NFA flow."
+   }
+  },
+  "JPY": {
+   "bc": {
+    "object": "cab_daily",
+    "column": "cab",
+    "era_start": "2024-07-31",
+    "equivalence_quality": "high",
+    "note": "DAILY current account balances, excess reserves, required reserves and market operations (T+1 final, same-day provisional) plus a full balance sheet every ten days. Closest G8 analogue to the Fed's daily data."
+   },
+   "treasury": {
+    "driver_v03": "provisional_era_corta / provisional_era_corta",
+    "component_v04": "treasury_5d",
+    "reconciliation_v04": "財政等要因 realizado (速報/確報) = −Δ cuenta del gobierno",
+    "equivalence_quality": "high",
+    "note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day."
+   }
+  },
+  "CHF": {
+   "bc": {
+    "object": "sight_deposits_domestic_weekly",
+    "column": "snbgwdchfsgw:GI",
+    "era_start": "2022-09-22",
+    "equivalence_quality": "high",
+    "note": "Sight deposits of domestic banks = reserves (weekly, Monday). Threshold system: 0% up to factor × minimum reserves, −0.25% above. SNB absorbs ~155 bn with Bills and 1-week repos at policy − 5 bp — that is the market anchor, not the policy rate."
+   },
+   "treasury": {
+    "driver_v03": "banda_por_diseño / banda_por_diseño",
+    "component_v04": "net_issuance_5d",
+    "reconciliation_v04": "MMDRC + bonos por liquidación T+2 (EFV)",
+    "equivalence_quality": "medium-low",
+    "note": "No daily statement and no monthly cash report (AFF site verified 2026-09-08: annual/budget only). Monthly 'Amounts due to the Confederation' (SNB balance sheet) + weekly MMDRC auctions + monthly bond auctions. Weight 0.10. The weekly 'other sight deposits' series is NOT a Confederation proxy (C6)."
+   }
+  },
+  "NZD": {
+   "bc": {
+    "object": "settlement_cash_daily",
+    "column": "D12:settlement_cash",
+    "era_start": "2022-07-01",
+    "equivalence_quality": "high",
+    "note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)"
+   },
+   "treasury": {
+    "driver_v03": "banda_por_diseño / banda_por_diseño",
+    "component_v04": null,
+    "reconciliation_v04": null,
+    "equivalence_quality": "medium",
+    "note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band"
+   }
+  },
+  "USD": {
+   "bc": {
+    "object": "reserves",
+    "column": "WRESBAL",
+    "era_start": "2022-06-01",
+    "equivalence_quality": "high",
+    "note": "H.4.1 Wednesday levels via FRED (Thu 16:30 ET = 22:30 WAT). Net Liquidity = WALCL − WTREGEN − RRPONTTLD (RRP = latest observation ≤ the H.4.1 date). All $M."
+   },
+   "treasury": {
+    "driver_v03": "frecuencia_de_era / frecuencia_de_era",
+    "component_v04": null,
+    "reconciliation_v04": null,
+    "equivalence_quality": "high",
+    "note": "DTS via Fiscal Data API, ~16:00 ET (22:00 WAT), record_date = previous business day. Views Daily / MTD / FYTD kept as fields on every line item. Net Treasury Flow (MMT sign) = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues): + = net fiscal injection (NFA creation), − = drain. Reserve impact ≠ NFA: −ΔTGA."
+   }
+  },
+  "EUR": {
+   "bc": {
+    "object": "excess_liquidity",
+    "column": "ILM.D.U2.C.EXLIQ.U2.EUR",
+    "era_start": "2022-09-14",
+    "equivalence_quality": "high",
+    "note": "ILM daily (T+1) = WRESBAL analog on a daily grid; WFS weekly Tuesday 15:00 CET. Floor system with full allotment: quantity taken at MRO/LTRO is the scarcity signal (like NZD OMO)."
+   },
+   "treasury": {
+    "driver_v03": "frecuencia_de_era / frecuencia_de_era",
+    "component_v04": "net_issuance_5d",
+    "reconciliation_v04": "DE+FR+ES+IT+UE(+ESM) por liquidación + reembolsos y cupones BRUTOS: DE 1999→, EU 2020→, FR 2019→ (recompras por mes), IT 2020→, ES 2025→ (sólo reembolsos, sin cupones); IT aplicado desde el primer registro de emisión del archivo MEF (2022 en el runner) para que el flujo sea de dos lados desde la misma fecha; ESM sólo un lado; ES/IT emisión sólo desde 2022",
+    "equivalence_quality": "medium-low",
+    "note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction."
+   }
+  }
+ },
+ "generated_at": "2026-09-12T00:15:16+00:00",
  "stamp": "00b723f4603b"
 }
