@@ -214,6 +214,19 @@ def _ordinal(n: int, L: Optional["Ledger"] = None, field: str = "streak") -> str
     return "%d.ª" % n
 
 
+_CADENCE_ORDER = ["daily", "weekly", "ten_day", "monthly", "quarterly"]  # regular cadences, fastest first; "event" series never set a cadence
+
+
+def _cadence(blk: dict) -> Optional[str]:
+    """Cadence of the block's as-of: the fastest regular frequency among the series dated on the block's as_of (the series
+    that set the as-of); if only event series sit on the as-of, the fastest regular frequency of the block. Published in
+    blocks_meta so the UI reads LAG against the cadence (daily 3 d, weekly 10 d, monthly 25 d) instead of one number for all."""
+    ser = [v for v in (blk.get("series") or {}).values() if isinstance(v, dict) and v.get("frequency") in _CADENCE_ORDER]
+    on_asof = [v["frequency"] for v in ser if v.get("date") == blk.get("as_of")]
+    pool = on_asof or [v["frequency"] for v in ser]
+    return next((f for f in _CADENCE_ORDER if f in pool), None)
+
+
 # ───────────────────────────── the seven sentences ─────────────────────────────
 def header(blocks: dict) -> Tuple[str, dict]:
     parts, meta = [], {}
@@ -223,7 +236,7 @@ def header(blocks: dict) -> Tuple[str, dict]:
         if not blk:
             continue
         st = (blk.get("source_health") or {}).get("status", "unavailable")
-        meta[b] = {"as_of": blk.get("as_of"), "status": st}
+        meta[b] = {"as_of": blk.get("as_of"), "status": st, "cadence": _cadence(blk)}
         parts.append("%s: as-of %s, %s" % (names[b], blk.get("as_of"), FRESH_ES.get(st, st)))
     latest = max([m["as_of"] for m in meta.values() if m.get("as_of")] or ["—"])
     return "Datos hasta %s (%s)." % (latest, "; ".join(parts)), meta

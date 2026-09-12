@@ -534,6 +534,13 @@ def main_activation() -> int:
     reg = {"as_of": "2026-09-10", "regimes": {"fiscal": {"as_of": "2026-09-10", "regime": "NEUTRAL"}, "central_bank": {"as_of": "2026-09-10", "regime": "NEUTRAL"}, "general": {"regime": "NEUTRAL"}}}
     led, st = update_ledger(prev, reg, {})
     check(led["fiscal"] == [["2026-09-07", "INJECTION"], ["2026-09-10", "NEUTRAL"]] and st["fiscal"] == 1, "ledger: an as-of regression drops the later entry and the streak equals the ledger run (gate A3)", fails)
+    # blocks_meta.cadence (pack de las 08:00): the fastest frequency among the series dated on the block's as_of; the UI reads LAG against it
+    from .narrative import _cadence, header
+    blk = {"as_of": "2026-09-07", "series": {"a": {"frequency": "monthly", "date": "2026-09-07"}, "b": {"frequency": "daily", "date": "2026-09-07"}, "c": {"frequency": "daily", "date": "2026-09-01"}}}
+    check(_cadence(blk) == "daily" and _cadence({"as_of": "2026-09-05", "series": {"a": {"frequency": "weekly", "date": "2026-09-05"}, "b": {"frequency": "daily", "date": "2026-09-04"}}}) == "weekly" and _cadence({"as_of": None, "series": {}}) is None
+          and _cadence({"as_of": "2026-09-08", "series": {"a": {"frequency": "event", "date": "2026-09-08"}, "b": {"frequency": "weekly", "date": "2026-09-01"}}}) == "weekly",
+          "blocks_meta.cadence = fastest regular frequency of the series dated on as_of (daily < weekly < ten_day < monthly); event never sets it; None without series", fails)
+    check(header({"central_bank": dict(blk, source_health={"status": "fresh"})})[1]["central_bank"].get("cadence") == "daily", "header(): blocks_meta carries cadence", fails)
     main_jefe_v2(fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
