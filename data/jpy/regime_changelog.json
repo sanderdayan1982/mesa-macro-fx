@@ -1,0 +1,234 @@
+{
+ "currency": "JPY",
+ "source": "replay v0.3 (calibration/jpy_v03/v03_regimes.csv): rejilla semanal dentro de la era, cortes e histéresis vivos, regla de acuerdo para el general",
+ "deviation": "el motor vivo lee la media de 7 días con reloj diario: el día exacto de un cambio puede diferir del viernes del replay; los bloques en v0.4 se reconstruyen con su sombra v0.3 (el replay v0.4 no guarda estados semanales)",
+ "weeks": 102,
+ "first": "2024-08-05",
+ "last": "2026-09-01",
+ "blocks": {
+  "central_bank": {
+   "current": "INJECTION",
+   "since": "2026-09-01",
+   "weeks_in_current": 1,
+   "switches": 30,
+   "mean_spell_weeks": 3.4,
+   "transitions": [
+    {
+     "date": "2026-03-13",
+     "old": "INJECTION",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-04-06",
+     "old": "NEUTRAL",
+     "new": "DRAIN"
+    },
+    {
+     "date": "2026-04-20",
+     "old": "DRAIN",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-05-08",
+     "old": "NEUTRAL",
+     "new": "INJECTION"
+    },
+    {
+     "date": "2026-05-15",
+     "old": "INJECTION",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-05-29",
+     "old": "NEUTRAL",
+     "new": "INJECTION"
+    },
+    {
+     "date": "2026-06-12",
+     "old": "INJECTION",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-07-03",
+     "old": "NEUTRAL",
+     "new": "DRAIN"
+    },
+    {
+     "date": "2026-07-17",
+     "old": "DRAIN",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-08-10",
+     "old": "NEUTRAL",
+     "new": "DRAIN"
+    },
+    {
+     "date": "2026-08-25",
+     "old": "DRAIN",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-09-01",
+     "old": "NEUTRAL",
+     "new": "INJECTION"
+    }
+   ],
+   "engine_today": "v0.3",
+   "hysteresis_band_weeks": 0,
+   "cuts_v03": {
+    "injection_enter": 0.75,
+    "injection_exit": 0.75,
+    "drain_enter": 0.25,
+    "drain_exit": 0.25
+   }
+  },
+  "fiscal": {
+   "current": "DRAIN",
+   "since": "2026-09-01",
+   "weeks_in_current": 1,
+   "switches": 36,
+   "mean_spell_weeks": 2.8,
+   "transitions": [
+    {
+     "date": "2026-02-27",
+     "old": "NEUTRAL",
+     "new": "INJECTION"
+    },
+    {
+     "date": "2026-04-13",
+     "old": "INJECTION",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-05-08",
+     "old": "NEUTRAL",
+     "new": "DRAIN"
+    },
+    {
+     "date": "2026-05-22",
+     "old": "DRAIN",
+     "new": "INJECTION"
+    },
+    {
+     "date": "2026-06-05",
+     "old": "INJECTION",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-06-12",
+     "old": "NEUTRAL",
+     "new": "INJECTION"
+    },
+    {
+     "date": "2026-06-26",
+     "old": "INJECTION",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-07-03",
+     "old": "NEUTRAL",
+     "new": "DRAIN"
+    },
+    {
+     "date": "2026-07-27",
+     "old": "DRAIN",
+     "new": "INJECTION"
+    },
+    {
+     "date": "2026-08-03",
+     "old": "INJECTION",
+     "new": "DRAIN"
+    },
+    {
+     "date": "2026-08-18",
+     "old": "DRAIN",
+     "new": "NEUTRAL"
+    },
+    {
+     "date": "2026-09-01",
+     "old": "NEUTRAL",
+     "new": "DRAIN"
+    }
+   ],
+   "engine_today": "v0.4",
+   "hysteresis_band_weeks": 6,
+   "cuts_v03": {
+    "injection_enter": 0.24,
+    "injection_exit": 0.13,
+    "drain_enter": -0.32,
+    "drain_exit": -0.14
+   }
+  },
+  "general": {
+   "current": "NEUTRAL_CONFLICT",
+   "since": "2026-09-01",
+   "weeks_in_current": 1,
+   "switches": 22,
+   "mean_spell_weeks": 4.6,
+   "transitions": [
+    {
+     "date": "2026-03-13",
+     "old": "LIQUIDITY_INJECTION",
+     "new": "NEUTRAL_PARTIAL"
+    },
+    {
+     "date": "2026-04-06",
+     "old": "NEUTRAL_PARTIAL",
+     "new": "NEUTRAL_CONFLICT"
+    },
+    {
+     "date": "2026-04-13",
+     "old": "NEUTRAL_CONFLICT",
+     "new": "NEUTRAL_PARTIAL"
+    },
+    {
+     "date": "2026-05-08",
+     "old": "NEUTRAL_PARTIAL",
+     "new": "NEUTRAL_CONFLICT"
+    },
+    {
+     "date": "2026-05-15",
+     "old": "NEUTRAL_CONFLICT",
+     "new": "NEUTRAL_PARTIAL"
+    },
+    {
+     "date": "2026-05-29",
+     "old": "NEUTRAL_PARTIAL",
+     "new": "LIQUIDITY_INJECTION"
+    },
+    {
+     "date": "2026-06-05",
+     "old": "LIQUIDITY_INJECTION",
+     "new": "NEUTRAL_PARTIAL"
+    },
+    {
+     "date": "2026-07-03",
+     "old": "NEUTRAL_PARTIAL",
+     "new": "LIQUIDITY_DRAIN"
+    },
+    {
+     "date": "2026-07-17",
+     "old": "LIQUIDITY_DRAIN",
+     "new": "NEUTRAL_PARTIAL"
+    },
+    {
+     "date": "2026-08-10",
+     "old": "NEUTRAL_PARTIAL",
+     "new": "LIQUIDITY_DRAIN"
+    },
+    {
+     "date": "2026-08-18",
+     "old": "LIQUIDITY_DRAIN",
+     "new": "NEUTRAL_PARTIAL"
+    },
+    {
+     "date": "2026-09-01",
+     "old": "NEUTRAL_PARTIAL",
+     "new": "NEUTRAL_CONFLICT"
+    }
+   ]
+  }
+ },
+ "status": "ok"
+}
