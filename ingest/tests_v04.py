@@ -541,6 +541,31 @@ def main_activation() -> int:
           and _cadence({"as_of": "2026-09-08", "series": {"a": {"frequency": "event", "date": "2026-09-08"}, "b": {"frequency": "weekly", "date": "2026-09-01"}}}) == "weekly",
           "blocks_meta.cadence = fastest regular frequency of the series dated on as_of (daily < weekly < ten_day < monthly); event never sets it; None without series", fails)
     check(header({"central_bank": dict(blk, source_health={"status": "fresh"})})[1]["central_bank"].get("cadence") == "daily", "header(): blocks_meta carries cadence", fails)
+    # Telegram (audit 2026-09-12): one-message digest, silent bootstrap, no stale flap, errors by name without HTML
+    from . import notify as N
+    check("HTML omitido" in N.clean_err("rbnz_d12: HTTP 403 <!DOCTYPE html><html>cloudflare…</html>") and len(N.clean_err("x" * 900)) == 160, "notify.clean_err: one line, no HTML body, ≤ 160 chars", fails)
+    base = {"as_of": "2026-09-11", "generated_at": "2026-09-12T05:00:00Z", "general": "NEUTRAL", "central_bank": "NEUTRAL", "fiscal": "NEUTRAL", "gate": True, "gate_failures": [], "hash": "h",
+            "streaks": {}, "blocks": {"central_bank": "fresh", "fiscal": "fresh"}, "blocks_asof": {}, "blocks_cadence": {}, "errors": [], "F1": "", "F5": "", "degraded": [], "lane": "daily", "fiscal_engine": None, "price_gate": None, "flags": []}
+    cfgN = N._cfg()
+    check(N.events_for("jpy", dict(base), None, {}, None, cfgN) == [], "notify: first run is silent (no 'estado inicial')", fails)
+    prev = dict(base)
+    cur = dict(base, blocks={"central_bank": "stale", "fiscal": "fresh"})
+    check(N.events_for("jpy", cur, prev, {}, None, cfgN) == [], "notify: fresh→stale is not an event (digest material)", fails)
+    cur = dict(base, blocks={"central_bank": "unavailable", "fiscal": "fresh"})
+    check(len(N.events_for("jpy", cur, prev, {}, None, cfgN)) == 1, "notify: fresh→unavailable fires once", fails)
+    err = "rbnz_d12: HTTP 403 <!DOCTYPE html><html>…</html>"
+    cur = dict(base, errors=[err])
+    ev = N.events_for("nzd", cur, prev, {}, None, cfgN)
+    check(len(ev) == 1 and "<!DOCTYPE" not in ev[0] and "rbnz_d12" in ev[0] and cur["errors_sent"].get("rbnz_d12"), "notify: source error → one sanitized line, remembered by name", fails)
+    prev2 = dict(base, errors=[err], errors_sent=cur["errors_sent"])
+    check(N.events_for("nzd", dict(base, errors=[err]), prev2, {}, None, cfgN) == [], "notify: same source error within 24 h is silent", fails)
+    check(N.events_for("nzd", dict(base, errors=[], lane="weekly"), prev2, {}, None, cfgN) == [], "notify: a clean run of ANOTHER lane is not a recovery", fails)
+    rec = N.events_for("nzd", dict(base, errors=[], lane="daily"), prev2, {}, None, cfgN)
+    check(len(rec) == 1 and "vuelve a responder" in rec[0], "notify: a clean run of the same lane is the recovery", fails)
+    gate_ev = N.events_for("cad", dict(base, gate=False, gate_failures=["A1"]), prev, {}, None, cfgN)
+    check(len(gate_ev) == 1 and "INVENTARIO" in gate_ev[0] and "PUERTA" not in gate_ev[0], "notify: the anti-invention inventory is never called 'puerta'", fails)
+    dg = N.digest()
+    check(len(dg) == 1 and len(dg[0]) <= 3900 and "<pre>" in dg[0] and "<!DOCTYPE" not in dg[0] and dg[0].count("\n") >= 12, "notify: the digest is ONE message ≤ 3900 chars with the eight rows", fails)
     main_jefe_v2(fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
