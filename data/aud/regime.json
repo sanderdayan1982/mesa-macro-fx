@@ -1,6 +1,6 @@
 {
  "currency": "AUD",
- "generated_at": "2026-09-12T00:51:17+00:00",
+ "generated_at": "2026-09-12T02:37:13+00:00",
  "as_of": "2026-09-10",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -22,6 +22,8 @@
  "regimes": {
   "central_bank": {
    "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
+   "canonical": "confirmed",
    "score": -0.1061,
    "label": "INJECTION",
    "traffic_light": "GREEN",
@@ -134,11 +136,13 @@
   },
   "fiscal": {
    "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
+   "canonical": "confirmed",
    "score": 1.2203,
    "label": "DRAIN",
    "traffic_light": "RED",
    "as_of": "2026-09-09",
-   "detail": "flow 2104.0 (Z 0.1903) · 4w cum -35425.0 (RISK_OFF) · gov deposits 78190.0",
+   "detail": "flow 2104.0 (Z 0.1903) · 4w cum -35425.0 (BAND_LOW) · gov deposits 78190.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.7248,
@@ -243,6 +247,8 @@
   },
   "general": {
    "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
+   "canonical": "confirmed",
    "score": 0.478,
    "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 74 weeks < 150); dual score +0.48 shown for context",
    "price_gate": null,
@@ -475,7 +481,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }

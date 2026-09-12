@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-09-11T12:24:12+00:00",
+ "generated_at": "2026-09-12T02:36:26+00:00",
  "as_of": "2026-09-09",
  "equivalence_quality": "medium-high",
  "equivalence_note": "Government deposits at the RBA are WEEKLY (A1) — a true TGA analogue at weekly resolution (better than GBP, worse than CAD's daily Receiver General). Issuance/tenders from AOFM (event). Monthly financial statements from Finance for the NFA flow.",
@@ -93,7 +93,7 @@
     "low": 38966.0,
     "low_date": "2026-01-14"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -350,7 +350,7 @@
     "low": -30111.0,
     "low_date": "2026-08-26"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "positive = government deposits fell = net injection into ES balances (spending/redemptions > receipts/issuance)"
@@ -432,7 +432,7 @@
     "low": -3.3422,
     "low_date": "2026-08-26"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -513,10 +513,10 @@
     "low": -35425.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
-   "signal": "RISK_OFF"
+   "signal": "BAND_LOW"
   },
   "fiscal_big_week": {
    "label": "FISCAL_BIG_WEEK (|flow| ≥ 15bn or |Z| ≥ 2)",
@@ -2273,7 +2273,7 @@
    "score_v02": 0.19,
    "score_flows_only": 0.19
   },
-  "detail": "flow 2104.0 (Z 0.1903) · 4w cum -35425.0 (RISK_OFF) · gov deposits 78190.0",
+  "detail": "flow 2104.0 (Z 0.1903) · 4w cum -35425.0 (BAND_LOW) · gov deposits 78190.0",
   "alerts": [
    {
     "metric": "fiscal_flow_zscore",
@@ -2635,6 +2635,11 @@
     "date": "2026-09-02",
     "label": "DRAIN",
     "score": -0.39
+   },
+   {
+    "date": "2026-09-09",
+    "label": "DRAIN",
+    "score": 0.19
    },
    {
     "date": "2026-09-09",
