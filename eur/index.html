@@ -65,7 +65,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15
 .badge.SAFE{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.WATCH{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
 .badge.STRESS{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.CRISIS{background:#3a0a0a;color:#fff;border-color:var(--red)}
 .badge.NODATA{background:#1a1a1a;color:#777;border-color:#2a2a2a}.badge.blue{background:#0a1a2a;color:var(--blue);border-color:#1a2a3a}
-.badge.RISK_ON{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.RISK_OFF{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.NEUTRAL{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
+.badge.BAND_HIGH{background:#0a2a1a;color:var(--green);border-color:#1a3a2a}.badge.BAND_LOW{background:#2a0a0a;color:var(--red);border-color:#3a1a1a}.badge.NEUTRAL{background:#1a1a0a;color:var(--amber);border-color:#2a2a0a}
 .chart{margin-top:6px}.chart svg{display:block;width:100%}
 table{width:100%;border-collapse:collapse;font-size:13px;font-family:var(--font)}
 th{text-align:left;padding:6px 8px;color:var(--text2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
@@ -258,7 +258,7 @@ function render(){
   // a source served from its last good copy (note tagged *_last_good_copy) is a warning, not an error: the data is current, the source is blocked
   const copies=errs.filter(x=>/last_good_copy/.test(x)), hard=errs.filter(x=>!/last_good_copy/.test(x));
   $('msg').className='msg '+(hard.length?'alert':(copies.length||stale)?'warn':'ok');
-  $('msg').textContent=hard.length?'⚠ source errors: '+hard.join(' | ')+(copies.length?' · last good copy: '+copies.join(' | '):''):copies.length?'ⓘ source blocked · last good copy served (data current): '+copies.join(' | '):stale?`⚠ data generated ${ageH.toFixed(0)}h ago — check the refresh workflow`:`All blocks loaded · regime ${R.regime} · flags ${(R.flags||[]).join(', ')||'none'} · weighted score ${R.weighted_score}`;
+  $('msg').textContent=hard.length?'⚠ source errors: '+hard.join(' | ')+(copies.length?' · last good copy: '+copies.join(' | '):''):copies.length?'ⓘ source blocked · last good copy served (data current): '+copies.join(' | '):stale?`⚠ data generated ${ageH.toFixed(0)}h ago — check the refresh workflow`:`All blocks loaded · regime ${R.regime} · flags ${(R.flags||[]).join(', ')||'none'}`;
   // wire
   const news=(D.news&&D.news.items)||[]; const _w=$('wire'); if(_w)_w.innerHTML=news.length?news.slice(0,6).map(n=>`<a href="${n.link}" target="_blank" rel="noopener">${n.title}</a>`).join(''):'no headlines (RSS disabled or offline)';
 
