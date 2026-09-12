@@ -99,6 +99,12 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
  .alert-item{flex-wrap:wrap;gap:6px}.alert-ts{min-width:0}.cal-item{flex-wrap:wrap}.cal-date{min-width:0}
  .layer{flex-wrap:wrap;gap:6px}.layer .lsig{margin-left:0;width:100%}.hdr-right{width:100%;justify-content:flex-start}}
 @media(max-width:480px){.g2,.g3{grid-column:span 12}.hdr-right .pill:nth-child(n+4){display:none}.wire{display:none}}
+/* blotter de ocho segundos (lote blotter, 2026-09-12): una fila canónica por divisa antes de las capas */
+.blotter{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--panel)}
+.blotter .bc{background:var(--panel2);border:1px solid var(--border);padding:8px 10px;min-width:0}.blotter .bt{font-family:var(--font);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.blotter .bv{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.blotter .bs{font-family:var(--font);font-size:12px;color:var(--text2);margin-top:4px;overflow-wrap:anywhere}
+.blotter .lag{font-family:var(--font);font-size:11px;font-weight:800;padding:2px 7px;letter-spacing:.06em;border:1px solid;display:inline-block}.blotter .lag.amber{color:var(--amber);border-color:var(--amber)}.blotter .lag.red{color:var(--red);border-color:var(--red)}
+@media(max-width:900px){.blotter{grid-template-columns:repeat(2,1fr)}}@media(max-width:480px){.blotter{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -126,6 +132,7 @@ td.num,th.num{text-align:right}td.pos{color:var(--green)}td.neg{color:var(--red)
   <div class="tab" data-tab="system">SYSTEM</div>
 </div>
 <div id="msg" class="msg info">Loading data/nzd/*.json…</div>
+<div id="blotter" class="blotter"></div>
 <div class="main">
   <section class="section active" id="sec-command">
     <div class="grid" id="execHeader"></div>
@@ -237,8 +244,26 @@ function layerHdr(n,title,sub,sig,cn){ const s=cn?`<span class="regime ${cn.tl}"
 function alertsTable(list){ if(!list||!list.length) return '<div style="color:var(--text3);font-size:13px">—</div>'; return `<table><thead><tr><th>Metric</th><th class="num">Value</th><th>Level</th><th>Thresholds</th><th>Hint</th></tr></thead><tbody>${list.map(a=>`<tr><td>${a.metric}</td><td class="num">${fN(a.value)}</td><td>${lvlBadge(a.level)}</td><td class="mono" style="font-size:11px;color:var(--text2)">${a.threshold?Object.entries(a.threshold).filter(([k,v])=>v!=null).map(([k,v])=>k+' '+fN(v)).join(' · '):'—'}</td><td style="color:var(--text2)">${a.action_hint||''}</td></tr>`).join('')}</tbody></table>`; }
 
 // ═══════════════════ RENDER ═══════════════════
+// ── blotter de ocho segundos: BC confirmado + racha · Tesoro confirmado + racha · puerta de precio · general · jefe ──
+// Lee sólo los JSON publicados (regime.json canonical=confirmed, agent.json streaks/blocks_meta, data/mesa/jefe.json objeto/as-of).
+function renderBlotter(){ const el=$('blotter'); if(!el) return; const R=D.regime||{}, G=R.regimes||{}, A=D.agent||{}, S=A.streaks||{}, BM=A.blocks_meta||{}, J=D.mesa_jefe||null, C=CCY.toUpperCase();
+  const rc=x=>x==='INJECTION'||x==='LIQUIDITY_INJECTION'?'GREEN':x==='DRAIN'||x==='LIQUIDITY_DRAIN'||x==='LIQUIDITY_SCARCITY'?'RED':x==='NO SIGNAL'||!x?'NONE':'YELLOW';
+  const days=d=>{if(!d)return null;const t=(Date.now()-new Date(d+'T00:00:00Z'))/864e5;return Math.floor(t);};
+  const lag=(asof,st)=>{const n=days(asof);if(n==null)return '';if(st==='stale'||st==='unavailable')return `<span class="lag red" title="bloque ${st} según su cadencia declarada · as-of ${asof}">${st==='stale'?'STALE':'SIN DATO'} ${n} d</span>`;return n>7?`<span class="lag amber" title="fresco según su cadencia (mensual/semanal), pero el dato es de hace ${n} días · as-of ${asof}">LAG ${n} d</span>`:'';};
+  const reg=(r,b)=>{const x=(r.confirmed||r.regime||'NO DATA');return `<span class="regime ${rc(x)}" title="régimen confirmado por el motor ${r.engine==='0.4'?'v0.4':'v0.3'} (canónico)">${x.replace(/_/g,' ')}${S[b]?' · '+S[b]+'.ª':''}</span>`;};
+  const cbR=G.central_bank||{}, fiR=G.fiscal||{}, gR=G.general||{};
+  const row=J&&J.ranking?J.ranking.find(x=>x.ccy===C):null, trk=J&&J.treasury&&J.treasury.ranking?J.treasury.ranking.find(x=>x.ccy===C):null, lab=J&&J.labels?J.labels[C]:null, cp=J&&J.completeness?J.completeness[C]:null;
+  const clash=trk&&fiR.engine==='0.4'&&((fiR.regime==='DRAIN'&&trk.z>0)||(fiR.regime==='INJECTION'&&trk.z<0));
+  const gate=gR.price_gate||null; const sp=(D.rates&&D.rates.derived)?Object.values(D.rates.derived).find(x=>x&&x.friction_confirmed!=null&&x.level):null;
+  el.innerHTML=`
+   <div class="bc"><div class="bt">BC · confirmado</div><div class="bv">${reg(cbR,'central_bank')} ${lag(cbR.as_of,(BM.central_bank||{}).status)}</div><div class="bs">${row?row.object+' · al '+(row.as_of||cbR.as_of||'—'):'as-of '+(cbR.as_of||'—')}${cp?' · '+cp.bc.engine+' '+cp.bc.truth:''}</div></div>
+   <div class="bc"><div class="bt">Tesoro · confirmado</div><div class="bv">${reg(fiR,'fiscal')} ${lag(fiR.as_of,(BM.fiscal||{}).status)}${clash?' <span class="lag amber" title="otro reloj: la columna Tesoro del jefe (media 13 s del score v0.3) apunta al otro lado del régimen vivo v0.4; relojes distintos, no contradicción">⧗ otro reloj</span>':''}</div><div class="bs">as-of ${fiR.as_of||'—'}${cp?' · '+cp.treasury.engine+' '+cp.treasury.truth:''}${trk&&trk.as_of?' · jefe al '+trk.as_of:''}</div></div>
+   <div class="bc"><div class="bt">Puerta de precio</div><div class="bv">${gate?'<span class="regime RED">ACTIVA</span>':'<span class="regime NONE">INACTIVA</span>'}</div><div class="bs">${gate?gate:'confirma, no ordena'}${sp?' · spread '+sp.level+(sp.friction_confirmed?' · fricción confirmada':''):''}</div></div>
+   <div class="bc"><div class="bt">General</div><div class="bv"><span class="regime ${R.traffic_light||'NONE'}">${(gR.confirmed||R.regime||'—').replace(/_/g,' ')}</span></div><div class="bs">acuerdo BC/Tesoro + puertas · ${gR.engine?'motor v'+gR.engine:''}</div></div>
+   <div class="bc"><div class="bt">Jefe de mesa · viernes ${J&&J.as_of_friday?J.as_of_friday:'—'}</div><div class="bv">${lab?`<span class="regime ${({abundante:'GREEN',escasa:'YELLOW',vulnerable:'RED'})[lab]||'NONE'}">${lab}</span>`:'<span class="regime NONE">—</span>'}</div><div class="bs">${row?'BC '+row.rank+'.º Z '+fN(row.z):'BC —'}${trk?' · Tesoro '+trk.rank+'.º Z '+fN(trk.z)+(trk.proxy?' (proxy)':''):''}${J&&J.stamp?' · sello '+J.stamp:''}</div></div>`; }
 function render(){
   const R=D.regime||{}, cb=D.central_bank, fi=D.fiscal, bk=D.banking, rt=D.rates, Q=D.quality||{};
+  try{renderBlotter();}catch(e){console.error(e);}
   // header
   $('regimePill').className='regime '+(R.traffic_light||'NONE'); $('regimePill').textContent=(R.regime||'NO DATA').replace(/_/g,' ');
   $('asOf').textContent='as of '+(R.as_of||'—'); $('genAt').textContent='gen '+(R.generated_at||'').replace('T',' ').slice(0,16)+'Z';
