@@ -1,7 +1,7 @@
 {
  "currency": "CAD",
  "template": "1.0 (ronda 3, 2026-09-09)",
- "generated_at": "2026-09-12T00:16:32+00:00",
+ "generated_at": "2026-09-12T00:50:41+00:00",
  "as_of": "2026-09-09",
  "regime": "FLOOR_FRICTION",
  "regime_enum": [
@@ -392,7 +392,7 @@
   },
   {
    "token": "2,23",
-   "field": "jefe.pair_max_conviction.z_gap",
+   "field": "jefe.pair_max_z_gap.z_gap",
    "value": 2.23,
    "kind": "pct",
    "unit": "Z"
@@ -649,7 +649,7 @@
   "sigma_week_p20_era": 4.442,
   "low_dispersion": false,
   "sigma_history_weeks": 207,
-  "pair_max_conviction": {
+  "pair_max_z_gap": {
    "reserves_growth": "CAD",
    "reserves_drain": "NZD",
    "z_gap": 2.23
@@ -682,6 +682,7 @@
      "v13": 0.4,
      "pct_era": 0.883,
      "z": 1.33,
+     "as_of": "2026-09-09",
      "rank_prev_week": 2,
      "rank_4w_ago": 5,
      "zero_cross": true,
@@ -693,6 +694,7 @@
      "v13": 0.04,
      "pct_era": 0.778,
      "z": 0.91,
+     "as_of": "2026-09-09",
      "rank_prev_week": 1,
      "rank_4w_ago": 1,
      "zero_cross": true,
@@ -704,6 +706,7 @@
      "v13": 0.09,
      "pct_era": 0.753,
      "z": 0.83,
+     "as_of": "2026-09-09",
      "rank_prev_week": 3,
      "rank_4w_ago": 2,
      "zero_cross": true,
@@ -715,6 +718,7 @@
      "v13": 0.08,
      "pct_era": 0.635,
      "z": 0.5,
+     "as_of": "2026-09-09",
      "rank_prev_week": 5,
      "rank_4w_ago": 7,
      "zero_cross": true,
@@ -726,6 +730,7 @@
      "v13": 0.34,
      "pct_era": 0.46,
      "z": 0.07,
+     "as_of": "2026-09-10",
      "rank_prev_week": 4,
      "rank_4w_ago": 3,
      "zero_cross": false,
@@ -737,6 +742,7 @@
      "v13": -0.12,
      "pct_era": 0.264,
      "z": -0.45,
+     "as_of": "2026-09-10",
      "rank_prev_week": 6,
      "rank_4w_ago": 8,
      "zero_cross": false,
@@ -748,6 +754,7 @@
      "v13": -0.38,
      "pct_era": 0.129,
      "z": -0.93,
+     "as_of": "2026-09-04",
      "rank_prev_week": 7,
      "rank_4w_ago": 6,
      "zero_cross": true,
@@ -759,6 +766,7 @@
      "v13": -0.22,
      "pct_era": 0.005,
      "z": -2.26,
+     "as_of": "2026-09-11",
      "rank_prev_week": 8,
      "rank_4w_ago": 4,
      "zero_cross": true,
@@ -1801,7 +1809,7 @@
      "column": "V36636",
      "era_start": "2020-03-23",
      "equivalence_quality": "high",
-     "note": ""
+     "note": "Settlement balances of Payments Canada members at the Bank of Canada (Valet V36636, weekly B2; the ranking uses this weekly stock, the daily Lynx table feeds the v0.4 archive). Includes all Lynx participants' balances; excludes the Receiver General deposits (own line) and notes in circulation. WRESBAL analogue in a floor system since 2020-03."
     },
     "treasury": {
      "driver_v03": "frecuencia_de_era / frecuencia_de_era",
@@ -1817,7 +1825,7 @@
      "column": "RPWB56A",
      "era_start": "2022-11-01",
      "equivalence_quality": "high",
-     "note": ""
+     "note": "Sterling reserve balance liabilities of the Bank of England (IADB RPWB56A, weekly Wednesday, Bank Return). Reserves of all SMF participants; excludes notes, the APF loan (asset side) and government deposits (Ways and Means, separate line). WRESBAL analogue since the 2022-11 STR/ILTR framework."
     },
     "treasury": {
      "driver_v03": "banda_por_diseño / banda_por_diseño",
@@ -1924,7 +1932,7 @@
     }
    }
   },
-  "generated_at": "2026-09-12T00:16:32+00:00",
+  "generated_at": "2026-09-12T00:50:42+00:00",
   "stamp": "00b723f4603b",
   "ranking": [
    {
@@ -1938,6 +1946,8 @@
     "reserves_13w_ago": 62451.0,
     "date_13w_ago": "2026-06-12",
     "field": "reserves",
+    "object": "saldos liquidación B2",
+    "as_of": "2026-09-09",
     "source_column": "V36636"
    },
    {
@@ -1951,6 +1961,8 @@
     "reserves_13w_ago": 166469.0,
     "date_13w_ago": "2026-06-12",
     "field": "reserves",
+    "object": "ES (A1)",
+    "as_of": "2026-09-09",
     "source_column": "ARBALESBW"
    },
    {
@@ -1964,6 +1976,8 @@
     "reserves_13w_ago": 645478.0,
     "date_13w_ago": "2026-06-12",
     "field": "reserves",
+    "object": "reservas BoE",
+    "as_of": "2026-09-04",
     "source_column": "RPWB56A"
    },
    {
@@ -1977,6 +1991,8 @@
     "reserves_13w_ago": 434025.0,
     "date_13w_ago": "2026-06-12",
     "field": "sight_deposits_domestic_weekly",
+    "object": "GI (dep. a la vista)",
+    "as_of": "2026-09-04",
     "source_column": "snbgwdchfsgw:GI"
    },
    {
@@ -1990,6 +2006,8 @@
     "reserves_13w_ago": 3080723.0,
     "date_13w_ago": "2026-06-12",
     "field": "reserves",
+    "object": "WRESBAL",
+    "as_of": "2026-09-09",
     "source_column": "WRESBAL"
    },
    {
@@ -2003,6 +2021,8 @@
     "reserves_13w_ago": 2204224.0,
     "date_13w_ago": "2026-06-12",
     "field": "excess_liquidity",
+    "object": "exceso ILM",
+    "as_of": "2026-09-10",
     "source_column": "ILM.D.U2.C.EXLIQ.U2.EUR"
    },
    {
@@ -2016,6 +2036,8 @@
     "reserves_13w_ago": 4375000.0,
     "date_13w_ago": "2026-06-12",
     "field": "cab_daily",
+    "object": "CAB",
+    "as_of": "2026-09-10",
     "source_column": "cab"
    },
    {
@@ -2029,6 +2051,8 @@
     "reserves_13w_ago": 28932.0,
     "date_13w_ago": "2026-06-12",
     "field": "settlement_cash_daily",
+    "object": "settlement cash D12",
+    "as_of": "2026-09-10",
     "source_column": "D12:settlement_cash"
    }
   ]

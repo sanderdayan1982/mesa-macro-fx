@@ -1,6 +1,6 @@
 {
  "currency": "CAD",
- "generated_at": "2026-09-12T00:16:32+00:00",
+ "generated_at": "2026-09-12T00:50:41+00:00",
  "as_of": "2026-09-09",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
@@ -280,15 +280,19 @@
    "id": "L2",
    "name": "Silent Fiscal Easing",
    "bias": "FISCAL INJECTION",
-   "active": true,
+   "active": false,
    "conditions_met": 2,
-   "total": 3,
+   "total": 4,
    "unknown": 0,
    "required": [
-    "fiscal.fiscal_flow_7d_cum >= injection"
+    "regime.fiscal == INJECTION"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
+    {
+     "condition": "regime.fiscal == INJECTION",
+     "met": false
+    },
     {
      "condition": "fiscal.fiscal_flow_7d_cum >= injection",
      "met": true
@@ -315,7 +319,7 @@
    "required_met": true,
    "details": [
     {
-     "condition": "central_bank.net_liquidity_wow_pct <= risk_off",
+     "condition": "central_bank.net_liquidity_wow_pct <= band_low",
      "met": false
     },
     {
