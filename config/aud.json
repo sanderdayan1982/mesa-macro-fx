@@ -1193,7 +1193,7 @@
    {
     "id": "net_liq_drain",
     "metric": "central_bank.net_liquidity_wow_pct",
-    "when": "<= risk_off",
+    "when": "<= band_low",
     "severity": "WARNING",
     "category": "liquidity"
    },
@@ -1258,11 +1258,12 @@
     "name": "Fiscal Drain (tax week / issuance)",
     "bias": "FISCAL DRAIN",
     "min": 2,
-    "required": ["fiscal.fiscal_flow_4w_cum <= drain"],
+    "required": ["regime.fiscal == DRAIN"],
     "conditions": [
+     "regime.fiscal == DRAIN",
      "fiscal.fiscal_flow_4w_cum <= drain",
      "fiscal.fiscal_flow_zscore <= -1.5",
-     "central_bank.net_liquidity_wow_pct <= risk_off"
+     "central_bank.net_liquidity_wow_pct <= band_low"
     ]
    },
    {
@@ -1282,8 +1283,9 @@
     "name": "Fiscal Injection",
     "bias": "FISCAL INJECTION",
     "min": 2,
-    "required": ["fiscal.fiscal_flow_4w_cum >= injection"],
+    "required": ["regime.fiscal == INJECTION"],
     "conditions": [
+     "regime.fiscal == INJECTION",
      "fiscal.fiscal_flow_4w_cum >= injection",
      "fiscal.fiscal_flow_zscore >= 1",
      "central_bank.reserves_wow_pct >= p80"

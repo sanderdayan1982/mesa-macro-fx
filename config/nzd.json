@@ -1665,6 +1665,7 @@
     "name": "OMO-supplied ample (LSAP unwind absorbed)",
     "bias": "NEUTRAL",
     "min": 2,
+    "required": ["rates.bank_bill_30d_minus_ocr_bps level == SAFE"],
     "conditions": [
      "central_bank.omo_reliance_share level >= WATCH",
      "rates.bank_bill_30d_minus_ocr_bps level == SAFE",
@@ -1700,8 +1701,9 @@
     "name": "Crown drain / supply indigestion",
     "bias": "FISCAL DRAIN",
     "min": 2,
-    "required": ["fiscal.fiscal_regime == DRAIN"],
+    "required": ["regime.fiscal == DRAIN"],
     "conditions": [
+     "regime.fiscal == DRAIN",
      "fiscal.fiscal_regime == DRAIN",
      "fiscal.bond_bid_to_cover level >= WATCH",
      "rates.bond_swap_spread_10y_bps level >= WATCH"
@@ -1712,8 +1714,9 @@
     "name": "Fiscal injection",
     "bias": "FISCAL INJECTION",
     "min": 2,
-    "required": ["fiscal.fiscal_regime == INJECTION"],
+    "required": ["regime.fiscal == INJECTION"],
     "conditions": [
+     "regime.fiscal == INJECTION",
      "fiscal.fiscal_regime == INJECTION",
      "central_bank.settlement_cash_wow level >= WATCH",
      "central_bank.residual_flow_5d_cum >= p80"

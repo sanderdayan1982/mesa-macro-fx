@@ -905,7 +905,7 @@
    {
     "id": "net_liq_risk_off",
     "metric": "central_bank.net_liquidity_wow_pct",
-    "when": "<= risk_off",
+    "when": "<= band_low",
     "severity": "WARNING",
     "category": "liquidity"
    },
@@ -996,11 +996,12 @@
     "name": "Treasury drain (TGA rebuild)",
     "bias": "FISCAL DRAIN",
     "min": 2,
-    "required": ["fiscal.fiscal_regime == DRAIN"],
+    "required": ["regime.fiscal == DRAIN"],
     "conditions": [
+     "regime.fiscal == DRAIN",
      "fiscal.fiscal_regime == DRAIN",
      "central_bank.tga level >= WATCH",
-     "central_bank.net_liquidity_wow_pct <= risk_off"
+     "central_bank.net_liquidity_wow_pct <= band_low"
     ]
    },
    {
@@ -1008,10 +1009,11 @@
     "name": "Fiscal injection / TGA drawdown",
     "bias": "FISCAL INJECTION",
     "min": 2,
-    "required": ["fiscal.fiscal_regime == INJECTION"],
+    "required": ["regime.fiscal == INJECTION"],
     "conditions": [
+     "regime.fiscal == INJECTION",
      "fiscal.fiscal_regime == INJECTION",
-     "central_bank.net_liquidity_wow_pct >= risk_on",
+     "central_bank.net_liquidity_wow_pct >= band_high",
      "fiscal.net_treasury_flow level >= WATCH"
     ]
    },

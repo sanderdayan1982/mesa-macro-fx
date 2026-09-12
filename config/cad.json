@@ -206,6 +206,7 @@
     "verify_on_first_run": true
    },
    "equivalence_quality": "high",
+   "equivalence_note": "Settlement balances of Payments Canada members at the Bank of Canada (Valet V36636, weekly B2; the ranking uses this weekly stock, the daily Lynx table feeds the v0.4 archive). Includes all Lynx participants' balances; excludes the Receiver General deposits (own line) and notes in circulation. WRESBAL analogue in a floor system since 2020-03.",
    "series": {
     "total_assets": {
      "id": "V36610",
@@ -1280,7 +1281,7 @@
    {
     "id": "net_liq_drain",
     "metric": "central_bank.net_liquidity_wow_pct",
-    "when": "<= risk_off",
+    "when": "<= band_low",
     "severity": "WARNING",
     "category": "liquidity"
    },
@@ -1348,8 +1349,9 @@
     "name": "Silent Fiscal Easing",
     "bias": "FISCAL INJECTION",
     "min": 2,
-    "required": ["fiscal.fiscal_flow_7d_cum >= injection"],
+    "required": ["regime.fiscal == INJECTION"],
     "conditions": [
+     "regime.fiscal == INJECTION",
      "fiscal.fiscal_flow_7d_cum >= injection",
      "rates.overnight_minus_policy_bps <= 0",
      "central_bank.reserves level == SAFE"
@@ -1361,7 +1363,7 @@
     "bias": "QT DRAIN",
     "min": 2,
     "conditions": [
-     "central_bank.net_liquidity_wow_pct <= risk_off",
+     "central_bank.net_liquidity_wow_pct <= band_low",
      "central_bank.sovereign_bonds_wow_pct <= p20",
      "central_bank.notes_in_circulation_wow_pct >= p80"
     ]

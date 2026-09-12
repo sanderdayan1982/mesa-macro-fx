@@ -1728,7 +1728,7 @@
     "category": "data"
    }
   ],
-  "note": "rule grammar (engine): 'level >= X' | '> n' | 'abs >= n' | '<= drain' | '<= risk_off' | quality.<field>; fx_intervention_suspect boolean → value True > 0"
+  "note": "rule grammar (engine): 'level >= X' | '> n' | 'abs >= n' | '<= drain' | '<= band_low' | quality.<field>; fx_intervention_suspect boolean → value True > 0"
  },
  "scenarios": {
   "origin": "liquidity-only set",
@@ -1762,8 +1762,9 @@
     "name": "Fiscal Drain (tax / issuance settlement)",
     "bias": "FISCAL DRAIN",
     "min": 2,
-    "required": ["fiscal.fiscal_flow_20d_cum <= drain"],
+    "required": ["regime.fiscal == DRAIN"],
     "conditions": [
+     "regime.fiscal == DRAIN",
      "fiscal.fiscal_flow_20d_cum <= drain",
      "fiscal.fiscal_flow_zscore <= -1.5",
      "central_bank.cab_dod level >= WATCH"
@@ -1797,8 +1798,9 @@
     "name": "Fiscal Injection + Ample",
     "bias": "FISCAL INJECTION",
     "min": 2,
-    "required": ["fiscal.fiscal_flow_20d_cum >= injection"],
+    "required": ["regime.fiscal == INJECTION"],
     "conditions": [
+     "regime.fiscal == INJECTION",
      "fiscal.fiscal_flow_20d_cum >= injection",
      "central_bank.cab_20d_change > 0",
      "rates.tona_minus_policy_bps level == SAFE"

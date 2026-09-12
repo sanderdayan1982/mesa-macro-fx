@@ -457,7 +457,7 @@
     },
     "sight_deposits_13w_change_pct": {
      "formula": "pct_change(sight_deposits_domestic_weekly,13)",
-     "signal_band": "risk_on/risk_off"
+     "signal_band": "band_high/band_low (posición en la banda de era, sin dirección)"
     },
     "excess_to_required_ratio": {
      "formula": "sight_deposits_domestic_weekly / min_reserve_requirement (ffill)",
@@ -1576,8 +1576,9 @@
     "name": "Confederation Drain",
     "bias": "FISCAL DRAIN",
     "min": 2,
-    "required": ["fiscal.fiscal_regime == DRAIN"],
+    "required": ["regime.fiscal == DRAIN"],
     "conditions": [
+     "regime.fiscal == DRAIN",
      "fiscal.confed_cash_mom >= p80",
      "central_bank.sight_deposits_4w_change <= p20",
      "fiscal.fiscal_regime == DRAIN"

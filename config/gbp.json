@@ -179,6 +179,7 @@
     "verify_on_first_run": true
    },
    "equivalence_quality": "high",
+   "equivalence_note": "Sterling reserve balance liabilities of the Bank of England (IADB RPWB56A, weekly Wednesday, Bank Return). Reserves of all SMF participants; excludes notes, the APF loan (asset side) and government deposits (Ways and Means, separate line). WRESBAL analogue since the 2022-11 STR/ILTR framework.",
    "series": {
     "reserves": {
      "id": "RPWB56A",
@@ -1241,7 +1242,7 @@
    {
     "id": "net_liq_drain",
     "metric": "central_bank.net_liquidity_wow_pct",
-    "when": "<= risk_off",
+    "when": "<= band_low",
     "severity": "WARNING",
     "category": "liquidity"
    },
@@ -1336,7 +1337,7 @@
     "min": 2,
     "conditions": [
      "central_bank.qt_pace level >= WATCH",
-     "central_bank.net_liquidity_wow_pct <= risk_off",
+     "central_bank.net_liquidity_wow_pct <= band_low",
      "central_bank.currency_drain <= p20"
     ]
    },
@@ -1357,8 +1358,9 @@
     "name": "Fiscal Injection",
     "bias": "FISCAL INJECTION",
     "min": 2,
-    "required": ["fiscal.net_spending_yoy >= injection"],
+    "required": ["regime.fiscal == INJECTION"],
     "conditions": [
+     "regime.fiscal == INJECTION",
      "fiscal.net_spending_yoy >= injection",
      "fiscal.cgncr_zscore >= 1",
      "central_bank.reserves_wow_pct >= p80"

@@ -1195,8 +1195,9 @@
         "name": "Government cash drain",
         "bias": "FISCAL DRAIN",
         "min": 2,
-        "required": ["fiscal.fiscal_regime == DRAIN"],
+        "required": ["regime.fiscal == DRAIN"],
         "conditions": [
+         "regime.fiscal == DRAIN",
           "fiscal.fiscal_regime == DRAIN",
           "fiscal.govt_deposits_wow level >= WATCH",
           "central_bank.excess_liquidity_wow level >= WATCH"
@@ -1207,8 +1208,9 @@
         "name": "Fiscal injection into excess liquidity",
         "bias": "FISCAL INJECTION",
         "min": 2,
-        "required": ["fiscal.fiscal_regime == INJECTION"],
+        "required": ["regime.fiscal == INJECTION"],
         "conditions": [
+         "regime.fiscal == INJECTION",
           "fiscal.fiscal_regime == INJECTION",
           "central_bank.excess_liquidity_wow level == SAFE",
           "banking.transmission_signal == GREEN"
