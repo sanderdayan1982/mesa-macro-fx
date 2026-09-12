@@ -602,7 +602,8 @@ def main_jefe_v2(fails: list) -> None:
         items = json.load(open(os.path.join(ROOT, "config", "%s.json" % c), encoding="utf-8"))["scenarios"]["items"]
         check(not any(_re.search(r"RISK|BULL|BEAR|DEFENSIVE|CONSTRUCTIVE|CAUTION|SUPPORTIVE", it["bias"]) for it in items) and all(all(r in it["conditions"] for r in it.get("required", [])) for it in items),
               "config %s: scenario biases are liquidity states and every required condition exists in its scenario" % c.upper(), fails)
-    for c in ("usd", "eur"):  # lote blotter: the canonical state is explicit in the JSON (confirmed == regime, canonical = "confirmed")
+    for c in ("usd",):  # lote blotter: the canonical state is explicit in the JSON (confirmed == regime, canonical = "confirmed")
+        # only the currency whose lane runs this gate: another currency's regime.json may predate the engine change on the runner
         rp = os.path.join(ROOT, "data", c, "regime.json")
         if os.path.exists(rp):
             rg = json.load(open(rp, encoding="utf-8"))["regimes"]
