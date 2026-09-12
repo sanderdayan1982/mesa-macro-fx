@@ -1,6 +1,6 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-12T00:19:45+00:00",
+ "generated_at": "2026-09-12T00:53:41+00:00",
  "as_of": "2026-09-10",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -346,14 +346,18 @@
    "name": "Government cash drain",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 0,
-   "total": 3,
+   "conditions_met": 1,
+   "total": 4,
    "unknown": 1,
    "required": [
-    "fiscal.fiscal_regime == DRAIN"
+    "regime.fiscal == DRAIN"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
+    {
+     "condition": "regime.fiscal == DRAIN",
+     "met": true
+    },
     {
      "condition": "fiscal.fiscal_regime == DRAIN",
      "met": null
@@ -374,13 +378,17 @@
    "bias": "FISCAL INJECTION",
    "active": false,
    "conditions_met": 2,
-   "total": 3,
+   "total": 4,
    "unknown": 1,
    "required": [
-    "fiscal.fiscal_regime == INJECTION"
+    "regime.fiscal == INJECTION"
    ],
    "required_met": false,
    "details": [
+    {
+     "condition": "regime.fiscal == INJECTION",
+     "met": false
+    },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
      "met": null
