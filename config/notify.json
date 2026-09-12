@@ -7,20 +7,21 @@
     "enabled": true,
     "hour_wat": 7,
     "days": "Mon-Sat",
-    "content": ["quality_incidents", "per_currency_regimes_and_streaks", "F1_F5_per_currency", "jefe_ranking"]
+    "content": ["header_clock_LDN_NY_WAT", "friday_map_stamp_and_tape_asof", "eight_rows_ccy_label_bc_treasury_pricegate_marks", "jefe_bc_line", "jefe_treasury_line", "exceptions", "inventory_A1_A5"],
+    "note": "one message (blotter de las 08:00, audit 2026-09-12): F1–F7 stay in agent.json and on the currency page; marks = ⧗ otro reloj, LAG por cadencia (daily 3 d / weekly 10 d / monthly 25 d), cobertura parcial, proxy"
   },
   "events": {
     "regime_change_general": {"enabled": true, "note": "regime.json regimes.general.regime changes vs last notified"},
     "regime_change_block": {"enabled": true, "note": "central_bank or fiscal confirmed regime changes vs last notified"},
-    "gate_withheld": {"enabled": true, "note": "daily_log gate pass -> fail (and recovery fail -> pass)"},
-    "block_degraded": {"enabled": true, "note": "a block's source_health leaves 'fresh' (stale/proxy/unavailable) or returns to fresh"},
-    "refresh_error": {"enabled": true, "note": "ingestion finished with source errors (heartbeat.errors non-empty), transition only"},
+    "gate_withheld": {"enabled": true, "note": "daily_log inventory A1–A5 pass -> fail (and recovery fail -> pass); worded 'inventario', never 'puerta' (the price gate is another thing)"},
+    "block_degraded": {"enabled": true, "note": "only unavailable/degraded transitions fire; stale/proxy flap between lanes and go to the digest"},
+    "refresh_error": {"enabled": true, "note": "source errors by source name, once per 24 h, one sanitized line (no HTML); recovery only when the error was sent and the same lane later runs clean"},
     "jefe_ranking_change": {"enabled": true, "note": "new jefe Friday: own position changed, or top/bottom currency changed"},
     "price_gate": {"enabled": true, "note": "FLOOR_FRICTION / LIQUIDITY_SCARCITY entered or left (covered by regime_change_general, listed for clarity)"}
   },
   "suppression": {
     "transition_only": true,
-    "note": "an event fires once, on the transition; the same state on later refreshes is silent. No cooldown needed: state is persisted in data/<ccy>/notify_state.json"
+    "note": "an event fires once, on the transition; the same state on later refreshes is silent; the first run of a currency (no notify_state.json) is silent too. State persisted in data/<ccy>/notify_state.json (errors_sent by source name)"
   },
   "format": {
     "parse_mode": "HTML",
