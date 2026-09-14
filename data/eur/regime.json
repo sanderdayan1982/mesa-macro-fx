@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-12T12:47:37+00:00",
- "as_of": "2026-09-10",
+ "generated_at": "2026-09-14T15:17:28+00:00",
+ "as_of": "2026-09-13",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.165,
+ "weighted_score": -0.011,
  "block_scores": {
-  "central_bank": -0.18,
+  "central_bank": -0.62,
   "rates": 0.2,
   "fiscal": 0.18,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": -0.18,
-   "label": "NEUTRAL",
+   "score": -0.62,
+   "label": "DRAIN",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-10",
-   "detail": "excess liquidity 2137073.0 M (SAFE) · Δ5s 1916.0 (p69.44) · TOMO 26546.0 M (ROUTINE) · MLF 56.5 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-09-13",
+   "detail": "excess liquidity 2137049.0 M (SAFE) · Δ5s -21658.0 (p25.54) · TOMO 26546.0 M (ROUTINE) · MLF 63.05012154 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,10 +45,10 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.093,
+    "effective_score": -0.085,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-13",
     "recent": [
      [
       "2026-09-08",
@@ -61,6 +61,10 @@
      [
       "2026-09-10",
       -0.18
+     ],
+     [
+      "2026-09-13",
+      -0.62
      ]
     ],
     "pending_days": null
@@ -69,8 +73,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": 0.09,
-     "excess_20s_vs_stock": -0.53
+     "excess_wow_vs_stock": -1.0,
+     "excess_20s_vs_stock": -0.55
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -82,8 +86,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.18,
-    "score_flows_only": -0.18
+    "score_v02": -0.62,
+    "score_flows_only": -0.62
    }
   },
   "fiscal": {
@@ -167,9 +171,9 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": -30287.957,
-    "denominator": 2137073.0,
-    "denominator_date": "2026-09-10",
-    "today": "2026-09-12",
+    "denominator": 2137049.0,
+    "denominator_date": "2026-09-13",
+    "today": "2026-09-14",
     "note": null
    },
    "v03_shadow": {
@@ -204,8 +208,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.072,
-   "rule": "conflict (INJECTION vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.07 shown for context",
+   "score": -0.38,
+   "rule": "conflict (INJECTION vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.38 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -257,7 +261,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.0,
+  "spread_bps": -6.1,
   "friction_confirmed": false
  },
  "rules": {
@@ -411,8 +415,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
-  "backfill": true,
+  "lane": "daily",
+  "backfill": false,
   "errors": []
  }
 }
