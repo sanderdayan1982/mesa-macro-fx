@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-12T06:30:41+00:00",
- "as_of": "2026-09-10",
+ "generated_at": "2026-09-14T09:36:29+00:00",
+ "as_of": "2026-09-14",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-10",
-   "detail": "settlement cash 26204.0 (5d 2029.0, 20d -913.0, SAFE) · OMO stock 9035.0 (34.5%) · ORRF 0.0 · phase LSAP_UNWIND",
-   "raw_regime": "DRAIN",
+   "as_of": "2026-09-14",
+   "detail": "settlement cash 26440.0 (5d 1933.0, 20d -1149.0, SAFE) · OMO stock 9035.0 (34.2%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
     "injection_exit": 0.25,
@@ -41,12 +41,12 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -0.25,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.167,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-14",
     "recent": [
      [
       "2026-09-08",
@@ -54,6 +54,10 @@
      ],
      [
       "2026-09-10",
+      0.0
+     ],
+     [
+      "2026-09-14",
       0.0
      ]
     ],
@@ -87,7 +91,7 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-10",
+   "as_of": "2026-09-14",
    "detail": "CSA 29080.0 (mom 218.0) · D10 govt cash 6846.1 · T-bill 3.04x at 2.8775% · bond 3.198x tail 1.0 bp · settlements next 5d 250.0 · non-resident 57.4%",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -106,7 +110,7 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-14",
     "recent": [
      [
       "2026-09-08",
@@ -114,6 +118,10 @@
      ],
      [
       "2026-09-10",
+      0.5
+     ],
+     [
+      "2026-09-14",
       0.5
      ]
     ],
@@ -140,7 +148,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.2,
-   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -168,7 +176,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-07-01",
-   "era_weeks": 218,
+   "era_weeks": 219,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -350,8 +358,8 @@
    "id": "L6",
    "name": "Curve repricing (hiking cycle)",
    "bias": "CURVE REPRICING",
-   "active": false,
-   "conditions_met": 0,
+   "active": true,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -359,11 +367,11 @@
    "details": [
     {
      "condition": "rates.nzgb_10y_5d_change_bps level >= WATCH",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.hike_pricing_bps >= p90",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.curve_10y_2y_bps level >= WATCH",
@@ -373,10 +381,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
+  "lane": "daily",
   "backfill": false,
   "errors": [
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_1887.html (snapshot 2026-09-12); nzdm_bond_listing.html (snapshot 2026-09-12); nzdm_bond_1008.html (snapshot 2026-09-12); nzdm_data.html (snapshot 2026-09-12)"
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_bond_listing.html (snapshot 2026-09-14)"
   ]
  }
 }
