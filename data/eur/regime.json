@@ -1,15 +1,15 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-15T16:46:59+00:00",
+ "generated_at": "2026-09-15T17:43:42+00:00",
  "as_of": "2026-09-14",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.037,
+ "weighted_score": -0.007,
  "block_scores": {
   "central_bank": -0.5,
   "rates": 0.2,
-  "fiscal": 0.18,
+  "fiscal": -0.11,
   "banking": 1.0
  },
  "weights": {
@@ -28,7 +28,7 @@
    "label": "DRAIN",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-14",
-   "detail": "excess liquidity 2134027.0 M (SAFE) · Δ5s -25764.0 (p20.55) · TOMO 26546.0 M (ROUTINE) · MLF 69.44040445 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
+   "detail": "excess liquidity 2134027.0 M (SAFE) · Δ5s -25764.0 (p20.55) · TOMO 26546.0 M (ROUTINE) · MLF 69.44040445 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -100260.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -102,7 +102,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-14",
-   "detail": "govt deposits 89275.0 M (Δw -2222.0, p48.57) · impulse 4w 1955.0 (p37.5) · 13w 1844.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.5 (NORMAL, avg26 1.76) · TARGET Δ3m -36661.8 · rule NEUTRAL",
+   "detail": "govt deposits 94717.0 M (Δw 5442.0, p77.78) · impulse 4w -1988.0 (p27.27) · 13w -103.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.3 (SOFT, avg26 1.75) · TARGET Δ3m -36661.8 · rule NEUTRAL",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.1427,
@@ -148,11 +148,11 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "impulse_4w_percentile": -0.42
+     "impulse_4w_percentile": -0.76
     },
     "level": {
      "structural_deficit": 1.0,
-     "auction_health": 0.25
+     "auction_health": -0.5
     },
     "weights": {
      "impulse_4w_percentile": 0.5,
@@ -163,8 +163,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.18,
-    "score_flows_only": -0.21
+    "score_v02": -0.11,
+    "score_flows_only": -0.38
    },
    "engine": "0.4",
    "component": {
@@ -186,7 +186,7 @@
    },
    "v03_shadow": {
     "regime": "NEUTRAL",
-    "score": 0.18,
+    "score": -0.11,
     "raw_regime": "NEUTRAL",
     "cuts": {
      "injection_enter": 0.59,
@@ -194,18 +194,22 @@
      "drain_enter": -0.02,
      "drain_exit": 0.1
     },
-    "as_of": "2026-09-09",
+    "as_of": "2026-09-15",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
-     "effective_score": 0.18,
+     "effective_score": 0.035,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-09-09",
+     "as_of": "2026-09-15",
      "recent": [
       [
        "2026-09-09",
        0.18
+      ],
+      [
+       "2026-09-15",
+       -0.11
       ]
      ],
      "pending_days": null
@@ -216,8 +220,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.296,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.30 shown for context",
+   "score": -0.383,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.38 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -423,10 +427,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_tue",
   "backfill": false,
-  "errors": [
-   "mef_pdf(BTP-3-Years-Auction-Results-10.09.2026.pdf): HTTP 404 for https://www.dt.mef.gov.it/export/sites/sitodt/modules/documenti_en/debito_pubblico/risultati_aste/risultati_aste_btp_3_anni/BTP-3-Years-Auction-Results-10.09.2026.pdf"
-  ]
+  "errors": []
  }
 }
