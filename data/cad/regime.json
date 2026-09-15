@@ -1,6 +1,6 @@
 {
  "currency": "CAD",
- "generated_at": "2026-09-14T23:57:46+00:00",
+ "generated_at": "2026-09-15T23:37:59+00:00",
  "as_of": "2026-09-09",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
@@ -154,7 +154,7 @@
     "raw": 2360.0,
     "denominator": 66140.0,
     "denominator_date": "2026-09-09",
-    "today": "2026-09-14",
+    "today": "2026-09-15",
     "note": null
    },
    "v03_shadow": {
@@ -244,7 +244,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "STRESS",
-  "spread_bps": 10.0,
+  "spread_bps": 8.0,
   "friction_confirmed": true
  },
  "rules": {
@@ -343,17 +343,17 @@
    "name": "Funding Stress",
    "bias": "FUNDING STRESS",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [
     "rates.overnight_minus_policy_bps level >= STRESS"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "rates.overnight_minus_policy_bps level >= STRESS",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.reserves level >= STRESS",
@@ -395,7 +395,7 @@
    "name": "Transmission Break",
    "bias": "TRANSMISSION BREAK",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -407,7 +407,7 @@
     },
     {
      "condition": "rates.corra_dispersion_bps level >= WATCH",
-     "met": true
+     "met": false
     },
     {
      "condition": "banking.deposits_public mom_pct zscore <= -1",
