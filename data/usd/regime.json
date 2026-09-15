@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-15T01:01:39+00:00",
- "as_of": "2026-09-14",
+ "generated_at": "2026-09-15T22:57:36+00:00",
+ "as_of": "2026-09-15",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.655,
+ "weighted_score": 0.537,
  "block_scores": {
   "central_bank": -0.1,
   "rates": 1.5,
-  "fiscal": 0.96,
+  "fiscal": 0.49,
   "banking": 0.8
  },
  "weights": {
@@ -27,7 +27,7 @@
    "score": -0.1,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-14",
+   "as_of": "2026-09-15",
    "detail": "WRESBAL NERVOUS · NL Δ% 1.5273 (NL UP) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "DRAIN",
    "cuts": {
@@ -43,10 +43,10 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.34,
+    "effective_score": -0.3,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-14",
+    "as_of": "2026-09-15",
     "recent": [
      [
       "2026-09-08",
@@ -66,6 +66,10 @@
      ],
      [
       "2026-09-14",
+      -0.1
+     ],
+     [
+      "2026-09-15",
       -0.1
      ]
     ],
@@ -96,11 +100,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.96,
-   "label": "INJECTION",
-   "traffic_light": "GREEN",
-   "as_of": "2026-09-11",
-   "detail": "NTF -8024.0 (within normal range) · Z -0.7633 · 7d 50521.0 · 60d 768720.0 (Z250 2.3339) · FYTD 1792345.0 vs prior FY 3.9% · structural 2.0 · surprise -0.07 · TGA close 822200.0 · −ΔTGA -4090.0",
+   "score": 0.49,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-09-14",
+   "detail": "NTF -49247.0 (extraordinary drain) · Z -2.3853 · 7d 1742.0 · 60d 710458.0 (Z250 1.9543) · FYTD 1743098.0 vs prior FY 2.54% · structural 1.98 · surprise -1.0 · TGA close 871224.0 · −ΔTGA -49024.0 · Est. Tax Day",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.215,
@@ -115,15 +119,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.996,
+    "effective_score": 0.928,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-11",
+    "as_of": "2026-09-14",
     "recent": [
-     [
-      "2026-09-04",
-      0.83
-     ],
      [
       "2026-09-08",
       0.66
@@ -139,6 +139,10 @@
      [
       "2026-09-11",
       0.96
+     ],
+     [
+      "2026-09-14",
+      0.49
      ]
     ],
     "pending_days": null
@@ -147,10 +151,10 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "daily_surprise": -0.07
+     "daily_surprise": -1.0
     },
     "level": {
-     "structural_ntf_60d": 2.0
+     "structural_ntf_60d": 1.98
     },
     "weights": {
      "structural_ntf_60d": 0.5,
@@ -160,16 +164,16 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.96,
-    "score_flows_only": -0.04
+    "score_v02": 0.49,
+    "score_flows_only": -0.5
    }
   },
   "general": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.324,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.32 shown for context",
+   "score": 0.136,
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.14 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -210,6 +214,7 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_STEADY",
+  "NTF_EXTRAORDINARY",
   "STRUCTURAL_DEFICIT_INJECTION"
  ],
  "overlays": {},
@@ -344,7 +349,7 @@
    "name": "Fiscal injection / TGA drawdown",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 2,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -366,7 +371,7 @@
     },
     {
      "condition": "fiscal.net_treasury_flow level >= WATCH",
-     "met": false
+     "met": true
     }
    ]
   },
