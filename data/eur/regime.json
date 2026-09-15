@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-14T18:02:04+00:00",
- "as_of": "2026-09-13",
+ "generated_at": "2026-09-15T13:54:30+00:00",
+ "as_of": "2026-09-14",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.011,
+ "weighted_score": 0.037,
  "block_scores": {
-  "central_bank": -0.62,
+  "central_bank": -0.5,
   "rates": 0.2,
   "fiscal": 0.18,
   "banking": 1.0
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "INJECTION",
-   "confirmed": "INJECTION",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.62,
+   "score": -0.5,
    "label": "DRAIN",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-13",
-   "detail": "excess liquidity 2137049.0 M (SAFE) · Δ5s -21658.0 (p25.54) · TOMO 26546.0 M (ROUTINE) · MLF 63.05012154 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
-   "raw_regime": "INJECTION",
+   "as_of": "2026-09-14",
+   "detail": "excess liquidity 2134027.0 M (SAFE) · Δ5s -25764.0 (p20.55) · TOMO 26546.0 M (ROUTINE) · MLF 69.44040445 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -102044.0 · phase QT · APP+PEPP rec RECONCILED",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
     "injection_exit": -0.14,
@@ -43,12 +43,12 @@
     "injection_test": "stress 4w ρ -0.311 q 0.02"
    },
    "state": {
-    "confirmed": "INJECTION",
-    "raw": "INJECTION",
-    "effective_score": -0.085,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.168,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-13",
+    "as_of": "2026-09-14",
     "recent": [
      [
       "2026-09-08",
@@ -65,6 +65,10 @@
      [
       "2026-09-13",
       -0.62
+     ],
+     [
+      "2026-09-14",
+      -0.5
      ]
     ],
     "pending_days": null
@@ -74,7 +78,7 @@
     "level_weight": 1.0,
     "flow": {
      "excess_wow_vs_stock": -1.0,
-     "excess_20s_vs_stock": -0.55
+     "excess_20s_vs_stock": -0.26
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -86,18 +90,18 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.62,
-    "score_flows_only": -0.62
+    "score_v02": -0.5,
+    "score_flows_only": -0.5
    }
   },
   "fiscal": {
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -1.4173,
+   "score": -0.6856,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-11",
+   "as_of": "2026-09-14",
    "detail": "govt deposits 89275.0 M (Δw -2222.0, p48.57) · impulse 4w 1955.0 (p37.5) · 13w 1844.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.5 (NORMAL, avg26 1.76) · TARGET Δ3m -36661.8 · rule NEUTRAL",
    "raw_regime": "DRAIN",
    "cuts": {
@@ -119,10 +123,10 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -1.065,
+    "effective_score": -0.939,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-11",
+    "as_of": "2026-09-14",
     "recent": [
      [
       "2026-09-10",
@@ -131,6 +135,10 @@
      [
       "2026-09-11",
       -1.4173
+     ],
+     [
+      "2026-09-14",
+      -0.6856
      ]
     ],
     "pending_days": null,
@@ -170,10 +178,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -30287.957,
-    "denominator": 2137049.0,
-    "denominator_date": "2026-09-13",
-    "today": "2026-09-14",
+    "raw": -14630.898,
+    "denominator": 2134027.0,
+    "denominator_date": "2026-09-14",
+    "today": "2026-09-15",
     "note": null
    },
    "v03_shadow": {
@@ -208,8 +216,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.38,
-   "rule": "conflict (INJECTION vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.38 shown for context",
+   "score": -0.296,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.30 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -261,7 +269,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.1,
+  "spread_bps": -6.0,
   "friction_confirmed": false
  },
  "rules": {
