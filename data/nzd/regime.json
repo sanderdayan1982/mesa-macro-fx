@@ -1,13 +1,13 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-15T11:18:26+00:00",
- "as_of": "2026-09-14",
+ "generated_at": "2026-09-16T09:07:09+00:00",
+ "as_of": "2026-09-15",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.3,
+ "weighted_score": 0.6,
  "block_scores": {
-  "central_bank": 0.0,
+  "central_bank": 0.75,
   "rates": 0.25,
   "fiscal": 0.5,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.0,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
-   "as_of": "2026-09-14",
-   "detail": "settlement cash 26834.0 (5d 2246.0, 20d -1047.0, SAFE) · OMO stock 9035.0 (33.7%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "score": 0.75,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-15",
+   "detail": "settlement cash 26936.0 (5d 2508.0, 20d 104.0, SAFE) · OMO stock 9035.0 (33.5%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,10 +43,10 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.167,
+    "effective_score": 0.062,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-14",
+    "as_of": "2026-09-15",
     "recent": [
      [
       "2026-09-08",
@@ -59,6 +59,10 @@
      [
       "2026-09-14",
       0.0
+     ],
+     [
+      "2026-09-15",
+      0.75
      ]
     ],
     "pending_days": null
@@ -68,7 +72,7 @@
     "level_weight": 1.0,
     "flow": {
      "settlement_cash_wow": 0.5,
-     "settlement_cash_20d": -0.25,
+     "settlement_cash_20d": 0.5,
      "orrf_used": 0.0
     },
     "level": {
@@ -80,8 +84,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": 0.0,
-    "score_flows_only": 0.25
+    "score_v02": 0.75,
+    "score_flows_only": 1.0
    }
   },
   "fiscal": {
@@ -92,7 +96,7 @@
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-09-15",
-   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash 6846.1 · T-bill 3.2x at 2.9025% · bond 3.198x tail 1.0 bp · settlements next 5d 0 · non-resident 57.4%",
+   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash 6846.1 · T-bill 3.2x at 2.9025% · bond 3.198x tail 1.0 bp · settlements next 5d 450.0 · non-resident 57.4%",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.25,
@@ -151,8 +155,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.2,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
+   "score": 0.65,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.65 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -193,7 +197,6 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_LSAP_UNWIND",
-  "LSAP_SALE_DAY",
   "OMO_DEPENDENCE"
  ],
  "overlays": {
@@ -388,6 +391,10 @@
  "heartbeat": {
   "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3beb6662d4631d3-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3beb6d7ce79d639-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-16); nzdm_tbill_1888.html (snapshot 2026-09-16)"
+  ]
  }
 }

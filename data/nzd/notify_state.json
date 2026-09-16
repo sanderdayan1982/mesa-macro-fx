@@ -1,23 +1,39 @@
 {
- "as_of": "2026-09-14",
- "generated_at": "2026-09-15T11:18:26+00:00",
+ "as_of": "2026-09-15",
+ "generated_at": "2026-09-16T09:07:09+00:00",
  "general": "NEUTRAL",
  "central_bank": "NEUTRAL",
  "fiscal": "INJECTION",
  "gate": true,
- "hash": "4ad9164ee2ed55ed",
+ "hash": "011e4fc28e1566ef",
  "blocks": {
   "central_bank": "fresh",
   "fiscal": "stale",
   "rates": "fresh",
   "banking": "fresh"
  },
- "errors": [],
+ "errors": [
+  "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3beb6662d4631d3-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+  "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3beb6d7ce79d639-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+  "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-16); nzdm_tbill_1888.html (snapshot 2026-09-16)"
+ ],
  "errors_sent": {
   "nzdm_tbill": {
    "ts": "2026-09-15T08:16:37Z",
    "lane": "weekly_tue"
+  },
+  "rbnz_d3": {
+   "ts": "2026-09-16T09:07:09Z",
+   "lane": "daily"
+  },
+  "rbnz_d9": {
+   "ts": "2026-09-16T09:07:09Z",
+   "lane": "daily"
+  },
+  "nzdm_last_good_copy": {
+   "ts": "2026-09-16T09:07:09Z",
+   "lane": "daily"
   }
  },
- "notified_at": "2026-09-15T11:18:26Z"
+ "notified_at": "2026-09-16T09:07:10Z"
 }
