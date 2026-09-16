@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-09-16T09:07:07+00:00",
+ "generated_at": "2026-09-16T11:01:56+00:00",
  "as_of": "2026-09-15",
  "equivalence_quality": "high",
  "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
@@ -13,9 +13,7 @@
   "series_expected": 24,
   "last_fetch_ok": true,
   "errors": [
-   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3beb6662d4631d3-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3beb6d7ce79d639-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-16); nzdm_tbill_1888.html (snapshot 2026-09-16)"
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-16); nzdm_tbill_1888.html (snapshot 2026-09-16); nzdm_bond_listing.html (snapshot 2026-09-16); nzdm_bond_1008.html (snapshot 2026-09-16)"
   ],
   "series_pending": 0
  },
@@ -712,9 +710,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 20.0,
-   "date": "2026-09-14",
+   "date": "2026-09-15",
    "prev_value": 20.0,
-   "prev_date": "2026-09-11",
+   "prev_date": "2026-09-14",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 0.0,
@@ -777,11 +775,11 @@
    ],
    "high_low": {
     "high": 20.0,
-    "high_date": "2026-07-02",
+    "high_date": "2026-07-03",
     "low": 20.0,
-    "low_date": "2026-07-02"
+    "low_date": "2026-07-03"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -5667,7 +5665,8 @@
     "2026-06-17",
     "2026-07-17",
     "2026-08-19",
-    "2026-09-14"
+    "2026-09-14",
+    "2026-09-17"
    ],
    "settlement": [
     "2026-09-15",
@@ -5830,6 +5829,11 @@
     "date": "2026-09-14",
     "label": "NEUTRAL",
     "score": 0.0
+   },
+   {
+    "date": "2026-09-15",
+    "label": "INJECTION",
+    "score": 0.75
    },
    {
     "date": "2026-09-15",
