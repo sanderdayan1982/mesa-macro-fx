@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-16T00:52:17+00:00",
- "as_of": "2026-09-15",
+ "generated_at": "2026-09-16T23:02:22+00:00",
+ "as_of": "2026-09-16",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.537,
+ "weighted_score": 0.387,
  "block_scores": {
   "central_bank": -0.1,
   "rates": 1.5,
-  "fiscal": 0.49,
+  "fiscal": -0.11,
   "banking": 0.8
  },
  "weights": {
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": -0.1,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-15",
+   "as_of": "2026-09-16",
    "detail": "WRESBAL NERVOUS · NL Δ% 1.5273 (NL UP) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
-   "raw_regime": "DRAIN",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.11,
     "injection_exit": 0.0,
@@ -41,17 +41,13 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -0.3,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.2,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-15",
+    "as_of": "2026-09-16",
     "recent": [
-     [
-      "2026-09-08",
-      -0.7
-     ],
      [
       "2026-09-09",
       -0.7
@@ -70,6 +66,10 @@
      ],
      [
       "2026-09-15",
+      -0.1
+     ],
+     [
+      "2026-09-16",
       -0.1
      ]
     ],
@@ -100,11 +100,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.49,
+   "score": -0.11,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-14",
-   "detail": "NTF -49247.0 (extraordinary drain) · Z -2.3853 · 7d 1742.0 · 60d 710458.0 (Z250 1.9543) · FYTD 1743098.0 vs prior FY 2.54% · structural 1.98 · surprise -1.0 · TGA close 871224.0 · −ΔTGA -49024.0 · Est. Tax Day",
+   "as_of": "2026-09-15",
+   "detail": "NTF -77073.0 (extraordinary drain) · Z -2.8922 · 7d -113961.0 · 60d 648398.0 (Z250 1.556) · FYTD 1666026.0 vs prior FY 2.27% · structural 1.78 · surprise -2.0 · TGA close 991557.0 · −ΔTGA -120333.0 · Est. Tax Day",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.215,
@@ -119,10 +119,10 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.928,
+    "effective_score": 0.755,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-14",
+    "as_of": "2026-09-15",
     "recent": [
      [
       "2026-09-08",
@@ -143,6 +143,10 @@
      [
       "2026-09-14",
       0.49
+     ],
+     [
+      "2026-09-15",
+      -0.11
      ]
     ],
     "pending_days": null
@@ -151,10 +155,10 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "daily_surprise": -1.0
+     "daily_surprise": -2.0
     },
     "level": {
-     "structural_ntf_60d": 1.98
+     "structural_ntf_60d": 1.78
     },
     "weights": {
      "structural_ntf_60d": 0.5,
@@ -164,16 +168,16 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.49,
-    "score_flows_only": -0.5
+    "score_v02": -0.11,
+    "score_flows_only": -1.0
    }
   },
   "general": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.136,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.14 shown for context",
+   "score": -0.104,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.10 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -201,7 +205,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-06-01",
-   "era_weeks": 223,
+   "era_weeks": 224,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -223,7 +227,7 @@
   "reserves_in_range": false,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -3.0,
+  "spread_bps": -1.0,
   "friction_confirmed": false
  },
  "rules": {
