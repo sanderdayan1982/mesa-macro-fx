@@ -1,6 +1,6 @@
 {
  "currency": "CHF",
- "generated_at": "2026-09-17T14:37:16+00:00",
+ "generated_at": "2026-09-17T14:41:34+00:00",
  "as_of": "2026-09-11",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -410,7 +410,7 @@
    "name": "Curve Repricing",
    "bias": "CURVE REPRICING",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 1,
    "required": [],
@@ -418,7 +418,7 @@
    "details": [
     {
      "condition": "rates.confed_10y_5d_change_bps level >= WATCH",
-     "met": true
+     "met": false
     },
     {
      "condition": "rates.curve_10y_2y_bps level >= WATCH",
@@ -432,7 +432,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_thu",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
