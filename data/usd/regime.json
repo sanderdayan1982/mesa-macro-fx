@@ -1,13 +1,13 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-17T22:54:04+00:00",
+ "generated_at": "2026-09-17T23:04:48+00:00",
  "as_of": "2026-09-17",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.555,
+ "weighted_score": 0.635,
  "block_scores": {
-  "central_bank": -0.1,
+  "central_bank": 0.1,
   "rates": 1.5,
   "fiscal": 0.56,
   "banking": 0.8
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.1,
+   "score": 0.1,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-17",
-   "detail": "WRESBAL NERVOUS · NL Δ% 1.5273 (NL UP) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
+   "detail": "WRESBAL AMPLE · NL Δ% 0.1245 (NEUTRAL) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.11,
@@ -43,7 +43,7 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.1,
+    "effective_score": -0.067,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-17",
@@ -70,7 +70,7 @@
      ],
      [
       "2026-09-17",
-      -0.1
+      0.1
      ]
     ],
     "pending_days": null
@@ -79,11 +79,11 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "net_liquidity_band": 1.0,
+     "net_liquidity_band": 0.0,
      "tga_status": -0.5
     },
     "level": {
-     "reserves_status": -1.0,
+     "reserves_status": 0.5,
      "rrp_status": 0.25,
      "phase": 0.0
     },
@@ -92,8 +92,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.1,
-    "score_flows_only": 0.2
+    "score_v02": 0.1,
+    "score_flows_only": -0.2
    }
   },
   "fiscal": {
@@ -176,8 +176,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.164,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.16 shown for context",
+   "score": 0.284,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.28 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -222,8 +222,8 @@
  ],
  "overlays": {},
  "inputs": {
-  "reserves_level": "WATCH",
-  "reserves_in_range": false,
+  "reserves_level": "SAFE",
+  "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
   "spread_bps": -3.0,
@@ -241,8 +241,8 @@
    "id": "L1",
    "name": "Ample reserves, calm floor",
    "bias": "NEUTRAL",
-   "active": false,
-   "conditions_met": 2,
+   "active": true,
+   "conditions_met": 3,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -250,7 +250,7 @@
    "details": [
     {
      "condition": "central_bank.reserves level == SAFE",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.sofr_minus_iorb_bps level == SAFE",
@@ -267,7 +267,7 @@
    "name": "Reserve scarcity building (Sept-2019 pattern)",
    "bias": "RESERVE SCARCITY",
    "active": false,
-   "conditions_met": 2,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 0,
    "required": [
@@ -277,7 +277,7 @@
    "details": [
     {
      "condition": "central_bank.reserves level >= WATCH",
-     "met": true
+     "met": false
     },
     {
      "condition": "rates.sofr_minus_iorb_bps level >= WATCH",
@@ -352,7 +352,7 @@
    "name": "Fiscal injection / TGA drawdown",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -370,7 +370,7 @@
     },
     {
      "condition": "central_bank.net_liquidity_wow_pct >= band_high",
-     "met": true
+     "met": false
     },
     {
      "condition": "fiscal.net_treasury_flow level >= WATCH",
@@ -405,7 +405,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_thu",
   "backfill": false,
   "errors": []
  }
