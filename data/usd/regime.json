@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-17T00:56:22+00:00",
- "as_of": "2026-09-16",
+ "generated_at": "2026-09-17T22:54:04+00:00",
+ "as_of": "2026-09-17",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.387,
+ "weighted_score": 0.555,
  "block_scores": {
   "central_bank": -0.1,
   "rates": 1.5,
-  "fiscal": -0.11,
+  "fiscal": 0.56,
   "banking": 0.8
  },
  "weights": {
@@ -27,7 +27,7 @@
    "score": -0.1,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-16",
+   "as_of": "2026-09-17",
    "detail": "WRESBAL NERVOUS · NL Δ% 1.5273 (NL UP) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -43,15 +43,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.2,
+    "effective_score": -0.1,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-17",
     "recent": [
-     [
-      "2026-09-09",
-      -0.7
-     ],
      [
       "2026-09-10",
       -0.1
@@ -70,6 +66,10 @@
      ],
      [
       "2026-09-16",
+      -0.1
+     ],
+     [
+      "2026-09-17",
       -0.1
      ]
     ],
@@ -100,11 +100,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.11,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
-   "as_of": "2026-09-15",
-   "detail": "NTF -77073.0 (extraordinary drain) · Z -2.8922 · 7d -113961.0 · 60d 648398.0 (Z250 1.556) · FYTD 1666026.0 vs prior FY 2.27% · structural 1.78 · surprise -2.0 · TGA close 991557.0 · −ΔTGA -120333.0 · Est. Tax Day",
+   "score": 0.56,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-16",
+   "detail": "NTF 206.0 (within normal range) · Z -0.2289 · 7d -116259.0 · 60d 654290.0 (Z250 1.5831) · FYTD 1666232.0 vs prior FY 3.38% · structural 1.79 · surprise -0.67 · TGA close 991708.0 · −ΔTGA -151.0 · Est. Tax Day",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.215,
@@ -119,15 +119,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.755,
+    "effective_score": 0.738,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-15",
+    "as_of": "2026-09-16",
     "recent": [
-     [
-      "2026-09-08",
-      0.66
-     ],
      [
       "2026-09-09",
       1.51
@@ -147,6 +143,10 @@
      [
       "2026-09-15",
       -0.11
+     ],
+     [
+      "2026-09-16",
+      0.56
      ]
     ],
     "pending_days": null
@@ -155,10 +155,10 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "daily_surprise": -2.0
+     "daily_surprise": -0.67
     },
     "level": {
-     "structural_ntf_60d": 1.78
+     "structural_ntf_60d": 1.79
     },
     "weights": {
      "structural_ntf_60d": 0.5,
@@ -168,16 +168,16 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.11,
-    "score_flows_only": -1.0
+    "score_v02": 0.56,
+    "score_flows_only": -0.34
    }
   },
   "general": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.104,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.10 shown for context",
+   "score": 0.164,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.16 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -218,7 +218,6 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_STEADY",
-  "NTF_EXTRAORDINARY",
   "STRUCTURAL_DEFICIT_INJECTION"
  ],
  "overlays": {},
@@ -227,7 +226,7 @@
   "reserves_in_range": false,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -1.0,
+  "spread_bps": -3.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -353,7 +352,7 @@
    "name": "Fiscal injection / TGA drawdown",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 2,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -375,7 +374,7 @@
     },
     {
      "condition": "fiscal.net_treasury_flow level >= WATCH",
-     "met": true
+     "met": false
     }
    ]
   },
