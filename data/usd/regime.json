@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-18T00:51:59+00:00",
- "as_of": "2026-09-17",
+ "generated_at": "2026-09-18T22:42:01+00:00",
+ "as_of": "2026-09-18",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.635,
+ "weighted_score": 0.633,
  "block_scores": {
   "central_bank": 0.1,
   "rates": 1.5,
-  "fiscal": 0.56,
+  "fiscal": 0.55,
   "banking": 0.8
  },
  "weights": {
@@ -27,7 +27,7 @@
    "score": 0.1,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-17",
+   "as_of": "2026-09-18",
    "detail": "WRESBAL AMPLE · NL Δ% 0.1245 (NEUTRAL) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -43,15 +43,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.067,
+    "effective_score": -0.033,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-17",
+    "as_of": "2026-09-18",
     "recent": [
-     [
-      "2026-09-10",
-      -0.1
-     ],
      [
       "2026-09-11",
       -0.1
@@ -70,6 +66,10 @@
      ],
      [
       "2026-09-17",
+      0.1
+     ],
+     [
+      "2026-09-18",
       0.1
      ]
     ],
@@ -97,15 +97,15 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "DRAIN",
+   "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": 0.56,
+   "score": 0.55,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-16",
-   "detail": "NTF 206.0 (within normal range) · Z -0.2289 · 7d -116259.0 · 60d 654290.0 (Z250 1.5831) · FYTD 1666232.0 vs prior FY 3.38% · structural 1.79 · surprise -0.67 · TGA close 991708.0 · −ΔTGA -151.0 · Est. Tax Day",
-   "raw_regime": "NEUTRAL",
+   "as_of": "2026-09-17",
+   "detail": "NTF 2636.0 (within normal range) · Z -0.1544 · 7d -96505.0 · 60d 632457.0 (Z250 1.4416) · FYTD 1668866.0 vs prior FY 2.44% · structural 1.72 · surprise -0.62 · TGA close 972675.0 · −ΔTGA 19033.0",
+   "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 1.215,
     "injection_exit": 1.11,
@@ -117,17 +117,13 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.738,
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": 0.578,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-17",
     "recent": [
-     [
-      "2026-09-09",
-      1.51
-     ],
      [
       "2026-09-10",
       1.02
@@ -147,6 +143,10 @@
      [
       "2026-09-16",
       0.56
+     ],
+     [
+      "2026-09-17",
+      0.55
      ]
     ],
     "pending_days": null
@@ -155,10 +155,10 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "daily_surprise": -0.67
+     "daily_surprise": -0.62
     },
     "level": {
-     "structural_ntf_60d": 1.79
+     "structural_ntf_60d": 1.72
     },
     "weights": {
      "structural_ntf_60d": 0.5,
@@ -168,16 +168,16 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.56,
-    "score_flows_only": -0.34
+    "score_v02": 0.55,
+    "score_flows_only": -0.31
    }
   },
   "general": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.284,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.28 shown for context",
+   "score": 0.28,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.28 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -226,7 +226,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -3.0,
+  "spread_bps": -5.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -320,18 +320,18 @@
    "id": "L4",
    "name": "Treasury drain (TGA rebuild)",
    "bias": "FISCAL DRAIN",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == DRAIN"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == DRAIN",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_regime == DRAIN",
