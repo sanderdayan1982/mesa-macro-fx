@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-17T16:46:51+00:00",
- "as_of": "2026-09-16",
+ "generated_at": "2026-09-18T13:12:08+00:00",
+ "as_of": "2026-09-17",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.429,
+ "weighted_score": 0.065,
  "block_scores": {
-  "central_bank": 0.59,
+  "central_bank": -0.32,
   "rates": 0.2,
   "fiscal": -0.11,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.59,
-   "label": "INJECTION",
-   "traffic_light": "GREEN",
-   "as_of": "2026-09-16",
-   "detail": "excess liquidity 2139867.0 M (SAFE) · Δ5s 23049.0 (p94.69) · TOMO 29197.0 M (ROUTINE) · MLF 66.93938715 M · €STR−DFR -5.9 bp (SAFE) · MonPol 13w -100260.0 · phase QT · APP+PEPP rec RECONCILED",
+   "score": -0.32,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-09-17",
+   "detail": "excess liquidity 2131380.0 M (SAFE) · Δ5s -5693.0 (p54.03) · TOMO 29197.0 M (ROUTINE) · MLF 70.42551739 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -100260.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.173,
+    "effective_score": -0.257,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-17",
     "recent": [
-     [
-      "2026-09-09",
-      0.18
-     ],
      [
       "2026-09-10",
       -0.18
@@ -73,6 +69,10 @@
      [
       "2026-09-16",
       0.59
+     ],
+     [
+      "2026-09-17",
+      -0.32
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": 1.0,
-     "excess_20s_vs_stock": 0.47
+     "excess_wow_vs_stock": -0.27,
+     "excess_20s_vs_stock": -0.53
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,18 +94,18 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.59,
-    "score_flows_only": 0.59
+    "score_v02": -0.32,
+    "score_flows_only": -0.32
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.6554,
+   "score": 1.502,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-16",
+   "as_of": "2026-09-17",
    "detail": "govt deposits 94717.0 M (Δw 5442.0, p77.78) · impulse 4w -1988.0 (p27.27) · 13w -103.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.3 (SOFT, avg26 1.75) · TARGET Δ3m -36661.8 · rule NEUTRAL",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -127,10 +127,10 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.295,
+    "effective_score": 0.004,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-17",
     "recent": [
      [
       "2026-09-10",
@@ -151,6 +151,10 @@
      [
       "2026-09-16",
       0.6554
+     ],
+     [
+      "2026-09-17",
+      1.502
      ]
     ],
     "pending_days": null,
@@ -190,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 14023.802,
-    "denominator": 2139867.0,
-    "denominator_date": "2026-09-16",
-    "today": "2026-09-17",
+    "raw": 32013.272,
+    "denominator": 2131380.0,
+    "denominator_date": "2026-09-17",
+    "today": "2026-09-18",
     "note": null
    },
    "v03_shadow": {
@@ -232,8 +236,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.38,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.38 shown for context",
+   "score": -0.257,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.26 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -285,7 +289,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -5.9,
+  "spread_bps": -6.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -326,7 +330,7 @@
    "name": "Scarcity building (€STR drifting to the DFR, MRO take-up rising)",
    "bias": "FUNDING SCARCITY",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [
@@ -344,7 +348,7 @@
     },
     {
      "condition": "central_bank.excess_liquidity_wow level >= WATCH",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -380,7 +384,7 @@
    "name": "Government cash drain",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -402,7 +406,7 @@
     },
     {
      "condition": "central_bank.excess_liquidity_wow level >= WATCH",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -411,7 +415,7 @@
    "name": "Fiscal injection into excess liquidity",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 2,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -429,7 +433,7 @@
     },
     {
      "condition": "central_bank.excess_liquidity_wow level == SAFE",
-     "met": false
+     "met": true
     },
     {
      "condition": "banking.transmission_signal == GREEN",
