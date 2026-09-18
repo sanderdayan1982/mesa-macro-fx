@@ -3,12 +3,12 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-09-17T23:37:48+00:00",
- "as_of": "2026-09-09",
+ "generated_at": "2026-09-18T21:28:51+00:00",
+ "as_of": "2026-09-16",
  "equivalence_quality": "medium-high",
  "equivalence_note": "Canada has no DTS with receipts/withdrawals, but the Receiver General publishes a DAILY closing cash balance at the BoC plus term deposits placed with banks (found in triangulation, verified 2026-09-08). Daily -dBalance is the analog of -dTGA; term deposits capture cash moved from the BoC to banks (reserve-adding without fiscal meaning). Issuance/redemption from auctions; net spending from monthly Fiscal Monitor (deferred).",
  "source_health": {
-  "status": "fresh",
+  "status": "stale",
   "series_loaded": 5,
   "series_expected": 5,
   "last_fetch_ok": true,
@@ -21,7 +21,7 @@
    "usd_analog": "DTS TGA closing balance",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 23975.781,
    "date": "2026-09-01",
    "prev_value": 24169.781,
@@ -92,8 +92,8 @@
     "low": 22360.034,
     "low_date": "2026-07-17"
    },
-   "age_days": 16,
-   "confidence": 100,
+   "age_days": 17,
+   "confidence": 70,
    "latest_outlier": false
   },
   "rg_term_deposits": {
@@ -102,7 +102,7 @@
    "usd_analog": null,
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 6000.0,
    "date": "2026-09-01",
    "prev_value": 23000.0,
@@ -173,8 +173,8 @@
     "low": 5000.0,
     "low_date": "2026-07-02"
    },
-   "age_days": 16,
-   "confidence": 92,
+   "age_days": 17,
+   "confidence": 62,
    "latest_outlier": true,
    "equivalence_note": "cash moved BoC→banks: adds reserves, not fiscal flow"
   },
@@ -184,7 +184,7 @@
    "usd_analog": null,
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 20000.0,
    "date": "2026-09-01",
    "prev_value": 20000.0,
@@ -255,8 +255,8 @@
     "low": 20000.0,
     "low_date": "2026-06-19"
    },
-   "age_days": 16,
-   "confidence": 100,
+   "age_days": 17,
+   "confidence": 70,
    "latest_outlier": false
   },
   "government_account_cb": {
@@ -266,18 +266,17 @@
    "unit": "CAD millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 22450.0,
-   "date": "2026-09-09",
-   "prev_value": 24810.0,
-   "prev_date": "2026-09-02",
-   "change_abs": -2360.0,
-   "change_pct": -9.5123,
-   "zscore": -1.2726,
+   "value": 24444.0,
+   "date": "2026-09-16",
+   "prev_value": 22450.0,
+   "prev_date": "2026-09-09",
+   "change_abs": 1994.0,
+   "change_pct": 8.882,
+   "zscore": -0.1783,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    25602.0,
     23178.0,
     24481.0,
     23587.0,
@@ -328,7 +327,8 @@
     24614.0,
     22962.0,
     24810.0,
-    22450.0
+    22450.0,
+    24444.0
    ],
    "high_low": {
     "high": 42117.0,
@@ -336,7 +336,7 @@
     "low": 22450.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 8,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -347,18 +347,17 @@
    "unit": "CAD millions",
    "frequency": "monthly",
    "status": "fresh",
-   "value": 4271.0,
-   "date": "2026-06-01",
-   "prev_value": 3298.0,
-   "prev_date": "2026-05-01",
-   "change_abs": 973.0,
-   "change_pct": 29.5027,
-   "zscore": 0.3188,
+   "value": 3259.0,
+   "date": "2026-07-01",
+   "prev_value": 4271.0,
+   "prev_date": "2026-06-01",
+   "change_abs": -1012.0,
+   "change_pct": -23.6947,
+   "zscore": -1.0199,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    3010.0,
     4273.0,
     3386.0,
     3379.0,
@@ -409,7 +408,8 @@
     4638.0,
     6086.0,
     3298.0,
-    4271.0
+    4271.0,
+    3259.0
    ],
    "high_low": {
     "high": 6330.0,
@@ -417,7 +417,7 @@
     "low": 2645.0,
     "low_date": "2023-03-01"
    },
-   "age_days": 108,
+   "age_days": 79,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -429,7 +429,7 @@
    "usd_analog": "−ΔTGA",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "proxy",
+   "status": "stale",
    "value": 194.0,
    "date": "2026-09-01",
    "prev_value": -268.179,
@@ -500,7 +500,7 @@
     "low": -2513.954,
     "low_date": "2026-08-13"
    },
-   "age_days": 16,
+   "age_days": 17,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -510,7 +510,7 @@
    "usd_analog": "Net Treasury Flow (Mosler)",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "proxy",
+   "status": "stale",
    "value": 17194.0,
    "date": "2026-09-01",
    "prev_value": -3268.179,
@@ -581,7 +581,7 @@
     "low": -11030.885,
     "low_date": "2026-08-04"
    },
-   "age_days": 16,
+   "age_days": 17,
    "confidence": 62,
    "latest_outlier": true,
    "equivalence_note": "positive = net injection of NFA proxy; excludes BoC↔bank cash transfers"
@@ -592,7 +592,7 @@
    "usd_analog": "DTS 30d Z",
    "unit": "σ",
    "frequency": "daily",
-   "status": "proxy",
+   "status": "stale",
    "value": 3.112,
    "date": "2026-09-01",
    "prev_value": -0.5686,
@@ -663,7 +663,7 @@
     "low": -2.1305,
     "low_date": "2026-07-31"
    },
-   "age_days": 16,
+   "age_days": 17,
    "confidence": 62,
    "latest_outlier": true,
    "thresholds": {
@@ -677,7 +677,7 @@
    "usd_analog": "7-day cumulative",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "proxy",
+   "status": "stale",
    "value": 13084.266,
    "date": "2026-09-01",
    "prev_value": -1573.415,
@@ -748,7 +748,7 @@
     "low": -22979.401,
     "low_date": "2026-08-12"
    },
-   "age_days": 16,
+   "age_days": 17,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -773,18 +773,17 @@
    "unit": "CAD millions",
    "frequency": "weekly",
    "status": "proxy",
-   "value": 2360.0,
-   "date": "2026-09-09",
-   "prev_value": -1848.0,
-   "prev_date": "2026-09-02",
-   "change_abs": 4208.0,
-   "change_pct": 227.7056,
-   "zscore": 0.9961,
+   "value": -1994.0,
+   "date": "2026-09-16",
+   "prev_value": 2360.0,
+   "prev_date": "2026-09-09",
+   "change_abs": -4354.0,
+   "change_pct": -184.4915,
+   "zscore": -0.8558,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -925.0,
     2424.0,
     -1303.0,
     894.0,
@@ -835,7 +834,8 @@
     -1810.0,
     1652.0,
     -1848.0,
-    2360.0
+    2360.0,
+    -1994.0
    ],
    "high_low": {
     "high": 9371.0,
@@ -843,7 +843,7 @@
     "low": -9414.0,
     "low_date": "2025-11-12"
    },
-   "age_days": 8,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -854,18 +854,17 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
-   "date": "2026-09-17",
-   "prev_value": -5000.0,
-   "prev_date": "2026-09-16",
-   "change_abs": 5000.0,
-   "change_pct": 100.0,
-   "zscore": 0.3068,
+   "value": -3000.0,
+   "date": "2026-09-18",
+   "prev_value": 0.0,
+   "prev_date": "2026-09-17",
+   "change_abs": -3000.0,
+   "change_pct": null,
+   "zscore": -0.0877,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -6370.0,
     -10500.0,
     -5500.0,
     -5500.0,
@@ -916,7 +915,8 @@
     -4298.0,
     -4298.0,
     -5000.0,
-    0.0
+    0.0,
+    -3000.0
    ],
    "high_low": {
     "high": 20010.0,
@@ -925,8 +925,8 @@
     "low_date": "2026-07-09"
    },
    "age_days": 0,
-   "confidence": 92,
-   "latest_outlier": true,
+   "confidence": 100,
+   "latest_outlier": false,
    "equivalence_note": "v0.4 first pass: bills + bonds − BoC purchase − private maturities + repurchases; coupons pending"
   },
   "fiscal_regime": {
@@ -966,18 +966,17 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
-   "date": "2026-09-17",
+   "value": 3000.0,
+   "date": "2026-09-18",
    "prev_value": 0.0,
-   "prev_date": "2026-09-16",
-   "change_abs": 0.0,
+   "prev_date": "2026-09-17",
+   "change_abs": 3000.0,
    "change_pct": null,
-   "zscore": -0.4893,
+   "zscore": -0.0919,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     5500.0,
     0.0,
     0.0,
@@ -1028,13 +1027,14 @@
     0.0,
     0.0,
     0.0,
-    0.0
+    0.0,
+    3000.0
    ],
    "high_low": {
     "high": 27720.0,
     "high_date": "2026-07-29",
     "low": 0.0,
-    "low_date": "2026-07-08"
+    "low_date": "2026-07-10"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1048,9 +1048,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "prev_value": 0.0,
-   "prev_date": "2026-09-16",
+   "prev_date": "2026-09-17",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": -0.3881,
@@ -1058,7 +1058,6 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     0.0,
     0.0,
     0.0,
@@ -1109,13 +1108,14 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "high_low": {
     "high": 29424.0,
     "high_date": "2026-08-12",
     "low": 0.0,
-    "low_date": "2026-07-08"
+    "low_date": "2026-07-09"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1198,7 +1198,7 @@
     "low": 64.665,
     "low_date": "2008-03-10"
    },
-   "age_days": 2360,
+   "age_days": 2361,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -1210,17 +1210,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-09-10",
-   "prev_value": 260.0,
-   "prev_date": "2026-09-09",
-   "change_abs": -260.0,
-   "change_pct": -100.0,
-   "zscore": -0.702,
+   "date": "2026-09-18",
+   "prev_value": 0.0,
+   "prev_date": "2026-09-10",
+   "change_abs": 0.0,
+   "change_pct": null,
+   "zscore": -0.6503,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    690.0,
     0.0,
     0.0,
     230.0,
@@ -1271,16 +1270,17 @@
     0.0,
     0.0,
     260.0,
+    0.0,
     0.0
    ],
    "high_low": {
-    "high": 690.0,
-    "high_date": "2026-02-11",
+    "high": 310.0,
+    "high_date": "2026-05-20",
     "low": 0.0,
     "low_date": "2026-02-12"
    },
-   "age_days": 7,
-   "confidence": 85,
+   "age_days": 0,
+   "confidence": 100,
    "latest_outlier": false
   },
   "net_issuance_private_daily": {
@@ -1290,18 +1290,17 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
-   "date": "2026-09-17",
+   "value": -3000.0,
+   "date": "2026-09-18",
    "prev_value": 0.0,
-   "prev_date": "2026-09-16",
-   "change_abs": 0.0,
+   "prev_date": "2026-09-17",
+   "change_abs": -3000.0,
    "change_pct": null,
-   "zscore": 0.1105,
+   "zscore": -0.6225,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     -5500.0,
     0.0,
     0.0,
@@ -1352,7 +1351,8 @@
     0.0,
     0.0,
     0.0,
-    0.0
+    0.0,
+    -3000.0
    ],
    "high_low": {
     "high": 20010.0,
@@ -1371,18 +1371,17 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 12000.0,
-   "date": "2026-09-17",
-   "prev_value": 6000.0,
-   "prev_date": "2026-09-16",
-   "change_abs": 6000.0,
-   "change_pct": 100.0,
-   "zscore": -0.4759,
+   "value": 9000.0,
+   "date": "2026-09-18",
+   "prev_value": 12000.0,
+   "prev_date": "2026-09-17",
+   "change_abs": -3000.0,
+   "change_pct": -25.0,
+   "zscore": -1.1029,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    17450.0,
     15000.0,
     16000.0,
     15447.0,
@@ -1433,7 +1432,8 @@
     11500.0,
     16500.0,
     6000.0,
-    12000.0
+    12000.0,
+    9000.0
    ],
    "high_low": {
     "high": 21950.0,
@@ -1452,18 +1452,17 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": -12500.0,
-   "date": "2026-09-17",
-   "prev_value": -10000.0,
-   "prev_date": "2026-09-16",
-   "change_abs": -2500.0,
-   "change_pct": -25.0,
-   "zscore": 0.3785,
+   "value": -12000.0,
+   "date": "2026-09-18",
+   "prev_value": -12500.0,
+   "prev_date": "2026-09-17",
+   "change_abs": 500.0,
+   "change_pct": 4.0,
+   "zscore": 0.5096,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -5600.0,
     -13200.0,
     -18250.0,
     -15000.0,
@@ -1514,11 +1513,12 @@
     -11000.0,
     -11500.0,
     -10000.0,
-    -12500.0
+    -12500.0,
+    -12000.0
    ],
    "high_low": {
-    "high": -5600.0,
-    "high_date": "2026-07-06",
+    "high": -6000.0,
+    "high_date": "2026-09-02",
     "low": -23000.0,
     "low_date": "2026-09-01"
    },
@@ -1533,18 +1533,17 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": -500.0,
-   "date": "2026-09-17",
-   "prev_value": -4000.0,
-   "prev_date": "2026-09-16",
-   "change_abs": 3500.0,
-   "change_pct": 87.5,
-   "zscore": -0.113,
+   "value": -3000.0,
+   "date": "2026-09-18",
+   "prev_value": -500.0,
+   "prev_date": "2026-09-17",
+   "change_abs": -2500.0,
+   "change_pct": -500.0,
+   "zscore": -0.5996,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    11850.0,
     1800.0,
     -2250.0,
     447.0,
@@ -1595,11 +1594,12 @@
     500.0,
     5000.0,
     -4000.0,
-    -500.0
+    -500.0,
+    -3000.0
    ],
    "high_low": {
-    "high": 11850.0,
-    "high_date": "2026-07-06",
+    "high": 8000.0,
+    "high_date": "2026-09-04",
     "low": -17000.0,
     "low_date": "2026-09-01"
    },
@@ -1614,18 +1614,17 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 12000.0,
-   "date": "2026-09-17",
-   "prev_value": 12500.0,
-   "prev_date": "2026-09-16",
-   "change_abs": -500.0,
-   "change_pct": -4.0,
-   "zscore": -1.1847,
+   "value": 9000.0,
+   "date": "2026-09-18",
+   "prev_value": 12000.0,
+   "prev_date": "2026-09-17",
+   "change_abs": -3000.0,
+   "change_pct": -25.0,
+   "zscore": -1.6024,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    21000.0,
     21447.0,
     22000.0,
     22164.0,
@@ -1676,7 +1675,8 @@
     11500.0,
     16500.0,
     12500.0,
-    12000.0
+    12000.0,
+    9000.0
    ],
    "high_low": {
     "high": 28000.0,
@@ -1695,18 +1695,17 @@
    "unit": "ratio",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1.855,
-   "date": "2026-09-17",
-   "prev_value": 2.373,
-   "prev_date": "2026-09-16",
-   "change_abs": -0.518,
-   "change_pct": -21.8289,
-   "zscore": 0.2576,
+   "value": 2.084,
+   "date": "2026-09-18",
+   "prev_value": 1.855,
+   "prev_date": "2026-09-17",
+   "change_abs": 0.229,
+   "change_pct": 12.345,
+   "zscore": 0.5809,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.919,
     1.411,
     1.264,
     1.027,
@@ -1757,7 +1756,8 @@
     1.345,
     1.825,
     2.373,
-    1.855
+    1.855,
+    2.084
    ],
    "high_low": {
     "high": 4.426,
@@ -1774,7 +1774,7 @@
    "value": 46234.0,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "calendar": [
     [
      "2026-09-23",
@@ -1794,9 +1794,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "prev_value": 0.0,
-   "prev_date": "2026-09-16",
+   "prev_date": "2026-09-17",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": null,
@@ -1810,9 +1810,9 @@
    ],
    "high_low": {
     "high": 0.0,
-    "high_date": "2026-09-15",
+    "high_date": "2026-09-16",
     "low": 0.0,
-    "low_date": "2026-09-15"
+    "low_date": "2026-09-16"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1826,9 +1826,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "prev_value": 0.0,
-   "prev_date": "2026-09-16",
+   "prev_date": "2026-09-17",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": null,
@@ -1842,9 +1842,9 @@
    ],
    "high_low": {
     "high": 0.0,
-    "high_date": "2026-09-15",
+    "high_date": "2026-09-16",
     "low": 0.0,
-    "low_date": "2026-09-15"
+    "low_date": "2026-09-16"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1858,9 +1858,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "prev_value": 0.0,
-   "prev_date": "2026-09-16",
+   "prev_date": "2026-09-17",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": null,
@@ -1874,9 +1874,9 @@
    ],
    "high_low": {
     "high": 0.0,
-    "high_date": "2026-09-15",
+    "high_date": "2026-09-16",
     "low": 0.0,
-    "low_date": "2026-09-15"
+    "low_date": "2026-09-16"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1889,8 +1889,8 @@
    "unit": "ratio",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.1132,
-   "date": "2026-09-17",
+   "value": 0.1133,
+   "date": "2026-09-18",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -1900,13 +1900,13 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.1132
+    0.1133
    ],
    "high_low": {
-    "high": 0.1132,
-    "high_date": "2026-09-17",
-    "low": 0.1132,
-    "low_date": "2026-09-17"
+    "high": 0.1133,
+    "high_date": "2026-09-18",
+    "low": 0.1133,
+    "low_date": "2026-09-18"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1920,7 +1920,7 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0121,
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -1934,9 +1934,9 @@
    ],
    "high_low": {
     "high": 0.0121,
-    "high_date": "2026-09-17",
+    "high_date": "2026-09-18",
     "low": 0.0121,
-    "low_date": "2026-09-17"
+    "low_date": "2026-09-18"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1950,7 +1950,7 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 144911.809,
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -1964,9 +1964,9 @@
    ],
    "high_low": {
     "high": 144911.809,
-    "high_date": "2026-09-17",
+    "high_date": "2026-09-18",
     "low": 144911.809,
-    "low_date": "2026-09-17"
+    "low_date": "2026-09-18"
    },
    "age_days": 0,
    "confidence": 100,
@@ -1974,10 +1974,10 @@
   },
   "bond_redemptions_net_next_12m": {
    "label": "GoC bond redemptions next 12 months — NET of BoC holdings",
-   "value": 127601.151,
+   "value": 127152.786,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "calendar": [
     [
      "2026-11-01",
@@ -1985,7 +1985,7 @@
     ],
     [
      "2026-12-01",
-     9278.731
+     9280.366
     ],
     [
      "2027-02-01",
@@ -2004,14 +2004,14 @@
      8122.446
     ]
    ],
-   "note": "gross 141632.8 · BoC 14031.6"
+   "note": "gross 141184.6 · BoC 14031.8"
   },
   "bond_coupons_net_next_4w": {
    "label": "GoC bond coupons next 4 weeks — NET of BoC holdings",
    "value": 0,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "calendar": []
   },
   "tbill_maturities_net_next_4w": {
@@ -2019,7 +2019,7 @@
    "value": 46234.0,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "calendar": [
     [
      "2026-09-23",
@@ -2034,9 +2034,9 @@
   "boc_holdings_asof": {
    "label": "BoC holdings snapshot used for netting",
    "value": null,
-   "cut_date": "2026-09-17",
+   "cut_date": "2026-09-18",
    "status": "fresh",
-   "date": "2026-09-17",
+   "date": "2026-09-18",
    "unmatched": []
   },
   "net_issuance_private_v2_daily": {
@@ -2046,11 +2046,11 @@
    "unit": "CAD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
-   "date": "2026-09-17",
+   "value": -3000.0,
+   "date": "2026-09-18",
    "prev_value": 0.0,
-   "prev_date": "2026-09-16",
-   "change_abs": 0.0,
+   "prev_date": "2026-09-17",
+   "change_abs": -3000.0,
    "change_pct": null,
    "zscore": null,
    "percentile": null,
@@ -2059,13 +2059,13 @@
    "sparkline": [
     0.0,
     0.0,
-    0.0
+    -3000.0
    ],
    "high_low": {
     "high": 0.0,
-    "high_date": "2026-09-15",
-    "low": 0.0,
-    "low_date": "2026-09-15"
+    "high_date": "2026-09-16",
+    "low": -3000.0,
+    "low_date": "2026-09-18"
    },
    "age_days": 0,
    "confidence": 100,
@@ -2120,7 +2120,7 @@
    "score_v02": 2.0,
    "score_flows_only": 2.0
   },
-  "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check 2360.0",
+  "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check -1994.0",
   "alerts": [
    {
     "metric": "fiscal_flow_zscore",
@@ -2143,8 +2143,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": 0.0,
-    "rg_am_net_5d_pct": -1.5119,
+    "net_issuance_5d_pct": -4.7574,
+    "rg_am_net_5d_pct": -3.1716,
     "fiscal_flow_z": 2.0
    },
    "level": {},
@@ -2153,8 +2153,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.49,
-   "score_flows_only": 0.49,
+   "score_v02": -2.0,
+   "score_flows_only": -2.0,
    "note": "shadow: not in the live score until the v0.4 replay sets the cuts"
   }
  },
@@ -2534,6 +2534,11 @@
    ]
   },
   "signal_log": [
+   {
+    "date": "2026-09-01",
+    "label": "INJECTION",
+    "score": 2.0
+   },
    {
     "date": "2026-09-01",
     "label": "INJECTION",
