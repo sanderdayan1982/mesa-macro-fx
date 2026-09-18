@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-17T11:11:04+00:00",
+ "generated_at": "2026-09-18T08:47:37+00:00",
  "as_of": "2026-09-17",
  "config_version": "0.4.0",
  "regime": "LIQUIDITY_INJECTION",
@@ -28,7 +28,7 @@
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-09-17",
-   "detail": "settlement cash 27978.0 (5d 3372.0, 20d 1420.0, SAFE) · OMO stock 9035.0 (32.3%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "detail": "settlement cash 28061.0 (5d 1857.0, 20d 4129.0, SAFE) · OMO stock 8847.0 (31.5%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
@@ -197,6 +197,7 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_LSAP_UNWIND",
+  "LSAP_SALE_DAY",
   "OMO_DEPENDENCE"
  ],
  "overlays": {
@@ -391,6 +392,9 @@
  "heartbeat": {
   "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3cf155eaf20d687-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-18)"
+  ]
  }
 }

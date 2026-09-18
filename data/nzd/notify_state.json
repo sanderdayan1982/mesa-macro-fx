@@ -1,31 +1,38 @@
 {
  "as_of": "2026-09-17",
- "generated_at": "2026-09-17T11:11:04+00:00",
+ "generated_at": "2026-09-18T08:47:37+00:00",
  "general": "LIQUIDITY_INJECTION",
  "central_bank": "INJECTION",
  "fiscal": "INJECTION",
  "gate": true,
- "hash": "6ab2cbde8877f49d",
+ "hash": "796c51f8b72ecc8d",
  "blocks": {
   "central_bank": "fresh",
   "fiscal": "stale",
   "rates": "fresh",
   "banking": "fresh"
  },
- "errors": [],
+ "errors": [
+  "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a3cf155eaf20d687-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+  "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-18)"
+ ],
  "errors_sent": {
   "nzdm_tbill": {
    "ts": "2026-09-15T08:16:37Z",
    "lane": "weekly_tue"
   },
   "rbnz_b2": {
-   "ts": "2026-09-17T08:27:02Z",
-   "lane": "weekly_thu"
+   "ts": "2026-09-18T08:47:37Z",
+   "lane": "daily"
   },
   "rbnz_d12": {
    "ts": "2026-09-17T08:27:02Z",
    "lane": "weekly_thu"
+  },
+  "nzdm_last_good_copy": {
+   "ts": "2026-09-18T08:47:37Z",
+   "lane": "daily"
   }
  },
- "notified_at": "2026-09-17T11:11:05Z"
+ "notified_at": "2026-09-18T08:47:38Z"
 }
