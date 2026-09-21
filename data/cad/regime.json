@@ -1,16 +1,16 @@
 {
  "currency": "CAD",
- "generated_at": "2026-09-18T23:31:46+00:00",
+ "generated_at": "2026-09-21T11:21:53+00:00",
  "as_of": "2026-09-16",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.322,
+ "weighted_score": 0.222,
  "block_scores": {
   "central_bank": 0.02,
   "rates": -0.75,
   "fiscal": 2.0,
-  "banking": 1.0
+  "banking": 0.0
  },
  "weights": {
   "central_bank": 0.45,
@@ -154,7 +154,7 @@
     "raw": -1994.0,
     "denominator": 63059.0,
     "denominator_date": "2026-09-16",
-    "today": "2026-09-18",
+    "today": "2026-09-21",
     "note": null
    },
    "v03_shadow": {
@@ -395,7 +395,7 @@
    "name": "Transmission Break",
    "bias": "TRANSMISSION BREAK",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -411,13 +411,13 @@
     },
     {
      "condition": "banking.deposits_public mom_pct zscore <= -1",
-     "met": false
+     "met": true
     }
    ]
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "monthly",
   "backfill": false,
   "errors": []
  }
