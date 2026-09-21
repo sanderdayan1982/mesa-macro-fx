@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-09-18T14:06:39+00:00",
+ "generated_at": "2026-09-21T16:02:19+00:00",
  "as_of": "2026-09-17",
  "equivalence_quality": "high",
  "equivalence_note": "SARON daily (T-1). Market anchor = policy − 5 bp (absorbing repos). SARON compound / term repo rates lag 3 weeks (SNB) until SIX is wired. Confederation curve daily from the SNB warehouse (NSS, 11:00).",
@@ -14,7 +14,13 @@
   "last_fetch_ok": true,
   "errors": [],
   "series_pending": 0,
-  "lagged_by_design": []
+  "lagged_by_design": [
+   "sar1w",
+   "sar1m",
+   "sar3m",
+   "saron_1m_compound",
+   "saron_3m_compound"
+  ]
  },
  "series": {
   "saron": {
@@ -94,7 +100,7 @@
     "low": -0.08,
     "low_date": "2026-08-05"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -175,7 +181,7 @@
     "low": 0.0,
     "low_date": "2026-07-02"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
    "latest_outlier": false
   },
@@ -256,7 +262,7 @@
     "low": -0.25,
     "low_date": "2026-07-02"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
    "latest_outlier": false
   },
@@ -337,7 +343,7 @@
     "low": 0.25,
     "low_date": "2026-07-02"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
    "latest_outlier": false
   },
@@ -347,7 +353,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.02208,
    "date": "2026-08-14",
    "prev_value": -0.00336,
@@ -418,10 +424,10 @@
     "low": -0.04314,
     "low_date": "2026-06-18"
    },
-   "age_days": 35,
-   "confidence": 100,
+   "age_days": 38,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "sar1m": {
    "source_id": "zirepo:H4",
@@ -429,7 +435,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.01833,
    "date": "2026-08-14",
    "prev_value": -0.01958,
@@ -500,10 +506,10 @@
     "low": -0.05187,
     "low_date": "2026-06-04"
    },
-   "age_days": 35,
-   "confidence": 100,
+   "age_days": 38,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "sar3m": {
    "source_id": "zirepo:H5",
@@ -511,7 +517,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.045,
    "date": "2026-08-14",
    "prev_value": -0.045,
@@ -582,10 +588,10 @@
     "low": -0.0725,
     "low_date": "2026-06-15"
    },
-   "age_days": 35,
-   "confidence": 100,
+   "age_days": 38,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "saron_1m_compound": {
    "source_id": "zirepo:H6",
@@ -593,7 +599,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.0477,
    "date": "2026-08-14",
    "prev_value": -0.0469,
@@ -664,10 +670,10 @@
     "low": -0.0477,
     "low_date": "2026-08-14"
    },
-   "age_days": 35,
-   "confidence": 100,
+   "age_days": 38,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "saron_3m_compound": {
    "source_id": "zirepo:H7",
@@ -675,7 +681,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.0433,
    "date": "2026-08-14",
    "prev_value": -0.0432,
@@ -746,10 +752,10 @@
     "low": -0.0461,
     "low_date": "2026-06-04"
    },
-   "age_days": 35,
-   "confidence": 100,
+   "age_days": 38,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "confed_1y": {
    "source_id": "SNB1A.SNB.NSS.KZS.EID:J01M0",
@@ -828,7 +834,7 @@
     "low": -0.029,
     "low_date": "2026-08-26"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -909,7 +915,7 @@
     "low": 0.02,
     "low_date": "2026-08-26"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -990,7 +996,7 @@
     "low": 0.185,
     "low_date": "2026-08-26"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1071,7 +1077,7 @@
     "low": 0.41,
     "low_date": "2026-07-08"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1152,7 +1158,7 @@
     "low": 0.56,
     "low_date": "2026-07-28"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1233,7 +1239,7 @@
     "low": 0.551,
     "low_date": "2026-07-28"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1314,7 +1320,7 @@
     "low": -0.75,
     "low_date": "2026-06-16"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -1397,7 +1403,7 @@
     "low": -3.0,
     "low_date": "2026-08-05"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
@@ -1500,7 +1506,7 @@
     "low": -8.0,
     "low_date": "2026-08-05"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
    "latest_outlier": false,
    "note": "cross-currency alias (desk head reads spread vs policy for all currencies); classification lives on saron_minus_absorption_rate_bps"
@@ -1582,7 +1588,7 @@
     "low": 0.34,
     "low_date": "2026-08-05"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
@@ -1604,7 +1610,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 0.5,
    "date": "2026-08-14",
    "prev_value": 0.5,
@@ -1675,7 +1681,7 @@
     "low": -3.25,
     "low_date": "2026-06-15"
    },
-   "age_days": 35,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false,
    "thresholds": {
@@ -1769,7 +1775,7 @@
     "low": -4.61,
     "low_date": "2026-06-04"
    },
-   "age_days": 35,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -1850,7 +1856,7 @@
     "low": 2.0,
     "low_date": "2026-08-26"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1931,7 +1937,7 @@
     "low": 29.3,
     "low_date": "2026-09-15"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2024,7 +2030,7 @@
     "low": -4.3,
     "low_date": "2026-09-15"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2116,7 +2122,7 @@
     "low": -7.5,
     "low_date": "2026-07-28"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2209,7 +2215,7 @@
     "low": -71.0,
     "low_date": "2026-06-16"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2269,7 +2275,7 @@
      "STRESS_high": null,
      "STRESS_low": null
     },
-    "status": "fresh",
+    "status": "stale",
     "action_hint": "term premium / hike pricing (3-week lag)"
    },
    {
@@ -3489,6 +3495,11 @@
    },
    {
     "date": "2026-09-04",
+    "label": "CORRIDOR CALM",
+    "score": 0.75
+   },
+   {
+    "date": "2026-09-11",
     "label": "CORRIDOR CALM",
     "score": 0.75
    },
