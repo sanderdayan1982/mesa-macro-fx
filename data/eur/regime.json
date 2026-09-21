@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-18T17:46:00+00:00",
- "as_of": "2026-09-17",
+ "generated_at": "2026-09-21T15:22:31+00:00",
+ "as_of": "2026-09-20",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.065,
+ "weighted_score": 0.141,
  "block_scores": {
-  "central_bank": -0.32,
+  "central_bank": -0.13,
   "rates": 0.2,
   "fiscal": -0.11,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.32,
+   "score": -0.13,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-17",
-   "detail": "excess liquidity 2131380.0 M (SAFE) · Δ5s -5693.0 (p54.03) · TOMO 29197.0 M (ROUTINE) · MLF 70.42551739 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -100260.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-09-20",
+   "detail": "excess liquidity 2136264.0 M (SAFE) · Δ5s -785.0 (p63.53) · TOMO 29197.0 M (ROUTINE) · MLF 79.94706798 M · €STR−DFR -5.9 bp (SAFE) · MonPol 13w -100260.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.257,
+    "effective_score": -0.248,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-17",
+    "as_of": "2026-09-20",
     "recent": [
-     [
-      "2026-09-10",
-      -0.18
-     ],
      [
       "2026-09-13",
       -0.62
@@ -73,6 +69,10 @@
      [
       "2026-09-17",
       -0.32
+     ],
+     [
+      "2026-09-20",
+      -0.13
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -0.27,
-     "excess_20s_vs_stock": -0.53
+     "excess_wow_vs_stock": -0.04,
+     "excess_20s_vs_stock": -0.29
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,20 +94,20 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.32,
-    "score_flows_only": -0.32
+    "score_v02": -0.13,
+    "score_flows_only": -0.13
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.502,
+   "score": 1.4716,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-17",
+   "as_of": "2026-09-18",
    "detail": "govt deposits 94717.0 M (Δw 5442.0, p77.78) · impulse 4w -1988.0 (p27.27) · 13w -103.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.3 (SOFT, avg26 1.75) · TARGET Δ3m -36661.8 · rule NEUTRAL",
-   "raw_regime": "NEUTRAL",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.1427,
     "injection_exit": -0.0359,
@@ -125,17 +125,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.004,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.368,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-17",
+    "as_of": "2026-09-18",
     "recent": [
-     [
-      "2026-09-10",
-      -0.7126
-     ],
      [
       "2026-09-11",
       -1.4173
@@ -155,6 +151,10 @@
      [
       "2026-09-17",
       1.502
+     ],
+     [
+      "2026-09-18",
+      1.4716
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 32013.272,
-    "denominator": 2131380.0,
-    "denominator_date": "2026-09-17",
-    "today": "2026-09-18",
+    "raw": 31437.66,
+    "denominator": 2136264.0,
+    "denominator_date": "2026-09-20",
+    "today": "2026-09-21",
     "note": null
    },
    "v03_shadow": {
@@ -236,8 +236,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.257,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.26 shown for context",
+   "score": -0.124,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.12 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -289,7 +289,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.0,
+  "spread_bps": -5.9,
   "friction_confirmed": false
  },
  "rules": {
@@ -414,18 +414,18 @@
    "id": "L5",
    "name": "Fiscal injection into excess liquidity",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 2,
+   "active": true,
+   "conditions_met": 3,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == INJECTION"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == INJECTION",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
@@ -443,8 +443,13 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly",
+  "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "mef_pdf(Placement-results-of-the-tap-7-year-BTP-and-tap-30-year-BTP-09.06.2025.pdf): HTTP 403 for https://www.dt.mef.gov.it/export/modules/documenti_en/debito_pubblico/risultati_aste/risultati_aste_btp_7_anni/Placement-results-of-the-tap-7-year-BTP-and-tap-30-year-BTP-09.06.2025.pdf",
+   "mef_pdf(BTP-7-Years-Syndicate-placement-09.06.2026.pdf): HTTP 403 for https://www.dt.mef.gov.it/export/modules/documenti_en/debito_pubblico/risultati_aste/risultati_aste_btp_7_anni/BTP-7-Years-Syndicate-placement-09.06.2026.pdf",
+   "mef_pdf(Placement-results-of-the-new-7-year-BTP-and-BTP-Green-2046-08.01.2026..pdf): HTTP 403 for https://www.dt.mef.gov.it/export/modules/documenti_en/debito_pubblico/risultati_aste/risultati_aste_btp_7_anni/Placement-results-of-the-new-7-year-BTP-and-BTP-Green-2046-08.01.2026..pdf",
+   "mef_pdf(BTP-7-Years-Syndicate-placement-08.01.2026.pdf): HTTP 403 for https://www.dt.mef.gov.it/export/modules/documenti_en/debito_pubblico/risultati_aste/risultati_aste_btp_7_anni/BTP-7-Years-Syndicate-placement-08.01.2026.pdf"
+  ]
  }
 }
