@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-19T08:37:34+00:00",
- "as_of": "2026-09-17",
+ "generated_at": "2026-09-21T09:39:02+00:00",
+ "as_of": "2026-09-18",
  "config_version": "0.4.0",
  "regime": "LIQUIDITY_INJECTION",
  "traffic_light": "GREEN",
@@ -27,8 +27,8 @@
    "score": 0.75,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-17",
-   "detail": "settlement cash 28061.0 (5d 1857.0, 20d 4129.0, SAFE) · OMO stock 8847.0 (31.5%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "as_of": "2026-09-18",
+   "detail": "settlement cash 27961.0 (5d 1521.0, 20d 4017.0, SAFE) · OMO stock 8847.0 (31.6%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,15 +43,11 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.375,
+    "effective_score": 0.562,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-17",
+    "as_of": "2026-09-18",
     "recent": [
-     [
-      "2026-09-10",
-      0.0
-     ],
      [
       "2026-09-14",
       0.0
@@ -62,6 +58,10 @@
      ],
      [
       "2026-09-17",
+      0.75
+     ],
+     [
+      "2026-09-18",
       0.75
      ]
     ],
@@ -95,7 +95,7 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-17",
+   "as_of": "2026-09-18",
    "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash 6846.1 · T-bill 3.2x at 2.9025% · bond 4.231x tail 0.7 bp · settlements next 5d 250.0 · non-resident 57.5%",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -114,12 +114,8 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-17",
+    "as_of": "2026-09-18",
     "recent": [
-     [
-      "2026-09-10",
-      0.5
-     ],
      [
       "2026-09-14",
       0.5
@@ -130,6 +126,10 @@
      ],
      [
       "2026-09-17",
+      0.5
+     ],
+     [
+      "2026-09-18",
       0.5
      ]
     ],
@@ -184,7 +184,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-07-01",
-   "era_weeks": 219,
+   "era_weeks": 220,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -197,7 +197,6 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_LSAP_UNWIND",
-  "LSAP_SALE_DAY",
   "OMO_DEPENDENCE"
  ],
  "overlays": {
@@ -390,10 +389,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "monthly",
+  "lane": "daily",
   "backfill": false,
   "errors": [
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_data.html (snapshot 2026-09-19)"
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-21); nzdm_tbill_1888.html (snapshot 2026-09-21); nzdm_bond_listing.html (snapshot 2026-09-21); nzdm_bond_1009.html (snapshot 2026-09-21)"
   ]
  }
 }
