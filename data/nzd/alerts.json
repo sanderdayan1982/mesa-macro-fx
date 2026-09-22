@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-22T08:08:09+00:00",
+ "generated_at": "2026-09-22T09:02:42+00:00",
  "alerts": [
   {
    "id": "alert_2026-09-14T093629+0000_curve_spike",
@@ -26,7 +26,7 @@
    "level": "WATCH",
    "message": "funding: rates.bank_bill_30d_minus_ocr_bps (level >= WATCH)",
    "status": "active",
-   "last_seen": "2026-09-22T08:08:09+00:00"
+   "last_seen": "2026-09-22T09:02:42+00:00"
   },
   {
    "id": "alert_2026-09-08T215238+0000_omo_reliance",
@@ -35,11 +35,23 @@
    "severity": "WARNING",
    "category": "reserves",
    "metric": "central_bank.omo_reliance_share",
-   "value": 0.3164,
+   "value": 0.3327,
    "level": "WATCH",
    "message": "reserves: central_bank.omo_reliance_share (level >= WATCH)",
    "status": "active",
-   "last_seen": "2026-09-22T08:08:09+00:00"
+   "last_seen": "2026-09-22T09:02:42+00:00"
+  },
+  {
+   "id": "alert_2026-09-22T090242+0000_tbill_weak",
+   "rule_id": "tbill_weak",
+   "timestamp": "2026-09-22T09:02:42+00:00",
+   "severity": "WARNING",
+   "category": "fiscal",
+   "metric": "fiscal.tbill_bid_to_cover",
+   "value": 1.94,
+   "level": "WATCH",
+   "message": "fiscal: fiscal.tbill_bid_to_cover (level >= WATCH)",
+   "status": "active"
   },
   {
    "id": "alert_2026-09-08T215238+0000_omo_outstanding_watch",
@@ -52,7 +64,19 @@
    "level": "WATCH",
    "message": "reserves: central_bank.omo_outstanding_level (level >= WATCH)",
    "status": "active",
-   "last_seen": "2026-09-22T08:08:09+00:00"
+   "last_seen": "2026-09-22T09:02:42+00:00"
+  },
+  {
+   "id": "alert_2026-09-22T090242+0000_tbill_underallocated",
+   "rule_id": "tbill_underallocated",
+   "timestamp": "2026-09-22T09:02:42+00:00",
+   "severity": "INFO",
+   "category": "fiscal",
+   "metric": "fiscal.tbill_allocation",
+   "value": 0.6,
+   "level": "WATCH",
+   "message": "fiscal: fiscal.tbill_allocation (level >= WATCH)",
+   "status": "active"
   }
  ]
 }
