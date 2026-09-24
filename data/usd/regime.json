@@ -1,13 +1,13 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-24T23:15:49+00:00",
+ "generated_at": "2026-09-24T23:25:24+00:00",
  "as_of": "2026-09-24",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.682,
+ "weighted_score": 0.202,
  "block_scores": {
-  "central_bank": 0.1,
+  "central_bank": -1.1,
   "rates": 1.5,
   "fiscal": 0.59,
   "banking": 1.2
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.1,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
+   "score": -1.1,
+   "label": "DRAIN",
+   "traffic_light": "RED",
    "as_of": "2026-09-24",
-   "detail": "WRESBAL AMPLE · NL Δ% 0.1245 (NEUTRAL) · TGA DRAIN WATCH · RRP LOW · Primary credit LOW · phase STEADY",
+   "detail": "WRESBAL NERVOUS · NL Δ% -1.6027 (NL DOWN) · TGA HEAVY DRAIN · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.11,
@@ -43,7 +43,7 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.1,
+    "effective_score": -0.1,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-24",
@@ -70,7 +70,7 @@
      ],
      [
       "2026-09-24",
-      0.1
+      -1.1
      ]
     ],
     "pending_days": null
@@ -79,11 +79,11 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "net_liquidity_band": 0.0,
-     "tga_status": -0.5
+     "net_liquidity_band": -1.0,
+     "tga_status": -1.0
     },
     "level": {
-     "reserves_status": 0.5,
+     "reserves_status": -1.0,
      "rrp_status": 0.25,
      "phase": 0.0
     },
@@ -92,8 +92,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.1,
-    "score_flows_only": -0.2
+    "score_v02": -1.1,
+    "score_flows_only": -0.8
    }
   },
   "fiscal": {
@@ -176,8 +176,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.296,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.30 shown for context",
+   "score": -0.424,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.42 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -218,12 +218,13 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_STEADY",
+  "TGA_HEAVY_DRAIN",
   "STRUCTURAL_DEFICIT_INJECTION"
  ],
  "overlays": {},
  "inputs": {
-  "reserves_level": "SAFE",
-  "reserves_in_range": true,
+  "reserves_level": "WATCH",
+  "reserves_in_range": false,
   "reserves_above_range": false,
   "spread_level": "SAFE",
   "spread_bps": -3.0,
@@ -241,8 +242,8 @@
    "id": "L1",
    "name": "Ample reserves, calm floor",
    "bias": "NEUTRAL",
-   "active": true,
-   "conditions_met": 3,
+   "active": false,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -250,7 +251,7 @@
    "details": [
     {
      "condition": "central_bank.reserves level == SAFE",
-     "met": true
+     "met": false
     },
     {
      "condition": "rates.sofr_minus_iorb_bps level == SAFE",
@@ -267,7 +268,7 @@
    "name": "Reserve scarcity building (Sept-2019 pattern)",
    "bias": "RESERVE SCARCITY",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [
@@ -277,7 +278,7 @@
    "details": [
     {
      "condition": "central_bank.reserves level >= WATCH",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.sofr_minus_iorb_bps level >= WATCH",
@@ -321,7 +322,7 @@
    "name": "Treasury drain (TGA rebuild)",
    "bias": "FISCAL DRAIN",
    "active": true,
-   "conditions_met": 2,
+   "conditions_met": 3,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -343,7 +344,7 @@
     },
     {
      "condition": "central_bank.net_liquidity_wow_pct <= band_low",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -405,7 +406,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_thu",
   "backfill": false,
   "errors": []
  }
