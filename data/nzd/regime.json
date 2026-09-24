@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-09-23T10:58:36+00:00",
- "as_of": "2026-09-22",
+ "generated_at": "2026-09-24T08:11:56+00:00",
+ "as_of": "2026-09-24",
  "config_version": "0.4.0",
  "regime": "LIQUIDITY_INJECTION",
  "traffic_light": "GREEN",
@@ -27,8 +27,8 @@
    "score": 0.75,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-22",
-   "detail": "settlement cash 26940.0 (5d 4.0, 20d 2594.0, SAFE) · OMO stock 8847.0 (32.8%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "as_of": "2026-09-24",
+   "detail": "settlement cash 28240.0 (5d 262.0, 20d 3071.0, SAFE) · OMO stock 8847.0 (31.3%) · ORRF 0.0 · phase OMO_SUPPLIED",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
@@ -46,12 +46,8 @@
     "effective_score": 0.65,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-22",
+    "as_of": "2026-09-24",
     "recent": [
-     [
-      "2026-09-15",
-      0.75
-     ],
      [
       "2026-09-17",
       0.75
@@ -66,6 +62,10 @@
      ],
      [
       "2026-09-22",
+      0.75
+     ],
+     [
+      "2026-09-24",
       0.75
      ]
     ],
@@ -99,7 +99,7 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-22",
+   "as_of": "2026-09-24",
    "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash 6846.1 · T-bill 1.94x at 3.14% · bond 4.231x tail 0.7 bp · settlements next 5d 450.0 · non-resident 57.5%",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -118,12 +118,8 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-22",
+    "as_of": "2026-09-24",
     "recent": [
-     [
-      "2026-09-15",
-      0.5
-     ],
      [
       "2026-09-17",
       0.5
@@ -134,6 +130,10 @@
      ],
      [
       "2026-09-22",
+      0.5
+     ],
+     [
+      "2026-09-24",
       0.5
      ]
     ],
@@ -200,21 +200,23 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "PHASE_LSAP_UNWIND",
+  "PHASE_OMO_SUPPLIED",
+  "OMO_TAKEUP_SURGE",
+  "OMO_RELIANCE_RISING",
   "TENDER_WEAK",
   "TBILL_UNDERALLOCATED",
   "OMO_DEPENDENCE"
  ],
  "overlays": {
   "OMO_DEPENDENCE": "OMO_DEPENDENCE_HIGH",
-  "OMO_DEPENDENCE_conditions_met": 2
+  "OMO_DEPENDENCE_conditions_met": 3
  },
  "inputs": {
   "reserves_level": "SAFE",
   "reserves_in_range": false,
   "reserves_above_range": true,
   "spread_level": "WATCH",
-  "spread_bps": 22.0,
+  "spread_bps": 23.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -256,8 +258,8 @@
    "id": "L2",
    "name": "Reserve scarcity building",
    "bias": "RESERVE SCARCITY",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [
@@ -275,7 +277,7 @@
     },
     {
      "condition": "central_bank.omo_takeup_wow level >= WATCH",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -395,8 +397,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_thu",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_bond_listing.html (snapshot 2026-09-24); nzdm_bond_1009.html (snapshot 2026-09-24)"
+  ]
  }
 }
