@@ -6,10 +6,25 @@
  "missing": [],
  "ranking": [
   {
-   "ccy": "AUD",
+   "ccy": "NZD",
    "rank": 1,
+   "d13_pct": 15.37,
+   "z": 2.04,
+   "rank_prev_week": 6,
+   "rank_4w_ago": 1,
+   "reserves_now": 31005.0,
+   "reserves_13w_ago": 26874.0,
+   "date_13w_ago": "2026-06-26",
+   "field": "settlement_cash_daily",
+   "object": "settlement cash D12",
+   "as_of": "2026-09-24",
+   "source_column": "D12:settlement_cash"
+  },
+  {
+   "ccy": "AUD",
+   "rank": 2,
    "d13_pct": 5.34,
-   "z": 0.77,
+   "z": 0.58,
    "rank_prev_week": 1,
    "rank_4w_ago": 3,
    "reserves_now": 173965.0,
@@ -21,25 +36,10 @@
    "source_column": "ARBALESBW"
   },
   {
-   "ccy": "NZD",
-   "rank": 2,
-   "d13_pct": 5.08,
-   "z": 0.73,
-   "rank_prev_week": 6,
-   "rank_4w_ago": 1,
-   "reserves_now": 28240.0,
-   "reserves_13w_ago": 26874.0,
-   "date_13w_ago": "2026-06-26",
-   "field": "settlement_cash_daily",
-   "object": "settlement cash D12",
-   "as_of": "2026-09-23",
-   "source_column": "D12:settlement_cash"
-  },
-  {
    "ccy": "CAD",
    "rank": 3,
    "d13_pct": 4.77,
-   "z": 0.68,
+   "z": 0.49,
    "rank_prev_week": 8,
    "rank_4w_ago": 2,
    "reserves_now": 63059.0,
@@ -54,7 +54,7 @@
    "ccy": "USD",
    "rank": 4,
    "d13_pct": -0.72,
-   "z": -0.12,
+   "z": -0.31,
    "rank_prev_week": 2,
    "rank_4w_ago": 7,
    "reserves_now": 2930193.0,
@@ -69,7 +69,7 @@
    "ccy": "EUR",
    "rank": 5,
    "d13_pct": -1.96,
-   "z": -0.3,
+   "z": -0.49,
    "rank_prev_week": 5,
    "rank_4w_ago": 6,
    "reserves_now": 2133554.0,
@@ -84,7 +84,7 @@
    "ccy": "CHF",
    "rank": 6,
    "d13_pct": -2.85,
-   "z": -0.43,
+   "z": -0.62,
    "rank_prev_week": 3,
    "rank_4w_ago": 5,
    "reserves_now": 428033.0,
@@ -99,7 +99,7 @@
    "ccy": "GBP",
    "rank": 7,
    "d13_pct": -3.93,
-   "z": -0.59,
+   "z": -0.78,
    "rank_prev_week": 4,
    "rank_4w_ago": 4,
    "reserves_now": 638012.0,
@@ -114,7 +114,7 @@
    "ccy": "JPY",
    "rank": 8,
    "d13_pct": -4.95,
-   "z": -0.74,
+   "z": -0.92,
    "rank_prev_week": 7,
    "rank_4w_ago": 8,
    "reserves_now": 4182100.0,
@@ -126,15 +126,15 @@
    "source_column": "cab"
   }
  ],
- "sigma_week": 4.3,
- "sigma_pooled": 6.842,
+ "sigma_week": 6.81,
+ "sigma_pooled": 6.851,
  "sigma_week_p20_era": 4.437,
- "low_dispersion": true,
+ "low_dispersion": false,
  "sigma_history_weeks": 209,
  "pair_max_z_gap": {
-  "reserves_growth": "AUD",
+  "reserves_growth": "NZD",
   "reserves_drain": "JPY",
-  "z_gap": 1.51
+  "z_gap": 2.96
  },
  "label": "mapa de flujo de reservas a un trimestre, 8–13 s (IC pequeño y validado: mapa, no libro)",
  "signature": "firma ICL 1.0 (2026-09-09): IC(8) > 0, IC(13) > 0, IC(26) ≤ 0; IC 13 s +0,124 (q BH 0,006), tercil que más inyecta pierde 0,46 % por trimestre frente al que más drena (divisa por USD)",
@@ -147,7 +147,7 @@
    "AUD": 2,
    "JPY": 11,
    "CHF": 2,
-   "NZD": 13,
+   "NZD": 14,
    "USD": 3,
    "EUR": 19
   }
@@ -373,7 +373,7 @@
     0.49,
     1.1,
     -0.64,
-    0.68
+    0.49
    ],
    "GBP": [
     0.59,
@@ -427,7 +427,7 @@
     0.56,
     0.15,
     0.15,
-    -0.59
+    -0.78
    ],
    "AUD": [
     0.16,
@@ -481,7 +481,7 @@
     1.35,
     0.76,
     0.58,
-    0.77
+    0.58
    ],
    "JPY": [
     0.35,
@@ -535,7 +535,7 @@
     -0.14,
     -0.62,
     -0.46,
-    -0.74
+    -0.92
    ],
    "CHF": [
     1.64,
@@ -589,7 +589,7 @@
     0.2,
     0.01,
     0.17,
-    -0.43
+    -0.62
    ],
    "NZD": [
     -1.52,
@@ -643,7 +643,7 @@
     -2.45,
     -1.01,
     -0.3,
-    0.73
+    2.04
    ],
    "USD": [
     -0.14,
@@ -697,7 +697,7 @@
     -0.1,
     -0.18,
     0.39,
-    -0.12
+    -0.31
    ],
    "EUR": [
     0.55,
@@ -751,7 +751,7 @@
     0.1,
     -0.2,
     0.1,
-    -0.3
+    -0.49
    ]
   },
   "treasury": {
@@ -1264,16 +1264,16 @@
   "EUR": "sin señal"
  },
  "labels": {
-  "CAD": "sin señal (compresión)",
-  "GBP": "sin señal (compresión)",
-  "AUD": "sin señal (compresión)",
-  "JPY": "sin señal (compresión)",
-  "CHF": "sin señal (compresión)",
-  "NZD": "sin señal (compresión)",
-  "USD": "sin señal (compresión)",
-  "EUR": "sin señal (compresión)"
+  "CAD": "abundante",
+  "GBP": "sin señal",
+  "AUD": "abundante",
+  "JPY": "escasa",
+  "CHF": "sin señal",
+  "NZD": "sin señal",
+  "USD": "escasa",
+  "EUR": "sin señal"
  },
- "labels_rule": "sin señal (compresión): σ semanal 4.3 < p20 de la era 4.437; la lectura por terciles queda en labels_tercile",
+ "labels_rule": "terciles (techo de n/3) de las Z de BC y Tesoro + puerta de precio (regimes.general.price_gate); vulnerable sólo con puerta activa",
  "completeness": {
   "CAD": {
    "bc": {
@@ -2087,6 +2087,6 @@
    }
   }
  },
- "generated_at": "2026-09-25T09:25:46+00:00",
- "stamp": "157cad32013b"
+ "generated_at": "2026-09-25T11:23:16+00:00",
+ "stamp": "765b3a13956b"
 }
