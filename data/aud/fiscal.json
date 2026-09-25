@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-09-18T12:25:12+00:00",
- "as_of": "2026-09-16",
+ "generated_at": "2026-09-25T13:04:27+00:00",
+ "as_of": "2026-09-23",
  "equivalence_quality": "medium-high",
  "equivalence_note": "Government deposits at the RBA are WEEKLY (A1) — a true TGA analogue at weekly resolution (better than GBP, worse than CAD's daily Receiver General). Issuance/tenders from AOFM (event). Monthly financial statements from Finance for the NFA flow.",
  "source_health": {
@@ -23,18 +23,17 @@
    "unit": "AUD millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 78136.0,
-   "date": "2026-09-16",
-   "prev_value": 78190.0,
-   "prev_date": "2026-09-09",
-   "change_abs": -54.0,
-   "change_pct": -0.0691,
-   "zscore": 0.6916,
+   "value": 51614.0,
+   "date": "2026-09-23",
+   "prev_value": 78136.0,
+   "prev_date": "2026-09-16",
+   "change_abs": -26522.0,
+   "change_pct": -33.9434,
+   "zscore": -1.1416,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    82748.0,
     81681.0,
     69603.0,
     64537.0,
@@ -85,7 +84,8 @@
     76661.0,
     80294.0,
     78190.0,
-    78136.0
+    78136.0,
+    51614.0
    ],
    "high_low": {
     "high": 89983.0,
@@ -280,18 +280,17 @@
    "unit": "AUD millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 54.0,
-   "date": "2026-09-16",
-   "prev_value": 2104.0,
-   "prev_date": "2026-09-09",
-   "change_abs": -2050.0,
-   "change_pct": -97.4335,
-   "zscore": -0.0107,
+   "value": 26522.0,
+   "date": "2026-09-23",
+   "prev_value": 54.0,
+   "prev_date": "2026-09-16",
+   "change_abs": 26468.0,
+   "change_pct": 49014.8148,
+   "zscore": 2.6652,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -3567.0,
     1067.0,
     12078.0,
     5066.0,
@@ -342,7 +341,8 @@
     -30111.0,
     -3633.0,
     2104.0,
-    54.0
+    54.0,
+    26522.0
    ],
    "high_low": {
     "high": 26761.0,
@@ -362,18 +362,17 @@
    "unit": "σ",
    "frequency": "weekly",
    "status": "fresh",
-   "value": -0.0107,
-   "date": "2026-09-16",
-   "prev_value": 0.1903,
-   "prev_date": "2026-09-09",
-   "change_abs": -0.201,
-   "change_pct": -105.6227,
-   "zscore": -0.0005,
+   "value": 2.6652,
+   "date": "2026-09-23",
+   "prev_value": -0.0107,
+   "prev_date": "2026-09-16",
+   "change_abs": 2.6759,
+   "change_pct": 25008.4112,
+   "zscore": 2.484,
    "percentile": null,
    "window": null,
-   "level": "SAFE",
+   "level": "STRESS",
    "sparkline": [
-    -0.3913,
     0.068,
     1.1972,
     0.4719,
@@ -424,7 +423,8 @@
     -3.3422,
     -0.3872,
     0.1903,
-    -0.0107
+    -0.0107,
+    2.6652
    ],
    "high_low": {
     "high": 2.9029,
@@ -443,18 +443,17 @@
    "unit": "AUD millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": -31586.0,
-   "date": "2026-09-16",
-   "prev_value": -35425.0,
-   "prev_date": "2026-09-09",
-   "change_abs": 3839.0,
-   "change_pct": 10.837,
-   "zscore": -1.5489,
-   "percentile": 1.33,
+   "value": 25047.0,
+   "date": "2026-09-23",
+   "prev_value": -31586.0,
+   "prev_date": "2026-09-16",
+   "change_abs": 56633.0,
+   "change_pct": 179.2978,
+   "zscore": 1.1633,
+   "percentile": 86.84,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    6237.0,
     9020.0,
     16960.0,
     14644.0,
@@ -505,7 +504,8 @@
     -22369.0,
     -27777.0,
     -35425.0,
-    -31586.0
+    -31586.0,
+    25047.0
    ],
    "high_low": {
     "high": 37196.0,
@@ -516,32 +516,32 @@
    "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
-   "signal": "BAND_LOW"
+   "signal": "BAND_HIGH"
   },
   "fiscal_big_week": {
    "label": "FISCAL_BIG_WEEK (|flow| ≥ 15bn or |Z| ≥ 2)",
-   "value": false,
-   "direction": null,
+   "value": true,
+   "direction": "INJECTION",
    "status": "fresh",
-   "date": "2026-09-16",
+   "date": "2026-09-23",
    "note": "seasonally annotated: 21st monthly PAYG/GST, 28th after quarter-end BAS, company tax instalments, super guarantee 28 Jul/Oct/Jan/Apr, EOFY 30-Jun (cash rebuild Jul–Oct), AOFM cash-buffer management — none of these is scarcity"
   },
   "fiscal_regime": {
    "label": "Fiscal regime",
    "value": null,
-   "regime": "DRAIN",
+   "regime": "INJECTION",
    "status": "fresh",
-   "date": "2026-09-16"
+   "date": "2026-09-23"
   },
   "fiscal_regime_score": {
    "label": "Fiscal regime score",
-   "value": -0.01,
+   "value": 2.0,
    "range": [
     -2,
     2
    ],
    "status": "fresh",
-   "date": "2026-09-16"
+   "date": "2026-09-23"
   },
   "net_issuance_event": {
    "label": "AOFM tenders net of maturities",
@@ -2246,15 +2246,17 @@
   }
  },
  "signals": {
-  "traffic_light": "RED",
-  "score": -0.01,
-  "label": "DRAIN",
-  "flags": [],
+  "traffic_light": "GREEN",
+  "score": 2.0,
+  "label": "INJECTION",
+  "flags": [
+   "FISCAL_BIG_WEEK"
+  ],
   "components": {
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "fiscal_flow_z": -0.01
+    "fiscal_flow_z": 2.0
    },
    "level": {},
    "weights": {},
@@ -2262,23 +2264,23 @@
     -2.0,
     2.0
    ],
-   "score_v02": -0.01,
-   "score_flows_only": -0.01
+   "score_v02": 2.0,
+   "score_flows_only": 2.0
   },
-  "detail": "flow 54.0 (Z -0.0107) · 4w cum -31586.0 (BAND_LOW) · gov deposits 78136.0",
+  "detail": "flow 26522.0 (Z 2.6652) · 4w cum 25047.0 (BAND_HIGH) · gov deposits 51614.0",
   "alerts": [
    {
     "metric": "fiscal_flow_zscore",
-    "level": "SAFE",
-    "value": -0.0107,
+    "level": "STRESS",
+    "value": 2.6652,
     "threshold": null,
     "status": "fresh",
     "action_hint": "|Z| ≥ 2 = extraordinary weekly flow (tax/issuance/AOFM cash)"
    },
    {
     "metric": "fiscal_flow_4w_cum",
-    "level": "WATCH",
-    "value": -31586.0,
+    "level": "SAFE",
+    "value": 25047.0,
     "threshold": null,
     "status": "fresh",
     "action_hint": "4-week cumulative below p20 = fiscal drain"
@@ -2306,7 +2308,6 @@
  },
  "history": {
   "dates": [
-   "2025-09-24",
    "2025-10-01",
    "2025-10-08",
    "2025-10-15",
@@ -2357,11 +2358,11 @@
    "2026-08-26",
    "2026-09-02",
    "2026-09-09",
-   "2026-09-16"
+   "2026-09-16",
+   "2026-09-23"
   ],
   "rows": {
    "government_account": [
-    82748.0,
     81681.0,
     69603.0,
     64537.0,
@@ -2412,10 +2413,10 @@
     76661.0,
     80294.0,
     78190.0,
-    78136.0
+    78136.0,
+    51614.0
    ],
    "fiscal_flow_weekly": [
-    -3567.0,
     1067.0,
     12078.0,
     5066.0,
@@ -2466,10 +2467,10 @@
     -30111.0,
     -3633.0,
     2104.0,
-    54.0
+    54.0,
+    26522.0
    ],
    "fiscal_flow_4w_cum": [
-    6237.0,
     9020.0,
     16960.0,
     14644.0,
@@ -2520,10 +2521,10 @@
     -22369.0,
     -27777.0,
     -35425.0,
-    -31586.0
+    -31586.0,
+    25047.0
    ],
    "fiscal_flow_zscore": [
-    -0.3913,
     0.068,
     1.1972,
     0.4719,
@@ -2574,7 +2575,8 @@
     -3.3422,
     -0.3872,
     0.1903,
-    -0.0107
+    -0.0107,
+    2.6652
    ]
   },
   "signal_log": [
@@ -2647,6 +2649,11 @@
     "date": "2026-09-16",
     "label": "DRAIN",
     "score": -0.01
+   },
+   {
+    "date": "2026-09-23",
+    "label": "INJECTION",
+    "score": 2.0
    }
   ]
  }
