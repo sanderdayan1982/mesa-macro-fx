@@ -1,13 +1,13 @@
 {
  "currency": "CAD",
- "generated_at": "2026-09-24T23:58:45+00:00",
- "as_of": "2026-09-16",
+ "generated_at": "2026-09-25T22:03:20+00:00",
+ "as_of": "2026-09-23",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.222,
+ "weighted_score": 0.811,
  "block_scores": {
-  "central_bank": 0.02,
+  "central_bank": 1.33,
   "rates": -0.75,
   "fiscal": 2.0,
   "banking": 0.0
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 0.02,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
-   "as_of": "2026-09-16",
-   "detail": "NetLiq NEUTRAL · reserves SAFE (in range) · phase NORMALIZATION",
-   "raw_regime": "NEUTRAL",
+   "score": 1.33,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-09-23",
+   "detail": "NetLiq BAND_HIGH · reserves SAFE (out of range) · phase NORMALIZATION",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
     "injection_exit": 0.05,
@@ -41,20 +41,20 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.27,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.675,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-23",
     "recent": [
-     [
-      "2026-09-09",
-      0.52
-     ],
      [
       "2026-09-16",
       0.02
+     ],
+     [
+      "2026-09-23",
+      1.33
      ]
     ],
     "pending_days": null
@@ -63,30 +63,30 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "net_liquidity_band": 0.0,
-     "reserves_wow": -0.46582999999999997
+     "net_liquidity_band": 1.0,
+     "reserves_wow": 1.0
     },
     "level": {
-     "reserves_vs_range": 0.5
+     "reserves_vs_range": 0.0
     },
     "weights": {},
     "range": [
      -2.0,
      2.0
     ],
-    "score_v02": 0.02,
-    "score_flows_only": -0.31
+    "score_v02": 1.33,
+    "score_flows_only": 1.33
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -3.1621,
+   "score": 0.7864,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-16",
-   "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check -1994.0",
+   "as_of": "2026-09-23",
+   "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check 614.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
@@ -107,18 +107,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.203,
+    "effective_score": -1.188,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-23",
     "recent": [
-     [
-      "2026-09-09",
-      3.5682
-     ],
      [
       "2026-09-16",
       -3.1621
+     ],
+     [
+      "2026-09-23",
+      0.7864
      ]
     ],
     "pending_days": null,
@@ -151,10 +151,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -1994.0,
-    "denominator": 63059.0,
-    "denominator_date": "2026-09-16",
-    "today": "2026-09-24",
+    "raw": 614.0,
+    "denominator": 78082.0,
+    "denominator_date": "2026-09-23",
+    "today": "2026-09-25",
     "note": null
    },
    "v03_shadow": {
@@ -167,21 +167,21 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-23",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
      "effective_score": 2.0,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-09-16",
+     "as_of": "2026-09-23",
      "recent": [
       [
-       "2026-09-09",
+       "2026-09-16",
        2.0
       ],
       [
-       "2026-09-16",
+       "2026-09-23",
        2.0
       ]
      ],
@@ -193,8 +193,8 @@
    "regime": "FLOOR_FRICTION",
    "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
-   "score": 0.812,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.81 shown for context",
+   "score": 1.598,
+   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +1.60 shown for context",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -224,7 +224,7 @@
    ],
    "agreement_only": true,
    "era_start": "2020-03-23",
-   "era_weeks": 338,
+   "era_weeks": 339,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -241,10 +241,10 @@
  "overlays": {},
  "inputs": {
   "reserves_level": "SAFE",
-  "reserves_in_range": true,
-  "reserves_above_range": false,
+  "reserves_in_range": false,
+  "reserves_above_range": true,
   "spread_level": "STRESS",
-  "spread_bps": 9.0,
+  "spread_bps": 10.0,
   "friction_confirmed": true
  },
  "rules": {
@@ -343,17 +343,17 @@
    "name": "Funding Stress",
    "bias": "FUNDING STRESS",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 0,
    "required": [
     "rates.overnight_minus_policy_bps level >= STRESS"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "rates.overnight_minus_policy_bps level >= STRESS",
-     "met": false
+     "met": true
     },
     {
      "condition": "central_bank.reserves level >= STRESS",
@@ -417,7 +417,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
