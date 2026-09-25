@@ -1,6 +1,98 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-25T15:26:06+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-25T15:26:06+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "d675684b92921385",
+    "degraded": [
+     "F3: government account not in JSON",
+     "F3: monthly fiscal series only",
+     "F7: own currency missing (treasury)"
+    ],
+    "streaks": {
+     "central_bank": 3,
+     "fiscal": 2,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-25T15:26:05+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-25T15:26:05+00:00",
+   "type": "GBP_V04",
+   "category": "system",
+   "details": {
+    "rows": {
+     "str": 204,
+     "iltr": 458,
+     "ctrf": 30,
+     "apf_sales": 1499,
+     "apf_profile": 40,
+     "d1a": 105,
+     "d22d": 3750,
+     "d21e": 2696,
+     "d1c": 237
+    },
+    "d1a_snapshots": 12,
+    "residual_last": [
+     "2026-09-16",
+     -4422.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-09-25T15:26:05+00:00",
+   "type": "GBP_SEED",
+   "category": "system",
+   "details": {
+    "d21e_issue": 1752,
+    "d21e_cancel": 101,
+    "d21e_collateral": 791,
+    "d21e_exchange": 41,
+    "d21e_buyback": 11,
+    "negative_base": 11,
+    "lines_unbased": 62,
+    "lines_based": 341,
+    "first_snapshot": "2026-09-09",
+    "seed_days": 2006,
+    "seed_last": "2026-09-08",
+    "tbill_first": "2002-05-31"
+   }
+  },
+  {
    "timestamp": "2026-09-24T19:20:26+00:00",
    "type": "NOTIFY",
    "category": "system",
