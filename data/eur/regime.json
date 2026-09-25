@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-09-24T17:00:47+00:00",
- "as_of": "2026-09-23",
+ "generated_at": "2026-09-25T14:12:44+00:00",
+ "as_of": "2026-09-24",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.204,
+ "weighted_score": 0.068,
  "block_scores": {
-  "central_bank": 0.03,
+  "central_bank": -0.31,
   "rates": 0.2,
   "fiscal": -0.12,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.03,
+   "score": -0.31,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-23",
-   "detail": "excess liquidity 2133554.0 M (SAFE) · Δ5s -6313.0 (p52.83) · TOMO 28862.0 M (ROUTINE) · MLF 246.70600412 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -106890.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-09-24",
+   "detail": "excess liquidity 2125423.0 M (SAFE) · Δ5s -5957.0 (p53.7) · TOMO 28862.0 M (ROUTINE) · MLF 187.44562845 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -106890.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.085,
+    "effective_score": -0.235,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-24",
     "recent": [
-     [
-      "2026-09-16",
-      0.59
-     ],
      [
       "2026-09-17",
       -0.32
@@ -73,6 +69,10 @@
      [
       "2026-09-23",
       0.03
+     ],
+     [
+      "2026-09-24",
+      -0.31
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -0.3,
-     "excess_20s_vs_stock": 0.37
+     "excess_wow_vs_stock": -0.28,
+     "excess_20s_vs_stock": -0.49
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,18 +94,18 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.03,
-    "score_flows_only": 0.03
+    "score_v02": -0.31,
+    "score_flows_only": -0.31
    }
   },
   "fiscal": {
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": -1.4084,
+   "score": -1.0254,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-23",
+   "as_of": "2026-09-24",
    "detail": "govt deposits 90626.0 M (Δw -4091.0, p37.84) · impulse 4w -4021.0 (p26.47) · 13w -2064.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.2 (SOFT, avg26 1.79) · TARGET Δ3m -36661.8 · rule NEUTRAL",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -127,15 +127,11 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.325,
+    "effective_score": 0.045,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-24",
     "recent": [
-     [
-      "2026-09-16",
-      0.6554
-     ],
      [
       "2026-09-17",
       1.502
@@ -155,6 +151,10 @@
      [
       "2026-09-23",
       -1.4084
+     ],
+     [
+      "2026-09-24",
+      -1.0254
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -30049.877,
-    "denominator": 2133554.0,
-    "denominator_date": "2026-09-23",
-    "today": "2026-09-24",
+    "raw": -21794.229,
+    "denominator": 2125423.0,
+    "denominator_date": "2026-09-24",
+    "today": "2026-09-25",
     "note": null
    },
    "v03_shadow": {
@@ -236,8 +236,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.015,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.01 shown for context",
+   "score": -0.253,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.25 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -289,7 +289,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.1,
+  "spread_bps": -6.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -445,8 +445,6 @@
  "heartbeat": {
   "lane": "daily",
   "backfill": false,
-  "errors": [
-   "mef_index(bot_3m,2026): ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
-  ]
+  "errors": []
  }
 }
