@@ -1,6 +1,103 @@
 {
  "entries": [
   {
+   "timestamp": "2026-09-28T17:47:00+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-28T17:47:00+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "722adaf8cb66963c",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 3,
+     "general": 4
+    }
+   }
+  },
+  {
+   "timestamp": "2026-09-28T17:47:00+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily_provisional",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-28T17:47:00+00:00",
+   "type": "JPY_V04",
+   "category": "system",
+   "details": {
+    "daily_new": 0,
+    "daily_files": 241,
+    "ops_new": 0,
+    "ops": {
+     "last_date": "2026-09-28",
+     "lag_days": 0,
+     "ope_files": 240,
+     "daily_files": 241
+    },
+    "mei": {
+     "asof": "2026-09-18",
+     "published": "2026-09-25",
+     "total": 5182009.0,
+     "unmapped": [
+      [
+       "5年債",
+       187,
+       5365.0
+      ],
+      [
+       "10年クライメート・トランジション国債",
+       5,
+       590.0
+      ]
+     ],
+     "jgb_records": 2602,
+     "tbill_records": 1397,
+     "mof_cut": "2026-08-03",
+     "mof_lag_days": 56
+    },
+    "juqp": "2026-09",
+    "net_issuance_last": [
+     "2026-08-03",
+     8265.4
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-09-28T17:46:36+00:00",
+   "type": "STRUCTURE_HASH",
+   "category": "system",
+   "details": {
+    "jd_latest": "2026-09-25",
+    "hash": "b548ecf4c35f04e7"
+   }
+  },
+  {
    "timestamp": "2026-09-28T10:07:35+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7495,51 +7592,6 @@
    "details": {
     "source": "boj_daily_cab",
     "error": "jd 2026-01-15: STRUCTURE CHANGE — required items missing: ops_ex_lsp,reserve_bal,excess"
-   }
-  },
-  {
-   "timestamp": "2026-09-08T11:54:58+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_daily_cab",
-    "error": "jd 2026-01-14: STRUCTURE CHANGE — required items missing: ops_ex_lsp,reserve_bal,excess"
-   }
-  },
-  {
-   "timestamp": "2026-09-08T11:54:58+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_daily_cab",
-    "error": "jd 2026-01-13: STRUCTURE CHANGE — required items missing: ops_ex_lsp,reserve_bal,excess"
-   }
-  },
-  {
-   "timestamp": "2026-09-08T11:54:58+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_daily_cab",
-    "error": "jd 2026-01-09: STRUCTURE CHANGE — required items missing: ops_ex_lsp,reserve_bal,excess"
-   }
-  },
-  {
-   "timestamp": "2026-09-08T11:54:58+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_daily_cab",
-    "error": "jd 2026-01-08: STRUCTURE CHANGE — required items missing: ops_ex_lsp,reserve_bal,excess"
-   }
-  },
-  {
-   "timestamp": "2026-09-08T11:54:58+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_daily_cab",
-    "error": "jd 2026-01-07: STRUCTURE CHANGE — required items missing: ops_ex_lsp,reserve_bal,excess"
    }
   }
  ]
