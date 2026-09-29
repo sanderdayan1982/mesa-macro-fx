@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-09-26T01:00:06+00:00",
- "as_of": "2026-09-25",
+ "generated_at": "2026-09-29T00:25:36+00:00",
+ "as_of": "2026-09-28",
  "config_version": "0.1.1",
- "regime": "NEUTRAL",
- "traffic_light": "YELLOW",
- "weighted_score": 0.155,
+ "regime": "LIQUIDITY_DRAIN",
+ "traffic_light": "RED",
+ "weighted_score": 0.142,
  "block_scores": {
   "central_bank": -1.1,
   "rates": 1.5,
-  "fiscal": 0.88,
+  "fiscal": 0.83,
   "banking": 0.0
  },
  "weights": {
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "DRAIN",
+   "confirmed": "DRAIN",
    "canonical": "confirmed",
    "score": -1.1,
    "label": "DRAIN",
    "traffic_light": "RED",
-   "as_of": "2026-09-25",
+   "as_of": "2026-09-28",
    "detail": "WRESBAL NERVOUS · NL Δ% -1.6027 (NL DOWN) · TGA HEAVY DRAIN · RRP LOW · Primary credit LOW · phase STEADY",
-   "raw_regime": "NEUTRAL",
+   "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.11,
     "injection_exit": 0.0,
@@ -41,17 +41,13 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": -0.3,
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-25",
+    "as_of": "2026-09-28",
     "recent": [
-     [
-      "2026-09-18",
-      0.1
-     ],
      [
       "2026-09-21",
       0.1
@@ -70,6 +66,10 @@
      ],
      [
       "2026-09-25",
+      -1.1
+     ],
+     [
+      "2026-09-28",
       -1.1
      ]
     ],
@@ -100,11 +100,11 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": 0.88,
+   "score": 0.83,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-24",
-   "detail": "NTF 5167.0 (within normal range) · Z -0.0336 · 7d 15496.0 · 60d 490358.0 (Z250 0.5606) · FYTD 1681521.0 vs prior FY 3.18% · structural 1.28 · surprise 0.47 · TGA close 924627.0 · −ΔTGA 22690.0",
+   "as_of": "2026-09-25",
+   "detail": "NTF 4830.0 (within normal range) · Z -0.0385 · 7d 20120.0 · 60d 461014.0 (Z250 0.3817) · FYTD 1686352.0 vs prior FY 3.2% · structural 1.19 · surprise 0.47 · TGA close 945290.0 · −ΔTGA -20663.0 · Payments Window",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 1.215,
@@ -119,15 +119,11 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": 0.568,
+    "effective_score": 0.615,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-24",
+    "as_of": "2026-09-25",
     "recent": [
-     [
-      "2026-09-17",
-      0.55
-     ],
      [
       "2026-09-18",
       0.45
@@ -147,6 +143,10 @@
      [
       "2026-09-24",
       0.88
+     ],
+     [
+      "2026-09-25",
+      0.83
      ]
     ],
     "pending_days": null
@@ -158,7 +158,7 @@
      "daily_surprise": 0.47
     },
     "level": {
-     "structural_ntf_60d": 1.28
+     "structural_ntf_60d": 1.19
     },
     "weights": {
      "structural_ntf_60d": 0.5,
@@ -168,16 +168,16 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.88,
+    "score_v02": 0.83,
     "score_flows_only": 0.23
    }
   },
   "general": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "LIQUIDITY_DRAIN",
+   "confirmed": "LIQUIDITY_DRAIN",
    "canonical": "confirmed",
-   "score": -0.308,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.31 shown for context",
+   "score": -0.328,
+   "rule": "agreement: both drain",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -227,7 +227,7 @@
   "reserves_in_range": false,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -2.0,
+  "spread_bps": 0.0,
   "friction_confirmed": false
  },
  "rules": {
