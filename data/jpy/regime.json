@@ -1,15 +1,15 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-28T17:47:00+00:00",
- "as_of": "2026-09-25",
+ "generated_at": "2026-09-29T08:52:35+00:00",
+ "as_of": "2026-09-28",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.151,
+ "weighted_score": 0.215,
  "block_scores": {
   "central_bank": 0.5,
   "rates": 0.0,
-  "fiscal": -0.12,
+  "fiscal": 0.2,
   "banking": 0.0
  },
  "weights": {
@@ -27,8 +27,8 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-25",
-   "detail": "CAB 4176400.0 · excess/required 27.84x (SAFE) · ΔCAB d/d -5700.0 · 20d -72100.0 (SAFE) · JGB purchases vs plan -0.134 · CLF 0.0",
+   "as_of": "2026-09-28",
+   "detail": "CAB 4179800.0 · excess/required 27.82x (SAFE) · ΔCAB d/d 3400.0 · 20d -59100.0 (SAFE) · JGB purchases vs plan -0.177 · CLF 0.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.75,
@@ -46,7 +46,7 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-25",
+    "as_of": "2026-09-28",
     "recent": [
      [
       "2026-09-24",
@@ -54,6 +54,10 @@
      ],
      [
       "2026-09-25",
+      0.5
+     ],
+     [
+      "2026-09-28",
       0.5
      ]
     ],
@@ -83,11 +87,11 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.9898,
+   "score": 1.9881,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-09-28",
-   "detail": "flow -8100.0 (Z -0.1572) · 5d 82200.0 · 20d -61300.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 4.005",
+   "detail": "flow 2400.0 (Z 0.2623) · 5d 83100.0 · 20d -49200.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.096",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.6459,
@@ -108,7 +112,7 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 1.981,
+    "effective_score": 1.98,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-09-28",
@@ -123,7 +127,7 @@
      ],
      [
       "2026-09-28",
-      1.9898
+      1.9881
      ]
     ],
     "pending_days": null,
@@ -133,7 +137,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": -0.12
+     "fiscal_flow_z": 0.2
     },
     "level": {},
     "weights": {},
@@ -141,8 +145,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": -0.12,
-    "score_flows_only": -0.12
+    "score_v02": 0.2,
+    "score_flows_only": 0.2
    },
    "engine": "0.4",
    "component": {
@@ -157,14 +161,14 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": 83100.0,
-    "denominator": 4176400.0,
-    "denominator_date": "2026-09-25",
-    "today": "2026-09-28",
+    "denominator": 4179800.0,
+    "denominator_date": "2026-09-28",
+    "today": "2026-09-29",
     "note": null
    },
    "v03_shadow": {
     "regime": "NEUTRAL",
-    "score": -0.12,
+    "score": 0.2,
     "raw_regime": "NEUTRAL",
     "cuts": {
      "injection_enter": 0.24,
@@ -172,18 +176,22 @@
      "drain_enter": -0.32,
      "drain_exit": -0.14
     },
-    "as_of": "2026-09-25",
+    "as_of": "2026-09-29",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
-     "effective_score": -0.12,
+     "effective_score": 0.04,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-09-25",
+     "as_of": "2026-09-29",
      "recent": [
       [
        "2026-09-25",
        -0.12
+      ],
+      [
+       "2026-09-29",
+       0.2
       ]
      ],
      "pending_days": null
@@ -194,8 +202,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.252,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 112 weeks < 150); dual score +0.25 shown for context",
+   "score": 0.38,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 112 weeks < 150); dual score +0.38 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -238,7 +246,8 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_QT",
-  "FX_INTERVENTION_SUSPECT"
+  "FX_INTERVENTION_SUSPECT",
+  "SUPER_LONG_SUPPLY_AHEAD"
  ],
  "overlays": {
   "QT_STRESS": null,
@@ -455,7 +464,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily_provisional",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
