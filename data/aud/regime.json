@@ -1,6 +1,6 @@
 {
  "currency": "AUD",
- "generated_at": "2026-10-01T09:20:26+00:00",
+ "generated_at": "2026-10-01T11:26:36+00:00",
  "as_of": "2026-09-30",
  "config_version": "0.4.1",
  "regime": "LIQUIDITY_INJECTION",
@@ -480,7 +480,7 @@
    "name": "Transmission Break",
    "bias": "TRANSMISSION BREAK",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -496,14 +496,14 @@
     },
     {
      "condition": "banking.m3_mom mom_pct zscore <= -1",
-     "met": false
+     "met": true
     }
    ]
   }
  ],
  "heartbeat": {
-  "lane": "daily",
-  "backfill": false,
+  "lane": "all",
+  "backfill": true,
   "errors": []
  }
 }
