@@ -3,7 +3,7 @@
  "block": "banking",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-10-01T10:25:05+00:00",
+ "generated_at": "2026-10-01T11:28:25+00:00",
  "as_of": "2026-09-20",
  "equivalence_quality": "medium",
  "equivalence_note": "Monthly only (loans ~8th, money stock ~2nd week); transmission read as levels + growth, plus BoJ lending programmes every ten days.",
@@ -835,18 +835,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "monthly",
    "status": "fresh",
-   "value": 653090.0,
-   "date": "2026-07-31",
-   "prev_value": 657520.0,
-   "prev_date": "2026-06-30",
-   "change_abs": -4430.0,
-   "change_pct": -0.6737,
-   "zscore": 1.756,
+   "value": 608390.0,
+   "date": "2026-08-31",
+   "prev_value": 653090.0,
+   "prev_date": "2026-07-31",
+   "change_abs": -44700.0,
+   "change_pct": -6.8444,
+   "zscore": -0.4449,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    374813.0,
     361971.0,
     406881.0,
     397334.0,
@@ -896,16 +895,17 @@
     609792.0,
     629986.0,
     617657.0,
-    657520.0,
-    653090.0
+    657517.0,
+    653090.0,
+    608390.0
    ],
    "high_low": {
-    "high": 657520.0,
+    "high": 657517.0,
     "high_date": "2026-06-30",
     "low": 330570.0,
     "low_date": "2022-11-30"
    },
-   "age_days": 62,
+   "age_days": 31,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -1589,18 +1589,17 @@
    "unit": "ratio",
    "frequency": "monthly",
    "status": "fresh",
-   "value": 0.1706,
-   "date": "2026-07-31",
-   "prev_value": 0.1677,
-   "prev_date": "2026-06-30",
-   "change_abs": 0.0029,
-   "change_pct": 1.7293,
-   "zscore": 2.2309,
-   "percentile": 100.0,
+   "value": 0.1628,
+   "date": "2026-08-31",
+   "prev_value": 0.1706,
+   "prev_date": "2026-07-31",
+   "change_abs": -0.0078,
+   "change_pct": -4.5721,
+   "zscore": 1.5526,
+   "percentile": 92.0,
    "window": "60m",
    "level": "SAFE",
    "sparkline": [
-    0.078,
     0.0776,
     0.086,
     0.0862,
@@ -1651,7 +1650,8 @@
     0.152,
     0.1542,
     0.1677,
-    0.1706
+    0.1706,
+    0.1628
    ],
    "high_low": {
     "high": 0.1706,
@@ -1659,18 +1659,18 @@
     "low": 0.0776,
     "low_date": "2022-05-31"
    },
-   "age_days": 62,
+   "age_days": 31,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "funding canary: a falling share while TRR/TONA firm = foreign banks short of yen (Gemini/CodeWord)",
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 0.111545,
-     "STRESS": 0.10694
+     "WATCH": 0.11156,
+     "STRESS": 0.10712
     },
     "window": "60m",
-    "n": 24,
+    "n": 25,
     "era_anchor": "2024-07-31",
     "era_thin": false
    }
@@ -1690,7 +1690,7 @@
   "score": 0.0,
   "label": "YELLOW",
   "flags": [],
-  "detail": "6 series valid · 1 improving / 0 weak · loans y/y 5.8 · M2 y/y 1.98 · foreign-bank share 0.1706",
+  "detail": "6 series valid · 1 improving / 0 weak · loans y/y 5.8 · M2 y/y 1.98 · foreign-bank share 0.1628",
   "alerts": [
    {
     "metric": "loans_yoy_pct_calc",
@@ -1717,10 +1717,10 @@
    {
     "metric": "foreign_banks_excess_share",
     "level": "SAFE",
-    "value": 0.1706,
+    "value": 0.1628,
     "threshold": {
-     "WATCH": 0.111545,
-     "STRESS": 0.10694
+     "WATCH": 0.11156,
+     "STRESS": 0.10712
     },
     "status": "fresh",
     "action_hint": "foreign banks short of yen reserves — confirm with TONA/TRR"
