@@ -1,15 +1,15 @@
 {
  "currency": "JPY",
- "generated_at": "2026-09-30T16:02:46+00:00",
- "as_of": "2026-09-29",
+ "generated_at": "2026-10-01T09:16:50+00:00",
+ "as_of": "2026-09-30",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.135,
+ "weighted_score": 0.413,
  "block_scores": {
   "central_bank": 0.5,
-  "rates": 0.0,
-  "fiscal": -0.2,
+  "rates": 0.75,
+  "fiscal": -0.12,
   "banking": 0.0
  },
  "weights": {
@@ -27,8 +27,8 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-29",
-   "detail": "CAB 4174300.0 · excess/required 27.76x (SAFE) · ΔCAB d/d -5500.0 · 20d -58900.0 (SAFE) · JGB purchases vs plan -0.028 · CLF 0.0",
+   "as_of": "2026-09-30",
+   "detail": "CAB 4166500.0 · excess/required 27.67x (SAFE) · ΔCAB d/d -7800.0 · 20d -77200.0 (SAFE) · JGB purchases vs plan -0.072 · CLF 0.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.75,
@@ -46,7 +46,7 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-29",
+    "as_of": "2026-09-30",
     "recent": [
      [
       "2026-09-24",
@@ -62,6 +62,10 @@
      ],
      [
       "2026-09-29",
+      0.5
+     ],
+     [
+      "2026-09-30",
       0.5
      ]
     ],
@@ -91,11 +95,11 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.3152,
+   "score": -1.248,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-30",
-   "detail": "flow -10800.0 (Z -0.2662) · 5d 65500.0 · 20d -54500.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.096",
+   "as_of": "2026-10-01",
+   "detail": "flow -8000.0 (Z -0.1534) · 5d 54900.0 · 20d -69000.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.096",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.6459,
@@ -116,10 +120,10 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 1.765,
+    "effective_score": 1.263,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-30",
+    "as_of": "2026-10-01",
     "recent": [
      [
       "2026-09-24",
@@ -140,6 +144,10 @@
      [
       "2026-09-30",
       1.3152
+     ],
+     [
+      "2026-10-01",
+      -1.248
      ]
     ],
     "pending_days": null,
@@ -149,7 +157,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": -0.2
+     "fiscal_flow_z": -0.12
     },
     "level": {},
     "weights": {},
@@ -157,8 +165,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": -0.2,
-    "score_flows_only": -0.2
+    "score_v02": -0.12,
+    "score_flows_only": -0.12
    },
    "engine": "0.4",
    "component": {
@@ -172,15 +180,15 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 54900.0,
-    "denominator": 4174300.0,
-    "denominator_date": "2026-09-29",
-    "today": "2026-09-30",
+    "raw": -52000.0,
+    "denominator": 4166500.0,
+    "denominator_date": "2026-09-30",
+    "today": "2026-10-01",
     "note": null
    },
    "v03_shadow": {
     "regime": "NEUTRAL",
-    "score": -0.2,
+    "score": -0.12,
     "raw_regime": "NEUTRAL",
     "cuts": {
      "injection_enter": 0.24,
@@ -188,14 +196,14 @@
      "drain_enter": -0.32,
      "drain_exit": -0.14
     },
-    "as_of": "2026-09-29",
+    "as_of": "2026-09-30",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
-     "effective_score": -0.16,
+     "effective_score": -0.147,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-09-29",
+     "as_of": "2026-09-30",
      "recent": [
       [
        "2026-09-25",
@@ -204,6 +212,10 @@
       [
        "2026-09-29",
        -0.2
+      ],
+      [
+       "2026-09-30",
+       -0.12
       ]
      ],
      "pending_days": null
@@ -214,8 +226,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.22,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 113 weeks < 150); dual score +0.22 shown for context",
+   "score": 0.252,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 113 weeks < 150); dual score +0.25 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -268,8 +280,8 @@
   "reserves_level": "SAFE",
   "reserves_in_range": false,
   "reserves_above_range": true,
-  "spread_level": "WATCH",
-  "spread_bps": -2.3,
+  "spread_level": "SAFE",
+  "spread_bps": -2.4,
   "friction_confirmed": false
  },
  "rules": {
@@ -285,17 +297,17 @@
    "name": "Floor Friction under QT",
    "bias": "FLOOR FRICTION",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [
     "rates.tona_minus_policy_bps level >= WATCH"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "rates.tona_minus_policy_bps level >= WATCH",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.cab_20d_change level >= WATCH",
@@ -421,8 +433,8 @@
    "id": "L6",
    "name": "Fiscal Injection + Ample",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 4,
    "unknown": 0,
    "required": [
@@ -444,7 +456,7 @@
     },
     {
      "condition": "rates.tona_minus_policy_bps level == SAFE",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -475,7 +487,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily_provisional",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
