@@ -1,16 +1,16 @@
 {
  "currency": "GBP",
- "generated_at": "2026-09-30T16:28:54+00:00",
- "as_of": "2026-09-16",
+ "generated_at": "2026-10-01T11:16:42+00:00",
+ "as_of": "2026-09-23",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.4,
+ "weighted_score": 0.5,
  "block_scores": {
   "central_bank": 0.5,
   "rates": 0.5,
   "fiscal": 0.0,
-  "banking": 0.0
+  "banking": 1.0
  },
  "weights": {
   "central_bank": 0.45,
@@ -27,8 +27,8 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-16",
-   "detail": "reserves SAFE (above PMRR) · PBS NEUTRAL · QT -1205.3/w · repo/reserves 0.3277",
+   "as_of": "2026-09-23",
+   "detail": "reserves SAFE (above PMRR) · PBS NEUTRAL · QT -1205.3/w · repo/reserves 0.3272",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.665,
@@ -46,14 +46,14 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-23",
     "recent": [
      [
-      "2026-09-09",
+      "2026-09-16",
       0.5
      ],
      [
-      "2026-09-16",
+      "2026-09-23",
       0.5
      ]
     ],
@@ -162,7 +162,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-11-01",
-   "era_weeks": 202,
+   "era_weeks": 203,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -183,7 +183,7 @@
   "reserves_in_range": false,
   "reserves_above_range": true,
   "spread_level": "SAFE",
-  "spread_bps": -1.98,
+  "spread_bps": -1.79,
   "friction_confirmed": false
  },
  "rules": {
@@ -303,7 +303,7 @@
    "name": "Fiscal Injection",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 0,
    "required": [
@@ -325,7 +325,7 @@
     },
     {
      "condition": "central_bank.reserves_wow_pct >= p80",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -334,7 +334,7 @@
    "name": "Transmission Break",
    "bias": "TRANSMISSION BREAK",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -350,14 +350,14 @@
     },
     {
      "condition": "banking.household_deposits mom_pct zscore <= -1",
-     "met": true
+     "met": false
     }
    ]
   }
  ],
  "heartbeat": {
-  "lane": "daily",
-  "backfill": false,
+  "lane": "all",
+  "backfill": true,
   "errors": []
  }
 }
