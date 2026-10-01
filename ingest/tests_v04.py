@@ -677,7 +677,10 @@ def main() -> int:
         diff = abs(st["2026-09-02"] - b2["2026-09-02"]) / b2["2026-09-02"]
         check(diff < 0.01, "term repo stock from operations %.0f vs B2 %.0f (diff %.2f%%)" % (st["2026-09-02"], b2["2026-09-02"], diff * 100), fails)
     check(dict(tr["term_repo_settled"]).get("2026-09-03") == 22561.0, "term repos settled 2026-09-03 = 22 561 (indicators table shows 22 561)", fails)
-    check(all(d <= "2026-09-10" for d, _ in tr["term_repo_net_daily"]), "no future-dated term repo flows", fails)
+    # 2026-10-01 (OK del propietario): op_flows corta por date.today(); el test comparaba con una fecha fija
+    # (2026-09-10) y fallaba en cuanto avanzaba el calendario. Misma regla, mismo «hoy» que el código.
+    from datetime import date as _date
+    check(all(d <= _date.today().isoformat() for d, _ in tr["term_repo_net_daily"]), "no future-dated term repo flows", fails)
     check(tr["term_repo_maturities_ahead"] and all(d > "2026-09-10" for d, _ in tr["term_repo_maturities_ahead"]), "maturity calendar is strictly ahead", fails)
     rg = O.rgam_series(rows("AUC_RGAM_RESULTS"), days)
     check(dict(rg["rg_am_placed"]).get("2026-09-08") == 16500.0, "RG AM placed 2026-09-08 = 10 000 + 6 500 (+ reserves)", fails)

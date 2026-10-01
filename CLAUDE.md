@@ -17,7 +17,8 @@ incluido el agente de mantenimiento.
 ## Cada cambio
 - Comprobaciones: `bash tools/smoke.sh` (compilación, `ingest.validate` de las 8 divisas, `ingest/tests_*.py`,
   JSON de config, tests de la compuerta). Ninguna puede empeorar respecto a `main`.
-  Nota 1-oct-2026: `tests_v04` ya fallaba antes («no future-dated term repo flows»), pendiente de revisar.
+  Nota 1-oct-2026: `tests_v04` («no future-dated term repo flows») fallaba porque comparaba con una fecha fija;
+  corregido con OK del propietario (ahora usa el mismo «hoy» que `ops_cad.op_flows`). Las 16 comprobaciones en verde.
 - Acta en `actas/ACTA_<lote>.md` (el agente: `actas/ACTA_AGENTE_<AAAAMMDD>.md`).
 - Python 3.11 con `requirements.txt` + `pyyaml`.
 

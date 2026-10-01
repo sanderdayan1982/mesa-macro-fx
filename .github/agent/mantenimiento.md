@@ -32,8 +32,8 @@ Lee primero `CLAUDE.md`: sus reglas mandan sobre todo lo demás.
    (`fixtures/agent/`) y falle con el formato viejo. Bloqueo de IPs → informe. Serie discontinuada → sustituta oficial
    con la misma definición, o informe si cambia la definición.
 3. **Comprobaciones**: `bash tools/smoke.sh` antes de cada commit; ninguna línea `CHECK … 0` de `main` puede pasar a ≠ 0.
-   Fallo conocido previo: `tests_v04` («no future-dated term repo flows»). Investígalo y explica la causa en el informe,
-   pero no cambies el test ni la regla.
+   Desde el 1-oct-2026 todas pasan (incluido `tests_v04`). Si una falla, explica la causa en el informe; no cambies tests
+   ni reglas para que pasen.
 4. **Acta** `actas/ACTA_AGENTE_<AAAAMMDD>.md` si cambiaste algo. **Commit** en la rama actual, uno por arreglo.
 5. **Informe** (siempre) en `.agent/report.md`, en español y corto:
    - línea 1: `ESTADO: OK` | `ESTADO: ARREGLADO` | `ESTADO: REQUIERE OK` | `ESTADO: FALLO SIN ARREGLO`;
