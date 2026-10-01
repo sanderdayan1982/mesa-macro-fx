@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-01T09:50:08+00:00",
+ "generated_at": "2026-10-01T10:45:45+00:00",
  "as_of": "2026-10-01",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -13,10 +13,8 @@
   "series_expected": 17,
   "last_fetch_ok": true,
   "errors": [
-   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a43a8db28ed833ed-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a43a8e241ce933ed-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a43a8e959be499a0-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_bond_listing.html (snapshot 2026-10-01); nzdm_bond_1010.html (snapshot 2026-10-01)"
+   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a43adf1d98fc0ffa-ORD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-01); nzdm_tbill_1890.html (snapshot 2026-10-01); nzdm_bond_listing.html (snapshot 2026-10-01); nzdm_bond_1010.html (snapshot 2026-10-01)"
   ],
   "series_pending": 3
  },
@@ -2087,11 +2085,20 @@
   },
   "issuance_ahead_5d": {
    "label": "Tender settlements in the next 5 business days (known drain)",
-   "value": 450.0,
+   "value": 700.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
-   "date": "2026-09-29",
+   "date": "2026-10-01",
    "items": [
+    {
+     "number": "1891",
+     "lines": "",
+     "volume": 250.0,
+     "announcement": "2026-10-05",
+     "tender": "2026-10-06",
+     "settlement": "2026-10-07",
+     "kind": "tbill"
+    },
     {
      "number": "1011",
      "lines": "1.50% 15 May 2031 4.50% 15 May 2035",
@@ -2102,7 +2109,7 @@
      "kind": "bond"
     }
    ],
-   "level": "SAFE"
+   "level": "WATCH"
   },
   "non_resident_share": {
    "source_id": null,
@@ -2789,7 +2796,7 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 1800.0,
+   "value": 2800.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-01",
@@ -2799,16 +2806,28 @@
      450.0
     ],
     [
+     "2026-10-07",
+     250.0
+    ],
+    [
      "2026-10-13",
      450.0
+    ],
+    [
+     "2026-10-14",
+     250.0
     ],
     [
      "2026-10-20",
      450.0
     ],
     [
+     "2026-10-21",
+     250.0
+    ],
+    [
      "2026-10-28",
-     450.0
+     700.0
     ]
    ]
   },
@@ -2866,18 +2885,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "monthly",
    "status": "fresh",
-   "value": 5611.797,
-   "date": "2026-08-31",
-   "prev_value": 5428.095,
-   "prev_date": "2026-07-31",
-   "change_abs": 183.702,
-   "change_pct": 3.3843,
-   "zscore": -1.1915,
+   "value": 5187.096,
+   "date": "2026-09-30",
+   "prev_value": 5611.797,
+   "prev_date": "2026-08-31",
+   "change_abs": -424.701,
+   "change_pct": -7.568,
+   "zscore": -1.6233,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1592.4,
     1392.1,
     1612.391,
     1574.0,
@@ -2928,7 +2946,8 @@
     5951.464,
     6787.041,
     5428.095,
-    5611.797
+    5611.797,
+    5187.096
    ],
    "high_low": {
     "high": 14484.61,
@@ -2936,7 +2955,7 @@
     "low": 1277.056,
     "low_date": "2023-01-31"
    },
-   "age_days": 31,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "Crown cash outside the RBNZ (context)"
@@ -2946,7 +2965,9 @@
   "traffic_light": "GREEN",
   "score": 0.5,
   "label": "INJECTION",
-  "flags": [],
+  "flags": [
+   "SUPPLY_AHEAD"
+  ],
   "components": {
    "mode": "sum",
    "level_weight": 1.0,
@@ -2962,7 +2983,7 @@
    "score_v02": 0.5,
    "score_flows_only": 0.5
   },
-  "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash 6846.1 · T-bill 3.08x at 3.0838% · bond 4.011x tail 0.4 bp · settlements next 5d 450.0 · non-resident 57.5%",
+  "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash 6846.1 · T-bill 3.08x at 3.0838% · bond 4.011x tail 0.4 bp · settlements next 5d 700.0 · non-resident 57.5%",
   "alerts": [
    {
     "metric": "govt_cash_influence",
@@ -3052,8 +3073,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": -2.4869,
-    "residual_5d_pct": -3.0304
+    "net_issuance_5d_pct": -2.4554,
+    "residual_5d_pct": -6.2857
    },
    "level": {},
    "weights": {},
@@ -4147,6 +4168,42 @@
   ],
   "upcoming": [
    {
+    "number": "1891",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-10-05",
+    "tender": "2026-10-06",
+    "settlement": "2026-10-07",
+    "kind": "tbill"
+   },
+   {
+    "number": "1892",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-10-12",
+    "tender": "2026-10-13",
+    "settlement": "2026-10-14",
+    "kind": "tbill"
+   },
+   {
+    "number": "1893",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-10-19",
+    "tender": "2026-10-20",
+    "settlement": "2026-10-21",
+    "kind": "tbill"
+   },
+   {
+    "number": "1894",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-10-23",
+    "tender": "2026-10-27",
+    "settlement": "2026-10-28",
+    "kind": "tbill"
+   },
+   {
     "number": "1011",
     "lines": "1.50% 15 May 2031 4.50% 15 May 2035",
     "volume": 450.0,
@@ -4193,6 +4250,11 @@
    }
   ],
   "signal_log": [
+   {
+    "date": "2026-07-31",
+    "label": "INJECTION",
+    "score": 0.5
+   },
    {
     "date": "2026-07-31",
     "label": "INJECTION",
