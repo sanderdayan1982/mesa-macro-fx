@@ -1,13 +1,13 @@
 {
  "currency": "CAD",
- "generated_at": "2026-10-02T01:02:41+00:00",
- "as_of": "2026-09-23",
+ "generated_at": "2026-10-02T22:50:32+00:00",
+ "as_of": "2026-09-30",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.686,
+ "weighted_score": 0.592,
  "block_scores": {
-  "central_bank": 1.33,
+  "central_bank": 1.12,
   "rates": -1.25,
   "fiscal": 2.0,
   "banking": 0.0
@@ -24,10 +24,10 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.33,
+   "score": 1.12,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-23",
+   "as_of": "2026-09-30",
    "detail": "NetLiq BAND_HIGH · reserves SAFE (out of range) · phase NORMALIZATION",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -43,18 +43,18 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.675,
+    "effective_score": 1.225,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-30",
     "recent": [
-     [
-      "2026-09-16",
-      0.02
-     ],
      [
       "2026-09-23",
       1.33
+     ],
+     [
+      "2026-09-30",
+      1.12
      ]
     ],
     "pending_days": null
@@ -64,7 +64,7 @@
     "level_weight": 1.0,
     "flow": {
      "net_liquidity_band": 1.0,
-     "reserves_wow": 1.0
+     "reserves_wow": 0.6862
     },
     "level": {
      "reserves_vs_range": 0.0
@@ -74,19 +74,19 @@
      -2.0,
      2.0
     ],
-    "score_v02": 1.33,
-    "score_flows_only": 1.33
+    "score_v02": 1.12,
+    "score_flows_only": 1.12
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.7864,
+   "score": -0.0084,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-09-23",
-   "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check 614.0",
+   "as_of": "2026-09-30",
+   "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check -7.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
@@ -107,18 +107,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -1.188,
+    "effective_score": 0.389,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-30",
     "recent": [
-     [
-      "2026-09-16",
-      -3.1621
-     ],
      [
       "2026-09-23",
       0.7864
+     ],
+     [
+      "2026-09-30",
+      -0.0084
      ]
     ],
     "pending_days": null,
@@ -151,9 +151,9 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 614.0,
-    "denominator": 78082.0,
-    "denominator_date": "2026-09-23",
+    "raw": -7.0,
+    "denominator": 83440.0,
+    "denominator_date": "2026-09-30",
     "today": "2026-10-02",
     "note": null
    },
@@ -167,21 +167,21 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-30",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
      "effective_score": 2.0,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-09-23",
+     "as_of": "2026-09-30",
      "recent": [
       [
-       "2026-09-16",
+       "2026-09-23",
        2.0
       ],
       [
-       "2026-09-23",
+       "2026-09-30",
        2.0
       ]
      ],
@@ -193,8 +193,8 @@
    "regime": "FLOOR_FRICTION",
    "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
-   "score": 1.598,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +1.60 shown for context",
+   "score": 1.472,
+   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +1.47 shown for context",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -224,7 +224,7 @@
    ],
    "agreement_only": true,
    "era_start": "2020-03-23",
-   "era_weeks": 339,
+   "era_weeks": 340,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -244,7 +244,7 @@
   "reserves_in_range": false,
   "reserves_above_range": true,
   "spread_level": "CRISIS",
-  "spread_bps": 11.0,
+  "spread_bps": 10.0,
   "friction_confirmed": true
  },
  "rules": {
@@ -318,7 +318,7 @@
    "name": "QT Drag Intensifying",
    "bias": "QT DRAIN",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -334,7 +334,7 @@
     },
     {
      "condition": "central_bank.notes_in_circulation_wow_pct >= p80",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -417,7 +417,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
