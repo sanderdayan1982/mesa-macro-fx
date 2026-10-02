@@ -1,12 +1,6 @@
 {
  "sent": [
   {
-   "ts": "2026-09-11T00:28:27Z",
-   "tag": "event:gbp",
-   "text": "<b>GBP · ERRORES DE FUENTE</b> en el refresco: boe_ops[apf_sales]: boe_ops apf_sales: no rows parsed (STRUCTURE CHANGE?); boe_ops[apf_profile]: boe_ops apf_profile: no rows parsed (STRUCTURE CHANGE?); dmo[d22d]: dmo d22d: not an XML data report (bot challenge or STRUCTURE CHANGE?)\n\n<b>GBP · JEFE DE MESA</b> (viernes 2026-09-11): posición 3 (antes 2) de 8 · 1.º CAD · último NZD · 1 CAD 3,0% (Z 0,95) · 2 AUD 2,1% (Z 0,82) · 3 GBP −0,3% (Z 0,47) · 4 CHF −2,1% (Z 0,21) · 5 EUR −4,0% (Z −0,07) · 6 JPY −5,9% (Z −0,35) · 7 USD −6,0% (Z −0,37) · 8 NZD −14,9% (Z −1,66)",
-   "delivered": true
-  },
-  {
    "ts": "2026-09-11T00:49:58Z",
    "tag": "event:gbp",
    "text": "<b>GBP</b> · el refresco vuelve a completarse sin errores de fuente.",
@@ -599,7 +593,13 @@
    "tag": "digest",
    "text": "<b>MESA MACRO FX · vie 02-10 · LDN 12:57 · NY 07:57 · WAT 12:57</b>\nmapa del viernes 2026-10-02 · sello 5bad37d2479b · cinta al 10-02 10:20Z\nmapa, no libro · sin dirección · BC y Tesoro sin netear\n<pre>CCY etiqueta  BC    r  TES   r  precio marcas\nUSD escasa    DREN  4ª  DREN  10ª —\nEUR escasa    NEUT  13ª DREN  3ª  —     cob.parcial\nGBP sin señal NEUT  4ª  NEUT  2ª  —     LAG Tesoro 32d\nJPY escasa    NEUT  5ª  INYEC 7ª  —     ⧗\nCHF abundante NEUT  4ª  NEUT  13ª —     cob.parcial proxy\nCAD abundante INYEC 1ª  NEUT  4ª  —\nAUD abundante INYEC 1ª  INYEC 1ª  —\nNZD sin señal INYEC 8ª  INYEC 11ª —     proxy</pre>\n<b>BC</b> (Δ13 s reservas % stock, Z): 1 CAD +7,6%/Z +1,11 · 2 NZD +6,1%/Z +0,89 · 3 AUD +1,1%/Z +0,17 · 4 USD −0,6%/Z −0,08 · 5 CHF −2,0%/Z −0,29 · 6 EUR −3,9%/Z −0,56 · 7 JPY −4,3%/Z −0,62 · 8 GBP −4,4%/Z −0,63\n<b>Tesoro</b> (13 s, Z): 1 CAD +1,95 · 2 AUD +1,94 · 3 CHF +1,01* · 4 EUR −0,14 · 5 NZD −0,44* · 6 USD −1,46 · 7 JPY −2,87 (* proxy)\npar mayor brecha Z BC: CAD / GBP (1,74) · dispersión normal\n<b>Excepciones (5)</b>\n• CAD Tesoro stale (as-of 09-23) · 3 series stale\n• CAD banca stale (as-of 07-01) · sin reconstruir (6/8): business_loans, household_credit\n• NZD Tesoro stale (as-of 10-01) · sin reconstruir (16/17): bonds_issued_month, kauri_holdings, nzdm_ecp_on_issue, treasury_residual_cash\n• NZD fuente (lane daily): rbnz_b2\n• NZD copia last-good: nzdm\ninventario anti-invención A1–A5: 8/8 PASA · ⧗ otro reloj (Tesoro v0.3 vs fiscal v0.4) · LAG por cadencia · cob.parcial = equivalencia media-baja",
    "delivered": true
+  },
+  {
+   "ts": "2026-10-02T12:04:34Z",
+   "tag": "event:nzd",
+   "text": "<b>NZD · FUENTE</b> (lane daily): rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xls… · rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx —… · reintento en la próxima lane",
+   "delivered": true
   }
  ],
- "last": "2026-10-02T11:57:03Z"
+ "last": "2026-10-02T12:04:35Z"
 }
