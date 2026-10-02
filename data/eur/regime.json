@@ -1,14 +1,14 @@
 {
  "currency": "EUR",
- "generated_at": "2026-10-01T18:22:42+00:00",
+ "generated_at": "2026-10-02T15:03:00+00:00",
  "as_of": "2026-10-01",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.08,
+ "weighted_score": 0.046,
  "block_scores": {
-  "central_bank": -0.46,
-  "rates": 0.2,
+  "central_bank": -0.32,
+  "rates": -0.1,
   "fiscal": 0.36,
   "banking": 1.0
  },
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.46,
+   "score": -0.32,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-01",
-   "detail": "excess liquidity 2109152.0 M (SAFE) · Δ5s -24402.0 (p22.01) · TOMO 38097.0 M (STRUCTURAL (no price confirmation)) · MLF 138.90903832 M · €STR−DFR -6.3 bp (SAFE) · MonPol 13w -99675.0 · phase QT · APP+PEPP rec RECONCILED",
+   "detail": "excess liquidity 2121011.0 M (SAFE) · Δ5s -4412.0 (p56.84) · TOMO 38097.0 M (STRUCTURAL (no price confirmation)) · MLF 0.0 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -99675.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,7 +45,7 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.464,
+    "effective_score": -0.436,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-10-01",
@@ -68,7 +68,7 @@
      ],
      [
       "2026-10-01",
-      -0.46
+      -0.32
      ]
     ],
     "pending_days": null
@@ -77,8 +77,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -1.0,
-     "excess_20s_vs_stock": 0.09
+     "excess_wow_vs_stock": -0.21,
+     "excess_20s_vs_stock": -0.33
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -90,20 +90,20 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.46,
-    "score_flows_only": -0.36
+    "score_v02": -0.32,
+    "score_flows_only": -0.22
    }
   },
   "fiscal": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.7003,
+   "score": -0.7633,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-30",
+   "as_of": "2026-10-01",
    "detail": "govt deposits 88595.0 M (Δw -2031.0, p50.0) · impulse 4w 2902.0 (p48.57) · 13w 5192.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.863 (NORMAL, avg26 1.8) · TARGET Δ3m -36661.8 · rule NEUTRAL",
-   "raw_regime": "DRAIN",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.1427,
     "injection_exit": -0.0359,
@@ -121,17 +121,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -0.409,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.302,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-30",
+    "as_of": "2026-10-01",
     "recent": [
-     [
-      "2026-09-23",
-      -1.4084
-     ],
      [
       "2026-09-24",
       -1.0254
@@ -151,6 +147,10 @@
      [
       "2026-09-30",
       0.7003
+     ],
+     [
+      "2026-10-01",
+      -0.7633
      ]
     ],
     "pending_days": null,
@@ -190,10 +190,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 14770.637,
-    "denominator": 2109152.0,
-    "denominator_date": "2026-09-30",
-    "today": "2026-10-01",
+    "raw": -16188.743,
+    "denominator": 2121011.0,
+    "denominator_date": "2026-10-01",
+    "today": "2026-10-02",
     "note": null
    },
    "v03_shadow": {
@@ -236,8 +236,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.214,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.21 shown for context",
+   "score": -0.116,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.12 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -290,7 +290,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.3,
+  "spread_bps": -5.8,
   "friction_confirmed": false
  },
  "rules": {
@@ -385,17 +385,17 @@
    "name": "Government cash drain",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == DRAIN"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "regime.fiscal == DRAIN",
-     "met": true
+     "met": false
     },
     {
      "condition": "fiscal.fiscal_regime == DRAIN",
