@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-01T12:39:27+00:00",
+ "generated_at": "2026-10-02T10:20:03+00:00",
  "as_of": "2026-09-29",
  "equivalence_quality": "high",
  "equivalence_note": "B2 daily close (T-1, 15:00 NZT). Floor system: the overnight interbank rate should sit at/just above the OCR; it is published only on days with trades (sparse) → the daily stress spread is the 30-day bank bill − OCR with a persistence rule, corrected for hike pricing by the 90-day bill and 1-year swap; the OMO price is fixed (OCR + 10) so price stress shows up in ORRF use and bills, not in the operation | v0.2: B2 bank bills are NZFMA/LSEG closing rates (the 10:20 NZT BKBM fixing itself is published by NZFBF; public delayed feed unverified — pending); NZ OIS has no public feed (not available, not proxied)",
@@ -13,8 +13,8 @@
   "series_expected": 16,
   "last_fetch_ok": true,
   "errors": [
-   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a43b867f5b124f8b-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-01); nzdm_tbill_1890.html (snapshot 2026-10-01)"
+   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a442f81189bec944-IAD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-02)"
   ],
   "series_pending": 0,
   "sparse_by_design": [
@@ -99,7 +99,7 @@
     "low": 2.5,
     "low_date": "2026-07-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -180,7 +180,7 @@
     "low": 2.5,
     "low_date": "2026-07-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -261,7 +261,7 @@
     "low": 3.0,
     "low_date": "2026-07-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -342,7 +342,7 @@
     "low": 2.28,
     "low_date": "2026-03-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "published only on days with trades (sparse) — last 2026-09-29"
@@ -424,7 +424,7 @@
     "low": 2.7,
     "low_date": "2026-07-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -505,7 +505,7 @@
     "low": 2.79,
     "low_date": "2026-07-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -586,7 +586,7 @@
     "low": 2.88,
     "low_date": "2026-07-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -667,7 +667,7 @@
     "low": 3.06,
     "low_date": "2026-08-13"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -748,7 +748,7 @@
     "low": 3.51,
     "low_date": "2026-08-13"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -829,7 +829,7 @@
     "low": 4.09,
     "low_date": "2026-08-13"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -910,7 +910,7 @@
     "low": 4.65,
     "low_date": "2026-07-29"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -991,7 +991,7 @@
     "low": 3.35,
     "low_date": "2026-08-13"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1072,7 +1072,7 @@
     "low": 3.59,
     "low_date": "2026-08-13"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1153,7 +1153,7 @@
     "low": 4.33,
     "low_date": "2026-08-13"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1234,7 +1234,7 @@
     "low": 61.0,
     "low_date": "2026-09-22"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1315,7 +1315,7 @@
     "low": 21115.0,
     "low_date": "2026-01-02"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -1398,7 +1398,7 @@
     "low": 20.0,
     "low_date": "2026-07-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1497,7 +1497,7 @@
     "low": 3.0,
     "low_date": "2026-03-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1598,7 +1598,7 @@
     "low": 0.06,
     "low_date": "2026-03-20"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1679,7 +1679,7 @@
     "low": 30.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1773,7 +1773,7 @@
     "low": 68.0,
     "low_date": "2026-09-08"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1869,7 +1869,7 @@
     "low": 10.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1950,7 +1950,7 @@
     "low": 84.0,
     "low_date": "2026-09-03"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2031,7 +2031,7 @@
     "low": 102.0,
     "low_date": "2026-07-24"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2124,7 +2124,7 @@
     "low": 29.0,
     "low_date": "2026-07-24"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2216,7 +2216,7 @@
     "low": -12.0,
     "low_date": "2026-07-31"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2304,7 +2304,7 @@
     "low": -54.0787,
     "low_date": "2025-12-26"
    },
-   "age_days": 6,
+   "age_days": 7,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -4027,6 +4027,11 @@
    },
    {
     "date": "2026-09-25",
+    "label": "HIKE PRICING",
+    "score": 0.25
+   },
+   {
+    "date": "2026-09-29",
     "label": "HIKE PRICING",
     "score": 0.25
    },
