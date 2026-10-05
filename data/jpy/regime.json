@@ -1,15 +1,15 @@
 {
  "currency": "JPY",
- "generated_at": "2026-10-03T08:45:51+00:00",
- "as_of": "2026-10-01",
+ "generated_at": "2026-10-05T09:28:33+00:00",
+ "as_of": "2026-10-02",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.298,
+ "weighted_score": 0.189,
  "block_scores": {
   "central_bank": 0.5,
   "rates": 0.75,
-  "fiscal": -0.7,
+  "fiscal": -1.24,
   "banking": 0.0
  },
  "weights": {
@@ -27,8 +27,8 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-10-01",
-   "detail": "CAB 4140100.0 · excess/required 27.5x (SAFE) · ΔCAB d/d -26400.0 · 20d -103700.0 (SAFE) · JGB purchases vs plan -0.028 · CLF 0.0",
+   "as_of": "2026-10-02",
+   "detail": "CAB 4095200.0 · excess/required 27.12x (SAFE) · ΔCAB d/d -44900.0 · 20d -94400.0 (SAFE) · JGB purchases vs plan -0.028 · CLF 0.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.75,
@@ -46,12 +46,8 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-01",
+    "as_of": "2026-10-02",
     "recent": [
-     [
-      "2026-09-24",
-      0.5
-     ],
      [
       "2026-09-25",
       0.5
@@ -70,6 +66,10 @@
      ],
      [
       "2026-10-01",
+      0.5
+     ],
+     [
+      "2026-10-02",
       0.5
      ]
     ],
@@ -96,15 +96,15 @@
    }
   },
   "fiscal": {
-   "regime": "INJECTION",
-   "confirmed": "INJECTION",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -2.157,
+   "score": -1.9315,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-02",
-   "detail": "flow -27500.0 (Z -0.936) · 5d -52000.0 · 20d -96400.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.096",
-   "raw_regime": "INJECTION",
+   "as_of": "2026-10-05",
+   "detail": "flow -45400.0 (Z -1.6513) · 5d -89300.0 · 20d -87200.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.096",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.6459,
     "injection_exit": 0.1934,
@@ -122,17 +122,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "INJECTION",
-    "raw": "INJECTION",
-    "effective_score": 0.571,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.079,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-02",
+    "as_of": "2026-10-05",
     "recent": [
-     [
-      "2026-09-25",
-      1.9682
-     ],
      [
       "2026-09-28",
       1.9881
@@ -152,6 +148,10 @@
      [
       "2026-10-02",
       -2.157
+     ],
+     [
+      "2026-10-05",
+      -1.9315
      ]
     ],
     "pending_days": null,
@@ -161,7 +161,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": -0.7
+     "fiscal_flow_z": -1.24
     },
     "level": {},
     "weights": {},
@@ -169,8 +169,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": -0.7,
-    "score_flows_only": -0.7
+    "score_v02": -1.24,
+    "score_flows_only": -1.24
    },
    "engine": "0.4",
    "component": {
@@ -184,16 +184,16 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -89300.0,
-    "denominator": 4140100.0,
-    "denominator_date": "2026-10-01",
-    "today": "2026-10-03",
+    "raw": -79100.0,
+    "denominator": 4095200.0,
+    "denominator_date": "2026-10-02",
+    "today": "2026-10-05",
     "note": null
    },
    "v03_shadow": {
-    "regime": "NEUTRAL",
-    "score": -0.7,
-    "raw_regime": "NEUTRAL",
+    "regime": "DRAIN",
+    "score": -1.24,
+    "raw_regime": "DRAIN",
     "cuts": {
      "injection_enter": 0.24,
      "injection_exit": 0.13,
@@ -202,9 +202,9 @@
     },
     "as_of": "2026-10-02",
     "state": {
-     "confirmed": "NEUTRAL",
-     "raw": "NEUTRAL",
-     "effective_score": -0.285,
+     "confirmed": "DRAIN",
+     "raw": "DRAIN",
+     "effective_score": -0.42,
      "candidate": null,
      "candidate_since": null,
      "as_of": "2026-10-02",
@@ -223,7 +223,7 @@
       ],
       [
        "2026-10-02",
-       -0.7
+       -1.24
       ]
      ],
      "pending_days": null
@@ -234,8 +234,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.02,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 113 weeks < 150); dual score +0.02 shown for context",
+   "score": -0.196,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 113 weeks < 150); dual score -0.20 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -278,6 +278,7 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_QT",
+  "FISCAL_BIG_DAY",
   "FX_INTERVENTION_SUSPECT"
  ],
  "overlays": {
@@ -359,7 +360,7 @@
    "name": "Fiscal Drain (tax / issuance settlement)",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 0,
    "required": [
@@ -377,7 +378,7 @@
     },
     {
      "condition": "fiscal.fiscal_flow_zscore <= -1.5",
-     "met": false
+     "met": true
     },
     {
      "condition": "central_bank.cab_dod level >= WATCH",
@@ -441,18 +442,18 @@
    "id": "L6",
    "name": "Fiscal Injection + Ample",
    "bias": "FISCAL INJECTION",
-   "active": true,
-   "conditions_met": 2,
+   "active": false,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 0,
    "required": [
     "regime.fiscal == INJECTION"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "regime.fiscal == INJECTION",
-     "met": true
+     "met": false
     },
     {
      "condition": "fiscal.fiscal_flow_20d_cum >= injection",
@@ -495,7 +496,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "ten_day",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
