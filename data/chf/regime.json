@@ -1,7 +1,7 @@
 {
  "currency": "CHF",
- "generated_at": "2026-10-02T16:06:42+00:00",
- "as_of": "2026-09-25",
+ "generated_at": "2026-10-05T18:52:12+00:00",
+ "as_of": "2026-10-02",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "DRAIN",
+   "confirmed": "DRAIN",
    "canonical": "confirmed",
    "score": -0.5,
    "label": "DRAIN",
    "traffic_light": "RED",
-   "as_of": "2026-09-25",
-   "detail": "GI 432037.0 (wow 4004.0, 13w -1.9424%, NEUTRAL) · absorption 165243.4848 (28.3%) · ratio 8.79x · factor 13.5 · phase ABSORBING",
-   "raw_regime": "NEUTRAL",
+   "as_of": "2026-10-02",
+   "detail": "GI 433124.0 (wow 1087.0, 13w -1.7686%, NEUTRAL) · absorption 165243.4848 (28.3%) · ratio 8.81x · factor 13.5 · phase ABSORBING",
+   "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 1.0,
     "injection_exit": 0.5,
@@ -41,19 +41,19 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": -0.25,
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-25",
+    "as_of": "2026-10-02",
     "recent": [
      [
-      "2026-09-18",
-      0.0
+      "2026-09-25",
+      -0.5
      ],
      [
-      "2026-09-25",
+      "2026-10-02",
       -0.5
      ]
     ],
@@ -81,10 +81,10 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.0285,
+   "score": -0.0053,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-09-30",
+   "as_of": "2026-10-02",
    "detail": "Confederation 20155.24409534 (mom -877.8977) · MMDRC 4.779x at -0.047% (-0.7 bp vs SARON) · bonds 1.534x",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -106,15 +106,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.047,
+    "effective_score": -0.029,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-09-30",
+    "as_of": "2026-10-02",
     "recent": [
-     [
-      "2026-09-23",
-      -0.0935
-     ],
      [
       "2026-09-25",
       -0.0569
@@ -130,6 +126,10 @@
      [
       "2026-09-30",
       0.0285
+     ],
+     [
+      "2026-10-02",
+      -0.0053
      ]
     ],
     "pending_days": null,
@@ -162,10 +162,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 123.0,
-    "denominator": 432037.0,
-    "denominator_date": "2026-09-25",
-    "today": "2026-10-02",
+    "raw": -22.85,
+    "denominator": 433124.0,
+    "denominator_date": "2026-10-02",
+    "today": "2026-10-05",
     "note": null
    },
    "v03_shadow": {
@@ -205,7 +205,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": -0.3,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.30 shown for context",
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.30 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -235,7 +235,7 @@
    ],
    "agreement_only": true,
    "era_start": "2022-09-22",
-   "era_weeks": 209,
+   "era_weeks": 210,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -249,11 +249,12 @@
  "flags": [
   "PHASE_ABSORBING",
   "ABSORPTION_INTENSITY",
-  "BILLS_ROLL_OFF_AHEAD"
+  "FOREIGN_SIGHT_DEPOSITS_JUMP",
+  "STERILISATION_STRESS"
  ],
  "overlays": {
-  "STERILISATION_STRESS": "STERILISATION_STRESS_LOW",
-  "STERILISATION_STRESS_conditions_met": 1
+  "STERILISATION_STRESS": "STERILISATION_STRESS_HIGH",
+  "STERILISATION_STRESS_conditions_met": 2
  },
  "inputs": {
   "reserves_level": "SAFE",
@@ -433,7 +434,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
