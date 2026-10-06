@@ -1,15 +1,15 @@
 {
  "currency": "CAD",
- "generated_at": "2026-10-05T12:56:59+00:00",
+ "generated_at": "2026-10-06T01:51:00+00:00",
  "as_of": "2026-09-30",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.592,
+ "weighted_score": 0.274,
  "block_scores": {
   "central_bank": 1.12,
   "rates": -1.25,
-  "fiscal": 2.0,
+  "fiscal": 0.41,
   "banking": 0.0
  },
  "weights": {
@@ -83,10 +83,10 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": -0.0084,
-   "label": "INJECTION",
-   "traffic_light": "GREEN",
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
    "as_of": "2026-09-30",
-   "detail": "7d cum 13084.266 · Z 3.112 · weekly Valet cross-check -7.0",
+   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check -7.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
@@ -128,7 +128,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": 2.0
+     "fiscal_flow_z": 0.41
     },
     "level": {},
     "weights": {},
@@ -136,8 +136,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": 2.0,
-    "score_flows_only": 2.0
+    "score_v02": 0.41,
+    "score_flows_only": 0.41
    },
    "engine": "0.4",
    "component": {
@@ -154,12 +154,12 @@
     "raw": -7.0,
     "denominator": 83440.0,
     "denominator_date": "2026-09-30",
-    "today": "2026-10-05",
+    "today": "2026-10-06",
     "note": null
    },
    "v03_shadow": {
     "regime": "INJECTION",
-    "score": 2.0,
+    "score": 0.41,
     "raw_regime": "INJECTION",
     "cuts": {
      "injection_enter": 0.55,
@@ -167,22 +167,22 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-09-30",
+    "as_of": "2026-10-01",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
-     "effective_score": 2.0,
+     "effective_score": 1.205,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-09-30",
+     "as_of": "2026-10-01",
      "recent": [
-      [
-       "2026-09-23",
-       2.0
-      ],
       [
        "2026-09-30",
        2.0
+      ],
+      [
+       "2026-10-01",
+       0.41
       ]
      ],
      "pending_days": null
@@ -193,8 +193,8 @@
    "regime": "FLOOR_FRICTION",
    "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
-   "score": 1.472,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +1.47 shown for context",
+   "score": 0.836,
+   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.84 shown for context",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -287,7 +287,7 @@
    "name": "Silent Fiscal Easing",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 2,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 0,
    "required": [
@@ -301,7 +301,7 @@
     },
     {
      "condition": "fiscal.fiscal_flow_7d_cum >= injection",
-     "met": true
+     "met": false
     },
     {
      "condition": "rates.overnight_minus_policy_bps <= 0",
@@ -417,7 +417,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "monthly",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
