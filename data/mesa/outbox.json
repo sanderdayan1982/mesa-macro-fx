@@ -1,12 +1,6 @@
 {
  "sent": [
   {
-   "ts": "2026-09-11T08:22:59Z",
-   "tag": "event:jpy",
-   "text": "<b>JPY · RÉGIMEN GENERAL</b>: NEUTRAL → <b>SIN SEÑAL</b> (as-of 2026-08-31)\n⚠ BC y Tesoro sin dato en esta pasada → sin acuerdo posible entre bloques; el cambio refleja la ausencia de un bloque, no un flujo.\nF5. Régimen general del motor: SIN SEÑAL (1.ª lectura consecutiva); sin lectura de mecanismo: BC y Tesoro sin dato en esta pasada, sin acuerdo posible entre bloques; el régimen general no se mueve por ausencia de datos; puerta de precio no activa; cortes de era de 110 semanas.\n\n<b>JPY · BC</b>: NEUTRAL → <b>SIN SEÑAL</b> (as-of 2026-08-31)\nF1. Los saldos cab en el boj: sin dato publicado en el JSON de hoy; régimen del BC SIN SEÑAL (1.ª lectura consecutiva).\n\n<b>JPY · Tesoro</b>: NEUTRAL → <b>SIN SEÑAL</b> (as-of 2026-09-11)\n\n\n<b>JPY · BC stale</b> (as-of 2026-08-31): el bloque deja de estar fresco.\n\n<b>JPY · Tesoro stale</b> (as-of 2026-09-11): el bloque deja de estar fresco.\n\n<b>JPY · tipos degradado</b> (as-of 2026-09-10): el bloque deja de estar fresco.",
-   "delivered": true
-  },
-  {
    "ts": "2026-09-11T08:36:50Z",
    "tag": "event:nzd",
    "text": "<b>NZD · ERRORES DE FUENTE</b> en el refresco: rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a39558689ea82de1-IAD'} body=&lt;!DOCTYPE html&gt;\r &lt;html lang=\"en\"&gt;\r &lt;head&gt;\r &lt;title&gt;Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua&lt;/title&gt;\r &lt;meta charset=\"utf-8\"&gt;\r &lt;meta name\n\n<b>NZD</b> · la fuente bloqueada vuelve a responder.",
@@ -599,7 +593,13 @@
    "tag": "event:nzd",
    "text": "<b>NZD · AVISO</b> fuente bloqueada, dato vigente desde la copia buena: nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-06)",
    "delivered": true
+  },
+  {
+   "ts": "2026-10-06T12:49:26Z",
+   "tag": "digest",
+   "text": "<b>MESA MACRO FX · mar 06-10 · LDN 13:49 · NY 08:49 · WAT 13:49</b>\nmapa del viernes 2026-10-02 · sello 283bf6ffb339 · cinta al 10-06 11:03Z\nmapa, no libro · sin dirección · BC y Tesoro sin netear\n<pre>CCY etiqueta  BC    r  TES   r  precio marcas\nUSD escasa    DREN  6ª  NEUT  2ª  —     LAG Tesoro 4d\nEUR escasa    NEUT  14ª NEUT  2ª  —     cob.parcial LAG Tesoro 11d\nGBP sin señal NEUT  4ª  NEUT  2ª  —     LAG BC 13d LAG Tesoro 36d\nJPY escasa    NEUT  7ª  NEUT  2ª  —\nCHF abundante DREN  1ª  NEUT  15ª —     cob.parcial proxy\nCAD abundante INYEC 2ª  NEUT  5ª  —     LAG Tesoro 5d\nAUD abundante INYEC 1ª  INYEC 2ª  —\nNZD sin señal INYEC 9ª  NEUT  1ª  —     proxy LAG BC 4d</pre>\n<b>BC</b> (Δ13 s reservas % stock, Z): 1 CAD +15,0%/Z +2,06 · 2 NZD +4,3%/Z +0,51 · 3 AUD +3,0%/Z +0,32 · 4 USD −0,6%/Z −0,21 · 5 CHF −1,8%/Z −0,37 · 6 EUR −3,7%/Z −0,65 · 7 GBP −4,4%/Z −0,75 · 8 JPY −5,3%/Z −0,89\n<b>Tesoro</b> (13 s, Z): 1 CAD +1,86 · 2 CHF +1,26* · 3 AUD +0,75 · 4 EUR +0,11 · 5 NZD −0,19* · 6 USD −1,15 · 7 JPY −2,63 (* proxy)\npar mayor brecha Z BC: CAD / JPY (2,95) · dispersión normal\n<b>Excepciones (5)</b>\n• CAD banca stale (as-of 07-01) · sin reconstruir (6/8): business_loans, household_credit\n• NZD Tesoro stale (as-of 10-06) · sin reconstruir (16/17): bonds_issued_month, kauri_holdings, nzdm_ecp_on_issue, treasury_residual_cash\n• NZD tipos stale (as-of 10-02) · 14 series stale\n• NZD fuente (lane daily): rbnz_b2 · rbnz_d12 · rbnz_d3 · rbnz_d9\n• NZD copia last-good: nzdm\ninventario anti-invención A1–A5: 8/8 PASA · ⧗ otro reloj (Tesoro v0.3 vs fiscal v0.4) · LAG por cadencia · cob.parcial = equivalencia media-baja",
+   "delivered": true
   }
  ],
- "last": "2026-10-06T11:03:34Z"
+ "last": "2026-10-06T12:49:27Z"
 }
