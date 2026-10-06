@@ -3,21 +3,16 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-05T13:54:34+00:00",
+ "generated_at": "2026-10-06T09:40:08+00:00",
  "as_of": "2026-10-02",
  "equivalence_quality": "high",
  "equivalence_note": "B2 daily close (T-1, 15:00 NZT). Floor system: the overnight interbank rate should sit at/just above the OCR; it is published only on days with trades (sparse) → the daily stress spread is the 30-day bank bill − OCR with a persistence rule, corrected for hike pricing by the 90-day bill and 1-year swap; the OMO price is fixed (OCR + 10) so price stress shows up in ORRF use and bills, not in the operation | v0.2: B2 bank bills are NZFMA/LSEG closing rates (the 10:20 NZT BKBM fixing itself is published by NZFBF; public delayed feed unverified — pending); NZ OIS has no public feed (not available, not proxied)",
  "source_health": {
-  "status": "fresh",
+  "status": "stale",
   "series_loaded": 16,
   "series_expected": 16,
   "last_fetch_ok": true,
-  "errors": [
-   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a45ce9915e58c4f9-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a45cea036e0ed7a7-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a45cea759aa9d7a7-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a45ceae7b885f59a-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name"
-  ],
+  "errors": [],
   "series_pending": 0,
   "sparse_by_design": [
    "overnight_interbank"
@@ -30,7 +25,7 @@
    "usd_analog": "Fed funds target",
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 2.75,
    "date": "2026-09-29",
    "prev_value": 2.75,
@@ -101,8 +96,8 @@
     "low": 2.5,
     "low_date": "2026-07-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "odr": {
@@ -111,7 +106,7 @@
    "usd_analog": "IORB",
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 2.75,
    "date": "2026-09-29",
    "prev_value": 2.75,
@@ -182,8 +177,8 @@
     "low": 2.5,
     "low_date": "2026-07-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "orrf_rate": {
@@ -192,7 +187,7 @@
    "usd_analog": "SRF rate",
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 3.25,
    "date": "2026-09-29",
    "prev_value": 3.25,
@@ -263,8 +258,8 @@
     "low": 3.0,
     "low_date": "2026-07-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "overnight_interbank": {
@@ -344,8 +339,8 @@
     "low": 2.28,
     "low_date": "2026-03-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "equivalence_note": "published only on days with trades (sparse) — last 2026-09-29"
   },
@@ -355,7 +350,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 3.01,
    "date": "2026-09-29",
    "prev_value": 3.01,
@@ -426,8 +421,8 @@
     "low": 2.7,
     "low_date": "2026-07-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "bank_bill_60d": {
@@ -436,7 +431,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 3.12,
    "date": "2026-09-29",
    "prev_value": 3.12,
@@ -507,8 +502,8 @@
     "low": 2.79,
     "low_date": "2026-07-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "bank_bill_90d": {
@@ -517,7 +512,7 @@
    "usd_analog": "3M term rate",
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 3.24,
    "date": "2026-09-29",
    "prev_value": 3.24,
@@ -588,8 +583,8 @@
     "low": 2.88,
     "low_date": "2026-07-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "nzgb_1y": {
@@ -598,7 +593,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 3.23,
    "date": "2026-09-29",
    "prev_value": 3.23,
@@ -669,8 +664,8 @@
     "low": 3.06,
     "low_date": "2026-08-13"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "nzgb_2y": {
@@ -679,7 +674,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 3.94,
    "date": "2026-09-29",
    "prev_value": 3.95,
@@ -750,8 +745,8 @@
     "low": 3.51,
     "low_date": "2026-08-13"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "nzgb_5y": {
@@ -760,7 +755,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 4.59,
    "date": "2026-09-29",
    "prev_value": 4.6,
@@ -831,8 +826,8 @@
     "low": 4.09,
     "low_date": "2026-08-13"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "nzgb_10y": {
@@ -841,7 +836,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 5.12,
    "date": "2026-09-29",
    "prev_value": 5.13,
@@ -912,8 +907,8 @@
     "low": 4.65,
     "low_date": "2026-07-29"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "swap_1y": {
@@ -922,7 +917,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 3.78,
    "date": "2026-09-29",
    "prev_value": 3.78,
@@ -993,8 +988,8 @@
     "low": 3.35,
     "low_date": "2026-08-13"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "swap_2y": {
@@ -1003,7 +998,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 4.13,
    "date": "2026-09-29",
    "prev_value": 4.13,
@@ -1074,8 +1069,8 @@
     "low": 3.59,
     "low_date": "2026-08-13"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "swap_10y": {
@@ -1084,7 +1079,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 4.82,
    "date": "2026-09-29",
    "prev_value": 4.81,
@@ -1155,8 +1150,8 @@
     "low": 4.33,
     "low_date": "2026-08-13"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "swap_2_10_spread_bps": {
@@ -1165,7 +1160,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 69.0,
    "date": "2026-09-29",
    "prev_value": 68.0,
@@ -1236,8 +1231,8 @@
     "low": 61.0,
     "low_date": "2026-09-22"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "nzgb_turnover_weekly": {
@@ -1317,7 +1312,7 @@
     "low": 21115.0,
     "low_date": "2026-01-02"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -1329,7 +1324,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 26.0,
    "date": "2026-09-29",
    "prev_value": 26.0,
@@ -1400,8 +1395,8 @@
     "low": 20.0,
     "low_date": "2026-07-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
     "method": "absolute",
@@ -1499,8 +1494,8 @@
     "low": 3.0,
     "low_date": "2026-03-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
     "method": "absolute",
@@ -1600,8 +1595,8 @@
     "low": 0.06,
     "low_date": "2026-03-20"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "bank_bill_90d_minus_ocr_bps": {
@@ -1610,7 +1605,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 49.0,
    "date": "2026-09-29",
    "prev_value": 49.0,
@@ -1681,8 +1676,8 @@
     "low": 30.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
@@ -1704,7 +1699,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 103.0,
    "date": "2026-09-29",
    "prev_value": 103.0,
@@ -1775,8 +1770,8 @@
     "low": 68.0,
     "low_date": "2026-09-08"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
@@ -1800,7 +1795,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 23.0,
    "date": "2026-09-29",
    "prev_value": 23.0,
@@ -1871,8 +1866,8 @@
     "low": 10.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "nzgb_2y_minus_ocr_bps": {
@@ -1881,7 +1876,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 119.0,
    "date": "2026-09-29",
    "prev_value": 120.0,
@@ -1952,8 +1947,8 @@
     "low": 84.0,
     "low_date": "2026-09-03"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "curve_10y_2y_bps": {
@@ -1962,7 +1957,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 118.0,
    "date": "2026-09-29",
    "prev_value": 118.0,
@@ -2033,8 +2028,8 @@
     "low": 102.0,
     "low_date": "2026-07-24"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
@@ -2055,7 +2050,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 30.0,
    "date": "2026-09-29",
    "prev_value": 32.0,
@@ -2126,8 +2121,8 @@
     "low": 29.0,
     "low_date": "2026-07-24"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
@@ -2147,7 +2142,7 @@
    "usd_analog": null,
    "unit": "bps",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 17.0,
    "date": "2026-09-29",
    "prev_value": 18.0,
@@ -2218,8 +2213,8 @@
     "low": -12.0,
     "low_date": "2026-07-31"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
    "thresholds": {
     "method": "absolute",
@@ -2306,7 +2301,7 @@
     "low": -54.0787,
     "low_date": "2025-12-26"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -2328,7 +2323,7 @@
      "STRESS": 40,
      "CRISIS": 60
     },
-    "status": "fresh",
+    "status": "stale",
     "action_hint": "raw spread: +25 WATCH / +40 STRESS / +60 CRISIS (desk proposal); confirmation by overnight or ORRF"
    },
    {
@@ -2353,7 +2348,7 @@
      "STRESS_high": null,
      "STRESS_low": null
     },
-    "status": "fresh",
+    "status": "stale",
     "action_hint": "BKBM − OCR (V3.1): term premium + hike pricing"
    },
    {
@@ -2366,7 +2361,7 @@
      "STRESS_high": null,
      "STRESS_low": null
     },
-    "status": "fresh",
+    "status": "stale",
     "action_hint": "swap 1y − OCR: context, never subtracted (N3)"
    },
    {
@@ -2379,7 +2374,7 @@
      "STRESS_high": null,
      "STRESS_low": null
     },
-    "status": "fresh",
+    "status": "stale",
     "action_hint": "NZGB curve slope"
    },
    {
@@ -2390,7 +2385,7 @@
      "WATCH": 50.0,
      "STRESS": 54.12
     },
-    "status": "fresh",
+    "status": "stale",
     "action_hint": "supply indigestion / offshore demand (p90 WATCH, p97 STRESS)"
    },
    {
@@ -2401,7 +2396,7 @@
      "WATCH": 15,
      "STRESS": 25
     },
-    "status": "fresh",
+    "status": "stale",
     "action_hint": "±15 bp WATCH, ±25 bp STRESS in 5 sessions"
    }
   ]
@@ -4029,6 +4024,11 @@
    },
    {
     "date": "2026-09-25",
+    "label": "HIKE PRICING",
+    "score": 0.25
+   },
+   {
+    "date": "2026-09-29",
     "label": "HIKE PRICING",
     "score": 0.25
    },
