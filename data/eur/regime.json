@@ -1,14 +1,14 @@
 {
  "currency": "EUR",
- "generated_at": "2026-10-06T19:38:18+00:00",
- "as_of": "2026-10-05",
+ "generated_at": "2026-10-07T15:48:50+00:00",
+ "as_of": "2026-10-06",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.033,
+ "weighted_score": 0.192,
  "block_scores": {
-  "central_bank": -0.28,
-  "rates": -0.1,
+  "central_bank": -0.11,
+  "rates": 0.2,
   "fiscal": 0.17,
   "banking": 1.0
  },
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.28,
+   "score": -0.11,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-05",
-   "detail": "excess liquidity 2123751.0 M (SAFE) · Δ5s 8197.0 (p79.85) · TOMO 38097.0 M (STRUCTURAL (no price confirmation)) · MLF 3.0 M · €STR−DFR -6.2 bp (SAFE) · MonPol 13w -99675.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-10-06",
+   "detail": "excess liquidity 2122136.0 M (SAFE) · Δ5s 13391.0 (p87.74) · TOMO 38097.0 M (STRUCTURAL (no price confirmation)) · MLF 16.85056998 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -99675.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.418,
+    "effective_score": -0.36,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-05",
+    "as_of": "2026-10-06",
     "recent": [
-     [
-      "2026-09-28",
-      -0.4
-     ],
      [
       "2026-09-29",
       -0.51
@@ -69,6 +65,10 @@
      [
       "2026-10-05",
       -0.28
+     ],
+     [
+      "2026-10-06",
+      -0.11
      ]
     ],
     "pending_days": null
@@ -77,8 +77,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": 0.39,
-     "excess_20s_vs_stock": -0.85
+     "excess_wow_vs_stock": 0.63,
+     "excess_20s_vs_stock": -0.65
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -90,18 +90,18 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.28,
-    "score_flows_only": -0.18
+    "score_v02": -0.11,
+    "score_flows_only": -0.01
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.8789,
+   "score": -1.1224,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-05",
+   "as_of": "2026-10-06",
    "detail": "govt deposits 88595.0 M (Δw -2031.0, p50.0) · impulse 4w 2902.0 (p48.57) · 13w 5192.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.1 (WEAK, avg26 1.72) · TARGET Δ3m -36661.8 · rule NEUTRAL",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -123,15 +123,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.266,
+    "effective_score": -0.398,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-05",
+    "as_of": "2026-10-06",
     "recent": [
-     [
-      "2026-09-28",
-      -0.3291
-     ],
      [
       "2026-09-29",
       0.3955
@@ -151,6 +147,10 @@
      [
       "2026-10-05",
       -0.8789
+     ],
+     [
+      "2026-10-06",
+      -1.1224
      ]
     ],
     "pending_days": null,
@@ -190,10 +190,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -18665.792,
-    "denominator": 2123751.0,
-    "denominator_date": "2026-10-05",
-    "today": "2026-10-06",
+    "raw": -23819.452,
+    "denominator": 2122136.0,
+    "denominator_date": "2026-10-06",
+    "today": "2026-10-07",
     "note": null
    },
    "v03_shadow": {
@@ -228,8 +228,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.145,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.14 shown for context",
+   "score": -0.026,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.03 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -283,7 +283,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.2,
+  "spread_bps": -6.1,
   "friction_confirmed": false
  },
  "rules": {
@@ -437,8 +437,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_tue",
+  "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "tesoro_13: HTTP 404 for https://www.tesoro.es/sites/default/files/estadisticas/13.xlsx (archive/fixture)"
+  ]
  }
 }
