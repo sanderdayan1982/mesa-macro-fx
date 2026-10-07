@@ -1,12 +1,6 @@
 {
  "sent": [
   {
-   "ts": "2026-09-11T13:43:40Z",
-   "tag": "event:jpy",
-   "text": "<b>JPY · Tesoro stale</b> (as-of 2026-09-11): el bloque deja de estar fresco.",
-   "delivered": true
-  },
-  {
    "ts": "2026-09-11T17:49:36Z",
    "tag": "event:eur",
    "text": "<b>EUR · ERRORES DE FUENTE</b> en el refresco: aft_v04: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
@@ -599,7 +593,13 @@
    "tag": "digest",
    "text": "<b>MESA MACRO FX · mié 07-10 · LDN 13:43 · NY 08:43 · WAT 13:43</b>\nmapa del viernes 2026-10-02 · sello 283bf6ffb339 · cinta al 10-07 10:52Z\nmapa, no libro · sin dirección · BC y Tesoro sin netear\n<pre>CCY etiqueta  BC    r  TES   r  precio marcas\nUSD escasa    DREN  7ª  NEUT  3ª  —\nEUR escasa    NEUT  15ª NEUT  3ª  —     cob.parcial\nGBP sin señal NEUT  4ª  NEUT  2ª  —     LAG BC 14d LAG Tesoro 37d\nJPY escasa    NEUT  8ª  DREN  1ª  —\nCHF abundante DREN  1ª  NEUT  15ª —     cob.parcial proxy\nCAD abundante INYEC 2ª  NEUT  5ª  —     LAG Tesoro 6d\nAUD abundante INYEC 2ª  INYEC 2ª  —\nNZD sin señal INYEC 10ª NEUT  1ª  —     proxy</pre>\n<b>BC</b> (Δ13 s reservas % stock, Z): 1 CAD +15,0%/Z +2,06 · 2 NZD +4,3%/Z +0,51 · 3 AUD +3,0%/Z +0,32 · 4 USD −0,6%/Z −0,21 · 5 CHF −1,8%/Z −0,37 · 6 EUR −3,7%/Z −0,65 · 7 GBP −4,4%/Z −0,75 · 8 JPY −5,3%/Z −0,89\n<b>Tesoro</b> (13 s, Z): 1 CAD +1,86 · 2 CHF +1,26* · 3 AUD +0,75 · 4 EUR +0,11 · 5 NZD −0,19* · 6 USD −1,15 · 7 JPY −2,63 (* proxy)\npar mayor brecha Z BC: CAD / JPY (2,95) · dispersión normal\n<b>Excepciones (5)</b>\n• GBP fuente (lane daily): boe_ops[iltr]\n• CAD banca stale (as-of 07-01) · sin reconstruir (6/8): business_loans, household_credit\n• NZD Tesoro stale (as-of 10-06) · sin reconstruir (16/17): bonds_issued_month, kauri_holdings, nzdm_ecp_on_issue, treasury_residual_cash\n• NZD tipos stale (as-of 10-02) · 14 series stale\n• NZD fuente (lane daily): rbnz_b2\ninventario anti-invención A1–A5: 8/8 PASA · ⧗ otro reloj (Tesoro v0.3 vs fiscal v0.4) · LAG por cadencia · cob.parcial = equivalencia media-baja",
    "delivered": true
+  },
+  {
+   "ts": "2026-10-07T12:51:20Z",
+   "tag": "event:nzd",
+   "text": "<b>NZD · FUENTE</b> (lane daily): rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xls… · rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xls… · reintento en la próxima lane",
+   "delivered": true
   }
  ],
- "last": "2026-10-07T12:43:35Z"
+ "last": "2026-10-07T12:51:21Z"
 }
