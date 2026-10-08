@@ -1,16 +1,16 @@
 {
  "currency": "CAD",
- "generated_at": "2026-10-08T22:00:22+00:00",
+ "generated_at": "2026-10-08T22:22:27+00:00",
  "as_of": "2026-09-30",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.649,
+ "weighted_score": 0.499,
  "block_scores": {
   "central_bank": 1.12,
   "rates": 0.25,
   "fiscal": 0.41,
-  "banking": 0.0
+  "banking": -1.5
  },
  "weights": {
   "central_bank": 0.45,
@@ -236,6 +236,7 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
+  "TRANSMISSION_FAILURE",
   "PHASE_NORMALIZATION"
  ],
  "overlays": {},
@@ -394,8 +395,8 @@
    "id": "L6",
    "name": "Transmission Break",
    "bias": "TRANSMISSION BREAK",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -403,7 +404,7 @@
    "details": [
     {
      "condition": "banking.transmission_signal == RED",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.corra_dispersion_bps level >= WATCH",
@@ -417,7 +418,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "monthly",
   "backfill": false,
   "errors": []
  }
