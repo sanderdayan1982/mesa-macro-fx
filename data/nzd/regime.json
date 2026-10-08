@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-08T10:06:53+00:00",
- "as_of": "2026-10-06",
+ "generated_at": "2026-10-08T11:09:47+00:00",
+ "as_of": "2026-10-08",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -27,8 +27,8 @@
    "score": 0.25,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-06",
-   "detail": "settlement cash 32621.0 (5d 4473.0, 20d 8193.0, SAFE) · OMO stock 8263.0 (25.3%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "as_of": "2026-10-08",
+   "detail": "settlement cash 32354.0 (5d 3845.0, 20d 7748.0, SAFE) · OMO stock 8263.0 (25.5%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,15 +43,11 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.625,
+    "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-06",
+    "as_of": "2026-10-08",
     "recent": [
-     [
-      "2026-09-29",
-      0.75
-     ],
      [
       "2026-10-01",
       0.75
@@ -62,6 +58,10 @@
      ],
      [
       "2026-10-06",
+      0.25
+     ],
+     [
+      "2026-10-08",
       0.25
      ]
     ],
@@ -95,8 +95,8 @@
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-06",
-   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.912x at 3.06% · bond 4.691x tail 0.4 bp · settlements next 5d 450.0 · non-resident 57.5%",
+   "as_of": "2026-10-08",
+   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.912x at 3.06% · bond 4.464x tail 0.8 bp · settlements next 5d 250.0 · non-resident 57.5%",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.25,
@@ -111,15 +111,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.125,
+    "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-06",
+    "as_of": "2026-10-08",
     "recent": [
-     [
-      "2026-09-29",
-      0.5
-     ],
      [
       "2026-10-01",
       0.0
@@ -130,6 +126,10 @@
      ],
      [
       "2026-10-06",
+      0.0
+     ],
+     [
+      "2026-10-08",
       0.0
      ]
     ],
@@ -389,12 +389,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_thu",
+  "lane": "daily",
   "backfill": false,
   "errors": [
-   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4745440184e6afb-SEA'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a47454b2dba776e8-SEA'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_bond_listing.html (snapshot 2026-10-08)"
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-08)"
   ]
  }
 }
