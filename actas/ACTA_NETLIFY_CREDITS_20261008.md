@@ -13,6 +13,6 @@ Este repo: ~563 commits desde el 10-sep, casi todos de bots (`data/`, `history/`
 
 **Riesgo conocido.** Si raw.githubusercontent falla (6 s), las páginas caen a la copia desplegada, que ya no se refresca; la «antigüedad» (`generated_at`) la delata, no se oculta.
 
-**Pruebas.** Sintaxis JS de las 9 páginas OK. `tools/smoke.sh` no se pudo ejecutar en el Mac (falta Python 3.11 con dependencias; exit 127); el cambio no toca Python. Verificar tras el push que los commits de datos salen «Skipped» en Netlify → Deploys.
+**Pruebas.** Sintaxis JS de las 9 páginas OK. `bash tools/smoke.sh` en verde (2026-10-08, Python 3.11.15 vía uv en el Mac): las 16 comprobaciones con código 0. Verificar tras el push que los commits de datos salen «Skipped» en Netlify → Deploys.
 
 **Siguiente.** Desactivar Deploy Previews en Netlify; recarga fija de créditos.
