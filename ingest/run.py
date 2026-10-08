@@ -12,7 +12,7 @@ import sys
 from typing import Dict, List, Optional
 from . import blocks as B
 from . import engine as E
-from .providers import ValetProvider, ReceiverGeneralProvider, IadbProvider, OnsProvider, RbaProvider, ProviderError, fetch_rss
+from .providers import ValetProvider, StatCanProvider, ReceiverGeneralProvider, IadbProvider, OnsProvider, RbaProvider, ProviderError, fetch_rss
 from . import blocks_gbp as BG
 from . import blocks_aud as BA
 from . import blocks_jpy as BJ
@@ -91,8 +91,10 @@ def fiscal_flows_score_point(regime: dict) -> Optional[tuple]:
     return (d[:10], float(sc)) if sc is not None and d else None
 
 
-def series_ids(cfg: dict, block: str) -> List[str]:
-    return [s["id"] for s in cfg["blocks"][block]["series"].values() if s.get("id")]
+def series_ids(cfg: dict, block: str, source: Optional[str] = None) -> List[str]:
+    """ids of a block; source="valet" leaves out series served by another provider (e.g. StatCan in CAD banking)"""
+    return [s["id"] for s in cfg["blocks"][block]["series"].values()
+            if s.get("id") and (source is None or s.get("source", "valet") == source)]
 
 
 def _merge_hist(hist_dir: str, got: Dict[str, Series], ids: List[str]) -> Dict[str, Series]:
@@ -165,7 +167,22 @@ def fetch_cad(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
     # ── 3 · banking transmission (monthly) ──
     if "monthly" in lanes or (a.backfill and "weekly" in lanes):
         ids = series_ids(cfg, "banking")
-        bk_raw = fetch_valet(ids)
+        bk_raw = fetch_valet(series_ids(cfg, "banking", "valet"))
+        sc_ids = series_ids(cfg, "banking", "statcan")
+        if sc_ids:
+            try:
+                sc = StatCanProvider(fixtures_dir=a.fixtures).fetch(sc_ids, latest_n=300 if a.backfill else 60)
+            except ProviderError as e:
+                errors.append("statcan: %s" % e)
+                E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "statcan", "error": str(e)})
+                sc = {i: [] for i in sc_ids}
+            if not a.fixtures:
+                for i in sc_ids:                                   # merge with history (and survive an outage)
+                    p = os.path.join(hist_dir, "%s.csv" % i)
+                    if os.path.exists(p):
+                        old = [(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"]
+                        sc[i] = clean(old + sc.get(i, []))
+            bk_raw.update(sc)
         blocks["banking"] = B.build_banking(cfg, bk_raw, blocks.get("rates"), prev.get("banking"))
         for i in ids:
             append_history_csv(os.path.join(hist_dir, "%s.csv" % i), i, bk_raw.get(i, []))

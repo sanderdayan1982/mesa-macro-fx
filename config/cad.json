@@ -32,8 +32,9 @@
   "statcan": {
    "base_url": "https://www150.statcan.gc.ca/t1/wds/rest",
    "auth": "none",
-   "status": "pending",
-   "note": "credit aggregates moved here from Valet E2 (Valet series end 2020-09); table IDs to be verified in Phase 3"
+   "status": "verified",
+   "endpoint": "POST /getDataFromVectorsAndLatestNPeriods [{vectorId, latestN}]",
+   "note": "credit aggregates moved here from Valet E2 (Valet series end 2020-09). Verified 2026-10-08: households 36-10-0639-01 v1231415582, private NFCs 36-10-0640-01 v1304432223 (raw, monthly, ~75-day lag like C1/C2)"
   },
   "fiscal_monitor": {
    "base_url": "https://www.canada.ca/en/department-finance/services/publications/fiscal-monitor.html",
@@ -624,27 +625,20 @@
      "usd_analog": null
     },
     "business_loans": {
-     "id": null,
+     "id": "v1304432223",
      "source": "statcan",
-     "status": "pending",
      "label": "Total business credit (StatCan)",
      "usd_analog": "BUSLOANS",
-     "statcan_candidates": [
-      "33-10-0006-01",
-      "36-10-0619-01",
-      "36-10-0640-01"
-     ]
+     "statcan_table": "36-10-0640-01 Credit liabilities of private non-financial corporations — Total credit liabilities, Canada, raw data (millions CAD)",
+     "verified": "2026-10-08 via WDS getDataFromVectorsAndLatestNPeriods: 2026-07 = 2,410,115 (released 2026-09-18). Rejected: 33-10-0006-01 archived (ends 2019-01), 36-10-0619-01 ends 2019-10"
     },
     "household_credit": {
-     "id": null,
+     "id": "v1231415582",
      "source": "statcan",
-     "status": "pending",
      "label": "Total household credit (StatCan)",
      "usd_analog": "TOTLL",
-     "statcan_candidates": [
-      "36-10-0639-01",
-      "V1231415582"
-     ]
+     "statcan_table": "36-10-0639-01 Credit liabilities of households — Total credit liabilities of households, Canada, raw data (millions CAD)",
+     "verified": "2026-10-08 via WDS getDataFromVectorsAndLatestNPeriods: 2026-07 = 3,290,492 (released 2026-09-18)"
     },
     "household_loans_banks": {
      "id": "V36717",

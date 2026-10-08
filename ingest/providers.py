@@ -100,6 +100,50 @@ class ValetProvider:
         return {k: clean(v) for k, v in out.items()}
 
 
+class StatCanProvider:
+    """Statistics Canada WDS (verified 2026-10-08): POST getDataFromVectorsAndLatestNPeriods. Ids are vector ids as
+    StatCan writes them ("v1231415582"); refPer is the month start (2026-07-01), the same dating as Valet C1/C2.
+    Credit aggregates (36-10-0639 households, 36-10-0640 private NFCs) left Valet in 2020-09 and live here."""
+    name = "statcan"
+    URL = "https://www150.statcan.gc.ca/t1/wds/rest/getDataFromVectorsAndLatestNPeriods"
+
+    def __init__(self, fixtures_dir: Optional[str] = None):
+        self.fixtures_dir = fixtures_dir
+
+    def fetch(self, ids: List[str], latest_n: int = 60) -> Dict[str, Series]:
+        if self.fixtures_dir:
+            return ValetProvider(fixtures_dir=self.fixtures_dir)._from_fixtures(ids)   # same CSV layout: date,<id>,...
+        if requests is None:
+            raise ProviderError("requests not installed")
+        body = [{"vectorId": int(i.lstrip("vV")), "latestN": latest_n} for i in ids]
+        last_err: Optional[Exception] = None
+        for k in range(3):
+            try:
+                r = requests.post(self.URL, json=body, headers=UA, timeout=30)
+                if r.status_code != 200:
+                    raise ProviderError("HTTP %s for %s" % (r.status_code, self.URL))
+                return self.parse(r.json(), ids)
+            except Exception as e:  # noqa
+                last_err = e
+                time.sleep(2 + 2 * k)
+        raise ProviderError("failed after 3 tries: %s" % last_err)
+
+    @staticmethod
+    def parse(j: list, ids: List[str]) -> Dict[str, Series]:
+        out: Dict[str, List] = {i: [] for i in ids}
+        by_vec = {int(i.lstrip("vV")): i for i in ids}
+        for item in j or []:
+            o = (item or {}).get("object") or {}
+            sid = by_vec.get(o.get("vectorId"))
+            if sid is None or item.get("status") != "SUCCESS":
+                continue
+            for pnt in o.get("vectorDataPoint") or []:
+                v = pnt.get("value")
+                if v not in (None, "") and pnt.get("refPer"):
+                    out[sid].append((pnt["refPer"][:10], float(v)))
+        return {k: clean(v) for k, v in out.items()}
+
+
 class ValetGroupProvider:
     """Valet group observations (operation-level tables: term repos, OR/ORR, Receiver General auctions, T-bill / bond
     auctions, repurchases). Verified 2026-09-10: the data live at /observations/group/<G>/json; /groups/<G>/json is

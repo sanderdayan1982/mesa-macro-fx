@@ -286,7 +286,13 @@ def build_banking(cfg: dict, valet: Dict[str, Series], rates_block: Optional[dic
     hd = [d for d, _ in S.tail(ser_assets, 24)]
     history = {"dates": hd, "rows": {k: [dict(S.clean(valet.get(b["series"][k]["id"], []))).get(d) for d in hd] for k in ("bank_assets", "deposits_public", "household_loans_banks", "deposits_government", "reserves_on_bank_books")},
                "signal_log": ((prev or {}).get("history", {}).get("signal_log", []) + ([{"date": hd[-1], "label": sig, "score": score}] if hd else []))[-24:]}
-    return _base(cfg["currency"], "banking", cfg, b, E, D, signals, history)
+    out = _base(cfg["currency"], "banking", cfg, b, E, D, signals, history)
+    # block health counts the series that feed the signal; display_only ones keep their own status/badge (bank_assets
+    # is erratic in the source itself: Valet V36852 = StatCan 10-10-0109 v36852) but no longer mark the block stale
+    disp = [k for k, sc in b["series"].items() if sc.get("status") == "display_only"]
+    scored = {k: v for k, v in E.items() if k not in disp}
+    out["source_health"] = dict(_health(scored, len(scored)), display_only=disp)
+    return out
 
 
 # ═══════════════════════ 4 · RATES / MONEY MARKET ═══════════════════════
