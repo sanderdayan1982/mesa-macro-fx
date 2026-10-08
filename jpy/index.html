@@ -155,8 +155,8 @@ const CCY='jpy';
 // the site itself deploys from branch `site` only when the HTML changes. Fallback: the relative path (same origin).
 const DATA_ROOT='https://raw.githubusercontent.com/sanderdayan1982/mesa-macro-fx/main/', BASE=DATA_ROOT+'data/'+CCY+'/', BASE_LOCAL='../data/'+CCY+'/', VQ='?v='+Math.floor(Date.now()/60000);
 function tfetch(u,ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); return fetch(u,{cache:'no-store',signal:c.signal}).finally(()=>clearTimeout(t)); }
-function getJSON(f){ return fetch(BASE_LOCAL+f+'.json'+VQ,{cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })  // relative first: every commit deploys (round 2)
-  .catch(()=>tfetch(BASE+f+'.json'+VQ,6000).then(r=>r.ok?r.json():null).catch(()=>null)); }
+function getJSON(f){ return tfetch(BASE+f+'.json'+VQ,6000).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })  // raw first: data commits no longer redeploy Netlify (acta NETLIFY_CREDITS); local copy is only the fallback
+  .catch(()=>fetch(BASE_LOCAL+f+'.json'+VQ,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)); }
 const FILES=['central_bank','fiscal','banking','rates','regime','calendar','quality','alerts','revisions','regime_history','news','oplog','agent','regime_changelog'];
 const $=id=>document.getElementById(id);
 let D={};
@@ -423,7 +423,7 @@ async function loadAll(){
   $('msg').className='msg info'; $('msg').textContent='Loading…';
   const results=await Promise.allSettled(FILES.map(f=>getJSON(f)));
   D={}; results.forEach((r,i)=>{ D[FILES[i]]=r.status==='fulfilled'?r.value:null; });
-  D.mesa_jefe=await fetch('../data/mesa/jefe.json'+VQ,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)||await tfetch(DATA_ROOT+'data/mesa/jefe.json'+VQ,6000).then(r=>r.ok?r.json():null).catch(()=>null); // verdad única del jefe (sello)
+  D.mesa_jefe=await tfetch(DATA_ROOT+'data/mesa/jefe.json'+VQ,6000).then(r=>r.ok?r.json():null).catch(()=>null)||await fetch('../data/mesa/jefe.json'+VQ,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null); // verdad única del jefe (sello)
   if(!D.regime&&!D.central_bank){ $('msg').className='msg alert'; $('msg').textContent='No data files found under '+BASE+' — run the ingestion workflow first.'; return; }
   try{ render(); }catch(err){ $('msg').className='msg alert'; $('msg').textContent='Render error: '+err.message; console.error(err); }
 }

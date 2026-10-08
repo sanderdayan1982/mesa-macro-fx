@@ -2,6 +2,9 @@
 [build]
   publish = "."
   command = ""
+  # Deploy only when a dashboard page (or this file) changed. Data/bot commits are read by the pages
+  # from raw.githubusercontent.com, so they do not need a deploy (15 credits each).
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- '*index.html' netlify.toml"
 [[headers]]
   for = "/data/*"
   [headers.values]

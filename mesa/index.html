@@ -103,7 +103,7 @@ const DATA_ROOT='https://raw.githubusercontent.com/sanderdayan1982/mesa-macro-fx
 // Every commit to main deploys the site again (decision 2026-09-10), so the JSON next to the HTML is the freshest copy: relative
 // path first, GitHub raw (branch main) as fallback for a stale CDN edge. Same generated_at either way.
 function tfetch(u,ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); return fetch(u,{cache:'no-store',signal:c.signal}).finally(()=>clearTimeout(t)); }
-async function get(u){ const rel=u.replace(/^\.\.\//,''); try{const r=await fetch(u+VQ,{cache:'no-store'}); if(r.ok) return await r.json();}catch(e){} try{const r=await tfetch(DATA_ROOT+rel+VQ,6000); return r.ok?await r.json():null;}catch(e){return null;} }
+async function get(u){ const rel=u.replace(/^\.\.\//,''); try{const r=await tfetch(DATA_ROOT+rel+VQ,6000); if(r.ok) return await r.json();}catch(e){} try{const r=await fetch(u+VQ,{cache:'no-store'}); return r.ok?await r.json():null;}catch(e){return null;} }  // raw first: data commits no longer redeploy Netlify
 async function load(){
   $('msg').className='msg info';$('msg').textContent='Cargando…';
   const D={};
