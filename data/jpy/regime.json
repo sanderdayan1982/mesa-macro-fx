@@ -1,15 +1,15 @@
 {
  "currency": "JPY",
- "generated_at": "2026-10-07T16:48:37+00:00",
- "as_of": "2026-10-06",
+ "generated_at": "2026-10-08T09:19:39+00:00",
+ "as_of": "2026-10-07",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.458,
+ "weighted_score": 0.32,
  "block_scores": {
   "central_bank": 0.5,
   "rates": 0.75,
-  "fiscal": 0.1,
+  "fiscal": -0.59,
   "banking": 0.0
  },
  "weights": {
@@ -27,8 +27,8 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-10-06",
-   "detail": "CAB 4108400.0 · excess/required 27.13x (SAFE) · ΔCAB d/d -200.0 · 20d -49000.0 (SAFE) · JGB purchases vs plan -0.028 · CLF 0.0",
+   "as_of": "2026-10-07",
+   "detail": "CAB 4084800.0 · excess/required 26.96x (SAFE) · ΔCAB d/d -23600.0 · 20d -73500.0 (SAFE) · JGB purchases vs plan -0.028 · CLF 0.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.75,
@@ -46,12 +46,8 @@
     "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-06",
+    "as_of": "2026-10-07",
     "recent": [
-     [
-      "2026-09-29",
-      0.5
-     ],
      [
       "2026-09-30",
       0.5
@@ -70,6 +66,10 @@
      ],
      [
       "2026-10-06",
+      0.5
+     ],
+     [
+      "2026-10-07",
       0.5
      ]
     ],
@@ -99,11 +99,11 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -2.0714,
+   "score": -1.4493,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-07",
-   "detail": "flow -1000.0 (Z 0.1355) · 5d -69300.0 · 20d -39100.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.096",
+   "as_of": "2026-10-08",
+   "detail": "flow -23800.0 (Z -0.7801) · 5d -85100.0 · 20d -62900.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.877",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.6459,
@@ -124,15 +124,11 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -1.298,
+    "effective_score": -1.759,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-07",
+    "as_of": "2026-10-08",
     "recent": [
-     [
-      "2026-09-30",
-      1.3152
-     ],
      [
       "2026-10-01",
       -1.256
@@ -152,6 +148,10 @@
      [
       "2026-10-07",
       -2.0714
+     ],
+     [
+      "2026-10-08",
+      -1.4493
      ]
     ],
     "pending_days": null,
@@ -161,7 +161,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": 0.1
+     "fiscal_flow_z": -0.59
     },
     "level": {},
     "weights": {},
@@ -169,8 +169,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": 0.1,
-    "score_flows_only": 0.1
+    "score_v02": -0.59,
+    "score_flows_only": -0.59
    },
    "engine": "0.4",
    "component": {
@@ -184,15 +184,15 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -85100.0,
-    "denominator": 4108400.0,
-    "denominator_date": "2026-10-06",
-    "today": "2026-10-07",
+    "raw": -59200.0,
+    "denominator": 4084800.0,
+    "denominator_date": "2026-10-07",
+    "today": "2026-10-08",
     "note": null
    },
    "v03_shadow": {
     "regime": "DRAIN",
-    "score": 0.1,
+    "score": -0.59,
     "raw_regime": "DRAIN",
     "cuts": {
      "injection_enter": 0.24,
@@ -200,23 +200,15 @@
      "drain_enter": -0.32,
      "drain_exit": -0.14
     },
-    "as_of": "2026-10-06",
+    "as_of": "2026-10-08",
     "state": {
      "confirmed": "DRAIN",
      "raw": "DRAIN",
-     "effective_score": -0.365,
+     "effective_score": -0.577,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-06",
+     "as_of": "2026-10-08",
      "recent": [
-      [
-       "2026-09-29",
-       -0.2
-      ],
-      [
-       "2026-09-30",
-       -0.12
-      ],
       [
        "2026-10-02",
        -1.24
@@ -224,6 +216,10 @@
       [
        "2026-10-06",
        0.1
+      ],
+      [
+       "2026-10-08",
+       -0.59
       ]
      ],
      "pending_days": null
@@ -234,8 +230,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.34,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 114 weeks < 150); dual score +0.34 shown for context",
+   "score": 0.064,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 114 weeks < 150); dual score +0.06 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -496,7 +492,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily_provisional",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
