@@ -46,7 +46,7 @@ AFT_REVIEW_PAGE = "https://www.aft.gouv.fr/en/monthly-operations-review"  # 2024
 AFT_SYND_XLSX = "https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chiffres/1999-2026_historique_syndications.xlsx"
 MEF_SCADENZE_INDEX = "https://www.dt.mef.gov.it/it/debito_pubblico/dati_statistici/scadenze_titoli_suddivise_anno/index.html?selezione-anno=%d"
 MEF_BASE = "https://www.dt.mef.gov.it"
-TESORO_13_XLSX = "https://www.tesoro.es/sites/default/files/estadisticas/13.xlsx"
+TESORO_13_XLSX = "https://www.tesoro.es/documents/d/tesoro/13-xlsx"  # verified 2026-10-09 (old /sites/default/files/estadisticas/13.xlsx → 404 since ≤2026-10-07)
 
 _MON_IT = {m: i for i, m in enumerate(["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"], 1)}
 _MON_ES = {m: i for i, m in enumerate(["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"], 1)}
