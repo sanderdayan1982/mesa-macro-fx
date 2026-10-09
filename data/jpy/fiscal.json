@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-10-08T16:48:19+00:00",
- "as_of": "2026-10-08",
+ "generated_at": "2026-10-09T03:34:07+00:00",
+ "as_of": "2026-10-09",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
  "source_health": {
@@ -23,18 +23,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -23800.0,
-   "date": "2026-10-07",
-   "prev_value": -1000.0,
-   "prev_date": "2026-10-06",
-   "change_abs": -22800.0,
-   "change_pct": -2280.0,
-   "zscore": -0.8489,
+   "value": -1600.0,
+   "date": "2026-10-08",
+   "prev_value": -23800.0,
+   "prev_date": "2026-10-07",
+   "change_abs": 22200.0,
+   "change_pct": 93.2773,
+   "zscore": 0.1549,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -3800.0,
     14500.0,
     7800.0,
     10700.0,
@@ -85,7 +84,8 @@
     -45400.0,
     12600.0,
     -1000.0,
-    -23800.0
+    -23800.0,
+    -1600.0
    ],
    "high_low": {
     "high": 79400.0,
@@ -143,7 +143,7 @@
     "low": -45200.0,
     "low_date": "2026-10-02"
    },
-   "age_days": -1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "tomorrow's fiscal impulse — unique to JPY"
@@ -225,7 +225,7 @@
     "low": 18797.2,
     "low_date": "2025-06-20"
    },
-   "age_days": 8,
+   "age_days": 9,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -307,7 +307,7 @@
     "low": -52324.0,
     "low_date": "2026-01-31"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -388,7 +388,7 @@
     "low": -136108.0,
     "low_date": "2024-02-29"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -469,7 +469,7 @@
     "low": 5574.0,
     "low_date": "2023-02-28"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -550,7 +550,7 @@
     "low": -45830.0,
     "low_date": "2022-05-31"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -631,7 +631,7 @@
     "low": -153179.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 85,
    "latest_outlier": true,
    "equivalence_note": "MoF FX intervention settlement shows here"
@@ -642,27 +642,22 @@
    "unit": "days",
    "frequency": "event",
    "status": "fresh",
-   "value": 1,
-   "date": "2026-10-07",
+   "value": 6,
+   "date": "2026-10-08",
    "next": {
-    "date": "2026-10-08",
-    "issue": "30-year (92)",
-    "tenor": "30y",
-    "result_href": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/eresul/eresul20261008.htm"
+    "date": "2026-10-14",
+    "issue": "5-year",
+    "tenor": "5y",
+    "result_href": null
    },
    "next_superlong": {
-    "date": "2026-10-08",
-    "issue": "30-year (92)",
-    "tenor": "30y",
-    "result_href": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/eresul/eresul20261008.htm"
+    "date": "2026-10-20",
+    "issue": "20-year",
+    "tenor": "20y",
+    "result_href": null
    },
-   "days_to_superlong": 1,
+   "days_to_superlong": 12,
    "upcoming": [
-    {
-     "date": "2026-10-08",
-     "tenor": "30y",
-     "issue": "30-year (92)"
-    },
     {
      "date": "2026-10-14",
      "tenor": "5y",
@@ -697,9 +692,14 @@
      "date": "2026-11-18",
      "tenor": "20y",
      "issue": "20-year"
+    },
+    {
+     "date": "2026-11-25",
+     "tenor": "40y",
+     "issue": "40-year"
     }
    ],
-   "level": "WATCH",
+   "level": "SAFE",
    "note": "supply event: super-long auction within 3 days = WATCH (position for the tail / QT_STRESS read)"
   },
   "auction_results": {
@@ -779,7 +779,7 @@
     "low": 2.616,
     "low_date": "2023-12-07"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -837,7 +837,7 @@
     "low": 62732.57,
     "low_date": "2026-02-28"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -895,7 +895,7 @@
     "low": 62732.57,
     "low_date": "2026-02-28"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -953,7 +953,7 @@
     "low": 16539.87,
     "low_date": "2024-07-31"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1011,7 +1011,7 @@
     "low": 5224.18,
     "low_date": "2025-11-30"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 85,
    "latest_outlier": true,
    "equivalence_note": "yen-buying FX intervention footprint (receipts = MoF took in yen); Aug-2026 = 162,092 vs 5,968 a year earlier"
@@ -1070,7 +1070,7 @@
     "low": 4410.53,
     "low_date": "2025-11-30"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1128,7 +1128,7 @@
     "low": 107568.73,
     "low_date": "2025-12-31"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1186,7 +1186,7 @@
     "low": -51028.44,
     "low_date": "2024-09-30"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -1230,18 +1230,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -23800.0,
-   "date": "2026-10-07",
-   "prev_value": -1000.0,
-   "prev_date": "2026-10-06",
-   "change_abs": -22800.0,
-   "change_pct": -2280.0,
-   "zscore": -0.7801,
+   "value": -1600.0,
+   "date": "2026-10-08",
+   "prev_value": -23800.0,
+   "prev_date": "2026-10-07",
+   "change_abs": 22200.0,
+   "change_pct": 93.2773,
+   "zscore": 0.1144,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -3800.0,
     14500.0,
     7800.0,
     10700.0,
@@ -1292,7 +1291,8 @@
     -45400.0,
     12600.0,
     -1000.0,
-    -23800.0
+    -23800.0,
+    -1600.0
    ],
    "high_low": {
     "high": 79400.0,
@@ -1312,18 +1312,17 @@
    "unit": "σ",
    "frequency": "daily",
    "status": "fresh",
-   "value": -0.7801,
-   "date": "2026-10-07",
-   "prev_value": 0.1355,
-   "prev_date": "2026-10-06",
-   "change_abs": -0.9156,
-   "change_pct": -675.7196,
-   "zscore": -0.7175,
+   "value": 0.1144,
+   "date": "2026-10-08",
+   "prev_value": -0.7801,
+   "prev_date": "2026-10-07",
+   "change_abs": 0.8945,
+   "change_pct": 114.6648,
+   "zscore": 0.093,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0096,
     0.7841,
     0.497,
     0.6186,
@@ -1374,7 +1373,8 @@
     -1.6513,
     0.6824,
     0.1355,
-    -0.7801
+    -0.7801,
+    0.1144
    ],
    "high_low": {
     "high": 3.416,
@@ -1393,18 +1393,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -85100.0,
-   "date": "2026-10-07",
-   "prev_value": -69300.0,
-   "prev_date": "2026-10-06",
-   "change_abs": -15800.0,
-   "change_pct": -22.7994,
-   "zscore": -0.8384,
+   "value": -59200.0,
+   "date": "2026-10-08",
+   "prev_value": -85100.0,
+   "prev_date": "2026-10-07",
+   "change_abs": 25900.0,
+   "change_pct": 30.4348,
+   "zscore": -0.4602,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    3800.0,
     27300.0,
     31000.0,
     41500.0,
@@ -1455,7 +1454,8 @@
     -89300.0,
     -79100.0,
     -69300.0,
-    -85100.0
+    -85100.0,
+    -59200.0
    ],
    "high_low": {
     "high": 83100.0,
@@ -1474,18 +1474,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -62900.0,
-   "date": "2026-10-07",
-   "prev_value": -39100.0,
-   "prev_date": "2026-10-06",
-   "change_abs": -23800.0,
-   "change_pct": -60.8696,
-   "zscore": 0.5997,
-   "percentile": 60.79,
+   "value": -67800.0,
+   "date": "2026-10-08",
+   "prev_value": -62900.0,
+   "prev_date": "2026-10-07",
+   "change_abs": -4900.0,
+   "change_pct": -7.7901,
+   "zscore": 0.5849,
+   "percentile": 59.21,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -117400.0,
     -74200.0,
     -75900.0,
     -58400.0,
@@ -1536,7 +1535,8 @@
     -87200.0,
     -40300.0,
     -39100.0,
-    -62900.0
+    -62900.0,
+    -67800.0
    ],
    "high_low": {
     "high": -26000.0,
@@ -1554,7 +1554,7 @@
    "value": false,
    "direction": null,
    "status": "fresh",
-   "date": "2026-10-07",
+   "date": "2026-10-08",
    "note": "3 tn yen; threshold to be calibrated on the backfilled 2025-2026 history"
   },
   "fiscal_projection_gap": {
@@ -1564,13 +1564,13 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1900.0,
-   "date": "2026-10-07",
-   "prev_value": -100.0,
-   "prev_date": "2026-10-06",
-   "change_abs": 2000.0,
-   "change_pct": 2000.0,
-   "zscore": 1.3021,
+   "value": -3400.0,
+   "date": "2026-10-08",
+   "prev_value": 1900.0,
+   "prev_date": "2026-10-07",
+   "change_abs": -5300.0,
+   "change_pct": -278.9474,
+   "zscore": -0.9615,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -1593,7 +1593,8 @@
     -200.0,
     3300.0,
     -100.0,
-    1900.0
+    1900.0,
+    -3400.0
    ],
    "high_low": {
     "high": 3300.0,
@@ -1610,7 +1611,7 @@
    "label": "FX_INTERVENTION_SUSPECT",
    "value": true,
    "status": "fresh",
-   "date": "2026-10-07",
+   "date": "2026-10-08",
    "daily_outlier": false,
    "fefsa_receipts_vs_prior_year": 27.16,
    "fefsa_month": "2026-08-31",
@@ -1694,7 +1695,7 @@
     "low": 2.127,
     "low_date": "2025-07-23"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1739,7 +1740,7 @@
     "low": 1.2,
     "low_date": "2026-10-08"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "MoF result pages only (since the XLS lacks the average yield); the May-2025 20Y auction is the reference stress event",
@@ -1786,7 +1787,7 @@
     "low": 0.2,
     "low_date": "2026-10-06"
    },
-   "age_days": 2,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1795,17 +1796,17 @@
    "value": null,
    "regime": "NEUTRAL",
    "status": "fresh",
-   "date": "2026-10-07"
+   "date": "2026-10-08"
   },
   "fiscal_regime_score": {
    "label": "Fiscal regime score (capped ±1.5)",
-   "value": -0.59,
+   "value": 0.09,
    "range": [
     -1.5,
     1.5
    ],
    "status": "fresh",
-   "date": "2026-10-07"
+   "date": "2026-10-08"
   },
   "mmt_note": {
    "label": "MMT note",
@@ -1891,7 +1892,7 @@
     "low": -112700.0,
     "low_date": "2026-08-04"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "J1: = −Δ government account (spending − taxes + redemptions − issuance + FX intervention + other); the regime's Treasury flow"
@@ -1973,7 +1974,7 @@
     "low": -240300.0,
     "low_date": "2026-08-05"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2054,7 +2055,7 @@
     "low": -114200.0,
     "low_date": "2026-08-04"
    },
-   "age_days": -1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "J2: expected component only; never a realized flow"
@@ -2136,7 +2137,7 @@
     "low": -10800.0,
     "low_date": "2026-08-12"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2217,7 +2218,7 @@
     "low": -18200.0,
     "low_date": "2026-08-17"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2229,9 +2230,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-07",
+   "date": "2026-10-08",
    "prev_value": 0.0,
-   "prev_date": "2026-10-06",
+   "prev_date": "2026-10-07",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": 0.0,
@@ -2294,9 +2295,9 @@
    ],
    "high_low": {
     "high": 0.0,
-    "high_date": "2026-07-22",
+    "high_date": "2026-07-23",
     "low": 0.0,
-    "low_date": "2026-07-22"
+    "low_date": "2026-07-23"
    },
    "age_days": 1,
    "confidence": 100,
@@ -2379,7 +2380,7 @@
     "low": -26291.0,
     "low_date": "2026-08-05"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -2460,7 +2461,7 @@
     "low": -30782.0,
     "low_date": "2026-04-01"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -2541,7 +2542,7 @@
     "low": -84999.1,
     "low_date": "2026-01-13"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -2622,7 +2623,7 @@
     "low": 31999.7,
     "low_date": "2026-01-20"
    },
-   "age_days": 38,
+   "age_days": 39,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -2701,7 +2702,7 @@
     "low": 8217.0,
     "low_date": "2024-03-11"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -2780,7 +2781,7 @@
     "low": 8217.0,
     "low_date": "2024-03-11"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -2861,7 +2862,7 @@
     "low": 6.075,
     "low_date": "2024-11-22"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -2942,7 +2943,7 @@
     "low": 0.0,
     "low_date": "2026-06-23"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 55,
    "latest_outlier": true
   },
@@ -3023,7 +3024,7 @@
     "low": 0.0,
     "low_date": "2026-06-23"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false
   },
@@ -3104,7 +3105,7 @@
     "low": -26019.9,
     "low_date": "2026-06-29"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 70,
    "latest_outlier": false,
    "equivalence_note": "J3: decomposition of the Treasury flow — never summed with 財政等要因 (identity, round 1)"
@@ -3186,7 +3187,7 @@
     "low": -148330.1,
     "low_date": "2026-06-22"
    },
-   "age_days": 37,
+   "age_days": 38,
    "confidence": 62,
    "latest_outlier": true,
    "equivalence_note": "income channel; contaminated by その他 (foreign central banks' yen accounts) — Kimi, round 4"
@@ -3196,7 +3197,7 @@
    "value": 342965.0,
    "unit": "JPY 100m (display: tn = 10^12)",
    "status": "fresh",
-   "date": "2026-10-08",
+   "date": "2026-10-09",
    "calendar": [
     [
      "2026-11-02",
@@ -3230,7 +3231,7 @@
    "value": 442.6,
    "unit": "JPY 100m (display: tn = 10^12)",
    "status": "fresh",
-   "date": "2026-10-08",
+   "date": "2026-10-09",
    "calendar": [
     [
      "2026-11-02",
@@ -3243,7 +3244,7 @@
    "value": 221998.0,
    "unit": "JPY 100m (display: tn = 10^12)",
    "status": "fresh",
-   "date": "2026-10-08",
+   "date": "2026-10-09",
    "calendar": [
     [
      "2026-10-13",
@@ -3309,16 +3310,16 @@
     "low": 0.0,
     "low_date": "2026-09-20"
    },
-   "age_days": -328,
+   "age_days": -327,
    "confidence": 100,
    "latest_outlier": false
   },
   "mof_data_cut": {
    "label": "MoF auction-results XLS — last issue date in the file (net issuance flows stop here)",
-   "value": 37,
+   "value": 38,
    "cut_date": "2026-09-01",
    "status": "fresh",
-   "date": "2026-10-08",
+   "date": "2026-10-09",
    "note": "the XLS lags the auction calendar by weeks; maturities after the cut are in the calendars, not in the flow"
   },
   "mei_asof": {
@@ -3328,7 +3329,7 @@
    "published": "2026-10-02",
    "unit": "JPY 100m (display: tn = 10^12)",
    "status": "fresh",
-   "date": "2026-10-08",
+   "date": "2026-10-09",
    "unmapped": []
   },
   "monthly_projection": {
@@ -3365,22 +3366,21 @@
    "projected": -65100.0,
    "days": 0,
    "status": "unavailable",
-   "date": "2026-10-08"
+   "date": "2026-10-09"
   }
  },
  "signals": {
   "traffic_light": "YELLOW",
-  "score": -0.59,
+  "score": 0.09,
   "label": "NEUTRAL",
   "flags": [
-   "FX_INTERVENTION_SUSPECT",
-   "SUPER_LONG_SUPPLY_AHEAD"
+   "FX_INTERVENTION_SUSPECT"
   ],
   "components": {
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "fiscal_flow_z": -0.59
+    "fiscal_flow_z": 0.09
    },
    "level": {},
    "weights": {},
@@ -3388,15 +3388,15 @@
     -1.5,
     1.5
    ],
-   "score_v02": -0.59,
-   "score_flows_only": -0.59
+   "score_v02": 0.09,
+   "score_flows_only": 0.09
   },
-  "detail": "flow -23800.0 (Z -0.7801) · 5d -85100.0 · 20d -62900.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.877",
+  "detail": "flow -1600.0 (Z 0.1144) · 5d -59200.0 · 20d -67800.0 (NEUTRAL) · FEFSA/py 27.16 · BTC super-long 3.877",
   "alerts": [
    {
     "metric": "fiscal_flow_zscore",
     "level": "SAFE",
-    "value": -0.7801,
+    "value": 0.1144,
     "threshold": null,
     "status": "fresh",
     "action_hint": "|Z| ≥ 2 = extraordinary daily flow (tax day, JGB settlement, pension, FX intervention)"
@@ -3404,7 +3404,7 @@
    {
     "metric": "fiscal_flow_20d_cum",
     "level": "SAFE",
-    "value": -62900.0,
+    "value": -67800.0,
     "threshold": null,
     "status": "fresh",
     "action_hint": "20-session cumulative below p20 = fiscal drain"
@@ -3434,11 +3434,11 @@
    },
    {
     "metric": "auction_calendar",
-    "level": "WATCH",
-    "value": 1,
+    "level": "SAFE",
+    "value": 6,
     "threshold": null,
     "status": "fresh",
-    "action_hint": "next super-long: 2026-10-08 30y"
+    "action_hint": "next super-long: 2026-10-20 20y"
    }
   ],
   "components_v04": {
@@ -3448,7 +3448,7 @@
     "treasury_5d_pct": -1.4483,
     "treasury_surprise_5d_pct": 0.0367,
     "net_issuance_5d_pct": 0.1855,
-    "fiscal_flow_z": -0.59
+    "fiscal_flow_z": 0.09
    },
    "level": {},
    "weights": {},
@@ -3456,14 +3456,13 @@
     -2.0,
     2.0
    ],
-   "score_v02": -1.82,
-   "score_flows_only": -1.82,
+   "score_v02": -1.14,
+   "score_flows_only": -1.14,
    "note": "shadow (J1–J3): 財政等要因 realized 5 sessions in % of 当座預金残高 + surprise + MoF net issuance (decomposition); cuts by the v0.4 replay"
   }
  },
  "history": {
   "dates": [
-   "2026-04-10",
    "2026-04-13",
    "2026-04-14",
    "2026-04-15",
@@ -3582,11 +3581,11 @@
    "2026-10-02",
    "2026-10-05",
    "2026-10-06",
-   "2026-10-07"
+   "2026-10-07",
+   "2026-10-08"
   ],
   "rows": {
    "treasury_funds_daily": [
-    -26900.0,
     -3800.0,
     -1200.0,
     73000.0,
@@ -3705,10 +3704,10 @@
     -45400.0,
     12600.0,
     -1000.0,
-    -23800.0
+    -23800.0,
+    -1600.0
    ],
    "fiscal_flow_5d_cum": [
-    -17900.0,
     -19600.0,
     -25100.0,
     42400.0,
@@ -3827,10 +3826,10 @@
     -89300.0,
     -79100.0,
     -69300.0,
-    -85100.0
+    -85100.0,
+    -59200.0
    ],
    "fiscal_flow_20d_cum": [
-    117400.0,
     111700.0,
     118800.0,
     186200.0,
@@ -3949,10 +3948,10 @@
     -87200.0,
     -40300.0,
     -39100.0,
-    -62900.0
+    -62900.0,
+    -67800.0
    ],
    "fiscal_flow_zscore": [
-    -0.9739,
     0.0274,
     0.1396,
     3.3565,
@@ -4071,7 +4070,8 @@
     -1.6513,
     0.6824,
     0.1355,
-    -0.7801
+    -0.7801,
+    0.1144
    ]
   },
   "monthly": {
@@ -4953,6 +4953,11 @@
     "date": "2026-10-07",
     "label": "NEUTRAL",
     "score": -0.59
+   },
+   {
+    "date": "2026-10-08",
+    "label": "NEUTRAL",
+    "score": 0.09
    }
   ]
  }
