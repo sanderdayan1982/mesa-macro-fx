@@ -3,7 +3,7 @@
  "block": "banking",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-10-08T22:22:26+00:00",
+ "generated_at": "2026-10-12T13:49:06+00:00",
  "as_of": "2026-07-01",
  "equivalence_quality": "medium-low",
  "equivalence_note": "USD H.8 is weekly; Canadian chartered-bank aggregates are month-end with ~2-3 month lag. Credit aggregates (business, household) left Valet in 2020-09 and live at Statistics Canada — pending verification. Reviewers proposed different StatCan table IDs (10-10-0109-01 vs 10-10-0114-01; 36-10-0639-01; 36-10-0619-01 vs 33-10-0006-01) — none verified; ingestion must resolve against the StatCan WDS API before use.",
@@ -96,7 +96,7 @@
     "low": 3211092.0,
     "low_date": "2025-01-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "V36852 month-end total oscillates 3.4T–5.4T between adjacent months (2025–26) — erratic in Valet; excluded from the transmission signal until StatCan 10-10-0109/0114 is verified"
@@ -178,7 +178,7 @@
     "low": 2574312.0,
     "low_date": "2022-04-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -259,7 +259,7 @@
     "low": 2645.0,
     "low_date": "2023-03-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -340,7 +340,7 @@
     "low": 963.0,
     "low_date": "2024-02-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "REJECTED as borrowings proxy (2 reject, 2 weak). Interbank stress now read from rates.corra_dispersion_bps and CORRA volume."
@@ -422,7 +422,7 @@
     "low": 60034.0,
     "low_date": "2026-02-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -503,7 +503,7 @@
     "low": 1884402.0,
     "low_date": "2022-04-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -584,7 +584,7 @@
     "low": 2745621.0,
     "low_date": "2022-04-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -665,7 +665,7 @@
     "low": 556953.0,
     "low_date": "2022-04-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -748,7 +748,7 @@
     "low": -0.4713,
     "low_date": "2025-03-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -836,7 +836,7 @@
     "low": -0.995,
     "low_date": "2025-01-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -924,7 +924,7 @@
     "low": -21.1207,
     "low_date": "2025-02-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1012,7 +1012,7 @@
     "low": -0.5746,
     "low_date": "2025-04-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1100,7 +1100,7 @@
     "low": -0.196,
     "low_date": "2023-01-01"
    },
-   "age_days": 99,
+   "age_days": 103,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1489,6 +1489,11 @@
     "date": "2026-07-01",
     "label": "YELLOW",
     "score": 0.0
+   },
+   {
+    "date": "2026-07-01",
+    "label": "RED",
+    "score": -1.5
    },
    {
     "date": "2026-07-01",
