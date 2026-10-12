@@ -1,15 +1,15 @@
 {
  "currency": "EUR",
- "generated_at": "2026-10-12T18:15:28+00:00",
+ "generated_at": "2026-10-12T18:48:23+00:00",
  "as_of": "2026-10-11",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.023,
+ "weighted_score": -0.077,
  "block_scores": {
   "central_bank": -0.42,
   "rates": -0.1,
-  "fiscal": 0.17,
+  "fiscal": -0.19,
   "banking": 1.0
  },
  "weights": {
@@ -28,7 +28,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-11",
-   "detail": "excess liquidity 2110143.0 M (SAFE) · Δ5s -3606.0 (p57.52) · TOMO 34276.0 M (STRUCTURAL (no price confirmation)) · MLF 24.35588804 M · €STR−DFR -6.3 bp (SAFE) · MonPol 13w -99675.0 · phase QT · APP+PEPP rec RECONCILED",
+   "detail": "excess liquidity 2110143.0 M (SAFE) · Δ5s -3606.0 (p57.52) · TOMO 34276.0 M (STRUCTURAL (no price confirmation)) · MLF 24.35588804 M · €STR−DFR -6.3 bp (SAFE) · MonPol 13w -108572.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -110,7 +110,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-09",
-   "detail": "govt deposits 88595.0 M (Δw -2031.0, p50.0) · impulse 4w 2902.0 (p48.57) · 13w 5192.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.1 (WEAK, avg26 1.72) · TARGET Δ3m -36661.8 · rule NEUTRAL",
+   "detail": "govt deposits 96786.0 M (Δw 8191.0, p82.05) · impulse 4w -7511.0 (p22.22) · 13w -6520.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.333 (SOFT, avg26 1.69) · TARGET Δ3m -28939.4 · rule NEUTRAL",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.1427,
@@ -168,11 +168,11 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "impulse_4w_percentile": -0.05
+     "impulse_4w_percentile": -0.93
     },
     "level": {
      "structural_deficit": 1.0,
-     "auction_health": -1.0
+     "auction_health": -0.5
     },
     "weights": {
      "impulse_4w_percentile": 0.5,
@@ -183,8 +183,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.17,
-    "score_flows_only": -0.03
+    "score_v02": -0.19,
+    "score_flows_only": -0.47
    },
    "engine": "0.4",
    "component": {
@@ -206,7 +206,7 @@
    },
    "v03_shadow": {
     "regime": "NEUTRAL",
-    "score": 0.17,
+    "score": -0.19,
     "raw_regime": "NEUTRAL",
     "cuts": {
      "injection_enter": 0.59,
@@ -214,18 +214,22 @@
      "drain_enter": -0.02,
      "drain_exit": 0.1
     },
-    "as_of": "2026-10-06",
+    "as_of": "2026-10-12",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
-     "effective_score": 0.17,
+     "effective_score": -0.01,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-06",
+     "as_of": "2026-10-12",
      "recent": [
       [
        "2026-10-06",
        0.17
+      ],
+      [
+       "2026-10-12",
+       -0.19
       ]
      ],
      "pending_days": null
@@ -236,8 +240,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.243,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.24 shown for context",
+   "score": -0.351,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.35 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -281,7 +285,6 @@
  "flags": [
   "PHASE_QT",
   "MRO_RELIANCE",
-  "WEAK_AUCTION",
   "STRUCTURAL_DEFICIT_INJECTION",
   "COUNTRY_SPREAD_WATCH"
  ],
@@ -445,8 +448,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
-  "backfill": false,
-  "errors": []
+  "lane": "all",
+  "backfill": true,
+  "errors": [
+   "mef_pdf(CCTeu_7_Years_Syndicate_placement_23.03.2022.pdf): ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
+  ]
  }
 }

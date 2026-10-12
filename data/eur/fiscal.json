@@ -3,16 +3,18 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-10-12T18:13:28+00:00",
- "as_of": "2026-10-06",
+ "generated_at": "2026-10-12T18:42:30+00:00",
+ "as_of": "2026-10-12",
  "equivalence_quality": "medium-low",
  "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
  "source_health": {
-  "status": "stale",
+  "status": "fresh",
   "series_loaded": 13,
   "series_expected": 13,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "mef_pdf(CCTeu_7_Years_Syndicate_placement_23.03.2022.pdf): ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
+  ],
   "series_pending": 1
  },
  "series": {
@@ -22,14 +24,14 @@
    "usd_analog": "TGA (aggregate)",
    "unit": "EUR millions",
    "frequency": "weekly",
-   "status": "stale",
-   "value": 88595.0,
-   "date": "2026-09-25",
-   "prev_value": 90626.0,
-   "prev_date": "2026-09-18",
-   "change_abs": -2031.0,
-   "change_pct": -2.2411,
-   "zscore": -1.1834,
+   "status": "fresh",
+   "value": 96786.0,
+   "date": "2026-10-02",
+   "prev_value": 88595.0,
+   "prev_date": "2026-09-25",
+   "change_abs": 8191.0,
+   "change_pct": 9.2454,
+   "zscore": 0.2122,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -73,7 +75,8 @@
     89275.0,
     94717.0,
     90626.0,
-    88595.0
+    88595.0,
+    96786.0
    ],
    "high_low": {
     "high": 122301.0,
@@ -81,8 +84,8 @@
     "low": 86605.0,
     "low_date": "2026-08-21"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false
   },
   "govt_debt_held": {
@@ -91,14 +94,14 @@
    "usd_analog": null,
    "unit": "EUR millions",
    "frequency": "weekly",
-   "status": "stale",
-   "value": 19703.0,
-   "date": "2026-09-25",
+   "status": "fresh",
+   "value": 19697.0,
+   "date": "2026-10-02",
    "prev_value": 19703.0,
-   "prev_date": "2026-09-18",
-   "change_abs": 0.0,
-   "change_pct": 0.0,
-   "zscore": 0.9839,
+   "prev_date": "2026-09-25",
+   "change_abs": -6.0,
+   "change_pct": -0.0305,
+   "zscore": -5.092,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -113,7 +116,6 @@
     20171.0,
     20171.0,
     20171.0,
-    20171.0,
     20169.0,
     20169.0,
     19701.0,
@@ -154,16 +156,17 @@
     19703.0,
     19703.0,
     19703.0,
-    19703.0
+    19703.0,
+    19697.0
    ],
    "high_low": {
     "high": 20171.0,
-    "high_date": "2025-10-03",
-    "low": 19700.0,
-    "low_date": "2026-01-09"
+    "high_date": "2025-10-10",
+    "low": 19697.0,
+    "low_date": "2026-10-02"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false,
    "display_only": true
   },
@@ -174,18 +177,17 @@
    "unit": "EUR millions",
    "frequency": "monthly",
    "status": "fresh",
-   "value": 1037116.1,
-   "date": "2026-07-01",
-   "prev_value": 1043208.02,
-   "prev_date": "2026-06-01",
-   "change_abs": -6091.92,
-   "change_pct": -0.584,
-   "zscore": -0.4036,
+   "value": 1071765.29,
+   "date": "2026-08-01",
+   "prev_value": 1037116.1,
+   "prev_date": "2026-07-01",
+   "change_abs": 34649.19,
+   "change_pct": 3.3409,
+   "zscore": 2.0457,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1135418.46,
     1159715.72,
     1216530.28,
     1166154.83,
@@ -236,7 +238,8 @@
     1059476.87,
     1065689.64,
     1043208.02,
-    1037116.1
+    1037116.1,
+    1071765.29
    ],
    "high_low": {
     "high": 1269075.98,
@@ -244,7 +247,7 @@
     "low": 1017130.43,
     "low_date": "2026-02-01"
    },
-   "age_days": 103,
+   "age_days": 72,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -255,18 +258,17 @@
    "unit": "EUR millions",
    "frequency": "monthly",
    "status": "fresh",
-   "value": -331168.67,
-   "date": "2026-07-01",
-   "prev_value": -335639.17,
-   "prev_date": "2026-06-01",
-   "change_abs": 4470.5,
-   "change_pct": 1.3319,
-   "zscore": 2.0492,
+   "value": -344949.42,
+   "date": "2026-08-01",
+   "prev_value": -331168.67,
+   "prev_date": "2026-07-01",
+   "change_abs": -13780.75,
+   "change_pct": -4.1612,
+   "zscore": 0.8031,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -573014.31,
     -596912.51,
     -627682.41,
     -640085.25,
@@ -317,7 +319,8 @@
     -348792.05,
     -358561.54,
     -335639.17,
-    -331168.67
+    -331168.67,
+    -344949.42
    ],
    "high_low": {
     "high": -331168.67,
@@ -325,7 +328,7 @@
     "low": -714932.27,
     "low_date": "2022-09-01"
    },
-   "age_days": 103,
+   "age_days": 72,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -336,18 +339,17 @@
    "unit": "EUR millions",
    "frequency": "monthly",
    "status": "fresh",
-   "value": -430474.26,
-   "date": "2026-07-01",
-   "prev_value": -445663.15,
-   "prev_date": "2026-06-01",
-   "change_abs": 15188.89,
-   "change_pct": 3.4082,
-   "zscore": -0.5823,
+   "value": -442554.69,
+   "date": "2026-08-01",
+   "prev_value": -430474.26,
+   "prev_date": "2026-07-01",
+   "change_abs": -12080.43,
+   "change_pct": -2.8063,
+   "zscore": -0.9481,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -505287.48,
     -525983.31,
     -516052.52,
     -494878.54,
@@ -398,7 +400,8 @@
     -444638.09,
     -448787.57,
     -445663.15,
-    -430474.26
+    -430474.26,
+    -442554.69
    ],
    "high_low": {
     "high": -354874.82,
@@ -406,7 +409,7 @@
     "low": -525983.31,
     "low_date": "2022-05-01"
    },
-   "age_days": 103,
+   "age_days": 72,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -417,18 +420,17 @@
    "unit": "EUR millions",
    "frequency": "monthly",
    "status": "fresh",
-   "value": -182480.77,
-   "date": "2026-07-01",
-   "prev_value": -196843.08,
-   "prev_date": "2026-06-01",
-   "change_abs": 14362.31,
-   "change_pct": 7.2963,
-   "zscore": 0.3901,
+   "value": -181336.52,
+   "date": "2026-08-01",
+   "prev_value": -182480.77,
+   "prev_date": "2026-07-01",
+   "change_abs": 1144.25,
+   "change_pct": 0.6271,
+   "zscore": 0.4041,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -39544.72,
     -28276.56,
     -104623.29,
     -44186.32,
@@ -479,7 +481,8 @@
     -187355.32,
     -190430.87,
     -196843.08,
-    -182480.77
+    -182480.77,
+    -181336.52
    ],
    "high_low": {
     "high": -14530.51,
@@ -487,7 +490,7 @@
     "low": -240108.41,
     "low_date": "2025-10-01"
    },
-   "age_days": 103,
+   "age_days": 72,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -498,19 +501,17 @@
    "unit": "EUR millions",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.1,
-   "date": "2026-10-06",
-   "prev_value": 1.768,
-   "prev_date": "2026-10-05",
-   "change_abs": -0.668,
-   "change_pct": -37.7828,
+   "value": 1.333,
+   "date": "2026-10-12",
+   "prev_value": 1.4,
+   "prev_date": "2026-10-07",
+   "change_abs": -0.067,
+   "change_pct": -4.7857,
    "zscore": null,
    "percentile": null,
    "window": null,
-   "level": "WATCH",
+   "level": "SAFE",
    "sparkline": [
-    2.4,
-    2.611,
     1.4,
     2.135,
     1.953,
@@ -560,7 +561,9 @@
     1.863,
     1.2,
     1.768,
-    1.1
+    1.1,
+    1.4,
+    1.333
    ],
    "high_low": {
     "high": 2.833,
@@ -568,11 +571,11 @@
     "low": 1.0,
     "low_date": "2026-07-08"
    },
-   "age_days": 6,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
-   "badge": "WEAK",
-   "avg_26": 1.72
+   "badge": "SOFT",
+   "avg_26": 1.69
   },
   "de_auction_avg_yield": {
    "source_id": "DE:avg_yield",
@@ -581,19 +584,17 @@
    "unit": "EUR millions",
    "frequency": "event",
    "status": "fresh",
-   "value": 3.1,
-   "date": "2026-10-06",
-   "prev_value": 2.737,
-   "prev_date": "2026-10-05",
-   "change_abs": 0.363,
-   "change_pct": 13.2627,
+   "value": 2.871,
+   "date": "2026-10-12",
+   "prev_value": 3.36,
+   "prev_date": "2026-10-07",
+   "change_abs": -0.489,
+   "change_pct": -14.5536,
    "zscore": null,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.8,
-    2.384,
     2.7,
     3.583,
     2.38,
@@ -643,7 +644,9 @@
     3.789,
     3.58,
     2.737,
-    3.1
+    3.1,
+    3.36,
+    2.871
    ],
    "high_low": {
     "high": 3.892,
@@ -651,7 +654,7 @@
     "low": 2.331,
     "low_date": "2026-06-01"
    },
-   "age_days": 6,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -662,19 +665,17 @@
    "unit": "EUR millions",
    "frequency": "event",
    "status": "fresh",
-   "value": 1473.9,
-   "date": "2026-10-06",
-   "prev_value": 878.0,
-   "prev_date": "2026-10-05",
-   "change_abs": 595.9,
-   "change_pct": 67.8702,
+   "value": 1549.0,
+   "date": "2026-10-12",
+   "prev_value": 2088.0,
+   "prev_date": "2026-10-07",
+   "change_abs": -539.0,
+   "change_pct": -25.8142,
    "zscore": null,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    838.4,
-    573.7,
     1370.0,
     374.7,
     107.0,
@@ -724,7 +725,9 @@
     346.7,
     1323.0,
     878.0,
-    1473.9
+    1473.9,
+    2088.0,
+    1549.0
    ],
    "high_low": {
     "high": 2591.0,
@@ -732,7 +735,7 @@
     "low": 84.2,
     "low_date": "2026-09-21"
    },
-   "age_days": 6,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -923,18 +926,16 @@
    "frequency": "event",
    "status": "fresh",
    "value": 6000.0,
-   "date": "2026-10-06",
-   "prev_value": 6000.0,
-   "prev_date": "2026-10-05",
-   "change_abs": 0.0,
-   "change_pct": 0.0,
+   "date": "2026-10-12",
+   "prev_value": 4000.0,
+   "prev_date": "2026-10-07",
+   "change_abs": 2000.0,
+   "change_pct": 50.0,
    "zscore": null,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    3500.0,
-    5000.0,
     6000.0,
     2500.0,
     4000.0,
@@ -984,6 +985,8 @@
     2000.0,
     5500.0,
     6000.0,
+    6000.0,
+    4000.0,
     6000.0
    ],
    "high_low": {
@@ -992,7 +995,7 @@
     "low": 1500.0,
     "low_date": "2026-07-07"
    },
-   "age_days": 6,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -1003,19 +1006,18 @@
    "usd_analog": null,
    "unit": "EUR millions",
    "frequency": "weekly",
-   "status": "stale",
-   "value": 182691.0,
-   "date": "2026-09-25",
-   "prev_value": 194648.0,
-   "prev_date": "2026-09-18",
-   "change_abs": -11957.0,
-   "change_pct": -6.1429,
-   "zscore": -1.0732,
+   "status": "fresh",
+   "value": 194193.0,
+   "date": "2026-10-02",
+   "prev_value": 182691.0,
+   "prev_date": "2026-09-25",
+   "change_abs": 11502.0,
+   "change_pct": 6.2959,
+   "zscore": 0.1434,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    191710.0,
     190330.0,
     191366.0,
     181216.0,
@@ -1066,7 +1068,8 @@
     181821.0,
     187781.0,
     194648.0,
-    182691.0
+    182691.0,
+    194193.0
    ],
    "high_low": {
     "high": 230007.0,
@@ -1074,8 +1077,8 @@
     "low": 178625.0,
     "low_date": "2026-08-21"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false,
    "display_only": true,
    "equivalence_note": "the government-deposit breakdown L050100 exists on the portal only since 2025-W45 (verified 2026-09-09); L050000 since 2015 gives the long-run scale (181,821 on 2026-W36 = 89,275 + 92,546)"
@@ -1089,14 +1092,14 @@
    "unit": "EUR millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": -2031.0,
-   "date": "2026-09-25",
-   "prev_value": -4091.0,
-   "prev_date": "2026-09-18",
-   "change_abs": 2060.0,
-   "change_pct": 50.3544,
-   "zscore": -0.2351,
-   "percentile": 50.0,
+   "value": 8191.0,
+   "date": "2026-10-02",
+   "prev_value": -2031.0,
+   "prev_date": "2026-09-25",
+   "change_abs": 10222.0,
+   "change_pct": 503.2989,
+   "zscore": 1.2969,
+   "percentile": 82.05,
    "window": "156w",
    "level": "SAFE",
    "sparkline": [
@@ -1138,7 +1141,8 @@
     -2222.0,
     5442.0,
     -4091.0,
-    -2031.0
+    -2031.0,
+    8191.0
    ],
    "high_low": {
     "high": 15013.0,
@@ -1146,21 +1150,21 @@
     "low": -11492.0,
     "low_date": "2026-06-05"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 10134.0,
-     "STRESS": 13681.66
+     "WATCH": 10040.0,
+     "STRESS": 13657.84
     },
     "window": "156w",
-    "n": 38,
+    "n": 39,
     "era_anchor": "2022-09-14",
     "era_thin": false
    },
-   "direction": "INJECTION"
+   "direction": "DRAIN"
   },
   "fiscal_impulse_4w": {
    "source_id": null,
@@ -1169,14 +1173,14 @@
    "unit": "EUR millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 2902.0,
-   "date": "2026-09-25",
-   "prev_value": -4021.0,
-   "prev_date": "2026-09-18",
-   "change_abs": 6923.0,
-   "change_pct": 172.1711,
-   "zscore": 0.1081,
-   "percentile": 48.57,
+   "value": -7511.0,
+   "date": "2026-10-02",
+   "prev_value": 2902.0,
+   "prev_date": "2026-09-25",
+   "change_abs": -10413.0,
+   "change_pct": -358.8215,
+   "zscore": -1.2687,
+   "percentile": 22.22,
    "window": "156w",
    "level": "SAFE",
    "sparkline": [
@@ -1215,7 +1219,8 @@
     1955.0,
     -1988.0,
     -4021.0,
-    2902.0
+    2902.0,
+    -7511.0
    ],
    "high_low": {
     "high": 16896.0,
@@ -1223,18 +1228,18 @@
     "low": -31224.0,
     "low_date": "2026-01-30"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "levels": {},
     "window": "156w",
-    "n": 35,
+    "n": 36,
     "era_anchor": "2022-09-14",
     "era_thin": false
    },
-   "direction": "INJECTION",
+   "direction": "DRAIN",
    "thin_history": false
   },
   "fiscal_impulse_13w": {
@@ -1244,13 +1249,13 @@
    "unit": "EUR millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 5192.0,
-   "date": "2026-09-25",
-   "prev_value": -2064.0,
-   "prev_date": "2026-09-18",
-   "change_abs": 7256.0,
-   "change_pct": 351.5504,
-   "zscore": -0.0628,
+   "value": -6520.0,
+   "date": "2026-10-02",
+   "prev_value": 5192.0,
+   "prev_date": "2026-09-25",
+   "change_abs": -11712.0,
+   "change_pct": -225.5778,
+   "zscore": -1.6942,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -1281,7 +1286,8 @@
     1844.0,
     -103.0,
     -2064.0,
-    5192.0
+    5192.0,
+    -6520.0
    ],
    "high_low": {
     "high": 16785.0,
@@ -1289,8 +1295,8 @@
     "low": -10692.0,
     "low_date": "2026-04-10"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false
   },
   "target_fragmentation": {
@@ -1300,18 +1306,17 @@
    "unit": "EUR millions",
    "frequency": "monthly",
    "status": "fresh",
-   "value": -36661.8,
-   "date": "2026-07-01",
-   "prev_value": 15347.0,
-   "prev_date": "2026-06-01",
-   "change_abs": -52008.8,
-   "change_pct": -338.8858,
-   "zscore": -0.9838,
-   "percentile": 37.78,
+   "value": -28939.4,
+   "date": "2026-08-01",
+   "prev_value": -36661.8,
+   "prev_date": "2026-07-01",
+   "change_abs": 7722.4,
+   "change_pct": 21.0639,
+   "zscore": -0.8771,
+   "percentile": 41.3,
    "window": "60m",
    "level": "SAFE",
    "sparkline": [
-    17697.2,
     17258.3,
     94684.9,
     61303.6,
@@ -1362,7 +1367,8 @@
     31318.7,
     33192.5,
     15347.0,
-    -36661.8
+    -36661.8,
+    -28939.4
    ],
    "high_low": {
     "high": 111934.6,
@@ -1370,17 +1376,17 @@
     "low": -122321.9,
     "low_date": "2023-12-01"
    },
-   "age_days": 103,
+   "age_days": 72,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 30102.32,
-     "STRESS": 50012.0
+     "WATCH": 29806.4,
+     "STRESS": 49343.8
     },
     "window": "60m",
-    "n": 45,
+    "n": 46,
     "era_anchor": "2022-09-14",
     "era_thin": false
    }
@@ -1392,18 +1398,17 @@
    "unit": "EUR millions",
    "frequency": "monthly",
    "status": "fresh",
-   "value": 944123.7,
-   "date": "2026-07-01",
-   "prev_value": 978145.4,
-   "prev_date": "2026-06-01",
-   "change_abs": -34021.7,
-   "change_pct": -3.4782,
-   "zscore": -1.3964,
+   "value": 968840.6,
+   "date": "2026-08-01",
+   "prev_value": 944123.7,
+   "prev_date": "2026-07-01",
+   "change_abs": 24716.9,
+   "change_pct": 2.618,
+   "zscore": 0.0573,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1117846.5,
     1151172.4,
     1248358.2,
     1179150.1,
@@ -1454,7 +1459,8 @@
     980785.5,
     997780.0,
     978145.4,
-    944123.7
+    944123.7,
+    968840.6
    ],
    "high_low": {
     "high": 1286935.6,
@@ -1462,7 +1468,7 @@
     "low": 931512.4,
     "low_date": "2025-12-01"
    },
-   "age_days": 103,
+   "age_days": 72,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1473,19 +1479,17 @@
    "unit": "EUR millions",
    "frequency": "event",
    "status": "fresh",
-   "value": 48500.0,
-   "date": "2026-10-06",
-   "prev_value": 44000.0,
-   "prev_date": "2026-10-05",
-   "change_abs": 4500.0,
-   "change_pct": 10.2273,
+   "value": 47000.0,
+   "date": "2026-10-12",
+   "prev_value": 47000.0,
+   "prev_date": "2026-10-07",
+   "change_abs": 0.0,
+   "change_pct": 0.0,
    "zscore": null,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    40000.0,
-    40000.0,
     41000.0,
     40500.0,
     40500.0,
@@ -1535,7 +1539,9 @@
     43000.0,
     43000.0,
     44000.0,
-    48500.0
+    48500.0,
+    47000.0,
+    47000.0
    ],
    "high_low": {
     "high": 49000.0,
@@ -1543,7 +1549,7 @@
     "low": 34000.0,
     "low_date": "2026-07-01"
    },
-   "age_days": 6,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1554,12 +1560,12 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.768,
-   "date": "2026-10-05",
-   "prev_value": 2.306,
-   "prev_date": "2026-09-21",
-   "change_abs": -0.538,
-   "change_pct": -23.3304,
+   "value": 1.333,
+   "date": "2026-10-12",
+   "prev_value": 1.768,
+   "prev_date": "2026-10-05",
+   "change_abs": -0.435,
+   "change_pct": -24.6041,
    "zscore": null,
    "percentile": null,
    "window": null,
@@ -1592,7 +1598,8 @@
     1.715,
     1.767,
     2.306,
-    1.768
+    1.768,
+    1.333
    ],
    "high_low": {
     "high": 3.653,
@@ -1600,7 +1607,7 @@
     "low": 1.126,
     "low_date": "2026-06-01"
    },
-   "age_days": 7,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1611,18 +1618,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.1,
-   "date": "2026-10-06",
-   "prev_value": 1.2,
-   "prev_date": "2026-09-30",
-   "change_abs": -0.1,
-   "change_pct": -8.3333,
+   "value": 1.4,
+   "date": "2026-10-07",
+   "prev_value": 1.1,
+   "prev_date": "2026-10-06",
+   "change_abs": 0.3,
+   "change_pct": 27.2727,
    "zscore": null,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.6,
     1.2,
     2.018,
     1.1,
@@ -1673,7 +1679,8 @@
     1.2,
     1.863,
     1.2,
-    1.1
+    1.1,
+    1.4
    ],
    "high_low": {
     "high": 2.936,
@@ -1681,7 +1688,7 @@
     "low": 1.0,
     "low_date": "2026-04-14"
    },
-   "age_days": 6,
+   "age_days": 5,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1699,18 +1706,18 @@
    "value": null,
    "regime": "NEUTRAL",
    "status": "fresh",
-   "date": "2026-09-25",
+   "date": "2026-10-02",
    "inputs": {
-    "impulse_4w": 2902.0,
-    "percentile": 48.57,
+    "impulse_4w": -7511.0,
+    "percentile": 22.22,
     "thin_history": false,
     "deficit_gdp": -3.0627,
-    "bid_to_cover": 1.1
+    "bid_to_cover": 1.333
    },
    "components": {
-    "impulse": -0.05,
+    "impulse": -0.93,
     "structural": 1.0,
-    "auctions": -1.0,
+    "auctions": -0.5,
     "weights": [
      0.5,
      0.35,
@@ -2867,13 +2874,13 @@
    "unit": "EUR millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": -24608.95,
-   "date": "2026-09-25",
-   "prev_value": 31437.66,
-   "prev_date": "2026-09-18",
-   "change_abs": -56046.61,
-   "change_pct": -178.2786,
-   "zscore": -0.7171,
+   "value": -19133.636,
+   "date": "2026-10-02",
+   "prev_value": -24608.95,
+   "prev_date": "2026-09-25",
+   "change_abs": 5475.314,
+   "change_pct": 22.2493,
+   "zscore": -0.544,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -2916,7 +2923,8 @@
     -13867.634,
     -30287.957,
     31437.66,
-    -24608.95
+    -24608.95,
+    -19133.636
    ],
    "high_low": {
     "high": 48742.049,
@@ -2924,8 +2932,8 @@
     "low": -47482.041,
     "low_date": "2026-06-26"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false
   },
   "fiscal_impulse_v04_weekly": {
@@ -2935,13 +2943,13 @@
    "unit": "EUR millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 26639.95,
-   "date": "2026-09-25",
-   "prev_value": -27346.66,
-   "prev_date": "2026-09-18",
-   "change_abs": 53986.61,
-   "change_pct": 197.4157,
-   "zscore": 0.7414,
+   "value": 10942.636,
+   "date": "2026-10-02",
+   "prev_value": 26639.95,
+   "prev_date": "2026-09-25",
+   "change_abs": -15697.314,
+   "change_pct": -58.924,
+   "zscore": 0.1784,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -2984,7 +2992,8 @@
     16089.634,
     24845.957,
     -27346.66,
-    26639.95
+    26639.95,
+    10942.636
    ],
    "high_low": {
     "high": 52615.027,
@@ -2992,8 +3001,8 @@
     "low": -62511.049,
     "low_date": "2026-05-01"
    },
-   "age_days": 17,
-   "confidence": 85,
+   "age_days": 10,
+   "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "E3: income channel; L050100 exists only since 2025-W45 → short history until the replay"
   },
@@ -3931,21 +3940,20 @@
  },
  "signals": {
   "traffic_light": "YELLOW",
-  "score": 0.17,
+  "score": -0.19,
   "label": "NEUTRAL",
   "flags": [
-   "WEAK_AUCTION",
    "STRUCTURAL_DEFICIT_INJECTION"
   ],
   "components": {
    "mode": "weighted",
    "level_weight": 1.0,
    "flow": {
-    "impulse_4w_percentile": -0.05
+    "impulse_4w_percentile": -0.93
    },
    "level": {
     "structural_deficit": 1.0,
-    "auction_health": -1.0
+    "auction_health": -0.5
    },
    "weights": {
     "impulse_4w_percentile": 0.5,
@@ -3956,18 +3964,18 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.17,
-   "score_flows_only": -0.03
+   "score_v02": -0.19,
+   "score_flows_only": -0.47
   },
-  "detail": "govt deposits 88595.0 M (Δw -2031.0, p50.0) · impulse 4w 2902.0 (p48.57) · 13w 5192.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.1 (WEAK, avg26 1.72) · TARGET Δ3m -36661.8 · rule NEUTRAL",
+  "detail": "govt deposits 96786.0 M (Δw 8191.0, p82.05) · impulse 4w -7511.0 (p22.22) · 13w -6520.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.333 (SOFT, avg26 1.69) · TARGET Δ3m -28939.4 · rule NEUTRAL",
   "alerts": [
    {
     "metric": "govt_deposits_wow",
     "level": "SAFE",
-    "value": -2031.0,
+    "value": 8191.0,
     "threshold": {
-     "WATCH": 10134.0,
-     "STRESS": 13681.66
+     "WATCH": 10040.0,
+     "STRESS": 13657.84
     },
     "status": "fresh",
     "action_hint": "beyond p90/p97 = government cash build (drain) or release (injection) of unusual size"
@@ -3975,7 +3983,7 @@
    {
     "metric": "fiscal_impulse_4w",
     "level": "SAFE",
-    "value": 2902.0,
+    "value": -7511.0,
     "threshold": {},
     "status": "fresh",
     "action_hint": "≤ p20 = 4-week cash build draining excess liquidity"
@@ -3983,18 +3991,18 @@
    {
     "metric": "target_fragmentation",
     "level": "SAFE",
-    "value": -36661.8,
+    "value": -28939.4,
     "threshold": {
-     "WATCH": 30102.32,
-     "STRESS": 50012.0
+     "WATCH": 29806.4,
+     "STRESS": 49343.8
     },
     "status": "fresh",
     "action_hint": "periphery TARGET liabilities rising fast = fragmentation"
    },
    {
     "metric": "de_auction_bid_to_cover",
-    "level": "WATCH",
-    "value": 1.1,
+    "level": "SAFE",
+    "value": 1.333,
     "threshold": null,
     "status": "fresh",
     "action_hint": "< 1.2 weak demand · < 1.0 uncovered"
@@ -4004,8 +4012,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_weekly_pct": -1.1662,
-    "fiscal_impulse_v04_pct": 1.2625
+    "net_issuance_weekly_pct": -0.9067,
+    "fiscal_impulse_v04_pct": 0.5186
    },
    "level": {},
    "weights": {},
@@ -4013,8 +4021,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.1,
-   "score_flows_only": 0.1,
+   "score_v02": -0.39,
+   "score_flows_only": -0.39,
    "note": "shadow (E1–E3): weekly net issuance by settlement + −ΔL050100; GFS.Q out; cuts by the v0.4 replay"
   }
  },
@@ -4059,7 +4067,8 @@
    "2026-09-04",
    "2026-09-11",
    "2026-09-18",
-   "2026-09-25"
+   "2026-09-25",
+   "2026-10-02"
   ],
   "rows": {
    "govt_deposits": [
@@ -4102,7 +4111,8 @@
     89275.0,
     94717.0,
     90626.0,
-    88595.0
+    88595.0,
+    96786.0
    ],
    "govt_deposits_wow": [
     null,
@@ -4144,7 +4154,8 @@
     -2222.0,
     5442.0,
     -4091.0,
-    -2031.0
+    -2031.0,
+    8191.0
    ],
    "fiscal_impulse_4w": [
     null,
@@ -4186,7 +4197,8 @@
     1955.0,
     -1988.0,
     -4021.0,
-    2902.0
+    2902.0,
+    -7511.0
    ],
    "govt_debt_held": [
     20171.0,
@@ -4228,12 +4240,11 @@
     19703.0,
     19703.0,
     19703.0,
-    19703.0
+    19703.0,
+    19697.0
    ]
   },
   "auction_dates": [
-   "2026-06-10",
-   "2026-06-15",
    "2026-06-16",
    "2026-06-17",
    "2026-06-23",
@@ -4271,12 +4282,12 @@
    "2026-09-23",
    "2026-09-30",
    "2026-10-05",
-   "2026-10-06"
+   "2026-10-06",
+   "2026-10-07",
+   "2026-10-12"
   ],
   "auction_rows": {
    "bid_to_cover": [
-    1.7,
-    1.438,
     1.6,
     1.715,
     1.9,
@@ -4314,11 +4325,11 @@
     1.863,
     1.2,
     1.768,
-    1.1
+    1.1,
+    1.4,
+    1.333
    ],
    "avg_yield": [
-    3.06,
-    2.418,
     2.64,
     3.449,
     2.57,
@@ -4356,11 +4367,11 @@
     3.789,
     3.58,
     2.737,
-    3.1
+    3.1,
+    3.36,
+    2.871
    ],
    "retention": [
-    1018.4,
-    342.0,
     1176.3,
     393.1,
     1193.3,
@@ -4398,11 +4409,11 @@
     346.7,
     1323.0,
     878.0,
-    1473.9
+    1473.9,
+    2088.0,
+    1549.0
    ],
    "volume": [
-    5000.0,
-    5000.0,
     5000.0,
     2500.0,
     5000.0,
@@ -4440,11 +4451,11 @@
     2000.0,
     5500.0,
     6000.0,
+    6000.0,
+    4000.0,
     6000.0
    ],
    "supply_4w": [
-    37000.0,
-    38000.0,
     38000.0,
     35500.0,
     40500.0,
@@ -4482,73 +4493,12 @@
     43000.0,
     43000.0,
     44000.0,
-    48500.0
+    48500.0,
+    47000.0,
+    47000.0
    ]
   },
   "auction_lines": [
-   {
-    "no": "78",
-    "date": "2026-08-12",
-    "isin": "DE0001102614",
-    "bond": "Bund",
-    "coupon": 0.018,
-    "maturity": "2053-08-15",
-    "segment": "30 Y",
-    "volume": 1500.0,
-    "type": "R",
-    "process": "M-A",
-    "bids": 1407.0,
-    "competitive": 929.0,
-    "non_competitive": 478.0,
-    "allotted": 1063.0,
-    "lowest_price": 68.54,
-    "avg_price": 68.56,
-    "avg_yield": 3.65,
-    "retention": 437.0,
-    "bid_to_cover": 1.3
-   },
-   {
-    "no": "79",
-    "date": "2026-08-17",
-    "isin": "DE000BU0E386",
-    "bond": "Bubill",
-    "coupon": null,
-    "maturity": "2027-02-17",
-    "segment": "12 M",
-    "volume": 3000.0,
-    "type": "R",
-    "process": "M-A",
-    "bids": 3889.0,
-    "competitive": 2744.0,
-    "non_competitive": 1145.0,
-    "allotted": 2780.0,
-    "lowest_price": 98.74843,
-    "avg_price": 98.7509,
-    "avg_yield": 2.502,
-    "retention": 220.0,
-    "bid_to_cover": 1.4
-   },
-   {
-    "no": "79",
-    "date": "2026-08-17",
-    "isin": "DE000BU0E444",
-    "bond": "Bubill",
-    "coupon": null,
-    "maturity": "2027-08-18",
-    "segment": "12 M",
-    "volume": 3000.0,
-    "type": "N",
-    "process": "M-A",
-    "bids": 6355.0,
-    "competitive": 4560.0,
-    "non_competitive": 1795.0,
-    "allotted": 2295.0,
-    "lowest_price": 97.38376,
-    "avg_price": 97.38472,
-    "avg_yield": 2.656,
-    "retention": 705.0,
-    "bid_to_cover": 2.8
-   },
    {
     "no": "None",
     "date": "2026-08-18",
@@ -5115,10 +5065,72 @@
     "avg_yield": 3.1,
     "retention": 1473.94,
     "bid_to_cover": 1.1
+   },
+   {
+    "no": "97",
+    "date": "2026-10-07",
+    "isin": "DE000BU27022",
+    "bond": "Bund",
+    "coupon": 0.033,
+    "maturity": "2033-11-15",
+    "segment": "7 Y",
+    "volume": 4000.0,
+    "type": "N",
+    "process": "Auc",
+    "bids": 2719.0,
+    "competitive": 1712.0,
+    "non_competitive": 1007.0,
+    "allotted": 1912.0,
+    "lowest_price": 99.62,
+    "avg_price": 99.64,
+    "avg_yield": 3.36,
+    "retention": 2088.0,
+    "bid_to_cover": 1.4
+   },
+   {
+    "no": "98",
+    "date": "2026-10-12",
+    "isin": "DE000BU0E402",
+    "bond": "Bubill",
+    "coupon": null,
+    "maturity": "2027-04-14",
+    "segment": "12 M",
+    "volume": 2500.0,
+    "type": "R",
+    "process": "M-A",
+    "bids": 1720.0,
+    "competitive": 910.0,
+    "non_competitive": 810.0,
+    "allotted": 1495.0,
+    "lowest_price": 98.63862,
+    "avg_price": 98.64502,
+    "avg_yield": 2.717,
+    "retention": 1005.0,
+    "bid_to_cover": 1.2
+   },
+   {
+    "no": "98",
+    "date": "2026-10-12",
+    "isin": "DE000BU0E469",
+    "bond": "Bubill",
+    "coupon": null,
+    "maturity": "2027-10-12",
+    "segment": "12 M",
+    "volume": 3500.0,
+    "type": "N",
+    "process": "M-A",
+    "bids": 4131.0,
+    "competitive": 2636.0,
+    "non_competitive": 1495.0,
+    "allotted": 2956.0,
+    "lowest_price": 97.10659,
+    "avg_price": 97.11229,
+    "avg_yield": 2.949,
+    "retention": 544.0,
+    "bid_to_cover": 1.4
    }
   ],
   "monthly_dates": [
-   "2023-08-01",
    "2023-09-01",
    "2023-10-01",
    "2023-11-01",
@@ -5153,11 +5165,11 @@
    "2026-04-01",
    "2026-05-01",
    "2026-06-01",
-   "2026-07-01"
+   "2026-07-01",
+   "2026-08-01"
   ],
   "monthly_rows": {
    "target_de": [
-    1056420.21,
     1048058.71,
     1058984.8,
     1060074.12,
@@ -5192,10 +5204,10 @@
     1059476.87,
     1065689.64,
     1043208.02,
-    1037116.1
+    1037116.1,
+    1071765.29
    ],
    "target_it": [
-    -560162.98,
     -555217.06,
     -526277.45,
     -508244.18,
@@ -5230,10 +5242,10 @@
     -348792.05,
     -358561.54,
     -335639.17,
-    -331168.67
+    -331168.67,
+    -344949.42
    ],
    "target_es": [
-    -409427.84,
     -395421.55,
     -374776.34,
     -354874.82,
@@ -5268,10 +5280,10 @@
     -444638.09,
     -448787.57,
     -445663.15,
-    -430474.26
+    -430474.26,
+    -442554.69
    ],
    "target_fr": [
-    -76513.5,
     -114485.54,
     -125282.37,
     -138293.92,
@@ -5306,10 +5318,10 @@
     -187355.32,
     -190430.87,
     -196843.08,
-    -182480.77
+    -182480.77,
+    -181336.52
    ],
    "periphery_level": [
-    1046104.3,
     1065124.2,
     1026336.2,
     1001412.9,
@@ -5344,10 +5356,10 @@
     980785.5,
     997780.0,
     978145.4,
-    944123.7
+    944123.7,
+    968840.6
    ],
    "fragmentation_3m": [
-    -70480.6,
     -21531.7,
     -56315.0,
     -44691.4,
@@ -5382,10 +5394,17 @@
     31318.7,
     33192.5,
     15347.0,
-    -36661.8
+    -36661.8,
+    -28939.4
    ]
   },
   "signal_log": [
+   {
+    "date": "2026-10-02",
+    "label": "drain",
+    "score": -8191.0,
+    "note": "−Δw govt deposits"
+   },
    {
     "date": "2026-09-25",
     "label": "inject",
@@ -5468,12 +5487,6 @@
     "date": "2026-06-26",
     "label": "drain",
     "score": -5225.0,
-    "note": "−Δw govt deposits"
-   },
-   {
-    "date": "2026-06-19",
-    "label": "inject",
-    "score": 6052.0,
     "note": "−Δw govt deposits"
    }
   ]
