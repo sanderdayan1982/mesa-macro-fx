@@ -1,6 +1,92 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-12T19:13:46+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-12T19:13:46+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "430f8b05fbb41023",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 10,
+     "fiscal": 3,
+     "general": 13
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-12T19:13:46+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily_provisional",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-12T19:13:46+00:00",
+   "type": "JPY_V04",
+   "category": "system",
+   "details": {
+    "daily_new": 0,
+    "daily_files": 250,
+    "ops_new": 0,
+    "ops": {
+     "last_date": "2026-10-09",
+     "lag_days": 3,
+     "ope_files": 249,
+     "daily_files": 250
+    },
+    "mei": {
+     "asof": "2026-09-30",
+     "published": "2026-10-02",
+     "total": 5023262.0,
+     "unmapped": [],
+     "jgb_records": 2609,
+     "tbill_records": 1403,
+     "mof_cut": "2026-09-01",
+     "mof_lag_days": 41
+    },
+    "juqp": "2026-10",
+    "net_issuance_last": [
+     "2026-09-01",
+     583.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-10-12T19:13:30+00:00",
+   "type": "STRUCTURE_HASH",
+   "category": "system",
+   "details": {
+    "jd_latest": "2026-10-08",
+    "hash": "fbfacdf9153d8e6a"
+   }
+  },
+  {
    "timestamp": "2026-10-12T11:16:34+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -8763,61 +8849,6 @@
    "details": {
     "source": "mof_auction_html",
     "error": "calendar 2601: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/calendar/2601e.htm"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:13:28+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_auction_results",
-    "error": "failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/auction/past_auction_results/Auction_Results_for_JGBs.xls"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:11:12+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_jgb_yields",
-    "error": "failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:10:06+00:00",
-   "type": "STRUCTURE_HASH",
-   "category": "system",
-   "details": {
-    "jd_latest": "2026-09-09",
-    "hash": "e52a046757370441"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T13:45:15+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
-    "errors": [],
-    "messages": 2
-   }
-  },
-  {
-   "timestamp": "2026-09-10T13:45:15+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "0be9e4cc32e5bd29",
-    "degraded": [],
-    "streaks": {
-     "central_bank": 3,
-     "fiscal": 2,
-     "general": 3
-    }
    }
   }
  ]
