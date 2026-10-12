@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-09T12:47:08+00:00",
- "as_of": "2026-10-08",
+ "generated_at": "2026-10-12T05:31:43+00:00",
+ "as_of": "2026-10-12",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "INJECTION",
-   "confirmed": "INJECTION",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-08",
+   "as_of": "2026-10-12",
    "detail": "settlement cash 28979.0 (5d -4421.0, 20d 2775.0, SAFE) · OMO stock 4756.0 (16.4%) · ORRF 0.0 · phase LSAP_UNWIND",
-   "raw_regime": "INJECTION",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
     "injection_exit": 0.25,
@@ -41,27 +41,23 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "INJECTION",
-    "raw": "INJECTION",
-    "effective_score": 0.438,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": 0.083,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-08",
+    "as_of": "2026-10-12",
     "recent": [
-     [
-      "2026-10-01",
-      0.75
-     ],
-     [
-      "2026-10-02",
-      0.75
-     ],
      [
       "2026-10-06",
       0.25
      ],
      [
       "2026-10-08",
+      0.0
+     ],
+     [
+      "2026-10-12",
       0.0
      ]
     ],
@@ -95,7 +91,7 @@
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-08",
+   "as_of": "2026-10-12",
    "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.912x at 3.06% · bond 4.464x tail 0.8 bp · settlements next 5d 250.0 · non-resident 57.5%",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -114,22 +110,18 @@
     "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-08",
+    "as_of": "2026-10-12",
     "recent": [
-     [
-      "2026-10-01",
-      0.0
-     ],
-     [
-      "2026-10-02",
-      0.0
-     ],
      [
       "2026-10-06",
       0.0
      ],
      [
       "2026-10-08",
+      0.0
+     ],
+     [
+      "2026-10-12",
       0.0
      ]
     ],
@@ -156,7 +148,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.0,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.00 shown for context",
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.00 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -184,7 +176,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-07-01",
-   "era_weeks": 222,
+   "era_weeks": 223,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -391,11 +383,11 @@
   "lane": "daily",
   "backfill": false,
   "errors": [
-   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a47d7b75de4070f0-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a47d7be74b4570f0-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a47d7c58c85870f0-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a47d7cca4acc70f0-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-09); nzdm_tbill_1891.html (snapshot 2026-10-09)"
+   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a493b5a41eaa510a-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a493b6169899510a-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a493b6892d40510a-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a493b6fbbbf8510a-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-12); nzdm_bond_listing.html (snapshot 2026-10-12)"
   ]
  }
 }
