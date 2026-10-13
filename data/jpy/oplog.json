@@ -1,6 +1,92 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-13T09:36:59+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-13T09:36:58+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "0ce35253220c363a",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 11,
+     "fiscal": 4,
+     "general": 14
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-13T09:36:58+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily_provisional",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-13T09:36:58+00:00",
+   "type": "JPY_V04",
+   "category": "system",
+   "details": {
+    "daily_new": 0,
+    "daily_files": 251,
+    "ops_new": 0,
+    "ops": {
+     "last_date": "2026-10-13",
+     "lag_days": 0,
+     "ope_files": 250,
+     "daily_files": 251
+    },
+    "mei": {
+     "asof": "2026-09-30",
+     "published": "2026-10-02",
+     "total": 5023262.0,
+     "unmapped": [],
+     "jgb_records": 2609,
+     "tbill_records": 1403,
+     "mof_cut": "2026-09-01",
+     "mof_lag_days": 42
+    },
+    "juqp": "2026-10",
+    "net_issuance_last": [
+     "2026-09-01",
+     583.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-10-13T09:36:42+00:00",
+   "type": "STRUCTURE_HASH",
+   "category": "system",
+   "details": {
+    "jd_latest": "2026-10-09",
+    "hash": "4eb3dde30d626067"
+   }
+  },
+  {
    "timestamp": "2026-10-13T03:34:10+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -8886,51 +8972,6 @@
    "details": {
     "source": "mof_treasury_receipts_payments",
     "error": "mof receipts 2024-08: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202408.xls"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:56:42+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_treasury_receipts_payments",
-    "error": "mof receipts 2024-07: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202407.xls"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:56:42+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_treasury_receipts_payments",
-    "error": "mof receipts 2024-06: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202406.xls"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:56:42+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_treasury_receipts_payments",
-    "error": "mof receipts 2024-05: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202405.xls"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:56:42+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_treasury_receipts_payments",
-    "error": "mof receipts 2024-04: failed after 3 tries: HTTP 503 for https://www.mof.go.jp/english/policy/exchequer/receipts_payments/e202404.xls"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T20:25:01+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_its_weekly",
-    "error": "failed after 3 tries: HTTP 503 for https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv"
    }
   }
  ]
