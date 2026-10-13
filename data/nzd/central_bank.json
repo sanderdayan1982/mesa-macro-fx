@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-13T03:03:34+00:00",
+ "generated_at": "2026-10-13T04:04:12+00:00",
  "as_of": "2026-10-12",
  "equivalence_quality": "high",
  "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
@@ -12,7 +12,9 @@
   "series_loaded": 24,
   "series_expected": 24,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a49b750ebc2c545f-SJC'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name"
+  ],
   "series_pending": 0
  },
  "series": {
@@ -23,18 +25,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 29502.0,
-   "date": "2026-10-09",
-   "prev_value": 28979.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 523.0,
-   "change_pct": 1.8048,
-   "zscore": 0.5883,
-   "percentile": 23.26,
+   "value": 29729.0,
+   "date": "2026-10-12",
+   "prev_value": 29502.0,
+   "prev_date": "2026-10-09",
+   "change_abs": 227.0,
+   "change_pct": 0.7694,
+   "zscore": 0.6186,
+   "percentile": 23.94,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    26017.0,
     25799.0,
     29500.0,
     29157.0,
@@ -85,7 +86,8 @@
     32621.0,
     32354.0,
     28979.0,
-    29502.0
+    29502.0,
+    29729.0
    ],
    "high_low": {
     "high": 33400.0,
@@ -93,7 +95,7 @@
     "low": 22962.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -117,9 +119,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": 0.0,
-   "prev_date": "2026-10-08",
+   "prev_date": "2026-10-09",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": 0.0,
@@ -127,7 +129,6 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     0.0,
     0.0,
     0.0,
@@ -178,15 +179,16 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "high_low": {
     "high": 10.0,
     "high_date": "2026-08-10",
     "low": 0.0,
-    "low_date": "2026-07-30"
+    "low_date": "2026-07-31"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -198,9 +200,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": 0.0,
-   "prev_date": "2026-10-08",
+   "prev_date": "2026-10-09",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": 0.0,
@@ -208,7 +210,6 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     682.0,
     0.0,
     0.0,
@@ -259,15 +260,16 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "high_low": {
     "high": 1172.0,
     "high_date": "2026-08-26",
     "low": 0.0,
-    "low_date": "2026-07-30"
+    "low_date": "2026-08-03"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -279,7 +281,7 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": 3.0,
    "prev_date": "2026-10-08",
    "change_abs": null,
@@ -351,7 +353,7 @@
    "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "no usage on 2026-10-09 (last use 2026-10-08 = 3.0)"
+   "equivalence_note": "no usage on 2026-10-12 (last use 2026-10-08 = 3.0)"
   },
   "omo_allocated_weekly": {
    "source_id": "D3:rr_omo_allocated",
@@ -418,17 +420,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 4756.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": 4756.0,
-   "prev_date": "2026-10-08",
+   "prev_date": "2026-10-09",
    "change_abs": 0.0,
    "change_pct": 0.0,
-   "zscore": -3.2323,
+   "zscore": -2.7385,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    7515.0,
     7515.0,
     7515.0,
     7515.0,
@@ -479,6 +480,7 @@
     8263.0,
     8263.0,
     4756.0,
+    4756.0,
     4756.0
    ],
    "high_low": {
@@ -487,7 +489,7 @@
     "low": 4756.0,
     "low_date": "2026-10-08"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -1933,18 +1935,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 523.0,
-   "date": "2026-10-09",
-   "prev_value": -3375.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 3898.0,
-   "change_pct": 115.4963,
-   "zscore": 0.333,
+   "value": 227.0,
+   "date": "2026-10-12",
+   "prev_value": 523.0,
+   "prev_date": "2026-10-09",
+   "change_abs": -296.0,
+   "change_pct": -56.5966,
+   "zscore": 0.1474,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -286.0,
     -218.0,
     3701.0,
     -343.0,
@@ -1995,7 +1996,8 @@
     125.0,
     -267.0,
     -3375.0,
-    523.0
+    523.0,
+    227.0
    ],
    "high_low": {
     "high": 4891.0,
@@ -2003,7 +2005,7 @@
     "low": -6302.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2022,18 +2024,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -3330.0,
-   "date": "2026-10-09",
-   "prev_value": -4421.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 1091.0,
-   "change_pct": 24.6777,
-   "zscore": -1.2192,
-   "percentile": 13.71,
+   "value": -2767.0,
+   "date": "2026-10-12",
+   "prev_value": -3330.0,
+   "prev_date": "2026-10-09",
+   "change_abs": 563.0,
+   "change_pct": 16.9069,
+   "zscore": -0.98,
+   "percentile": 18.26,
    "window": null,
    "level": "WATCH",
    "sparkline": [
-    -2562.0,
     -2194.0,
     815.0,
     3675.0,
@@ -2084,7 +2085,8 @@
     4473.0,
     3845.0,
     -4421.0,
-    -3330.0
+    -3330.0,
+    -2767.0
    ],
    "high_low": {
     "high": 5332.0,
@@ -2092,20 +2094,20 @@
     "low": -5089.0,
     "low_date": "2026-09-03"
    },
-   "age_days": 4,
-   "confidence": 92,
-   "latest_outlier": true,
+   "age_days": 1,
+   "confidence": 100,
+   "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 3531.2,
-     "WATCH_low": -3923.8,
-     "STRESS_high": 4916.33,
-     "STRESS_low": -6000.66
+     "WATCH_high": 3531.0,
+     "WATCH_low": -3922.0,
+     "STRESS_high": 4913.0,
+     "STRESS_low": -5997.0
     },
     "window": "750d",
-    "n": 700
+    "n": 701
    },
    "side": "low"
   },
@@ -2116,18 +2118,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 3062.0,
-   "date": "2026-10-09",
-   "prev_value": 2775.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 287.0,
-   "change_pct": 10.3423,
-   "zscore": 0.7593,
+   "value": 2895.0,
+   "date": "2026-10-12",
+   "prev_value": 3062.0,
+   "prev_date": "2026-10-09",
+   "change_abs": -167.0,
+   "change_pct": -5.454,
+   "zscore": 0.7009,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -5462.0,
     -3190.0,
     167.0,
     1245.0,
@@ -2178,7 +2179,8 @@
     8193.0,
     7748.0,
     2775.0,
-    3062.0
+    3062.0,
+    2895.0
    ],
    "high_low": {
     "high": 9225.0,
@@ -2186,7 +2188,7 @@
     "low": -6184.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2197,18 +2199,17 @@
    "unit": "ratio",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.1612,
-   "date": "2026-10-09",
-   "prev_value": 0.1641,
-   "prev_date": "2026-10-08",
-   "change_abs": -0.0029,
-   "change_pct": -1.7672,
-   "zscore": -1.7451,
-   "percentile": 77.87,
+   "value": 0.16,
+   "date": "2026-10-12",
+   "prev_value": 0.1612,
+   "prev_date": "2026-10-09",
+   "change_abs": -0.0012,
+   "change_pct": -0.7444,
+   "zscore": -1.7284,
+   "percentile": 77.62,
    "window": "750d",
    "level": "SAFE",
    "sparkline": [
-    0.2888,
     0.2913,
     0.2547,
     0.2577,
@@ -2259,27 +2260,28 @@
     0.2533,
     0.2554,
     0.1641,
-    0.1612
+    0.1612,
+    0.16
    ],
    "high_low": {
     "high": 0.4812,
     "high_date": "2026-08-28",
-    "low": 0.1612,
-    "low_date": "2026-10-09"
+    "low": 0.16,
+    "low_date": "2026-10-12"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 0.20442,
+     "WATCH": 0.204375,
      "STRESS": 0.299,
      "WATCH_abs": 0.3,
      "STRESS_abs": 0.45
     },
     "window": "750d",
-    "n": 705,
+    "n": 706,
     "era_anchor": "2022-07-01",
     "era_thin": false
    },
@@ -2295,17 +2297,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 4756.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": 4756.0,
-   "prev_date": "2026-10-08",
+   "prev_date": "2026-10-09",
    "change_abs": 0.0,
    "change_pct": 0.0,
-   "zscore": -1.6043,
-   "percentile": 78.3,
+   "zscore": -1.5659,
+   "percentile": 78.33,
    "window": "750d",
    "level": "SAFE",
    "sparkline": [
-    7515.0,
     7515.0,
     7515.0,
     7515.0,
@@ -2356,6 +2357,7 @@
     8263.0,
     8263.0,
     4756.0,
+    4756.0,
     4756.0
    ],
    "high_low": {
@@ -2364,7 +2366,7 @@
     "low": 4756.0,
     "low_date": "2026-10-08"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 92,
    "latest_outlier": true,
    "thresholds": {
@@ -2376,7 +2378,7 @@
      "STRESS_abs": 12000
     },
     "window": "750d",
-    "n": 705,
+    "n": 706,
     "era_anchor": "2022-07-01",
     "era_thin": false
    },
@@ -2391,17 +2393,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": -4279.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": -4279.0,
-   "prev_date": "2026-10-08",
+   "prev_date": "2026-10-09",
    "change_abs": 0.0,
    "change_pct": 0.0,
-   "zscore": -2.4104,
+   "zscore": -2.2633,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    555.0,
     1835.0,
     1835.0,
     1835.0,
@@ -2452,6 +2453,7 @@
     -95.0,
     -95.0,
     -4279.0,
+    -4279.0,
     -4279.0
    ],
    "high_low": {
@@ -2460,7 +2462,7 @@
     "low": -4279.0,
     "low_date": "2026-10-08"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2541,18 +2543,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 523.0,
-   "date": "2026-10-09",
-   "prev_value": 132.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 391.0,
-   "change_pct": 296.2121,
-   "zscore": 0.2683,
+   "value": 227.0,
+   "date": "2026-10-12",
+   "prev_value": 523.0,
+   "prev_date": "2026-10-09",
+   "change_abs": -296.0,
+   "change_pct": -56.5966,
+   "zscore": 0.1229,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    744.0,
     -900.0,
     4383.0,
     -343.0,
@@ -2603,7 +2604,8 @@
     125.0,
     -267.0,
     132.0,
-    523.0
+    523.0,
+    227.0
    ],
    "high_low": {
     "high": 7536.0,
@@ -2611,11 +2613,13 @@
     "low": -6302.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "note": "COINCIDENT, NOISY residual (N4, all reviewers): Crown cash + currency + LSAP sales/repurchases + RBNZ portfolio coupons + FX reserve transactions. Shown with a ± band = monthly reconciliation error vs D10; known non-fiscal days are tagged (COUPON_PAYMENT_DAY, BOND_MATURITY_DAY, LSAP_SALE_DAY from the D3/on-issue calendars) and excluded from FISCAL_BIG_DAY. Never a flag on its own",
-   "tagged_day": []
+   "tagged_day": [
+    "lsap"
+   ]
   },
   "residual_flow_5d_cum": {
    "source_id": null,
@@ -2624,18 +2628,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 177.0,
-   "date": "2026-10-09",
-   "prev_value": -914.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 1091.0,
-   "change_pct": 119.3654,
-   "zscore": 0.0483,
-   "percentile": 53.0,
+   "value": 740.0,
+   "date": "2026-10-12",
+   "prev_value": 177.0,
+   "prev_date": "2026-10-09",
+   "change_abs": 563.0,
+   "change_pct": 318.0791,
+   "zscore": 0.1914,
+   "percentile": 58.77,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1545.0,
     -1846.0,
     1845.0,
     4705.0,
@@ -2686,7 +2689,8 @@
     7118.0,
     6490.0,
     -914.0,
-    177.0
+    177.0,
+    740.0
    ],
    "high_low": {
     "high": 7118.0,
@@ -2694,20 +2698,20 @@
     "low": -6717.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 2901.2,
-     "WATCH_low": -3251.8,
+     "WATCH_high": 2891.0,
+     "WATCH_low": -3246.0,
      "STRESS_high": null,
      "STRESS_low": null
     },
     "window": "750d",
-    "n": 700
+    "n": 701
    }
   },
   "residual_flow_20d_cum": {
@@ -2717,18 +2721,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 7341.0,
-   "date": "2026-10-09",
-   "prev_value": 7054.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 287.0,
-   "change_pct": 4.0686,
-   "zscore": 1.6626,
+   "value": 7174.0,
+   "date": "2026-10-12",
+   "prev_value": 7341.0,
+   "prev_date": "2026-10-09",
+   "change_abs": -167.0,
+   "change_pct": -2.2749,
+   "zscore": 1.5662,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -6017.0,
     -5707.0,
     -1668.0,
     -590.0,
@@ -2779,7 +2782,8 @@
     8288.0,
     7843.0,
     7054.0,
-    7341.0
+    7341.0,
+    7174.0
    ],
    "high_low": {
     "high": 12017.0,
@@ -2787,7 +2791,7 @@
     "low": -9719.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2802,9 +2806,11 @@
    "label": "FISCAL_BIG_DAY",
    "value": false,
    "status": "fresh",
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "direction": null,
-   "excluded_tags": []
+   "excluded_tags": [
+    "lsap"
+   ]
   },
   "settlement_cash_ex_omo": {
    "source_id": null,
@@ -2813,18 +2819,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 24746.0,
-   "date": "2026-10-09",
-   "prev_value": 24223.0,
-   "prev_date": "2026-10-08",
-   "change_abs": 523.0,
-   "change_pct": 2.1591,
-   "zscore": 1.8157,
+   "value": 24973.0,
+   "date": "2026-10-12",
+   "prev_value": 24746.0,
+   "prev_date": "2026-10-09",
+   "change_abs": 227.0,
+   "change_pct": 0.9173,
+   "zscore": 1.8958,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    18502.0,
     18284.0,
     21985.0,
     21642.0,
@@ -2875,7 +2880,8 @@
     24358.0,
     24091.0,
     24223.0,
-    24746.0
+    24746.0,
+    24973.0
    ],
    "high_low": {
     "high": 25137.0,
@@ -2883,7 +2889,7 @@
     "low": 11912.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2895,9 +2901,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": 0.0,
-   "prev_date": "2026-10-08",
+   "prev_date": "2026-10-09",
    "change_abs": 0.0,
    "change_pct": null,
    "zscore": -0.0837,
@@ -2905,7 +2911,6 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     0.0,
     0.0,
     0.0,
@@ -2956,15 +2961,16 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "high_low": {
     "high": 10.0,
     "high_date": "2026-08-10",
     "low": 0.0,
-    "low_date": "2026-07-30"
+    "low_date": "2026-07-31"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2984,17 +2990,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "prev_value": 0.0,
-   "prev_date": "2026-10-08",
+   "prev_date": "2026-10-09",
    "change_abs": 0.0,
    "change_pct": null,
-   "zscore": -0.6259,
-   "percentile": 44.26,
+   "zscore": -0.6226,
+   "percentile": 44.33,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     682.0,
     0.0,
     0.0,
@@ -3045,25 +3050,26 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "high_low": {
     "high": 1172.0,
     "high_date": "2026-08-26",
     "low": 0.0,
-    "low_date": "2026-07-30"
+    "low_date": "2026-08-03"
    },
-   "age_days": 4,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "levels": {
-     "WATCH": 4523.6,
-     "STRESS": 6467.04
+     "WATCH": 4518.5,
+     "STRESS": 6466.8
     },
     "window": "750d",
-    "n": 705,
+    "n": 706,
     "era_anchor": "2022-07-01",
     "era_thin": false
    }
@@ -3216,7 +3222,7 @@
    "value": null,
    "phase": "LSAP_UNWIND",
    "status": "fresh",
-   "date": "2026-10-09",
+   "date": "2026-10-12",
    "note": "OMO_SUPPLIED if omo_outstanding_4w_change > 0 for 2 consecutive months AND omo_reliance_share ≥ 0.25; LSAP_UNWIND if lsap_runoff_12m < 0 and omo_outstanding_4w_change ≤ 0; STEADY otherwise"
   },
   "omo_settled_daily": {
@@ -3782,7 +3788,9 @@
   "traffic_light": "YELLOW",
   "score": 0.0,
   "label": "NEUTRAL",
-  "flags": [],
+  "flags": [
+   "LSAP_SALE_DAY"
+  ],
   "components": {
    "mode": "sum",
    "level_weight": 1.0,
@@ -3803,29 +3811,29 @@
    "score_v02": 0.0,
    "score_flows_only": 0.0
   },
-  "detail": "settlement cash 29502.0 (5d -3330.0, 20d 3062.0, SAFE) · OMO stock 4756.0 (16.1%) · ORRF 0.0 · phase LSAP_UNWIND",
+  "detail": "settlement cash 29729.0 (5d -2767.0, 20d 2895.0, SAFE) · OMO stock 4756.0 (16.0%) · ORRF 0.0 · phase LSAP_UNWIND",
   "alerts": [
    {
     "metric": "settlement_cash_daily",
     "level": "SAFE",
-    "value": 29502.0,
+    "value": 29729.0,
     "threshold": {
      "WATCH": 15000,
      "STRESS": 10000,
      "CRISIS": 7000
     },
     "status": "fresh",
-    "action_hint": "dead-man switch: 29.5 bn today (ample > 20, WATCH < 15, STRESS < 10, CRISIS < 7 — desk proposal)"
+    "action_hint": "dead-man switch: 29.7 bn today (ample > 20, WATCH < 15, STRESS < 10, CRISIS < 7 — desk proposal)"
    },
    {
     "metric": "settlement_cash_wow",
     "level": "WATCH",
-    "value": -3330.0,
+    "value": -2767.0,
     "threshold": {
-     "WATCH_high": 3531.2,
-     "WATCH_low": -3923.8,
-     "STRESS_high": 4916.33,
-     "STRESS_low": -6000.66
+     "WATCH_high": 3531.0,
+     "WATCH_low": -3922.0,
+     "STRESS_high": 4913.0,
+     "STRESS_low": -5997.0
     },
     "status": "fresh",
     "action_hint": "5-session change (two-sided p90/p10)"
@@ -3833,9 +3841,9 @@
    {
     "metric": "omo_reliance_share",
     "level": "SAFE",
-    "value": 0.1612,
+    "value": 0.16,
     "threshold": {
-     "WATCH": 0.20442,
+     "WATCH": 0.204375,
      "STRESS": 0.299,
      "WATCH_abs": 0.3,
      "STRESS_abs": 0.45
@@ -3884,8 +3892,8 @@
     "level": "SAFE",
     "value": 0.0,
     "threshold": {
-     "WATCH": 4523.6,
-     "STRESS": 6467.04
+     "WATCH": 4518.5,
+     "STRESS": 6466.8
     },
     "status": "fresh",
     "action_hint": "RBNZ FX swaps as a liquidity tool"
@@ -3895,7 +3903,7 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "omo_net_5d_pct": -11.8873,
+    "omo_net_5d_pct": -11.7966,
     "settlement_cash_wow": -0.5,
     "settlement_cash_20d": 0.5
    },
@@ -3912,7 +3920,6 @@
  },
  "history": {
   "dates": [
-   "2026-04-22",
    "2026-04-23",
    "2026-04-24",
    "2026-04-28",
@@ -4031,11 +4038,11 @@
    "2026-10-06",
    "2026-10-07",
    "2026-10-08",
-   "2026-10-09"
+   "2026-10-09",
+   "2026-10-12"
   ],
   "rows": {
    "settlement_cash_daily": [
-    28292.0,
     28751.0,
     27998.0,
     27591.0,
@@ -4154,10 +4161,10 @@
     32621.0,
     32354.0,
     28979.0,
-    29502.0
+    29502.0,
+    29729.0
    ],
    "settlement_cash_dod": [
-    -238.0,
     459.0,
     -753.0,
     -407.0,
@@ -4276,10 +4283,10 @@
     125.0,
     -267.0,
     -3375.0,
-    523.0
+    523.0,
+    227.0
    ],
    "omo_outstanding": [
-    4160.0,
     4544.0,
     4544.0,
     4544.0,
@@ -4398,10 +4405,10 @@
     8263.0,
     8263.0,
     4756.0,
+    4756.0,
     4756.0
    ],
    "omo_reliance_share": [
-    0.147,
     0.158,
     0.1623,
     0.1647,
@@ -4520,10 +4527,10 @@
     0.2533,
     0.2554,
     0.1641,
-    0.1612
+    0.1612,
+    0.16
    ],
    "residual_flow_daily": [
-    774.0,
     157.0,
     -179.0,
     121.0,
@@ -4642,10 +4649,10 @@
     125.0,
     -267.0,
     132.0,
-    523.0
+    523.0,
+    227.0
    ],
    "orrf_usage_daily": [
-    0.0,
     0.0,
     0.0,
     0.0,
@@ -4764,10 +4771,10 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "fx_swaps_daily": [
-    3217.0,
     3135.0,
     2561.0,
     2033.0,
@@ -4886,10 +4893,10 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "settlement_cash_ex_omo": [
-    24132.0,
     24207.0,
     23454.0,
     23047.0,
@@ -5008,7 +5015,8 @@
     24358.0,
     24091.0,
     24223.0,
-    24746.0
+    24746.0,
+    24973.0
    ]
   },
   "monthly": {
@@ -5703,8 +5711,10 @@
     "2026-10-07",
     "2026-10-13",
     "2026-10-14",
+    "2026-10-20",
     "2026-10-21",
-    "2026-10-28"
+    "2026-10-28",
+    "2026-11-03"
    ],
    "tax": [
     "2026-05-07",
@@ -6132,6 +6142,11 @@
    },
    {
     "date": "2026-10-09",
+    "label": "NEUTRAL",
+    "score": 0.0
+   },
+   {
+    "date": "2026-10-12",
     "label": "NEUTRAL",
     "score": 0.0
    }
