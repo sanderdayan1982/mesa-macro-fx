@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-10-12T21:13:02+00:00",
- "as_of": "2026-10-11",
+ "generated_at": "2026-10-13T09:39:50+00:00",
+ "as_of": "2026-10-12",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.077,
+ "weighted_score": -0.181,
  "block_scores": {
-  "central_bank": -0.42,
+  "central_bank": -0.68,
   "rates": -0.1,
   "fiscal": -0.19,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.42,
-   "label": "NEUTRAL",
+   "score": -0.68,
+   "label": "DRAIN",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-11",
-   "detail": "excess liquidity 2110143.0 M (SAFE) · Δ5s -3606.0 (p57.52) · TOMO 34276.0 M (STRUCTURAL (no price confirmation)) · MLF 24.35588804 M · €STR−DFR -6.3 bp (SAFE) · MonPol 13w -108572.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-10-12",
+   "detail": "excess liquidity 2106668.0 M (SAFE) · Δ5s -17083.0 (p30.04) · TOMO 34276.0 M (STRUCTURAL (no price confirmation)) · MLF 7.0 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -108572.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.269,
+    "effective_score": -0.283,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-11",
+    "as_of": "2026-10-12",
     "recent": [
-     [
-      "2026-10-04",
-      -0.58
-     ],
      [
       "2026-10-05",
       -0.28
@@ -77,6 +73,10 @@
      [
       "2026-10-11",
       -0.42
+     ],
+     [
+      "2026-10-12",
+      -0.68
      ]
     ],
     "pending_days": null
@@ -85,8 +85,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -0.17,
-     "excess_20s_vs_stock": -0.64
+     "excess_wow_vs_stock": -0.81,
+     "excess_20s_vs_stock": -0.65
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -98,18 +98,18 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.42,
-    "score_flows_only": -0.32
+    "score_v02": -0.68,
+    "score_flows_only": -0.58
    }
   },
   "fiscal": {
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": 0.24,
+   "score": 0.603,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-09",
+   "as_of": "2026-10-12",
    "detail": "govt deposits 96786.0 M (Δw 8191.0, p82.05) · impulse 4w -7511.0 (p22.22) · 13w -6520.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.333 (SOFT, avg26 1.69) · TARGET Δ3m -28939.4 · rule NEUTRAL",
    "raw_regime": "DRAIN",
    "cuts": {
@@ -131,15 +131,11 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.876,
+    "effective_score": -0.656,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-09",
+    "as_of": "2026-10-12",
     "recent": [
-     [
-      "2026-10-02",
-      -0.7176
-     ],
      [
       "2026-10-05",
       -0.8789
@@ -159,6 +155,10 @@
      [
       "2026-10-09",
       0.24
+     ],
+     [
+      "2026-10-12",
+      0.603
      ]
     ],
     "pending_days": null,
@@ -198,10 +198,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 5064.418,
-    "denominator": 2110143.0,
-    "denominator_date": "2026-10-11",
-    "today": "2026-10-12",
+    "raw": 12703.692,
+    "denominator": 2106668.0,
+    "denominator_date": "2026-10-12",
+    "today": "2026-10-13",
     "note": null
    },
    "v03_shadow": {
@@ -240,8 +240,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.351,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.35 shown for context",
+   "score": -0.533,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.53 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -294,7 +294,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.3,
+  "spread_bps": -6.1,
   "friction_confirmed": false
  },
  "rules": {
@@ -450,6 +450,8 @@
  "heartbeat": {
   "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "aft_reviews(monthly-operations-review): HTTP 522 for https://www.aft.gouv.fr/en/monthly-operations-review"
+  ]
  }
 }
