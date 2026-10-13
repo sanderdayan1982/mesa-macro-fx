@@ -1,15 +1,15 @@
 {
  "currency": "EUR",
- "generated_at": "2026-10-13T12:06:35+00:00",
+ "generated_at": "2026-10-13T13:37:32+00:00",
  "as_of": "2026-10-12",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.181,
+ "weighted_score": -0.193,
  "block_scores": {
   "central_bank": -0.68,
   "rates": -0.1,
-  "fiscal": -0.19,
+  "fiscal": -0.27,
   "banking": 1.0
  },
  "weights": {
@@ -110,7 +110,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-12",
-   "detail": "govt deposits 96786.0 M (Δw 8191.0, p82.05) · impulse 4w -7511.0 (p22.22) · 13w -6520.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.333 (SOFT, avg26 1.69) · TARGET Δ3m -28939.4 · rule NEUTRAL",
+   "detail": "govt deposits 96786.0 M (Δw 8191.0, p82.05) · impulse 4w -7511.0 (p22.22) · 13w -6520.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.1 (WEAK, avg26 1.69) · TARGET Δ3m -28939.4 · rule NEUTRAL",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.1427,
@@ -172,7 +172,7 @@
     },
     "level": {
      "structural_deficit": 1.0,
-     "auction_health": -0.5
+     "auction_health": -1.0
     },
     "weights": {
      "impulse_4w_percentile": 0.5,
@@ -183,7 +183,7 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.19,
+    "score_v02": -0.27,
     "score_flows_only": -0.47
    },
    "engine": "0.4",
@@ -205,23 +205,23 @@
     "note": null
    },
    "v03_shadow": {
-    "regime": "NEUTRAL",
-    "score": -0.19,
-    "raw_regime": "NEUTRAL",
+    "regime": "DRAIN",
+    "score": -0.27,
+    "raw_regime": "DRAIN",
     "cuts": {
      "injection_enter": 0.59,
      "injection_exit": 0.46,
      "drain_enter": -0.02,
      "drain_exit": 0.1
     },
-    "as_of": "2026-10-12",
+    "as_of": "2026-10-13",
     "state": {
-     "confirmed": "NEUTRAL",
-     "raw": "NEUTRAL",
-     "effective_score": -0.01,
+     "confirmed": "DRAIN",
+     "raw": "DRAIN",
+     "effective_score": -0.097,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-12",
+     "as_of": "2026-10-13",
      "recent": [
       [
        "2026-10-06",
@@ -230,6 +230,10 @@
       [
        "2026-10-12",
        -0.19
+      ],
+      [
+       "2026-10-13",
+       -0.27
       ]
      ],
      "pending_days": null
@@ -240,8 +244,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.533,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.53 shown for context",
+   "score": -0.557,
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.56 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -285,6 +289,7 @@
  "flags": [
   "PHASE_QT",
   "MRO_RELIANCE",
+  "WEAK_AUCTION",
   "STRUCTURAL_DEFICIT_INJECTION",
   "COUNTRY_SPREAD_WATCH"
  ],
@@ -448,7 +453,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_tue",
   "backfill": false,
   "errors": []
  }
