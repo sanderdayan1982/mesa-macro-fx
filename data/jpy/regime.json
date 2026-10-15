@@ -1,6 +1,6 @@
 {
  "currency": "JPY",
- "generated_at": "2026-10-15T08:33:37+00:00",
+ "generated_at": "2026-10-15T09:33:04+00:00",
  "as_of": "2026-10-14",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
@@ -92,15 +92,15 @@
    }
   },
   "fiscal": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.442,
+   "score": 1.7216,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-14",
+   "as_of": "2026-10-15",
    "detail": "flow -3800.0 (Z 0.0224) · 5d -18100.0 · 20d -17000.0 (NEUTRAL) · FEFSA/py 0.83 · BTC super-long 3.877",
-   "raw_regime": "DRAIN",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.6459,
     "injection_exit": 0.1934,
@@ -118,17 +118,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -0.961,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.202,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-15",
     "recent": [
-     [
-      "2026-10-07",
-      -2.0714
-     ],
      [
       "2026-10-08",
       -1.4483
@@ -144,6 +140,10 @@
      [
       "2026-10-14",
       -0.442
+     ],
+     [
+      "2026-10-15",
+      1.7216
      ]
     ],
     "pending_days": null,
@@ -176,7 +176,7 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -18100.0,
+    "raw": 70500.0,
     "denominator": 4095100.0,
     "denominator_date": "2026-10-14",
     "today": "2026-10-15",
@@ -192,14 +192,14 @@
      "drain_enter": -0.32,
      "drain_exit": -0.14
     },
-    "as_of": "2026-10-15",
+    "as_of": "2026-10-14",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
      "effective_score": 0.177,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-15",
+     "as_of": "2026-10-14",
      "recent": [
       [
        "2026-10-08",
@@ -214,7 +214,7 @@
        0.63
       ],
       [
-       "2026-10-15",
+       "2026-10-14",
        0.02
       ]
      ],
@@ -227,7 +227,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.008,
-   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 115 weeks < 150); dual score +0.01 shown for context",
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 115 weeks < 150); dual score +0.01 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -351,17 +351,17 @@
    "name": "Fiscal Drain (tax / issuance settlement)",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 4,
    "unknown": 0,
    "required": [
     "regime.fiscal == DRAIN"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "regime.fiscal == DRAIN",
-     "met": true
+     "met": false
     },
     {
      "condition": "fiscal.fiscal_flow_20d_cum <= drain",
@@ -487,7 +487,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "daily_provisional",
   "backfill": false,
   "errors": []
  }
