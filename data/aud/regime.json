@@ -1,7 +1,7 @@
 {
  "currency": "AUD",
- "generated_at": "2026-10-14T07:57:19+00:00",
- "as_of": "2026-10-13",
+ "generated_at": "2026-10-15T05:01:19+00:00",
+ "as_of": "2026-10-14",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "DRAIN",
+   "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -0.5503,
+   "score": -0.8669,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-10-13",
-   "detail": "ES SAFE (above demand range) · ΔES d/d 2595.0 · BS liq NEUTRAL · OMO/ES 0.2338 · SF+25 0.0",
-   "raw_regime": "NEUTRAL",
+   "as_of": "2026-10-14",
+   "detail": "ES SAFE (above demand range) · ΔES d/d -2259.0 · BS liq NEUTRAL · OMO/ES 0.227 · SF+25 0.0",
+   "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.466,
     "injection_exit": 0.2928,
@@ -47,17 +47,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.232,
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -0.656,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-14",
     "recent": [
-     [
-      "2026-10-06",
-      1.797
-     ],
      [
       "2026-10-07",
       -0.5503
@@ -65,6 +61,10 @@
      [
       "2026-10-13",
       -0.5503
+     ],
+     [
+      "2026-10-14",
+      -0.8669
      ]
     ],
     "pending_days": null,
@@ -100,10 +100,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -1081.0,
+    "raw": -1703.0,
     "denominator": 196456.0,
     "denominator_date": "2026-10-07",
-    "today": "2026-10-14",
+    "today": "2026-10-15",
     "note": null
    },
    "v03_shadow": {
@@ -116,19 +116,15 @@
      "drain_enter": 0.085,
      "drain_exit": 0.335
     },
-    "as_of": "2026-10-13",
+    "as_of": "2026-10-14",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
      "effective_score": 0.67,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-13",
+     "as_of": "2026-10-14",
      "recent": [
-      [
-       "2026-10-06",
-       0.67
-      ],
       [
        "2026-10-07",
        0.67
@@ -147,6 +143,10 @@
       ],
       [
        "2026-10-13",
+       0.67
+      ],
+      [
+       "2026-10-14",
        0.67
       ]
      ],
@@ -230,7 +230,7 @@
     "raw": 9645.0,
     "denominator": 196456.0,
     "denominator_date": "2026-10-07",
-    "today": "2026-10-14",
+    "today": "2026-10-15",
     "note": null
    },
    "v03_shadow": {
@@ -270,7 +270,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.746,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 78 weeks < 150); dual score +0.75 shown for context",
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 79 weeks < 150); dual score +0.75 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -301,7 +301,7 @@
    ],
    "agreement_only": true,
    "era_start": "2025-04-09",
-   "era_weeks": 78,
+   "era_weeks": 79,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
