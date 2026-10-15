@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-15T07:30:02+00:00",
+ "generated_at": "2026-10-15T08:02:37+00:00",
  "as_of": "2026-10-13",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -13,11 +13,10 @@
   "series_expected": 17,
   "last_fetch_ok": true,
   "errors": [
-   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad1a623b7d43c0-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad1ad49abdc213-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad1b474a0fa0c6-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad1bb99de7a0c6-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-15); nzdm_tbill_1892.html (snapshot 2026-10-15); nzdm_bond_listing.html (snapshot 2026-10-15); nzdm_bond_1012.html (snapshot 2026-10-15)"
+   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad4bd6ffd9cb9c-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad4c49ce244965-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad4cbc2e954965-LAX'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "nzdm_bond: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad4d3b9a06e6b9-LAX'} body=\u001b?\u0017\u0000d����~yN�k[)��S5K\u0016\u0015Ĉ��s�+!JH}������rX�߶a�������6�4��h��\u001cM-��%R%Rb&TB�9���Fd9ʛ(�d��8���M�n^5��\f���e�\u001d\u0017n���I����\u001b\u0004 ����(\u001aEL��\f�i�&K7�\u0017����� �\"2B��KlM���\u0000f�s"
   ],
   "series_pending": 3
  },
@@ -948,7 +947,7 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "event",
    "status": "fresh",
-   "value": 1125.0,
+   "value": 900.0,
    "date": "2026-10-01",
    "prev_value": null,
    "prev_date": null,
@@ -959,12 +958,12 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1125.0
+    900.0
    ],
    "high_low": {
-    "high": 1125.0,
+    "high": 900.0,
     "high_date": "2026-10-01",
-    "low": 1125.0,
+    "low": 900.0,
     "low_date": "2026-10-01"
    },
    "age_days": 14,
@@ -2781,22 +2780,14 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 1625.0,
+   "value": 900.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-15",
    "calendar": [
     [
-     "2026-10-20",
-     225.0
-    ],
-    [
-     "2026-10-21",
-     250.0
-    ],
-    [
      "2026-10-28",
-     700.0
+     450.0
     ],
     [
      "2026-11-03",
@@ -4130,33 +4121,6 @@
   ],
   "upcoming": [
    {
-    "number": "1893",
-    "lines": "",
-    "volume": 250.0,
-    "announcement": "2026-10-19",
-    "tender": "2026-10-20",
-    "settlement": "2026-10-21",
-    "kind": "tbill"
-   },
-   {
-    "number": "1894",
-    "lines": "",
-    "volume": 250.0,
-    "announcement": "2026-10-23",
-    "tender": "2026-10-27",
-    "settlement": "2026-10-28",
-    "kind": "tbill"
-   },
-   {
-    "number": "1013",
-    "lines": "2.00% 15 May 2032",
-    "volume": 225.0,
-    "announcement": "2026-10-12",
-    "tender": "2026-10-15",
-    "settlement": "2026-10-20",
-    "kind": "bond"
-   },
-   {
     "number": "1014",
     "lines": "",
     "volume": 450.0,
@@ -4475,6 +4439,11 @@
     "date": "2026-07-31",
     "label": "INJECTION",
     "score": 0.5
+   },
+   {
+    "date": "2026-08-31",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-08-31",
