@@ -1,6 +1,6 @@
 {
  "currency": "EUR",
- "generated_at": "2026-10-15T16:47:56+00:00",
+ "generated_at": "2026-10-16T08:50:54+00:00",
  "as_of": "2026-10-14",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -103,15 +103,15 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.6359,
+   "score": 1.4266,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-14",
+   "as_of": "2026-10-15",
    "detail": "govt deposits 94723.0 M (Δw -2063.0, p47.5) · impulse 4w -6.0 (p37.84) · 13w -4643.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.1 (WEAK, avg26 1.69) · TARGET Δ3m -28939.4 · rule NEUTRAL",
-   "raw_regime": "NEUTRAL",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.1427,
     "injection_exit": -0.0359,
@@ -129,17 +129,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.092,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.565,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-15",
     "recent": [
-     [
-      "2026-10-07",
-      -1.4127
-     ],
      [
       "2026-10-08",
       -1.3628
@@ -159,6 +155,10 @@
      [
       "2026-10-14",
       1.6359
+     ],
+     [
+      "2026-10-15",
+      1.4266
      ]
     ],
     "pending_days": null,
@@ -198,10 +198,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 34681.33,
+    "raw": 30243.397,
     "denominator": 2120011.0,
     "denominator_date": "2026-10-14",
-    "today": "2026-10-15",
+    "today": "2026-10-16",
     "note": null
    },
    "v03_shadow": {
@@ -245,7 +245,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": -0.192,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.19 shown for context",
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.19 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -424,18 +424,18 @@
    "id": "L5",
    "name": "Fiscal injection into excess liquidity",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 2,
+   "active": true,
+   "conditions_met": 3,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == INJECTION"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == INJECTION",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
