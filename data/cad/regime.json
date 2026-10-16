@@ -1,13 +1,13 @@
 {
  "currency": "CAD",
- "generated_at": "2026-10-15T23:46:38+00:00",
- "as_of": "2026-10-07",
+ "generated_at": "2026-10-16T19:36:16+00:00",
+ "as_of": "2026-10-14",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": -0.136,
+ "weighted_score": 0.035,
  "block_scores": {
-  "central_bank": -0.29,
+  "central_bank": 0.09,
   "rates": 0.25,
   "fiscal": 0.41,
   "banking": -1.5
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "INJECTION",
-   "confirmed": "INJECTION",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.29,
+   "score": 0.09,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-07",
+   "as_of": "2026-10-14",
    "detail": "NetLiq NEUTRAL · reserves SAFE (out of range) · phase NORMALIZATION",
-   "raw_regime": "INJECTION",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
     "injection_exit": 0.05,
@@ -41,20 +41,20 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "INJECTION",
-    "raw": "INJECTION",
-    "effective_score": 0.415,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.1,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-07",
+    "as_of": "2026-10-14",
     "recent": [
-     [
-      "2026-09-30",
-      1.12
-     ],
      [
       "2026-10-07",
       -0.29
+     ],
+     [
+      "2026-10-14",
+      0.09
      ]
     ],
     "pending_days": null
@@ -64,7 +64,7 @@
     "level_weight": 1.0,
     "flow": {
      "net_liquidity_band": 0.0,
-     "reserves_wow": -0.42857
+     "reserves_wow": 0.13935999999999998
     },
     "level": {
      "reserves_vs_range": 0.0
@@ -74,19 +74,19 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.29,
-    "score_flows_only": -0.29
+    "score_v02": 0.09,
+    "score_flows_only": 0.09
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 1.316,
+   "score": -1.1114,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-07",
-   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check 1051.0",
+   "as_of": "2026-10-14",
+   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check -900.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
@@ -107,18 +107,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.654,
+    "effective_score": 0.102,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-07",
+    "as_of": "2026-10-14",
     "recent": [
-     [
-      "2026-09-30",
-      -0.0084
-     ],
      [
       "2026-10-07",
       1.316
+     ],
+     [
+      "2026-10-14",
+      -1.1114
      ]
     ],
     "pending_days": null,
@@ -151,10 +151,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 1051.0,
-    "denominator": 79864.0,
-    "denominator_date": "2026-10-07",
-    "today": "2026-10-15",
+    "raw": -900.0,
+    "denominator": 80977.0,
+    "denominator_date": "2026-10-14",
+    "today": "2026-10-16",
     "note": null
    },
    "v03_shadow": {
@@ -167,25 +167,21 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-10-07",
+    "as_of": "2026-10-14",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
-     "effective_score": 0.94,
+     "effective_score": 0.41,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-07",
+     "as_of": "2026-10-14",
      "recent": [
       [
-       "2026-09-30",
-       2.0
-      ],
-      [
-       "2026-10-01",
+       "2026-10-07",
        0.41
       ],
       [
-       "2026-10-07",
+       "2026-10-14",
        0.41
       ]
      ],
@@ -197,8 +193,8 @@
    "regime": "FLOOR_FRICTION",
    "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
-   "score": -0.01,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.01 shown for context",
+   "score": 0.218,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.22 shown for context",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -228,7 +224,7 @@
    ],
    "agreement_only": true,
    "era_start": "2020-03-23",
-   "era_weeks": 341,
+   "era_weeks": 342,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -422,7 +418,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
