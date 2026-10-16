@@ -3,22 +3,22 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-15T11:02:16+00:00",
+ "generated_at": "2026-10-16T04:06:07+00:00",
  "as_of": "2026-10-12",
  "equivalence_quality": "high",
  "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
  "source_health": {
-  "status": "fresh",
+  "status": "stale",
   "series_loaded": 24,
   "series_expected": 24,
   "last_fetch_ok": true,
   "errors": [
-   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ae513e1b57a20d-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ae51b06e26acf6-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ae52239ca9a20d-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ae52962826e895-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-   "nzdm_bond: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ae54676872c959-ORD'} body=\u001b?\u0017\u0000d�ת��u\u000e�^+\u0005\b�:U�\u0010PQ.\u0005Tx��@r�B�@G�����[\u000e���6L�����\u0011�&�&\u0011\u0011mv���%��D�DJ̄JH<���܈,Gy\u0013Ş�\u0013\u0010���\b���USM`1���w\\�)�A1����m\u0010\u0006��{Up\u001c�\"&CM��4\u0011ʳ-�E�n �ZA^DF(6~�-�_�\u001f}.@\u000e",
-   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-15); nzdm_tbill_1892.html (snapshot 2026-10-15); nzdm_bond_listing.html (snapshot 2026-10-15)"
+   "rbnz_b2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4b42d1219d79af3-ORD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d12: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4b42d849bb161b2-ORD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d3/hd3.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4b42df6cc42ff5a-ORD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "rbnz_d9: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d9/hd9-weekly.xlsx — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4b42e68d97e61b2-ORD'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te Pūtea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
+   "nzdm_bond: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4b430311db721b1-ORD'} body=\u001b?\u0017\u0000d����~yN�k[)��N�,IA\t*��\u0006N�$!_b���1w}�\u001cV�m�4qy�#�M<M\"\"��:GSK&q�T���\t��x\u000e���\u0011Y��&�=\u0019' ��?\u0011��ͫ����|y7f�q��\u0007�0\u0005�Ƕ���Dޫ��h\u00141\u0019j2<��`��\u0010/r�\u0006��\u0015�Ed�b�ز�%�!�������",
+   "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-16); nzdm_tbill_1892.html (snapshot 2026-10-16); nzdm_bond_listing.html (snapshot 2026-10-16)"
   ],
   "series_pending": 0
  },
@@ -100,7 +100,7 @@
     "low": 22962.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -193,7 +193,7 @@
     "low": 0.0,
     "low_date": "2026-07-31"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -274,7 +274,7 @@
     "low": 0.0,
     "low_date": "2026-08-03"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -413,7 +413,7 @@
     "low": 2306.0,
     "low_date": "2026-08-06"
    },
-   "age_days": 7,
+   "age_days": 8,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -494,7 +494,7 @@
     "low": 4756.0,
     "low_date": "2026-10-08"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -551,7 +551,7 @@
     "low": 10.0,
     "low_date": "2026-04-02"
    },
-   "age_days": 7,
+   "age_days": 8,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -631,7 +631,7 @@
     "low": 50.0,
     "low_date": "2026-10-12"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -712,7 +712,7 @@
     "low": 15.0,
     "low_date": "2020-06-30"
    },
-   "age_days": 231,
+   "age_days": 232,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -722,7 +722,7 @@
    "usd_analog": null,
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": 20.0,
    "date": "2026-10-09",
    "prev_value": 20.0,
@@ -793,8 +793,8 @@
     "low": 20.0,
     "low_date": "2026-07-30"
    },
-   "age_days": 6,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false
   },
   "total_assets": {
@@ -874,7 +874,7 @@
     "low": 70667.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -955,7 +955,7 @@
     "low": 11484.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1036,7 +1036,7 @@
     "low": 12551.0,
     "low_date": "2022-05-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1117,7 +1117,7 @@
     "low": 4679.0,
     "low_date": "2023-03-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1198,7 +1198,7 @@
     "low": 52720.0,
     "low_date": "2025-10-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1279,7 +1279,7 @@
     "low": 8809.0,
     "low_date": "2024-07-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1360,7 +1360,7 @@
     "low": 33515.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1441,7 +1441,7 @@
     "low": 23318.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1522,7 +1522,7 @@
     "low": 10822.0,
     "low_date": "2023-06-30"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1603,7 +1603,7 @@
     "low": -8007.3,
     "low_date": "2023-01-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1684,7 +1684,7 @@
     "low": -2582.5,
     "low_date": "2025-04-30"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1765,7 +1765,7 @@
     "low": -654.6,
     "low_date": "2026-04-30"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1846,7 +1846,7 @@
     "low": -4705.0,
     "low_date": "2026-04-30"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -1927,7 +1927,7 @@
     "low": -4534.2,
     "low_date": "2023-12-29"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -2010,7 +2010,7 @@
     "low": -6302.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2099,7 +2099,7 @@
     "low": -5089.0,
     "low_date": "2026-09-03"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2193,7 +2193,7 @@
     "low": -6184.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2274,7 +2274,7 @@
     "low": 0.16,
     "low_date": "2026-10-12"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2371,7 +2371,7 @@
     "low": 4756.0,
     "low_date": "2026-10-08"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 92,
    "latest_outlier": true,
    "thresholds": {
@@ -2467,7 +2467,7 @@
     "low": -4279.0,
     "low_date": "2026-10-08"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2523,7 +2523,7 @@
     "low": -4665.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 7,
+   "age_days": 8,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2618,7 +2618,7 @@
     "low": -6302.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "note": "COINCIDENT, NOISY residual (N4, all reviewers): Crown cash + currency + LSAP sales/repurchases + RBNZ portfolio coupons + FX reserve transactions. Shown with a ± band = monthly reconciliation error vs D10; known non-fiscal days are tagged (COUPON_PAYMENT_DAY, BOND_MATURITY_DAY, LSAP_SALE_DAY from the D3/on-issue calendars) and excluded from FISCAL_BIG_DAY. Never a flag on its own",
@@ -2703,7 +2703,7 @@
     "low": -6717.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2796,7 +2796,7 @@
     "low": -9719.0,
     "low_date": "2026-08-31"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2894,7 +2894,7 @@
     "low": 11912.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2975,7 +2975,7 @@
     "low": 0.0,
     "low_date": "2026-07-31"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -3064,7 +3064,7 @@
     "low": 0.0,
     "low_date": "2026-08-03"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -3156,7 +3156,7 @@
     "low": -14800.0,
     "low_date": "2025-04-30"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -3218,7 +3218,7 @@
     "low": -0.26,
     "low_date": "2025-12-31"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -3283,7 +3283,7 @@
     "low": 2306.0,
     "low_date": "2026-08-06"
    },
-   "age_days": 7,
+   "age_days": 8,
    "confidence": 85,
    "latest_outlier": false
   },
@@ -3339,7 +3339,7 @@
     "low": -8500.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 7,
+   "age_days": 8,
    "confidence": 85,
    "latest_outlier": false
   },
@@ -3351,17 +3351,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-15",
+   "date": "2026-10-16",
    "prev_value": 0.0,
-   "prev_date": "2026-10-14",
+   "prev_date": "2026-10-15",
    "change_abs": 0.0,
    "change_pct": null,
-   "zscore": 0.2099,
+   "zscore": 0.1354,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     -1929.0,
     0.0,
     0.0,
@@ -3412,6 +3411,7 @@
     0.0,
     0.0,
     0.0,
+    0.0,
     0.0
    ],
    "high_low": {
@@ -3429,7 +3429,7 @@
    "value": -4756.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
-   "date": "2026-10-15",
+   "date": "2026-10-16",
    "calendar": [
     [
      "2026-10-15",
@@ -3457,17 +3457,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-10-15",
-   "prev_value": -3507.0,
-   "prev_date": "2026-10-14",
-   "change_abs": 3507.0,
-   "change_pct": 100.0,
-   "zscore": 0.5172,
+   "date": "2026-10-16",
+   "prev_value": 0.0,
+   "prev_date": "2026-10-15",
+   "change_abs": 0.0,
+   "change_pct": null,
+   "zscore": 0.4765,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -1030.0,
     -1929.0,
     -1929.0,
     -1929.0,
@@ -3518,6 +3517,7 @@
     -3507.0,
     -3507.0,
     -3507.0,
+    0.0,
     0.0
    ],
    "high_low": {
@@ -3587,7 +3587,7 @@
     "low": -9747.8,
     "low_date": "2024-08-30"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "N3 quality control; not a signal"
@@ -3649,7 +3649,7 @@
     "low": -90257.41,
     "low_date": "2024-08-30"
    },
-   "age_days": 45,
+   "age_days": 46,
    "confidence": 85,
    "latest_outlier": true
   },
@@ -3730,7 +3730,7 @@
     "low": 18340.207,
     "low_date": "2025-10-20"
    },
-   "age_days": 349,
+   "age_days": 350,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "historical release for replay and proxy validation; not updated by the Treasury"
@@ -3782,7 +3782,7 @@
     "low": -15038.424,
     "low_date": "2024-05-31"
    },
-   "age_days": 349,
+   "age_days": 350,
    "confidence": 70,
    "latest_outlier": false,
    "mean_abs_error": 3987.0,
@@ -6142,6 +6142,11 @@
    },
    {
     "date": "2026-10-09",
+    "label": "NEUTRAL",
+    "score": 0.0
+   },
+   {
+    "date": "2026-10-12",
     "label": "NEUTRAL",
     "score": 0.0
    },
