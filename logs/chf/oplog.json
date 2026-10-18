@@ -1,6 +1,622 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-18T11:41:56+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "dry",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [],
+    "messages": 2
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:56+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "33c7f1337e74187c",
+    "degraded": [
+     "F2: monthly stock only (fx_investments)",
+     "F2: monthly stock only (snb_bills)",
+     "F2: monthly stock only (absorbing_repos)"
+    ],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 23,
+     "general": 6
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:55+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:55+00:00",
+   "type": "CHF_V04",
+   "category": "system",
+   "details": {
+    "ops_rows": 1637,
+    "ops_cut": "2026-08-31",
+    "mmdrc_records": 408,
+    "bond_records": 168,
+    "bonds_outstanding": 23,
+    "outstanding_asof": "2026-09-30",
+    "es_recon_months": 35,
+    "proxy_weeks": 284
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:55+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_bonds_outstanding",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/K9gjjBZzAoPz/ausstehende-anleihen.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:54+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbfxtr",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbfxtr/data/json/en?fromDate=2025-09-13&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:53+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snb_money_market_operations",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.snb.ch', port=443): Max retries exceeded with url: /dam/jcr:dd367aa2-9c2f-41c1-be62-9c50d61c52c1/gmges.en.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.snb.ch', port=443): Failed to resolve 'www.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:53+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zimoma",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zimoma/data/json/en?dimSel=D0(EG3M)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:52+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zikrepro",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zikrepro/data/json/en?dimSel=D0(05Q),D1(MV,50,10)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:51+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbmonagg",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbmonagg/data/json/en?dimSel=D0(B),D1(GM1,GM2,GM3,S0)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:50+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "babilpobm",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/babilpobm/data/json/en?dimSel=BANKENGRUPPE(A40),INLANDAUSLAND(T),WAEHRUNG(T),AKT(FMI,FKU,HYP,TOT),PAS(VBA,VKE,APF)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:49+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "bakredinausbm",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/bakredinausbm/data/json/en?dimSel=D0(AV1),D1(I),D2(T1,H,T2),D3(F)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:48+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "bamire",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/bamire/data/json/en?dimSel=D0(TB),D1(GA,T,GN,NM,EP,EGP,ZNP,AI)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:47+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbmoba",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbmoba/data/json/en?dimSel=D0(N0,GB,N1,RF,G)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:46+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbbipo",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbbipo/data/json/en?dimSel=D0(GFG,D,FRGSF,GSGSF,GD,T0,N,GB,VB,GBI,US,VRGSF,ES,UT,T1)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:45+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_auctions",
+    "error": "efv bonds: failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/AFFQnqhWiEVW/resultate-anleihen.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:45+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_auctions",
+    "error": "efv mmdrc: failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/d9FElh8dV0db/resultate-gmbf.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:45+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdmigirow",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdmigirow/data/json/en?dimSel=D0(GU)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:44+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdchfsgw",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdchfsgw/data/json/en?dimSel=D0(GI,UEB,TG)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:43+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zirepo",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zirepo/data/json/en?dimSel=D0(H0,H1,H2,H4,H5,H6,H7,H8)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:42+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nss_curve",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/warehouse/cube/SNB1A.SNB.NSS.KZS.EID/data/json/en?dimSel=LAUFZEIT(J01M0,J02M0,J03M0,J05M0,J07M0,J10M0,J20M0,J30M0),ZEITPUNKT(A1100),frequency(P1D_L),AGGREGATIONSMETHODE(ZZ)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:41+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdzid[saron]",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdzid/data/json/en?dimSel=D0(SARON)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:40+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdzid[policy]",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdzid/data/json/en?dimSel=D0(LZ,ENG,ZIGBL,ZIG,ZIABP,FREI)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:37:47+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zikrepro",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zikrepro/data/json/en?dimSel=D0(05Q),D1(MV,50,10)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:37:29+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbmonagg",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbmonagg/data/json/en?dimSel=D0(B),D1(GM1,GM2,GM3,S0)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:37:11+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "babilpobm",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/babilpobm/data/json/en?dimSel=BANKENGRUPPE(A40),INLANDAUSLAND(T),WAEHRUNG(T),AKT(FMI,FKU,HYP,TOT),PAS(VBA,VKE,APF)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:36:53+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "bakredinausbm",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/bakredinausbm/data/json/en?dimSel=D0(AV1),D1(I),D2(T1,H,T2),D3(F)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:36:35+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "bamire",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/bamire/data/json/en?dimSel=D0(TB),D1(GA,T,GN,NM,EP,EGP,ZNP,AI)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:36:17+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbmoba",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbmoba/data/json/en?dimSel=D0(N0,GB,N1,RF,G)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:35:59+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbbipo",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbbipo/data/json/en?dimSel=D0(GFG,D,FRGSF,GSGSF,GD,T0,N,GB,VB,GBI,US,VRGSF,ES,UT,T1)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:35:41+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_auctions",
+    "error": "efv bonds: failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/AFFQnqhWiEVW/resultate-anleihen.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:35:41+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_auctions",
+    "error": "efv mmdrc: failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/d9FElh8dV0db/resultate-gmbf.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:35:05+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdmigirow",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdmigirow/data/json/en?dimSel=D0(GU)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:34:47+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdchfsgw",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdchfsgw/data/json/en?dimSel=D0(GI,UEB,TG)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:34:28+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zirepo",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zirepo/data/json/en?dimSel=D0(H0,H1,H2,H4,H5,H6,H7,H8)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:34:10+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nss_curve",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/warehouse/cube/SNB1A.SNB.NSS.KZS.EID/data/json/en?dimSel=LAUFZEIT(J01M0,J02M0,J03M0,J05M0,J07M0,J10M0,J20M0,J30M0),ZEITPUNKT(A1100),frequency(P1D_L),AGGREGATIONSMETHODE(ZZ)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:33:52+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdzid[saron]",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdzid/data/json/en?dimSel=D0(SARON)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:33:34+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdzid[policy]",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdzid/data/json/en?dimSel=D0(LZ,ENG,ZIGBL,ZIG,ZIABP,FREI)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:49:50+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "dry",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [],
+    "messages": 2
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:49:50+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "b26c6e37fabdfe00",
+    "degraded": [
+     "F2: monthly stock only (fx_investments)",
+     "F2: monthly stock only (snb_bills)",
+     "F2: monthly stock only (absorbing_repos)"
+    ],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 23,
+     "general": 6
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:49:50+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:49:50+00:00",
+   "type": "CHF_V04",
+   "category": "system",
+   "details": {
+    "ops_rows": 1637,
+    "ops_cut": "2026-08-31",
+    "mmdrc_records": 0,
+    "bond_records": 0,
+    "bonds_outstanding": 23,
+    "outstanding_asof": "2026-09-30",
+    "es_recon_months": 35,
+    "proxy_weeks": 284
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:49:50+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_bonds_outstanding",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/K9gjjBZzAoPz/ausstehende-anleihen.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:49:31+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbfxtr",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbfxtr/data/json/en?fromDate=2025-09-13&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:49:13+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snb_bills_register",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/list/snbbillshreg/data/json/en (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:48:55+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snb_money_market_operations",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.snb.ch', port=443): Max retries exceeded with url: /dam/jcr:dd367aa2-9c2f-41c1-be62-9c50d61c52c1/gmges.en.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.snb.ch', port=443): Failed to resolve 'www.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:48:37+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zimoma",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zimoma/data/json/en?dimSel=D0(EG3M)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:48:19+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zikrepro",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zikrepro/data/json/en?dimSel=D0(05Q),D1(MV,50,10)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:48:01+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbmonagg",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbmonagg/data/json/en?dimSel=D0(B),D1(GM1,GM2,GM3,S0)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:47:43+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "babilpobm",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/babilpobm/data/json/en?dimSel=BANKENGRUPPE(A40),INLANDAUSLAND(T),WAEHRUNG(T),AKT(FMI,FKU,HYP,TOT),PAS(VBA,VKE,APF)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:47:25+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "bakredinausbm",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/bakredinausbm/data/json/en?dimSel=D0(AV1),D1(I),D2(T1,H,T2),D3(F)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:47:07+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "bamire",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/bamire/data/json/en?dimSel=D0(TB),D1(GA,T,GN,NM,EP,EGP,ZNP,AI)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:46:49+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbmoba",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbmoba/data/json/en?dimSel=D0(N0,GB,N1,RF,G)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:46:31+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbbipo",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbbipo/data/json/en?dimSel=D0(GFG,D,FRGSF,GSGSF,GD,T0,N,GB,VB,GBI,US,VRGSF,ES,UT,T1)&fromDate=2026-06-20&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:46:13+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_auctions",
+    "error": "efv bonds: failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/AFFQnqhWiEVW/resultate-anleihen.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:46:13+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "efv_auctions",
+    "error": "efv mmdrc: failed after 3 tries: HTTPSConnectionPool(host='www.efv.admin.ch', port=443): Max retries exceeded with url: /dam/en/sd-web/d9FElh8dV0db/resultate-gmbf.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.efv.admin.ch', port=443): Failed to resolve 'www.efv.admin.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:45:37+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdmigirow",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdmigirow/data/json/en?dimSel=D0(GU)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:45:19+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdchfsgw",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdchfsgw/data/json/en?dimSel=D0(GI,UEB,TG)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:45:01+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "zirepo",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/zirepo/data/json/en?dimSel=D0(H0,H1,H2,H4,H5,H6,H7,H8)&fromDate=2026-08-19&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:44:43+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nss_curve",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/warehouse/cube/SNB1A.SNB.NSS.KZS.EID/data/json/en?dimSel=LAUFZEIT(J01M0,J02M0,J03M0,J05M0,J07M0,J10M0,J20M0,J30M0),ZEITPUNKT(A1100),frequency(P1D_L),AGGREGATIONSMETHODE(ZZ)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:44:25+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdzid[saron]",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdzid/data/json/en?dimSel=D0(SARON)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:44:07+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "snbgwdzid[policy]",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='data.snb.ch', port=443): Max retries exceeded with url: /api/cube/snbgwdzid/data/json/en?dimSel=D0(LZ,ENG,ZIGBL,ZIG,ZIABP,FREI)&fromDate=2026-09-03&toDate=2026-10-18 (Caused by NameResolutionError(\"HTTPSConnection(host='data.snb.ch', port=443): Failed to resolve 'data.snb.ch' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
    "timestamp": "2026-10-16T14:32:23+00:00",
    "type": "NOTIFY",
    "category": "system",

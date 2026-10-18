@@ -1,4 +1,4 @@
-# Publish the repo root as a static site. Frontend reads /data/<ccy>/*.json only.
+# Publish the repo root as a static site. Frontend reads /data/<ccy>/*.json from GitHub Raw with 5-min sessionStorage + CDN cache.
 [build]
   publish = "."
   command = ""
@@ -8,8 +8,8 @@
 [[headers]]
   for = "/data/*"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "public, max-age=300, stale-while-revalidate=600"
 [[headers]]
   for = "/*.html"
   [headers.values]
-    Cache-Control = "no-cache"
+    Cache-Control = "public, max-age=300, stale-while-revalidate=600"

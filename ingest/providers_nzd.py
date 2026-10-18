@@ -42,6 +42,7 @@ BROWSER_HEADERS = {
 }
 _SESSIONS: Dict[str, object] = {}
 _LAST_403: Dict[str, str] = {}
+_OFFLINE: set = set()
 
 
 def _session(origin: str):
@@ -52,10 +53,12 @@ def _session(origin: str):
     if origin not in _SESSIONS:
         sess = requests.Session()
         sess.headers.update(BROWSER_HEADERS)
-        try:
-            sess.get(origin + "/", timeout=30)
-        except Exception:  # noqa
-            pass
+        if origin not in _OFFLINE:
+            try:
+                sess.get(origin + "/", timeout=5)
+            except Exception as e:  # noqa
+                if "ConnectionError" in type(e).__name__ or "Failed to establish" in str(e) or "nodename nor servname" in str(e):
+                    _OFFLINE.add(origin)
         _SESSIONS[origin] = sess
     return _SESSIONS[origin]
 
@@ -63,18 +66,22 @@ def _session(origin: str):
 def _impersonated_get(url: str, hdr: Dict[str, str], timeout: int, origin: str):
     """Akamai / Cloudflare bot managers fingerprint the TLS handshake (JA3): python-requests is rejected with 403 whatever the headers.
     curl_cffi impersonates Chrome's TLS + HTTP/2 fingerprint; falls back to the system curl binary, then to requests."""
+    if origin in _OFFLINE:
+        return None
     try:
         from curl_cffi import requests as creq  # type: ignore
         key = "cffi:" + origin
         if key not in _SESSIONS:
             s = creq.Session(impersonate="chrome")
             try:
-                s.get(origin + "/", timeout=30)
+                s.get(origin + "/", timeout=5)
             except Exception:  # noqa
                 pass
             _SESSIONS[key] = s
         return _SESSIONS[key].get(url, headers=hdr, timeout=timeout, allow_redirects=True)
     except ImportError:
+        pass
+    except Exception:
         pass
     import shutil
     import subprocess
@@ -82,11 +89,14 @@ def _impersonated_get(url: str, hdr: Dict[str, str], timeout: int, origin: str):
     if shutil.which("curl"):
         fd, path = tempfile.mkstemp()
         os.close(fd)
-        args = ["curl", "-sSL", "--compressed", "-m", str(timeout), "-o", path, "-w", "%{http_code}", "-A", BROWSER_HEADERS["User-Agent"], "-H", "Accept-Language: en-NZ,en;q=0.9", "-H", "Referer: " + origin + "/", url]
+        args = ["curl", "-sSL", "--compressed", "--connect-timeout", "4", "-m", str(timeout), "-o", path, "-w", "%{http_code}", "-A", BROWSER_HEADERS["User-Agent"], "-H", "Accept-Language: en-NZ,en;q=0.9", "-H", "Referer: " + origin + "/", url]
         p = subprocess.run(args, capture_output=True, text=True)
         code = int((p.stdout or "0").strip()[-3:] or 0)
         body = open(path, "rb").read()
         os.unlink(path)
+        if code == 0:
+            _OFFLINE.add(origin)
+            return None
 
         class R:  # minimal response shim
             status_code, content, headers = code, body, {"via": "system-curl"}
@@ -95,17 +105,23 @@ def _impersonated_get(url: str, hdr: Dict[str, str], timeout: int, origin: str):
     return None
 
 
-def _http(url: str, timeout: int = 60, retries: int = 3, binary: bool = False):
+def _http(url: str, timeout: int = 30, retries: int = 3, binary: bool = False):
     """fetch ladder: curl_cffi (Chrome TLS fingerprint) → system curl → requests with browser headers; 403/429 recorded with server headers for the oplog"""
     from urllib.parse import urlsplit
     sp = urlsplit(url)
     origin = "%s://%s" % (sp.scheme, sp.netloc)
+    if origin in _OFFLINE:
+        raise ProviderError("origin %s unreachable (offline)" % origin)
     sess = _session(origin)
+    if origin in _OFFLINE:
+        raise ProviderError("origin %s unreachable (offline)" % origin)
     last: Optional[Exception] = None
     for i in range(retries):
         try:
             hdr = {"Referer": origin + "/", "Accept": ("application/octet-stream,*/*;q=0.8" if binary else BROWSER_HEADERS["Accept"])}
-            r = _impersonated_get(url, hdr, timeout, origin) if i == 0 else None
+            r = _impersonated_get(url, hdr, timeout, origin)
+            if origin in _OFFLINE:
+                raise ProviderError("origin %s unreachable (offline)" % origin)
             if r is None or r.status_code in (403, 429):
                 r = sess.get(url, headers=hdr, timeout=timeout, allow_redirects=True)
             if r.status_code == 403 and i == 0:
@@ -125,7 +141,10 @@ def _http(url: str, timeout: int = 60, retries: int = 3, binary: bool = False):
             raise
         except Exception as e:  # noqa
             last = e
-            time.sleep(3 * (i + 1))
+            if origin in _OFFLINE or "ConnectionError" in type(e).__name__ or "Failed to establish" in str(e) or "nodename nor servname" in str(e):
+                _OFFLINE.add(origin)
+                break
+            time.sleep(2 * (i + 1))
     raise ProviderError("failed after %d tries: %s" % (retries, last))
 from .providers_jpy import read_fixture, _sleep_gap, _snapshot
 from .series import Series, clean
@@ -201,7 +220,14 @@ class RbnzTableProvider:
 
     def _blob(self, path: str, tag: str) -> bytes:
         self._last = _sleep_gap(self._last, self.MIN_GAP_S)
-        blob = _http(RBNZ_FILES + path, binary=True)
+        try:
+            blob = _http(RBNZ_FILES + path, binary=True)
+        except ProviderError:
+            snap = os.path.join(self.raw_dir, tag + ".xlsx") if self.raw_dir else None
+            if snap and os.path.exists(snap):
+                with open(snap, "rb") as f:
+                    return f.read()
+            raise
         _snapshot(self.raw_dir, tag + ".xlsx", blob)
         return blob
 
@@ -426,7 +452,7 @@ class RbnzD3Provider(RbnzTableProvider):
 class RbnzD10Provider(RbnzTableProvider):
     PATH = "d-f-r/d10/hd10.xlsx"
     LABELS = {"cash_begin": r"cash at beginning", "govt_cash_influence": r"government cash influence", "rbnz_transactions": r"reserve bank transactions",
-              "bonds_issued": r"^bonds issued", "bond_maturities": r"bond maturities", "tbills_issued": r"treasury bill issued", "tbills_matured": r"treasury bill matur",
+              "bonds_issued": r"bonds issued", "bond_maturities": r"bond maturities", "tbills_issued": r"treasury bill issued", "tbills_matured": r"treasury bill matur",
               "fx": r"foreign exchange", "net_reverse_repos": r"net reverse repos", "net_fx_swaps": r"net fx swaps", "net_orrf": r"overnight reverse repo facility",
               "cash_end": r"cash as at end", "avg_settlement_cash": r"average settlement cash"}
 
@@ -542,12 +568,12 @@ class NzdmProvider:
         url = path if path.startswith("http") else self.base + path
         try:
             payload = _http(url, binary=binary)
-        except ProviderError as e:
+        except ProviderError:
             # Cloudflare in front of debtmanagement.treasury.govt.nz challenged the runner with 403 on 2026-09-11 (NZD #15) after
             # serving the same pages minutes earlier: use the committed raw snapshot (logs/nzd/raw, last good copy) and say so —
             # the block then carries known data with a label, never nothing and never an invention
             snap = os.path.join(self.raw_dir, tag) if self.raw_dir else None
-            if snap and os.path.exists(snap) and "403" in str(e):
+            if snap and os.path.exists(snap):
                 stamp = _dt.date.fromtimestamp(os.path.getmtime(snap)).isoformat()
                 self.fallbacks.append("%s (snapshot %s)" % (tag, stamp))
                 with open(snap, "rb" if binary else "r", encoding=None if binary else "utf-8") as f:

@@ -64,6 +64,8 @@ table{width:100%;border-collapse:collapse;font-size:13px;font-family:var(--font)
   <div class="strip" id="strip"></div>
   <h2>Incidencias de calidad</h2>
   <div id="issues"></div>
+  <h2>Boletín operativo de liquidez MMT — Bancos Centrales y Tesoros G8</h2>
+  <div id="liq_mmt"></div>
   <h2>Esta semana — liquidaciones y publicaciones de las ocho (próximos cinco días hábiles)</h2>
   <div class="tbl" id="week" style="max-height:420px;overflow:auto"></div>
   <h2>Ocho divisas</h2>
@@ -99,17 +101,22 @@ function age(iso){if(!iso)return null;const h=(Date.now()-new Date(iso).getTime(
 function ageTxt(h){if(h==null)return '—';if(h<1)return Math.round(h*60)+' min';if(h<48)return h.toFixed(1)+' h';return (h/24).toFixed(1)+' d';}
 function tick(){const d=new Date();const t=z=>d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:z});$('clock').textContent='LDN '+t('Europe/London')+' · NY '+t('America/New_York')+' · WAT '+t('Africa/Lagos');}
 setInterval(tick,30000);tick();
-const DATA_ROOT='https://raw.githubusercontent.com/sanderdayan1982/mesa-macro-fx/main/', VQ='?v='+Math.floor(Date.now()/60000);
-// Every commit to main deploys the site again (decision 2026-09-10), so the JSON next to the HTML is the freshest copy: relative
-// path first, GitHub raw (branch main) as fallback for a stale CDN edge. Same generated_at either way.
-function tfetch(u,ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); return fetch(u,{cache:'no-store',signal:c.signal}).finally(()=>clearTimeout(t)); }
-async function get(u){ const rel=u.replace(/^\.\.\//,''); try{const r=await tfetch(DATA_ROOT+rel+VQ,6000); if(r.ok) return await r.json();}catch(e){} try{const r=await fetch(u+VQ,{cache:'no-store'}); return r.ok?await r.json():null;}catch(e){return null;} }  // raw first: data commits no longer redeploy Netlify
-async function load(){
+const DATA_ROOT='https://raw.githubusercontent.com/sanderdayan1982/mesa-macro-fx/main/', TTL_MS=300000;
+function tfetch(u,ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); return fetch(u,{cache:'default',signal:c.signal}).finally(()=>clearTimeout(t)); }
+async function get(u,force=false){
+  const rel=u.replace(/^\.\.\//,''), ck='mmfx:'+rel;
+  if(!force){try{const s=sessionStorage.getItem(ck);if(s){const p=JSON.parse(s);if(Date.now()-p.t<TTL_MS)return p.d;}}catch(e){}}
+  const vq='?v='+Math.floor(Date.now()/TTL_MS);
+  try{const r=await tfetch(DATA_ROOT+rel+vq,6000); if(r.ok){const d=await r.json();try{sessionStorage.setItem(ck,JSON.stringify({t:Date.now(),d}));}catch(e){} return d;}}catch(e){}
+  try{const r=await fetch(u+vq,{cache:'default'}); if(r.ok){const d=await r.json();try{sessionStorage.setItem(ck,JSON.stringify({t:Date.now(),d}));}catch(e){} return d;}}catch(e){}
+  return null;
+}
+async function load(force=false){
   $('msg').className='msg info';$('msg').textContent='Cargando…';
   const D={};
-  await Promise.all(CCYS.map(async c=>{const [a,r,q,k,h]=await Promise.all([get('../data/'+c+'/agent.json'),get('../data/'+c+'/regime.json'),get('../data/'+c+'/quality.json'),get('../data/'+c+'/calendar.json'),get('../data/'+c+'/regime_history.json')]);D[c]={a,r,q,k,h};}));
-  const J=await get('../data/mesa/jefe.json');
-  const OB=await get('../data/mesa/outbox.json');
+  await Promise.all(CCYS.map(async c=>{const [a,r,q,k,h]=await Promise.all([get('../data/'+c+'/agent.json',force),get('../data/'+c+'/regime.json',force),get('../data/'+c+'/quality.json',force),get('../data/'+c+'/calendar.json',force),get('../data/'+c+'/regime_history.json',force)]);D[c]={a,r,q,k,h};}));
+  const J=await get('../data/mesa/jefe.json',force);
+  const OB=await get('../data/mesa/outbox.json',force);
   $('outbox').innerHTML=OB&&OB.sent&&OB.sent.length?OB.sent.slice(-6).reverse().map(x=>`<div class="issue ${x.delivered?'ok':'err'}"><b>${x.ts.slice(0,16).replace('T',' ')}Z · ${x.tag} · ${x.delivered?'entregado':(x.note?'dry run (sin secretos)':'no entregado')}</b><br>${x.text.replace(/<[^>]+>/g,'').slice(0,400).replace(/\n/g,'<br>')}</div>`).join(''):'<div class="issue ok">Sin envíos todavía (data/mesa/outbox.json).</div>';
   let fresh=0,stale=0,unav=0,gates=0,gateFail=0,old=0,missing=0,lagN=0;const issues=[];
   const cards=CCYS.map(c=>{
@@ -162,6 +169,7 @@ async function load(){
     const TY={fiscal:'Tesoro',central_bank:'BC',banking:'banca',rates:'tipos'};const noCal=CCYS.filter(c=>!D[c].k||!D[c].k.upcoming).map(c=>c.toUpperCase());
     $('week').innerHTML=(rows.length?`<table><thead><tr><th>Fecha</th><th>Divisa</th><th>Bloque</th><th>Impacto</th><th>Evento</th><th>Hora</th></tr></thead><tbody>${rows.map(e=>`<tr><td>${e.date.slice(5)}${e.date===t0.toISOString().slice(0,10)?' <span class="badge dim">hoy</span>':''}</td><td><b>${e.c}</b></td><td>${TY[e.type]||e.type||'—'}</td><td><span class="badge ${e.impact==='HIGH'?'err':e.impact==='MEDIUM'?'warn':'dim'}">${e.impact||'—'}</span></td><td style="white-space:normal;min-width:260px">${e.title}</td><td>${e.time_local||'—'}</td></tr>`).join('')}</tbody></table>`:'<div class="issue ok">Ningún evento declarado en los próximos cinco días hábiles.</div>')+`<div class="src">${days[0]} → ${days[4]} (días hábiles L–V, UTC; festivos locales no descontados) · fuente: calendar.json de cada divisa (calendario declarado en config, sin fuentes externas)${noCal.length?' · sin calendario: '+noCal.join(', '):''}</div>`;}
   $('issues').innerHTML=issues.length?issues.map(i=>`<div class="issue ${i.lvl}">${i.t}</div>`).join(''):'<div class="issue ok">Sin incidencias: los 32 bloques frescos, ocho puertas pasan, ningún refresco atrasado, sin errores de fuente ni copias last-good.</div>';
+  $('liq_mmt').innerHTML=CCYS.map(c=>{const lb=((D[c].a||{}).liquidity_bulletin)||{};if(!lb.cb_message&&!lb.treasury_message)return '';return `<div class="issue ok" style="border-left-color:var(--blue);color:var(--text)"><b><a href="../${c}/" style="color:var(--gold);text-decoration:none">${c.toUpperCase()}</a> · BC:</b> ${lb.cb_message||'—'}<br><b><a href="../${c}/" style="color:var(--gold);text-decoration:none">${c.toUpperCase()}</a> · Tesoro (MMT):</b> ${lb.treasury_message||'—'}</div>`;}).join('')||'<div class="issue warn">Boletín operativo de liquidez MMT pendiente de regeneración.</div>';
   // ── fontanería por divisa: two bars (BC, Tesoro) at ±2.5 Z and their 52-week paths; presentation of jefe.json only ──
   if(J&&J.history&&J.history.bc){const H=J.history,T0=J.treasury&&J.treasury.ranking?J.treasury:null;const LBL=c=>J.labels?J.labels[c]:null;
     const bar=(name,z)=>{const w=z==null?0:Math.min(Math.abs(z),2.5)/2.5*50;const left=z==null?50:(z<0?50-w:50);return `<div class="bar"><span>${name}</span><div class="tr"><i class="${z<0?'neg':''}" style="left:${left}%;width:${w}%"></i><span class="z0"></span></div><span class="v">${z==null?'—':fN(z)}</span></div>`;};

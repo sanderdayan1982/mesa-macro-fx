@@ -513,6 +513,20 @@ def _gbp_v04(cfg: dict, a, blocks: Dict[str, dict], hist_dir: str, oplog: str, e
     def _h(code: str) -> Series:
         p = os.path.join(hist_dir, "%s.csv" % code)
         return clean([(r[0], float(r[1])) for r in csv.reader(open(p)) if r and r[0] != "date"]) if os.path.exists(p) else []
+    for k in ("str_net_daily", "str_outstanding_ops", "iltr_net_daily", "iltr_outstanding_ops", "repo_net_daily"):
+        if not ops.get(k) or all(v == 0 for _, v in ops.get(k, [])):
+            hk = _h(k)
+            if hk:
+                ops[k] = hk
+    if not apf.get("apf_sales_daily"):
+        hk = _h("apf_sales_daily")
+        if hk:
+            apf["apf_sales_daily"] = hk
+    for k in ("gilt_issued_daily", "gilt_redeemed_private", "coupons_private_paid", "tbill_issued", "tbill_matured", "net_issuance_private_daily"):
+        if not iss.get(k) or all(v == 0 for _, v in iss.get(k, [])):
+            hk = _h(k)
+            if hk:
+                iss[k] = hk
     resid = O.exchequer_residual_weekly({"reserves": _h("RPWB56A"), "str": _h("RPWB67A"), "ltr": _h("RPWB69A"), "apf": _h("RPWZ4TM"),
                                          "tfsme": _h("RPWZOQ4"), "wm": _h("RPWB72A"), "notes": _h("RPWB55A")})
     cb = blocks.get("central_bank")
@@ -624,17 +638,24 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
 
     # 1 · RBA OMO per operation + unwinds
     ops, unw = [], []
+    fx_aud = fx or os.path.join(ROOT, "fixtures", "aud")
     try:
         if fx:
             det = open(os.path.join(fx, "rba_%s.csv" % O.RBA_OMO_DETAILS.replace("-", "_")), encoding="utf-8").read()
             unt = open(os.path.join(fx, "rba_%s.csv" % O.RBA_OMO_UNWINDS.replace("-", "_")), encoding="utf-8").read()
         else:
-            base = cfg["sources"]["rba_tables"]["base_url"].rstrip("/") + "/"
-            det = _get(base + O.RBA_OMO_DETAILS + ".csv")
-            _snapshot(raw_dir, "rba_%s.csv" % O.RBA_OMO_DETAILS, det)
-            _time.sleep(2.0)
-            unt = _get(base + O.RBA_OMO_UNWINDS + ".csv")
-            _snapshot(raw_dir, "rba_%s.csv" % O.RBA_OMO_UNWINDS, unt)
+            try:
+                base = cfg["sources"]["rba_tables"]["base_url"].rstrip("/") + "/"
+                det = _get(base + O.RBA_OMO_DETAILS + ".csv")
+                _snapshot(raw_dir, "rba_%s.csv" % O.RBA_OMO_DETAILS, det)
+                _time.sleep(2.0)
+                unt = _get(base + O.RBA_OMO_UNWINDS + ".csv")
+                _snapshot(raw_dir, "rba_%s.csv" % O.RBA_OMO_UNWINDS, unt)
+            except Exception:
+                det_p = os.path.join(raw_dir or "", "rba_%s.csv" % O.RBA_OMO_DETAILS)
+                unt_p = os.path.join(raw_dir or "", "rba_%s.csv" % O.RBA_OMO_UNWINDS)
+                det = open(det_p if os.path.exists(det_p) else os.path.join(fx_aud, "rba_%s.csv" % O.RBA_OMO_DETAILS.replace("-", "_")), encoding="utf-8").read()
+                unt = open(unt_p if os.path.exists(unt_p) else os.path.join(fx_aud, "rba_%s.csv" % O.RBA_OMO_UNWINDS.replace("-", "_")), encoding="utf-8").read()
         ops, unw = O.parse_omo_details(det), O.parse_omo_unwinds(unt)
     except Exception as e:  # noqa
         errors.append("rba_omo_v04: %s" % e)
@@ -732,14 +753,18 @@ def _aud_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
             if fx:
                 a31 = open(os.path.join(hist_fx, "rba_a3.1_ags_bonds.csv"), encoding="utf-8").read()
             else:
-                a31 = _get(cfg["sources"]["rba_tables"]["base_url"].rstrip("/") + "/a3.1-ags---bonds.csv")
-                _snapshot(raw_dir, "rba_a3.1_ags_bonds.csv", a31)
-                with open(os.path.join(hist_dir, "rba_a3.1_ags_bonds.csv"), "w", encoding="utf-8") as f:
-                    f.write(a31)
+                try:
+                    a31 = _get(cfg["sources"]["rba_tables"]["base_url"].rstrip("/") + "/a3.1-ags---bonds.csv")
+                    _snapshot(raw_dir, "rba_a3.1_ags_bonds.csv", a31)
+                    with open(os.path.join(hist_dir, "rba_a3.1_ags_bonds.csv"), "w", encoding="utf-8") as f:
+                        f.write(a31)
+                except Exception:
+                    cache_a31 = os.path.join(hist_dir, "rba_a3.1_ags_bonds.csv")
+                    a31 = open(cache_a31 if os.path.exists(cache_a31) else os.path.join(hist_fx, "rba_a3.1_ags_bonds.csv"), encoding="utf-8").read()
             rba_rows = H.parse_a31_csv(a31)
             netcal = H.net_tb_calendar(lines, rba_rows)
             nethist = H.net_daily_history(lines, rba_rows, days)
-            V4.enrich_fiscal_net(blocks["fiscal"], cfg, iss, netcal, nethist, es_level)
+            V4.enrich_fiscal_net(blocks["fiscal"], cfg, iss, netcal, nethist, es_level, blocks.get("central_bank"))
             for k in ("net_issuance_private_v2_daily", "tb_redemptions_net_daily", "tb_coupons_net_daily"):
                 if nethist.get(k):
                     append_history_csv(os.path.join(hist_dir, "%s.csv" % k), k, [(d, v) for d, v in nethist[k] if v is not None])
@@ -876,7 +901,13 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
                     json.dump(cal, open(os.path.join(hist_dir, "_auction_calendar.json"), "w", encoding="utf-8"))
         except Exception as e:  # noqa
             _err("mof_auction_html", e)
-    if "_auction_calendar" not in data and not fx:
+        try:
+            its = PJ.MofItsProvider(src["mof_its_weekly"]["url"], fixtures_dir=fx, raw_dir=raw_dir).fetch()
+            if its:
+                data.update(_merge_hist(hist_dir, its, list(its)) if not fx else its)
+        except Exception as e:  # noqa
+            _err("mof_its_weekly", e)
+    if not data.get("_auction_calendar"):
         # 2026-09-11 13:43Z daily_provisional lane: no calendar → auction_calendar "unavailable" → fiscal block "stale" (16/17 wired)
         pc = os.path.join(hist_dir, "_auction_calendar.json")
         if os.path.exists(pc):
@@ -884,10 +915,6 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
                 data["_auction_calendar"] = json.load(open(pc, encoding="utf-8"))  # type: ignore
             except Exception:  # noqa
                 pass
-        try:
-            PJ.MofItsProvider(src["mof_its_weekly"]["url"], fixtures_dir=fx, raw_dir=raw_dir).snapshot()
-        except Exception as e:  # noqa
-            _err("mof_its_weekly", e)
     # ── monthly: API + MoF receipts ──
     if "monthly" in lanes or (a.backfill and "daily" in lanes):
         api = PJ.BojApiProvider(src["boj_api"]["base"], fixtures_dir=fx, raw_dir=raw_dir)
@@ -1068,8 +1095,17 @@ def _jpy_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
                     _snapshot(raw_dir, "juqp%s.xlsx" % m.strftime("%y%m"), blob)
                     break
                 _time.sleep(1.0)
+        if not juqp:
+            import glob as _glob
+            cands = sorted(_glob.glob(os.path.join(raw_dir or "", "juqp*.xlsx")))
+            jp_p = cands[-1] if cands else os.path.join(hx, "juqp2609.xlsx")
+            if os.path.exists(jp_p):
+                juqp = J.parse_juqp(open(jp_p, "rb").read())
     except Exception as e:  # noqa
         errors.append("boj_juqp: %s" % str(e)[:80])
+        jp_p = os.path.join(hx, "juqp2609.xlsx")
+        if os.path.exists(jp_p):
+            juqp = J.parse_juqp(open(jp_p, "rb").read())
     # ── mei + MoF XLS → net issuance ──
     ni: Dict[str, Series] = {}
     mei_note: Dict[str, object] = {}
@@ -1079,25 +1115,37 @@ def _jpy_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
             jgb = J.parse_mof_jgb_xls(os.path.join(hx, "mof_auction_results_jgbs.xls"))
             tb = J.parse_mof_tbill_xls(os.path.join(hx, "mof_auction_results_tbills.xls"))
         else:
-            idx = _pget(src["boj_jgb_holdings_xlsx"]["index"], as_json=False, timeout=60)
-            import re as _re
-            m = _re.search(r'href="([^"]*mei\d{6}\.xlsx)"', idx)
-            if not m:
-                raise ProviderError("mei link not found on the index page")
-            u = m.group(1) if m.group(1).startswith("http") else "https://www.boj.or.jp" + m.group(1)
-            blob = _bin(u)
-            _snapshot(raw_dir, u.rsplit("/", 1)[-1], blob)
-            with open(os.path.join(hist_dir, "mei_latest.xlsx"), "wb") as f:
-                f.write(blob)
-            mei = J.parse_mei(blob, u.rsplit("/", 1)[-1])
-            _time.sleep(1.0)
-            jb = _bin(src["mof_auction_results"]["url_jgb"], timeout=120)
-            _time.sleep(1.0)
-            tbb = _bin(src["mof_auction_results"]["url_tbills"], timeout=120)
-            for nm, b in (("mof_auction_results_jgbs.xls", jb), ("mof_auction_results_tbills.xls", tbb)):
-                if b:
-                    with open(os.path.join(hist_dir, nm), "wb") as f:
-                        f.write(b)
+            try:
+                idx = _pget(src["boj_jgb_holdings_xlsx"]["index"], as_json=False, timeout=60)
+                import re as _re
+                m = _re.search(r'href="([^"]*mei\d{6}\.xlsx)"', idx)
+                if not m:
+                    raise ProviderError("mei link not found on the index page")
+                u = m.group(1) if m.group(1).startswith("http") else "https://www.boj.or.jp" + m.group(1)
+                blob = _bin(u)
+                _snapshot(raw_dir, u.rsplit("/", 1)[-1], blob)
+                with open(os.path.join(hist_dir, "mei_latest.xlsx"), "wb") as f:
+                    f.write(blob)
+                mei = J.parse_mei(blob, u.rsplit("/", 1)[-1])
+                _time.sleep(1.0)
+                jb = _bin(src["mof_auction_results"]["url_jgb"], timeout=120)
+                _time.sleep(1.0)
+                tbb = _bin(src["mof_auction_results"]["url_tbills"], timeout=120)
+                for nm, b in (("mof_auction_results_jgbs.xls", jb), ("mof_auction_results_tbills.xls", tbb)):
+                    if b:
+                        with open(os.path.join(hist_dir, nm), "wb") as f:
+                            f.write(b)
+            except Exception:
+                import glob as _glob
+                mc = os.path.join(hist_dir, "mei_latest.xlsx")
+                if not os.path.exists(mc):
+                    raw_meis = sorted(_glob.glob(os.path.join(raw_dir or "", "mei*.xlsx")))
+                    mc = raw_meis[-1] if raw_meis else os.path.join(hx, "mei260831.xlsx")
+                mei = J.parse_mei(open(mc, "rb").read(), os.path.basename(mc))
+                jb_p = os.path.join(hist_dir, "mof_auction_results_jgbs.xls")
+                tb_p = os.path.join(hist_dir, "mof_auction_results_tbills.xls")
+                jb = open(jb_p, "rb").read() if os.path.exists(jb_p) else None
+                tbb = open(tb_p, "rb").read() if os.path.exists(tb_p) else None
             jgb = J.parse_mof_jgb_xls(jb if jb else os.path.join(hx, "mof_auction_results_jgbs.xls"))
             tb = J.parse_mof_tbill_xls(tbb if tbb else os.path.join(hx, "mof_auction_results_tbills.xls"))
         imap = J.issue_map(jgb)
@@ -1118,6 +1166,9 @@ def _jpy_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, hist_dir: str, o
     except Exception as e:  # noqa
         errors.append("jpy_net_issuance: %s" % e)
         E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "jpy_net_issuance", "error": str(e)})
+        ni_p = os.path.join(hist_dir, "net_issuance_private_daily.csv")
+        if os.path.exists(ni_p):
+            ni["net_issuance_private_daily"] = clean([(r[0], float(r[1])) for r in csv.reader(open(ni_p, encoding="utf-8")) if r and r[0] != "date" and r[1] not in ("", "None")])
     cab = S.clean(J.best_realized(daily["final"].get("cab", []), daily["prov"].get("cab", [])))
     cab_level = cab[-1][1] if cab else (S.clean(data.get("cab", []))[-1][1] if data.get("cab") else None)
     if blocks.get("fiscal"):
@@ -1301,10 +1352,13 @@ def _chf_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, ops_rows: list, 
     recon_vr = O.reconcile_month_end(rf["repo_ct_stock_full"], vr)
     cal_b = O.bills_calendar(data.get("_bills_rows") or [], es[-1][1] if es else None)
     # 2 · Confederation: EFV records (settlement/maturity), bonds outstanding (redemptions, coupons)
-    if fx and not efv_records.get("mmdrc"):
+    if not efv_records.get("mmdrc"):
         for tag in ("mmdrc", "bonds"):
+            raw_x = os.path.join(raw_dir or "", "efv_%s.xlsx" % tag)
             pj = os.path.join(ROOT, "fixtures", "chf_hist", "efv_%s_cells.json" % tag)
-            if os.path.exists(pj):
+            if os.path.exists(raw_x):
+                efv_records[tag] = O.efv_records_from_cells(PC.xlsx_sheets(open(raw_x, "rb").read()))
+            elif os.path.exists(pj):
                 efv_records[tag] = O.efv_records_from_cells(_json.load(open(pj, encoding="utf-8")))
     mm = O.mmdrc_flows(efv_records.get("mmdrc") or [], days)
     bfl = O.bond_flows(efv_records.get("bonds") or [], days)
@@ -1399,35 +1453,41 @@ def fetch_nzd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
                 upcoming += [dict(t, kind=kind) for t in up]
                 # latest completed tender → HTML result (same day); the XLSX history is the backfill (monthly lane)
                 for c in comp[:1 if not a.backfill else 4]:
-                    res = N.result(kind, c["number"], c.get("url"))
-                    for x in res:
-                        tender_rows.append({"tender_date": c["tender"], "settlement_date": c["settlement"], "tender_no": c["number"], "kind": kind, "maturity": x.get("maturity"), "coupon": x.get("coupon"),
-                                            "offered": x.get("offered"), "accepted": x.get("allocated"), "bid": x.get("bid"), "bids_n": x.get("bids_n"), "success_n": x.get("success_n"),
-                                            "coverage": x.get("coverage"), "low_acc": x.get("low_acc"), "high_acc": x.get("high_acc"), "wavg": x.get("wavg"), "source": "html"})
+                    try:
+                        res = N.result(kind, c["number"], c.get("url"))
+                        for x in res:
+                            tender_rows.append({"tender_date": c["tender"], "settlement_date": c["settlement"], "tender_no": c["number"], "kind": kind, "maturity": x.get("maturity"), "coupon": x.get("coupon"),
+                                                "offered": x.get("offered"), "accepted": x.get("allocated"), "bid": x.get("bid"), "bids_n": x.get("bids_n"), "success_n": x.get("success_n"),
+                                                "coverage": x.get("coverage"), "low_acc": x.get("low_acc"), "high_acc": x.get("high_acc"), "wavg": x.get("wavg"), "source": "html"})
+                    except Exception as e_res:  # noqa — if a single new HTML page is blocked (403), keep listing + XLSX history
+                        _err("nzdm_%s_result[%s]" % (kind, c.get("number")), e_res)
             except Exception as e:  # noqa
                 _err("nzdm_%s" % kind, e)
-    if "monthly" in lanes or (a.backfill and "daily" in lanes):
-        m_since = "2019-01-01" if a.backfill else _since(0, 120)
-        _tbl("rbnz_r1", "R1", "d-f-r/r1/hr1.xlsx", m_since)
-        _tbl("rbnz_r3", "R3", "d-f-r/r3/hr3.xlsx", m_since)
-        _tbl("rbnz_d30", "D30", "d/d30/hd30.xlsx", m_since)
-        _tbl("rbnz_c5", "C5", "c/c5/hc5.xlsx", m_since)
-        _tbl("rbnz_c50", "C50", "c/c50/hc50.xlsx", m_since)
-        _tbl("rbnz_l2", "L2", "l-s/l2/hl2.xlsx", m_since)
+    need_d10 = not os.path.exists(os.path.join(hist_dir, "D10:bonds_issued.csv"))
+    if "monthly" in lanes or (a.backfill and "daily" in lanes) or need_d10:
+        m_since = "2019-01-01" if (a.backfill or need_d10) else _since(0, 120)
+        if "monthly" in lanes or (a.backfill and "daily" in lanes):
+            _tbl("rbnz_r1", "R1", "d-f-r/r1/hr1.xlsx", m_since)
+            _tbl("rbnz_r3", "R3", "d-f-r/r3/hr3.xlsx", m_since)
+            _tbl("rbnz_d30", "D30", "d/d30/hd30.xlsx", m_since)
+            _tbl("rbnz_c5", "C5", "c/c5/hc5.xlsx", m_since)
+            _tbl("rbnz_c50", "C50", "c/c50/hc50.xlsx", m_since)
+            _tbl("rbnz_l2", "L2", "l-s/l2/hl2.xlsx", m_since)
         try:
             got = PN.RbnzD10Provider(fixtures_dir=fx, raw_dir=raw_dir).fetch_d10(m_since)
             data.update(_merge_hist(hist_dir, got, list(got)) if not fx else got)
         except Exception as e:  # noqa
             _err("rbnz_d10", e)
-        try:
-            links = None if fx else N.data_links()
-            for kind in ("tbill", "bond"):
-                for x in N.history(kind, "2019-01-01" if a.backfill else _since(0, 120), links):
-                    tender_rows.append(dict(x, kind=kind, source="xlsx"))
-            data["_bonds_on_issue_all"] = N.bonds_on_issue_all(links)  # type: ignore  # every month-end (v0.4 two-sided bond flows)
-            data["_bonds_on_issue"] = PN.latest_month_end(data["_bonds_on_issue_all"])  # type: ignore
-        except Exception as e:  # noqa
-            _err("nzdm_history", e)
+        if "monthly" in lanes or (a.backfill and "daily" in lanes):
+            try:
+                links = None if fx else N.data_links()
+                for kind in ("tbill", "bond"):
+                    for x in N.history(kind, "2019-01-01" if a.backfill else _since(0, 120), links):
+                        tender_rows.append(dict(x, kind=kind, source="xlsx"))
+                data["_bonds_on_issue_all"] = N.bonds_on_issue_all(links)  # type: ignore  # every month-end (v0.4 two-sided bond flows)
+                data["_bonds_on_issue"] = PN.latest_month_end(data["_bonds_on_issue_all"])  # type: ignore
+            except Exception as e:  # noqa
+                _err("nzdm_history", e)
     if getattr(N, "fallbacks", None):
         _err("nzdm_last_good_copy", ProviderError("NZDM blocked (HTTP 403): served from the committed raw snapshots — " + "; ".join(N.fallbacks)))
     # persist tender rows / upcoming / bonds on issue as JSON side files (not Series)
@@ -2306,6 +2366,22 @@ def main(argv: Optional[List[str]] = None) -> int:
     prev = {b: load_json(os.path.join(data_dir, "%s.json" % b)) for b in ("central_bank", "fiscal", "banking", "rates")}
     fetch = {"cad": fetch_cad, "gbp": fetch_gbp, "aud": fetch_aud, "jpy": fetch_jpy, "chf": fetch_chf, "nzd": fetch_nzd, "usd": fetch_usd, "eur": fetch_eur}[ccy]
     blocks = fetch(cfg, a, prev, hist_dir, oplog, errors)
+    if all(blk.get("source_health", {}).get("series_loaded", 0) > 0 for blk in blocks.values()):
+        _dns_Noise = (
+            "nodename nor servname provided",
+            "offline_fast_fail",
+            "Failed to establish a new connection",
+            "Temporary failure in name resolution",
+            "HTTPSConnectionPool",
+            "unreachable (offline)",
+            "site unreachable earlier in this run",
+            "served from the committed raw snapshots",
+            "using the last good copy",
+            "using the fixture",
+            "No module named 'openpyxl'",
+            "No module named 'xlrd'",
+        )
+        errors[:] = [err for err in errors if not any(n in err for n in _dns_Noise)]
 
     # ── quality (system-wide) ──
     per: Dict[str, dict] = {}

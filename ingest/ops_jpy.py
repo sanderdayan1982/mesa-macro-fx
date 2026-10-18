@@ -108,13 +108,36 @@ def _dense(flows: Series, days: List[str]) -> Series:
 
 
 def read_xlsx_cells(blob: bytes, sheet: Optional[str] = None) -> List[List]:
-    """openpyxl, values only: rows as lists (row 0 = Excel row 1); `sheet` by name, else the first sheet"""
-    import openpyxl
-    wb = openpyxl.load_workbook(io.BytesIO(blob), data_only=True)  # not read_only: BoJ files declare a short <dimension>, read_only truncates
-    ws = wb[sheet] if sheet and sheet in wb.sheetnames else wb[wb.sheetnames[0]]
-    rows = [list(r) for r in ws.iter_rows(values_only=True)]
-    wb.close()
-    return rows
+    """openpyxl (or stdlib zipfile+xml fallback), values only: rows as lists (row 0 = Excel row 1); `sheet` by name, else the first sheet"""
+    try:
+        import openpyxl
+        wb = openpyxl.load_workbook(io.BytesIO(blob), data_only=True)  # not read_only: BoJ files declare a short <dimension>, read_only truncates
+        ws = wb[sheet] if sheet and sheet in wb.sheetnames else wb[wb.sheetnames[0]]
+        rows = [list(r) for r in ws.iter_rows(values_only=True)]
+        wb.close()
+        return rows
+    except ImportError:
+        from .providers_chf import xlsx_sheets, _rows_of
+        sheets = xlsx_sheets(blob)
+        cells = sheets.get(sheet) if (sheet and sheet in sheets) else next(iter(sheets.values()), {})
+        rmap = _rows_of(cells)
+        if not rmap:
+            return []
+        def _col_idx(col_str: str) -> int:
+            idx = 0
+            for ch in col_str:
+                idx = idx * 26 + (ord(ch) - ord("A") + 1)
+            return idx - 1
+        max_r = max(rmap)
+        max_c = max((_col_idx(c) for r in rmap.values() for c in r), default=0)
+        out = []
+        for r_idx in range(1, max_r + 1):
+            r_dict = rmap.get(r_idx, {})
+            row = [None] * (max_c + 1)
+            for c_str, val in r_dict.items():
+                row[_col_idx(c_str)] = val
+            out.append(row)
+        return out
 
 
 def _cells(blob_or_cells, sheet: Optional[str] = None) -> List[List]:
@@ -405,6 +428,25 @@ OP_SIGNS: Dict[str, Tuple[float, float]] = {
 }
 
 
+def _jgb_bucket(jp: str, en: str) -> Optional[str]:
+    s = _norm(jp) + " " + (en or "").lower()
+    if "物価連動" in s or "inflation" in s:
+        return "jgb_purch_iib"
+    if "1年以下" in s or "１年以下" in s or "up to 1 year" in s:
+        return "jgb_purch_upto1y"
+    if "1年超3年" in s or "１年超３年" in s or "up to 3 years" in s:
+        return "jgb_purch_1to3y"
+    if "3年超5年" in s or "３年超５年" in s or "up to 5 years" in s:
+        return "jgb_purch_3to5y"
+    if "5年超10年" in s or "５年超１０年" in s or "up to 10 years" in s:
+        return "jgb_purch_5to10y"
+    if "10年超25年" in s or "１０年超２５年" in s or "up to 25 years" in s:
+        return "jgb_purch_10to25y"
+    if "25年超" in s or "２５年超" in s or "more than 25 years" in s:
+        return "jgb_purch_over25y"
+    return None
+
+
 def ops_flows(ops: List[dict], daily_flow_line: Optional[Dict[str, Series]], days: List[str], today: Optional[str] = None) -> Dict[str, Series]:
     """By settlement (start) date, 100m, FACE amounts (see the module docstring for the sign per kind):
       jgb_purch_settled (+), tbill_purch_settled (+), tbill_sales_settled (−), slf_out (− at start), slf_back (+ at end),
@@ -414,6 +456,7 @@ def ops_flows(ops: List[dict], daily_flow_line: Optional[Dict[str, Series]], day
     today = today or date.today().isoformat()
     ev_start: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
     ev_end: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    jgb_buckets: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
     for o in ops:
         k, a = o.get("kind", "other"), o.get("allotted")
         s0, s1 = OP_SIGNS.get(k, (0, 0))
@@ -422,6 +465,10 @@ def ops_flows(ops: List[dict], daily_flow_line: Optional[Dict[str, Series]], day
         st = o.get("start") or o.get("date")
         if st and s0:
             ev_start[k][st] += s0 * a
+            if k == "jgb_purch":
+                bk = _jgb_bucket(o.get("instrument_jp", ""), o.get("instrument_en", ""))
+                if bk:
+                    jgb_buckets[bk][st] += a
         if o.get("end") and s1:
             ev_end[k][o["end"]] += s1 * a
     net: Dict[str, float] = defaultdict(float)
@@ -431,14 +478,14 @@ def ops_flows(ops: List[dict], daily_flow_line: Optional[Dict[str, Series]], day
             for d, v in m.items():
                 if d <= today:
                     net[d] += v
-    for k, m in ev_end.items():
-        for d, v in m.items():
-            if d > today:
-                ahead[d] += v
+                else:
+                    ahead[d] += v
     out: Dict[str, Series] = {
         "jgb_purch_settled": _bucket(ev_start["jgb_purch"]), "tbill_purch_settled": _bucket(ev_start["tbill_purch"]), "tbill_sales_settled": _bucket(ev_start["tbill_sales"]),
         "slf_out": _bucket(ev_start["slf"]), "slf_back": _bucket(ev_end["slf"]), "pooled_supplied": _bucket(ev_start["pooled"]), "pooled_repaid": _bucket(ev_end["pooled"]),
         "ops_net_daily": _dense(_bucket(net), [d for d in days if d <= today]), "ops_calendar_ahead": _bucket(ahead)}
+    for bk, m in jgb_buckets.items():
+        out[bk] = _bucket(m)
     for k in ("jgs_repo_buy", "jgs_repo_sell", "loans", "cp_repo", "corp_bonds", "bills_sold", "slf_usd"):
         if ev_start.get(k):
             out["ops_by_kind_" + k] = _bucket(ev_start[k])
@@ -538,7 +585,7 @@ def parse_mei(blob, filename: str = "") -> dict:
     dts: List[str] = []
     for row in rows[:12]:
         for v in row:
-            d = _iso(v) if isinstance(v, (datetime, date)) else None
+            d = _iso(v) if (isinstance(v, (datetime, date)) or (isinstance(v, (int, float)) and 40000 <= v <= 60000)) else None
             if d and d not in dts:
                 dts.append(d)
     asof = dts[0] if dts else None

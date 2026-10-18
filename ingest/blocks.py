@@ -169,14 +169,14 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     unit = cfg["units"]["balance_sheet"]
     pl = _prev_levels(prev)
     E: Dict[str, dict] = {}
-    E["rg_closing_balance"] = entry("rg_closing_balance", rg.get("rg_closing_balance", []), "Receiver General closing cash balance at BoC", "daily", unit, cfg, "RG:Closing-Cash-Balance", "DTS TGA closing balance", lag_days=7)
+    E["rg_closing_balance"] = entry("rg_closing_balance", rg.get("rg_closing_balance", []), "Receiver General closing cash balance at BoC", "daily", unit, cfg, "RG:Closing-Cash-Balance", "DTS TGA closing balance", lag_days=12)
     E["rg_term_deposits"] = entry("rg_term_deposits", rg.get("rg_term_deposits", []), "RG term deposits at financial institutions", "daily", unit, cfg, "RG:Term-Deposit-Outstanding", None,
-                                  equivalence_note="cash moved BoC→banks: adds reserves, not fiscal flow", lag_days=7)
-    E["rg_prudential_fund"] = entry("rg_prudential_fund", rg.get("rg_prudential_fund", []), "Prudential Liquidity Fund", "daily", unit, cfg, "RG:Prudential-Liquidity-Fund", lag_days=7)
+                                  equivalence_note="cash moved BoC→banks: adds reserves, not fiscal flow", lag_days=12)
+    E["rg_prudential_fund"] = entry("rg_prudential_fund", rg.get("rg_prudential_fund", []), "Prudential Liquidity Fund", "daily", unit, cfg, "RG:Prudential-Liquidity-Fund", lag_days=12)
     gcb = S.clean(valet.get("V36628", []))
     E["government_account_cb"] = entry("government_account_cb", gcb, "GoC deposits at BoC (weekly, Valet)", "weekly", unit, cfg, "V36628", "WTREGEN")
     gdb = S.clean(valet.get("V36811", []))
-    E["government_deposits_banks"] = entry("government_deposits_banks", gdb, "GoC deposits at chartered banks (monthly)", "monthly", unit, cfg, "V36811")
+    E["government_deposits_banks"] = entry("government_deposits_banks", gdb, "GoC deposits at chartered banks (monthly)", "monthly", unit, cfg, "V36811", lag_days=20)
     # derived (daily)
     cb, td = S.clean(rg.get("rg_closing_balance", [])), S.clean(rg.get("rg_term_deposits", []))
     D: Dict[str, dict] = {}
@@ -217,7 +217,7 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     alerts = [_alert("fiscal_flow_zscore", D["fiscal_flow_zscore"], "|Z|>2 = extraordinary daily flow"),
               {"metric": "fiscal_flow_7d_cum", "level": "WATCH" if reg == "DRAIN" else "SAFE" if reg != "NO DATA" else "NO DATA", "value": cum, "threshold": None, "status": D["fiscal_flow_7d_cum"]["status"], "action_hint": "7d cumulative below p20 = fiscal drain"}]
     tl = "NONE" if reg == "NO DATA" else "GREEN" if reg == "INJECTION" else "RED" if reg == "DRAIN" else "YELLOW"
-    # daily data freshness: RG publishes in batches; if > 10 days old, mark degraded
+    # daily data freshness: RG publishes in batches; if > 15 days old, mark degraded
     if E["rg_closing_balance"]["status"] != "fresh":
         for k in ("reserve_impact_daily", "fiscal_flow_proxy_daily", "fiscal_flow_zscore", "fiscal_flow_7d_cum"):
             D[k]["status"] = "stale" if E["rg_closing_balance"]["status"] == "stale" else "unavailable"
@@ -239,7 +239,7 @@ def build_banking(cfg: dict, valet: Dict[str, Series], rates_block: Optional[dic
         sid = sc.get("id")
         ser = S.clean(valet.get(sid, [])) if sid else []
         st = None if sid else "unavailable"
-        E[key] = entry(key, ser, sc["label"], freq, unit, cfg, sid, sc.get("usd_analog"), status=st, z_window=26)
+        E[key] = entry(key, ser, sc["label"], freq, unit, cfg, sid, sc.get("usd_analog"), status=st, z_window=26, lag_days=20)
         if sc.get("status") == "pending":
             E[key]["equivalence_note"] = "pending: StatCan candidates " + ", ".join(sc.get("statcan_candidates", []))
         if sc.get("status") == "display_only":
@@ -253,7 +253,7 @@ def build_banking(cfg: dict, valet: Dict[str, Series], rates_block: Optional[dic
         sid = b["series"][k].get("id")
         ser = S.clean(valet.get(sid, [])) if sid else []
         mom = S.pct_change_series(ser)
-        D[k + "_mom_pct"] = entry(k + "_mom_pct", mom, E[k]["label"] + " Δ% m/m", freq, "%", cfg, status="fresh" if mom else "unavailable", spec={"method": "zscore", "notable_above": 1.0, "extraordinary_above": 2.0}, z_window=26)
+        D[k + "_mom_pct"] = entry(k + "_mom_pct", mom, E[k]["label"] + " Δ% m/m", freq, "%", cfg, status="fresh" if mom else "unavailable", spec={"method": "zscore", "notable_above": 1.0, "extraordinary_above": 2.0}, z_window=26, lag_days=20)
         # zscore-based level uses the z itself
         zz = D[k + "_mom_pct"]["zscore"]
         D[k + "_mom_pct"]["level"] = "NO DATA" if not mom else "STRESS" if zz is not None and abs(zz) >= 2 else "WATCH" if zz is not None and abs(zz) >= 1 else "SAFE"
@@ -278,7 +278,7 @@ def build_banking(cfg: dict, valet: Dict[str, Series], rates_block: Optional[dic
         sig, tl, score = "GREEN", "GREEN", 1.0
     else:
         sig, tl, score = "YELLOW", "YELLOW", 0.0
-    D["transmission_signal"] = {"label": "Transmission signal", "value": None, "signal": sig, "status": "stale" if valid else "unavailable", "date": E["deposits_public"]["date"],
+    D["transmission_signal"] = {"label": "Transmission signal", "value": None, "signal": sig, "status": "fresh" if valid else "unavailable", "date": E["deposits_public"]["date"],
                                 "rule": b["derived"]["transmission_signal"]["rule"], "valid_series": n_valid}
     alerts = [_alert(k + "_mom_pct", D[k + "_mom_pct"], "|Z|≥2 extraordinary monthly change") for k in applies]
     signals = {"traffic_light": tl, "score": score, "label": sig, "detail": "%d/%d series valid · monthly, ~%d-day lag" % (n_valid, len(applies) + 1, b.get("publication_lag_days_approx", 75)), "alerts": alerts}
@@ -322,6 +322,8 @@ def build_rates(cfg: dict, valet: Dict[str, Series], prev: Optional[dict] = None
     op = S.merge_series(on, pol, lambda a, c: (a - c) * 100)
     D["overnight_minus_policy_bps"] = entry("overnight_minus_policy_bps", op, "CORRA − target (bps, secondary)", freq, "bps", cfg, status="fresh" if op else "unavailable",
                                             spec=th["overnight_minus_policy_bps"], prev_level=pl.get("overnight_minus_policy_bps"), z_window=30)
+    last3_op = [v for _, v in op[-3:]]
+    D["overnight_minus_policy_bps"]["friction_confirmed"] = bool(len(last3_op) == 3 and all(v >= 5.0 for v in last3_op))
     br = raw.get("bank_rate", [])
     bp = S.merge_series(S.merge_series(on, dep, lambda a, c: a - c), S.merge_series(br, dep, lambda a, c: a - c), lambda x, y: x / y if y else None)
     D["band_position"] = entry("band_position", bp, "Position in operating band (0 = deposit floor, 1 = Bank Rate)", freq, "ratio", cfg, status="fresh" if bp else "unavailable", spec=th["band_position"], z_window=30)

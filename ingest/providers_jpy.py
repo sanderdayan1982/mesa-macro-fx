@@ -78,6 +78,8 @@ def _http_plain(url: str, timeout: int = 60, retries: int = 3, binary: bool = Fa
             raise
         except Exception as e:  # noqa
             last_err = e
+            if any(t in str(e) for t in ("Failed to resolve", "nodename nor servname", "NameResolutionError")):
+                break
             time.sleep(3 * (i + 1))
     raise ProviderError("failed after %d tries: %s" % (retries, last_err))
 
@@ -852,18 +854,70 @@ class MofAuctionHtmlProvider:
         return {k: clean(v) for k, v in out.items()}, cal, errs
 
 
-# ───────────────────────── MoF ITS weekly (Shift-JIS CSV) — parser Phase 3, snapshot only ─────────────────────────
+# ───────────────────────── MoF ITS weekly (Shift-JIS CSV) ─────────────────────────
 class MofItsProvider:
     name = "mof_its_weekly"
 
     def __init__(self, url: str, fixtures_dir: Optional[str] = None, raw_dir: Optional[str] = None):
         self.url, self.fixtures_dir, self.raw_dir = url, fixtures_dir, raw_dir
 
-    def snapshot(self) -> bool:
+    @staticmethod
+    def parse(text: str, since: Optional[str] = "2020-01-01") -> Dict[str, Series]:
+        """Columns (Unit: 100 million Yen):
+        0: Period ('2026．10．4～10．10') -> week-ending ISO date ('2026-10-10')
+        6: Resident net purchases of foreign long-term debt securities
+        17: Non-resident net purchases of Japanese long-term debt securities (JGBs)
+        21: Non-resident net purchases of Japanese short-term debt securities (T-Bills)"""
+        jgb, tbill, res_bonds = [], [], []
+        for row in csv.reader(io.StringIO(text)):
+            if len(row) < 22:
+                continue
+            p = row[0].strip().replace("．", ".").replace(" ", "")
+            m = re.match(r"^(\d{4})\.(\d{1,2})\.(\d{1,2})[～~](?:(\d{4})\.)?(\d{1,2})\.(\d{1,2})$", p)
+            if not m:
+                continue
+            y1, m1, _d1, y2, m2, d2 = m.groups()
+            yr = int(y2) if y2 else (int(y1) + 1 if int(m2) < int(m1) else int(y1))
+            iso = "%04d-%02d-%02d" % (yr, int(m2), int(d2))
+            if since and iso < since:
+                continue
+            def _v(idx: int) -> Optional[float]:
+                s = row[idx].replace(",", "").strip() if idx < len(row) else ""
+                try:
+                    return float(s) if s and s != "-" else None
+                except ValueError:
+                    return None
+            v_jgb, v_tb, v_res = _v(17), _v(21), _v(6)
+            if v_jgb is not None:
+                jgb.append((iso, v_jgb))
+            if v_tb is not None:
+                tbill.append((iso, v_tb))
+            if v_res is not None:
+                res_bonds.append((iso, v_res))
+        return {"its_foreign_jgb_weekly": clean(jgb), "its_foreign_tbill_weekly": clean(tbill), "its_resident_foreign_bonds_weekly": clean(res_bonds)}
+
+    def fetch(self, since: Optional[str] = "2020-01-01") -> Dict[str, Series]:
         if self.fixtures_dir:
-            return True
-        blob = _http(self.url, binary=True)
-        _snapshot(self.raw_dir, "its_week.csv", blob)
+            p = os.path.join(self.fixtures_dir, "mof_its_weekly.csv")
+            if os.path.exists(p):
+                return read_fixture(p)
+            snap = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(self.fixtures_dir))), "logs", "jpy", "raw", "its_week.csv")
+            if os.path.exists(snap):
+                return self.parse(open(snap, "rb").read().decode("cp932", errors="replace"), since)
+            return {}
+        try:
+            blob = _http(self.url, binary=True)
+            _snapshot(self.raw_dir, "its_week.csv", blob)
+        except Exception:
+            snap = os.path.join(self.raw_dir, "its_week.csv") if self.raw_dir else None
+            if snap and os.path.exists(snap):
+                blob = open(snap, "rb").read()
+            else:
+                raise
+        return self.parse(blob.decode("cp932", errors="replace"), since)
+
+    def snapshot(self) -> bool:
+        self.fetch()
         return True
 
 

@@ -428,6 +428,37 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     if raw["mmdrc_3m_yield"]:
         E["mmdrc_3m_yield"]["status"] = "fresh"
     saron, pol, zig, eng = raw["saron"], raw["policy_rate"], raw["rate_above_threshold"], raw["special_rate"]
+    saron_lag = int((b["series"].get("saron") or {}).get("lag_days", 0) or 0)
+    # Extend saron_1m_compound (H6) and saron_3m_compound (H7) beyond SNB's 3-week zirepo embargo using ACT/360 daily SARON compounding
+    if len(saron) >= 65:
+        from datetime import date as _d
+        sar_dates = [(_d.fromisoformat(d), d, v) for d, v in saron]
+        for k_comp, win_days in (("saron_1m_compound", 30), ("saron_3m_compound", 91)):
+            base_ser = list(raw.get(k_comp) or [])
+            last_d = base_ser[-1][0] if base_ser else ""
+            ext = []
+            for idx in range(len(sar_dates)):
+                dt_end, d_str, _ = sar_dates[idx]
+                if d_str <= last_d:
+                    continue
+                prod = 1.0
+                tot_days = 0
+                j = idx
+                while j > 0 and tot_days < win_days:
+                    dt_prev, _, r_prev = sar_dates[j - 1]
+                    dt_cur = sar_dates[j][0]
+                    n_d = max(1, (dt_cur - dt_prev).days)
+                    use_d = min(n_d, win_days - tot_days)
+                    prod *= (1.0 + (r_prev / 100.0) * use_d / 360.0)
+                    tot_days += use_d
+                    j -= 1
+                if tot_days > 0:
+                    comp_r = round((prod - 1.0) * (360.0 / tot_days) * 100.0, 4)
+                    ext.append((d_str, comp_r))
+            if ext:
+                raw[k_comp] = base_ser + ext
+                E[k_comp] = entry(k_comp, raw[k_comp], b["series"][k_comp]["label"], "daily", "%", cfg, b["series"][k_comp].get("id"), status="fresh", lag_days=saron_lag,
+                                  equivalence_note="SNB zirepo extended past the 3-week embargo via ACT/360 daily SARON compounding")
     polf = _ffill(pol, saron)
     D: Dict[str, dict] = {}
     sp = S.merge_series(saron, polf, lambda a, c: round((a - c) * 100, 2))
@@ -435,7 +466,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     spec = _spec(th, "saron_minus_absorption_rate_bps") or {}
     absr = spec.get("secondary_absolute", {"watch": 5, "stress": 10, "crisis": 20})
     D["saron_minus_absorption_rate_bps"] = entry("saron_minus_absorption_rate_bps", anchor, "SARON − absorption anchor (policy − 5 bp), bps — STRESS SPREAD", "daily", "bps", cfg,
-                                                 spec=spec, prev_level=pl.get("saron_minus_absorption_rate_bps"), z_window=30)
+                                                 spec=spec, prev_level=pl.get("saron_minus_absorption_rate_bps"), z_window=30, lag_days=saron_lag)
     if anchor:
         vals = [v for _, v in anchor]
         p_lvl = _persistent_level(vals, absr, 3)
@@ -458,12 +489,12 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
         D["saron_minus_absorption_rate_bps"]["floor_leak"] = fl
     else:
         fc = fl = False
-    D["saron_minus_policy_bps"] = entry("saron_minus_policy_bps", sp, "SARON − SNB policy rate (bps) — cross-currency alias", "daily", "bps", cfg, z_window=30)
+    D["saron_minus_policy_bps"] = entry("saron_minus_policy_bps", sp, "SARON − SNB policy rate (bps) — cross-currency alias", "daily", "bps", cfg, z_window=30, lag_days=saron_lag)
     D["saron_minus_policy_bps"]["level"] = D["saron_minus_absorption_rate_bps"].get("level", "NO DATA")
     D["saron_minus_policy_bps"]["note"] = b["derived"]["saron_minus_policy_bps"]["note"]
     bp = S.merge_series(S.merge_series(saron, _ffill(zig, saron), lambda a, z: a - z), _ffill(S.merge_series(eng, zig, lambda e, z: e - z), saron), lambda n, w: round(n / w, 3) if w else None) if zig and eng else []
     bp = [(d, v) for d, v in bp if v is not None]
-    D["band_position"] = entry("band_position", bp, "Position in the band [tier rate above threshold, special rate] (0..1)", "daily", "ratio", cfg, spec=_spec(th, "band_position"), prev_level=pl.get("band_position"), z_window=30)
+    D["band_position"] = entry("band_position", bp, "Position in the band [tier rate above threshold, special rate] (0..1)", "daily", "ratio", cfg, spec=_spec(th, "band_position"), prev_level=pl.get("band_position"), z_window=30, lag_days=saron_lag)
     if bp:
         _apply(D["band_position"], _two_sided("band_position", bp, dict(_spec(th, "band_position") or {}, method="absolute"), "daily", pl.get("band_position")))
     sar3m = raw["sar3m"]
@@ -473,7 +504,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
         _apply(D["sar3m_minus_saron_bps"], _two_sided("sar3m_minus_saron_bps", t3, _spec(th, "sar3m_minus_saron_bps") or {}, "daily", pl.get("sar3m_minus_saron_bps")))
         D["sar3m_minus_saron_bps"]["status"] = "stale" if E["sar3m"]["status"] != "fresh" else "fresh"
     c3 = raw["saron_3m_compound"]
-    D["saron_3m_compound_minus_policy_bps"] = entry("saron_3m_compound_minus_policy_bps", S.merge_series(c3, _ffill(pol, c3), lambda a, c: round((a - c) * 100, 2)), "SARON 3M compound − policy (bps; lagged)", "daily", "bps", cfg, z_window=30)
+    D["saron_3m_compound_minus_policy_bps"] = entry("saron_3m_compound_minus_policy_bps", S.merge_series(c3, _ffill(pol, c3), lambda a, c: round((a - c) * 100, 2)), "SARON 3M compound − policy (bps; lagged)", "daily", "bps", cfg, z_window=30, lag_days=saron_lag)
     y1, y2, y5, y10, y20, y30 = raw["confed_1y"], raw["confed_2y"], raw["confed_5y"], raw["confed_10y"], raw["confed_20y"], raw["confed_30y"]
     D["confed_2y_minus_policy_bps"] = entry("confed_2y_minus_policy_bps", S.merge_series(y2, _ffill(pol, y2), lambda a, c: round((a - c) * 100, 1)), "Confederation 2y − policy rate (bps; next-moves pricing)", "daily", "bps", cfg, z_window=30)
     c102 = S.merge_series(y10, y2, lambda a, c: round((a - c) * 100, 1))

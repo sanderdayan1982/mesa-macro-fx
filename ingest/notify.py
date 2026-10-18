@@ -117,7 +117,9 @@ def snapshot(ccy: str, root: str = ROOT) -> dict:
             "blocks_cadence": {b: (m or {}).get("cadence") for b, m in (a.get("blocks_meta") or {}).items()},
             "blocks_meta": a.get("blocks_meta") or {},
             "errors": (r.get("heartbeat") or {}).get("errors") or [], "F1": (a.get("daily_log") or {}).get("F1"), "F5": (a.get("daily_log") or {}).get("F5"),
-            "degraded": a.get("degraded") or []}
+            "degraded": a.get("degraded") or [],
+            "liquidity_bulletin": a.get("liquidity_bulletin") or {},
+            "auto_repair_actions": a.get("auto_repair_actions") or []}
 
 
 def jefe_snapshot(root: str = ROOT) -> dict:
@@ -150,7 +152,21 @@ def events_for(ccy: str, cur: dict, prev: Optional[dict], jefe: dict, jefe_prev:
     if on("regime_change_block"):
         for b in ("central_bank", "fiscal"):
             if cur[b] != prev.get(b):
-                out.append("<b>%s · %s</b>: %s → <b>%s</b> (as-of %s)\n%s" % (C, BN[b], esc(REG_ES.get(prev.get(b), prev.get(b))), esc(REG_ES.get(cur[b], cur[b])), esc(cur["blocks_asof"].get(b) or cur["as_of"]), esc(cur.get("F1") if b == "central_bank" else "")))
+                out.append("<b>%s · %s</b>: %s → <b>%s</b> (as-of %s)\n%s" % (C, BN[b], esc(REG_ES.get(prev.get(b), prev.get("general"))), esc(REG_ES.get(cur[b], cur[b])), esc(cur["blocks_asof"].get(b) or cur["as_of"]), esc(cur.get("F1") if b == "central_bank" else "")))
+    lb = cur.get("liquidity_bulletin") or {}
+    plb = (prev.get("liquidity_bulletin") or {}) if isinstance(prev, dict) else {}
+    if on("liquidity_flow_change") and lb:
+        cb_changed = (lb.get("cb_date") != plb.get("cb_date")) or (lb.get("cb_direction") != plb.get("cb_direction")) or (lb.get("cb_message") != plb.get("cb_message"))
+        tr_changed = (lb.get("treasury_date") != plb.get("treasury_date")) or (lb.get("treasury_direction") != plb.get("treasury_direction")) or (lb.get("treasury_message") != plb.get("treasury_message"))
+        if cb_changed and lb.get("cb_message"):
+            out.append("<b>%s · FLUJO LIQUIDEZ BC</b>\n%s" % (C, esc(lb["cb_message"])))
+        if tr_changed and lb.get("treasury_message"):
+            out.append("<b>%s · FLUJO LIQUIDEZ TESORO (MMT)</b>\n%s" % (C, esc(lb["treasury_message"])))
+    rep_acts = cur.get("auto_repair_actions") or []
+    prev_acts = (prev.get("auto_repair_actions") or []) if isinstance(prev, dict) else []
+    new_acts = [a for a in rep_acts if a not in prev_acts]
+    if new_acts:
+        out.append("<b>%s · AGENTE DOCTOR (AUTO-REPARACIÓN / SUSTITUCIÓN)</b>\n%s" % (C, "\n".join("• " + esc(a) for a in new_acts)))
     if on("gate_withheld") and cur["gate"] is not None and cur["gate"] != prev.get("gate"):
         if cur["gate"]:
             out.append("<b>%s · INVENTARIO A1–A5</b>: PASA de nuevo, el daily_log vuelve a publicarse." % C)
@@ -315,7 +331,22 @@ def digest(root: str = ROOT) -> List[str]:
         body += "jefe de mesa: sin ranking publicado\n"
     body += ("<b>Excepciones (%d)</b>\n%s\n" % (len(exc), "\n".join("• " + esc(x) for x in exc))) if exc else "<b>Sin excepciones</b>: 32 bloques frescos, sin errores de fuente.\n"
     body += "inventario anti-invención A1–A5: %d/8 PASA · ⧗ otro reloj (Tesoro v0.3 vs fiscal v0.4) · LAG por cadencia · cob.parcial = equivalencia media-baja" % gates_ok
-    return [head + table + "\n" + body]
+    liq_lines = []
+    rep_lines = []
+    for c in CCYS:
+        lb = snaps[c].get("liquidity_bulletin") or {}
+        if lb.get("cb_message"):
+            liq_lines.append("• " + esc(lb["cb_message"]))
+        if lb.get("treasury_message"):
+            liq_lines.append("• " + esc(lb["treasury_message"]))
+        for act in snaps[c].get("auto_repair_actions") or []:
+            rep_lines.append("• " + esc(act))
+    msgs = [head + table + "\n" + body]
+    if liq_lines:
+        msgs.append("<b>FLUJOS OPERATIVOS DE LIQUIDEZ MMT (BC Y TESOROS G8)</b>\n" + "\n".join(liq_lines))
+    if rep_lines:
+        msgs.append("<b>AGENTE DOCTOR · AUTO-REPARACIÓN Y SUSTITUCIÓN DE FEEDS</b>\n" + "\n".join(rep_lines))
+    return msgs
 
 
 # ───────────────────────────── transport ─────────────────────────────
@@ -342,13 +373,20 @@ def send(messages: List[str], root: str = ROOT, tag: str = "event") -> dict:
         entry = {"ts": _now(), "tag": tag, "text": ch, "delivered": None}
         if token and chat:
             try:
-                import requests
-                r = requests.post(TG_API % token, json={"chat_id": chat, "text": ch, "parse_mode": "HTML", "disable_web_page_preview": True}, timeout=30)
-                entry["delivered"] = bool(r.ok and r.json().get("ok"))
+                try:
+                    import requests
+                    r = requests.post(TG_API % token, json={"chat_id": chat, "text": ch, "parse_mode": "HTML", "disable_web_page_preview": True}, timeout=30)
+                    entry["delivered"] = bool(r.ok and r.json().get("ok"))
+                    if not entry["delivered"]:
+                        result["errors"].append(r.text[:200])
+                except ImportError:
+                    import urllib.parse as _up, urllib.request as _ur
+                    body_bytes = _up.urlencode({"chat_id": chat, "text": ch, "parse_mode": "HTML", "disable_web_page_preview": "true"}).encode()
+                    req = _ur.Request(TG_API % token, data=body_bytes)
+                    with _ur.urlopen(req, timeout=30) as resp:
+                        entry["delivered"] = bool(200 <= resp.status < 300 and json.load(resp).get("ok"))
                 if entry["delivered"]:
                     result["ok"] += 1
-                else:
-                    result["errors"].append(r.text[:200])
             except Exception as e:
                 entry["delivered"] = False
                 result["errors"].append(str(e)[:200])
@@ -373,7 +411,7 @@ def run_events(ccy: str, root: str = ROOT) -> dict:
     jefe_prev = _rj(jp)
     msgs = events_for(ccy, cur, prev, jefe, jefe_prev, cfg)
     res = send(msgs, root, tag="event:%s" % ccy) if msgs else {"mode": "none", "chunks": 0, "ok": 0, "errors": []}
-    state = {k: cur[k] for k in ("as_of", "generated_at", "general", "central_bank", "fiscal", "gate", "hash", "blocks", "errors")}
+    state = {k: cur[k] for k in ("as_of", "generated_at", "general", "central_bank", "fiscal", "gate", "hash", "blocks", "errors", "liquidity_bulletin", "auto_repair_actions")}
     state["errors_sent"] = cur.get("errors_sent") or {}
     state["notified_at"] = _now()
     _wj(sp, state)

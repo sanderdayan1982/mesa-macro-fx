@@ -92,8 +92,12 @@ def enrich_fiscal(block: dict, cfg: dict, daily: Dict[str, Dict[str, Series]], n
         m = juqp.get("month")
         if m and nd:
             mo = [v for d, v in nd if d.startswith(m) and v is not None]
-            D["monthly_reconciliation"] = {"label": "Month-to-date MoF net issuance vs BoJ projected JGB + T-Bill net", "value": round(sum(mo), 1) if mo else None, "unit": unit,
-                                           "projected": (juqp.get("jgb_net") or 0) + (juqp.get("tbill_net") or 0), "days": len(mo), "status": "fresh" if mo else "unavailable", "date": date.today().isoformat()}
+            ref_m = m
+            if not mo:
+                ref_m = nd[-1][0][:7]
+                mo = [v for d, v in nd if d.startswith(ref_m) and v is not None]
+            D["monthly_reconciliation"] = {"label": "Month-to-date MoF net issuance (%s) vs BoJ projected JGB + T-Bill net (%s)" % (ref_m, m), "value": round(sum(mo), 1) if mo else None, "unit": unit,
+                                           "projected": (juqp.get("jgb_net") or 0) + (juqp.get("tbill_net") or 0), "days": len(mo), "month": ref_m, "status": "fresh" if mo else "unavailable", "date": date.today().isoformat()}
     C = Comps(cfg, "sum")
     if cab_level:
         C.flow("treasury_5d_pct", _pct(t5[-1][1], cab_level) if t5 else 0.0)
@@ -116,7 +120,14 @@ def enrich_central_bank(block: dict, cfg: dict, daily: Dict[str, Dict[str, Serie
         ser = S.clean(best_realized(fin.get(k, []), prov.get(k, [])))
         D["%s_v04" % k] = entry("%s_v04" % k, ser, label, "daily", unit, cfg, "boj:juq jx/jd", status="fresh" if ser else "unavailable")
     for k, label in (("jgb_purch_settled", "Outright JGB purchases by operation — FACE, at Date of Exercise (T+1)"), ("ops_net_daily", "BoJ operations net by operation (face; start + / end −)"),
-                     ("slf_out", "Securities lending facility — JGSs sold under repo (− at start)"), ("pooled_supplied", "Funds-supplying against pooled collateral (+ at start)")):
+                     ("slf_out", "Securities lending facility — JGSs sold under repo (− at start)"), ("pooled_supplied", "Funds-supplying against pooled collateral (+ at start)"),
+                     ("jgb_purch_upto1y", "BoJ outright JGB purchases — residual maturity ≤ 1Y (face)"),
+                     ("jgb_purch_1to3y", "BoJ outright JGB purchases — residual maturity > 1Y to 3Y [2Y sector] (face)"),
+                     ("jgb_purch_3to5y", "BoJ outright JGB purchases — residual maturity > 3Y to 5Y [5Y sector] (face)"),
+                     ("jgb_purch_5to10y", "BoJ outright JGB purchases — residual maturity > 5Y to 10Y [10Y sector] (face)"),
+                     ("jgb_purch_10to25y", "BoJ outright JGB purchases — residual maturity > 10Y to 25Y [20Y sector] (face)"),
+                     ("jgb_purch_over25y", "BoJ outright JGB purchases — residual maturity > 25Y [30Y/40Y sector] (face)"),
+                     ("jgb_purch_iib", "BoJ outright JGB purchases — Inflation-Indexed Bonds (face)")):
         ser = ops.get(k, [])
         D[k] = entry(k, ser, label, "daily", unit, cfg, "boj:ope XLSX by operation", status="fresh" if ser else "unavailable")
     D["jgb_purch_face_minus_cash"] = entry("jgb_purch_face_minus_cash", recon, "Reconciliation: JGB purchases FACE (ope) − CASH (daily file), same settlement date", "daily", unit, cfg, "derived",

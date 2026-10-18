@@ -41,6 +41,26 @@ def enrich_central_bank(block: dict, cfg: dict, ops: Dict[str, Series], apf: Dic
                                            status="fresh" if resid.get("exchequer_residual_weekly") else "unavailable",
                                            equivalence_note="Exchequer + unobserved clients (foreign central banks, CCPs); cleaned per ADJUDICACION_METRICAS_GBP.md 4b")
     D["exchequer_residual_4w"] = entry("exchequer_residual_4w", resid.get("exchequer_residual_4w", []), "Exchequer residual, 4 weeks", "weekly", unit, cfg, status="fresh" if resid.get("exchequer_residual_4w") else "unavailable")
+    E = block.get("series") or {}
+    if "government_account" in E and resid.get("exchequer_residual_weekly"):
+        E["government_account"] = entry("government_account", resid["exchequer_residual_weekly"],
+                                        "HMG Exchequer residual at BoE (weekly identity ΔR − ΔSTR − ΔLTR − ΔAPF − ΔTFSME − ΔW&M + ΔNotes)",
+                                        "weekly", unit, cfg, "derived:IADB", status="fresh", usd_analog="WTREGEN (weekly residual)",
+                                        equivalence_note="HMG deposits at BoE are not published as a standalone Weekly Report line; this is the weekly Exchequer residual from the Bank Return identity")
+    if "str_auction_result" in E and ops.get("str_outstanding_ops"):
+        E["str_auction_result"] = entry("str_auction_result", ops["str_outstanding_ops"],
+                                        "STR operation: allotted / outstanding from BoE operations", "weekly", unit, cfg,
+                                        "BoE:short-term-repo-omos-by-operation.xlsx", status="fresh")
+    if "iltr_auction_result" in E and ops.get("iltr_outstanding_ops"):
+        E["iltr_auction_result"] = entry("iltr_auction_result", ops["iltr_outstanding_ops"],
+                                         "ILTR operation: allotted / outstanding from BoE operations", "weekly", unit, cfg,
+                                         "BoE:indexed-long-term-repo-omos-by-operation.xlsx", status="fresh")
+    if "apf_gilt_sales_by_bucket" in E and apf.get("apf_sales_daily"):
+        E["apf_gilt_sales_by_bucket"] = entry("apf_gilt_sales_by_bucket", apf["apf_sales_daily"],
+                                              "APF gilt sales settled (− reserves, proceeds)", "daily", unit, cfg,
+                                              "BoE:gilt-sales-time-series.xlsx", status="fresh")
+    if "source_health" in block and E:
+        block["source_health"]["series_loaded"] = sum(1 for v in E.values() if v.get("value") is not None)
     C = Comps(cfg, "mean2")
     lvl = S.last(reserves_w)
     lv = lvl[1] if lvl else None
@@ -76,6 +96,17 @@ def enrich_fiscal(block: dict, cfg: dict, iss: Dict[str, Series], cal: Dict[str,
     D["exchequer_residual_weekly"] = entry("exchequer_residual_weekly", resid.get("exchequer_residual_weekly", []), "Exchequer residual (weekly identity on the Weekly Report)", "weekly", unit, cfg, "derived:IADB",
                                            status="fresh" if resid.get("exchequer_residual_weekly") else "unavailable")
     D["exchequer_residual_4w"] = entry("exchequer_residual_4w", resid.get("exchequer_residual_4w", []), "Exchequer residual, 4 weeks", "weekly", unit, cfg, status="fresh" if resid.get("exchequer_residual_4w") else "unavailable")
+    E = block.get("series") or {}
+    if "dmo_gilt_auction" in E and iss.get("gilt_issued_daily"):
+        E["dmo_gilt_auction"] = entry("dmo_gilt_auction", iss["gilt_issued_daily"],
+                                      "DMO gilt issuance settled (Δ amount in issue, D1A archive)", "daily", unit, cfg,
+                                      "DMO:D1A archive", status="fresh")
+    if "dmo_tbill_tender" in E and iss.get("tbill_issued"):
+        E["dmo_tbill_tender"] = entry("dmo_tbill_tender", iss["tbill_issued"],
+                                      "DMO T-bill tender issued (D2.2D)", "weekly", unit, cfg,
+                                      "DMO:D2.2D", status="fresh")
+    if "source_health" in block and E:
+        block["source_health"]["series_loaded"] = sum(1 for v in E.values() if v.get("value") is not None)
     C = Comps(cfg, "sum")
     lvl = S.last(reserves_w)
     lv = lvl[1] if lvl else None

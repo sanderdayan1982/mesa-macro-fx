@@ -3,17 +3,17 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-10-16T12:47:38+00:00",
+ "generated_at": "2026-10-18T11:44:20+00:00",
  "as_of": "2026-10-15",
  "equivalence_quality": "high",
  "equivalence_note": "Weekly A1 balance sheet + DAILY ES balances (A3): the AUD has a daily reserves series, closer to the Fed's H.4.1/daily data than CAD or GBP.",
  "source_health": {
   "status": "fresh",
-  "series_loaded": 15,
-  "series_expected": 15,
+  "series_loaded": 17,
+  "series_expected": 16,
   "last_fetch_ok": true,
   "errors": [],
-  "series_pending": 4
+  "series_pending": 3
  },
  "series": {
   "es_balances_daily": {
@@ -93,7 +93,7 @@
     "low": 166162.0,
     "low_date": "2026-09-18"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -185,7 +185,7 @@
     "low": 133199.0,
     "low_date": "2026-09-04"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -406,7 +406,7 @@
     "low": 27482.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "demand-driven full-allotment repos — quantity is not a policy signal"
@@ -488,7 +488,7 @@
     "low": 14846.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -598,7 +598,7 @@
     "low": 160349.0,
     "low_date": "2026-06-03"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -690,7 +690,7 @@
     "low": 38966.0,
     "low_date": "2026-01-14"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -771,7 +771,7 @@
     "low": 1.0,
     "low_date": "2026-06-24"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 85,
    "latest_outlier": true,
    "display_only": true
@@ -853,7 +853,7 @@
     "low": 106233.0,
     "low_date": "2025-10-22"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -934,7 +934,7 @@
     "low": 962.0,
     "low_date": "2026-03-11"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -1016,7 +1016,7 @@
     "low": 346879.0,
     "low_date": "2026-10-14"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1097,7 +1097,7 @@
     "low": 232565.0,
     "low_date": "2026-09-23"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1178,49 +1178,102 @@
     "low": 106165.0,
     "low_date": "2026-03-11"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
   },
   "omo_takeup_weekly": {
-   "source_id": null,
-   "label": "OMO weekly take-up: amount allotted (7d + 28d), by operation",
+   "source_id": "RBA:a3-omo-repo-transaction-details.csv per operation",
+   "label": "OMO weekly take-up (allotted, 7-day + 28-day terms; from operations)",
    "usd_analog": null,
    "unit": "AUD millions",
    "frequency": "weekly",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
-   "prev_value": null,
-   "prev_date": null,
-   "change_abs": null,
-   "change_pct": null,
-   "zscore": null,
+   "status": "fresh",
+   "value": 8651.0,
+   "date": "2026-10-14",
+   "prev_value": 8363.0,
+   "prev_date": "2026-10-07",
+   "change_abs": 288.0,
+   "change_pct": 3.4437,
+   "zscore": 0.2517,
    "percentile": null,
-   "window": "since 2025-04-09",
-   "level": "NO DATA",
-   "sparkline": [],
+   "window": null,
+   "level": "SAFE",
+   "sparkline": [
+    5619.0,
+    7140.0,
+    5484.0,
+    6224.0,
+    7299.0,
+    6495.0,
+    5566.0,
+    7591.0,
+    7618.0,
+    7812.0,
+    3485.0,
+    4626.0,
+    6495.0,
+    5471.0,
+    2630.0,
+    5180.0,
+    5602.0,
+    5495.0,
+    4640.0,
+    5017.0,
+    5189.0,
+    6414.0,
+    7717.0,
+    6649.0,
+    6283.0,
+    5926.0,
+    5123.0,
+    6662.0,
+    5068.0,
+    6156.0,
+    5757.0,
+    5523.0,
+    6069.0,
+    8742.0,
+    8473.0,
+    10548.0,
+    8375.0,
+    8676.0,
+    8089.0,
+    10399.0,
+    11663.0,
+    9026.0,
+    8228.0,
+    9266.0,
+    9304.0,
+    7722.0,
+    7690.0,
+    9884.0,
+    10060.0,
+    11706.0,
+    8363.0,
+    8651.0
+   ],
    "high_low": {
-    "high": null,
-    "high_date": null,
-    "low": null,
-    "low_date": null
+    "high": 11706.0,
+    "high_date": "2026-09-30",
+    "low": 2630.0,
+    "low_date": "2026-01-28"
    },
-   "age_days": null,
-   "confidence": 0,
+   "age_days": 4,
+   "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "THE demand-driven signal: rising take-up = banks replacing declining reserves; surge > p90 = early friction before AONIA moves (RBA's own scarcity indicator #2)"
+   "equivalence_note": "v0.4: per-operation file replaces the pending v0.3 parser; surge vs its own history = demand-driven friction (RBA indicator #2)"
   },
   "apf_holdings_a31": {
-   "source_id": null,
-   "label": "RBA holdings of AGS and semis (run-off of the bond portfolio)",
+   "source_id": "RBA:a3.1-ags---bonds.csv",
+   "label": "RBA holdings of Treasury Bonds by line (A3.1, month-end)",
    "usd_analog": null,
    "unit": "AUD millions",
    "frequency": "monthly",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
+   "status": "fresh",
+   "value": 164683.0,
+   "date": "2026-09-30",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -1228,18 +1281,19 @@
    "zscore": null,
    "percentile": null,
    "window": null,
-   "level": "NO DATA",
-   "sparkline": [],
+   "level": "SAFE",
+   "sparkline": [
+    164683.0
+   ],
    "high_low": {
-    "high": null,
-    "high_date": null,
-    "low": null,
-    "low_date": null
+    "high": 164683.0,
+    "high_date": "2026-09-30",
+    "low": 164683.0,
+    "low_date": "2026-09-30"
    },
-   "age_days": null,
-   "confidence": 0,
-   "latest_outlier": false,
-   "equivalence_note": "structural driver of reserve decline"
+   "age_days": 18,
+   "confidence": 100,
+   "latest_outlier": false
   },
   "securities_lending": {
    "source_id": null,
@@ -1378,7 +1432,7 @@
     "low": 272085.0,
     "low_date": "2026-06-03"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "kept as the cross-currency balance-sheet analogue; NOT the primary AUD reserves gauge (that is ES total vs the RBA demand estimate + price). State-government deposits exist in A1 but are immaterial (< $50m)."
@@ -1460,7 +1514,7 @@
     "low": -10.289,
     "low_date": "2026-08-26"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "signal": "NEUTRAL",
@@ -1551,7 +1605,7 @@
     "low": -15.5911,
     "low_date": "2026-08-26"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1644,7 +1698,7 @@
     "low": -16165.0,
     "low_date": "2026-08-25"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1733,7 +1787,7 @@
     "low": 0.8014,
     "low_date": "2026-09-04"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1814,7 +1868,7 @@
     "low": 42328.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "RBA Aug-2026: $20–30bn; quantity is demand, not a policy signal"
@@ -1896,7 +1950,7 @@
     "low": 0.2179,
     "low_date": "2026-08-19"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "repo-supplied share of ES; RBA Aug-2026: OMO $20–30bn outstanding vs ES ~$200bn. Escalates only with price confirmation",
@@ -1989,7 +2043,7 @@
     "low": 2630.0,
     "low_date": "2026-01-28"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "v0.4: per-operation file replaces the pending v0.3 parser; surge vs its own history = demand-driven friction (RBA indicator #2)"
@@ -2071,7 +2125,7 @@
     "low": -881.0,
     "low_date": "2025-12-17"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "Outside money: not subtracted from balance-sheet liquidity (cross-currency rule)"
@@ -2153,7 +2207,7 @@
     "low": 66162.0,
     "low_date": "2026-09-18"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "distance to the top of the RBA's $70–100bn demand estimate (Jacobs 2026-08-25)"
@@ -2235,7 +2289,7 @@
     "low": -29934.0,
     "low_date": "2026-01-28"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2324,7 +2378,7 @@
     "low": 2630.0,
     "low_date": "2026-01-28"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2405,7 +2459,7 @@
     "low": -10615.0,
     "low_date": "2026-08-19"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2486,7 +2540,7 @@
     "low": -1703.0,
     "low_date": "2026-10-14"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2567,7 +2621,7 @@
     "low": 27446.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2648,7 +2702,7 @@
     "low": 154.0,
     "low_date": "2026-01-28"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2729,7 +2783,7 @@
     "low": 2476.0,
     "low_date": "2026-01-28"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2810,7 +2864,7 @@
     "low": -1703.0,
     "low_date": "2026-10-14"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2891,7 +2945,7 @@
     "low": 10.0,
     "low_date": "2025-10-22"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "A3: a spread above the fixed +10 bp would mean the fixed-price full-allotment framework changed"
@@ -2901,7 +2955,7 @@
    "value": 29572.0,
    "unit": "AUD millions",
    "status": "fresh",
-   "date": "2026-10-16",
+   "date": "2026-10-18",
    "calendar": [
     [
      "2026-10-21",
@@ -2951,7 +3005,7 @@
     "low": 0.301,
     "low_date": "2026-10-21"
    },
-   "age_days": -26,
+   "age_days": -24,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "quality control: same-day settlement convention verified when this stays ≈ 0.3 %"
@@ -3033,17 +3087,17 @@
     "low": -69.0,
     "low_date": "2026-10-13"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false
   },
   "omo_data_cut": {
    "label": "Last OMO operation in the file",
-   "value": 2.0,
+   "value": 4.0,
    "unit": "days behind today",
    "cut_date": "2026-10-14",
    "status": "fresh",
-   "date": "2026-10-16"
+   "date": "2026-10-18"
   }
  },
  "signals": {

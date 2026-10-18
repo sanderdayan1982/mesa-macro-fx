@@ -1,6 +1,215 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-18T10:52:52+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "dry",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [],
+    "messages": 2
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:52+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "e268d9da7220257e",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 7,
+     "general": 7
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:52+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "FLOOR_FRICTION",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:52+00:00",
+   "type": "CAD_V04",
+   "category": "system",
+   "details": {
+    "groups": {
+     "term_repo": 437,
+     "or": 331,
+     "orr": 412,
+     "rgam": 2222,
+     "tbill": 2434,
+     "bond": 1165,
+     "bond_repurchase": 1134
+    },
+    "indicator_days": 29,
+    "net_issuance_last": [
+     "2026-10-16",
+     -5000.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:52+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boc_holdings",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /markets/government-securities-auctions/bank-of-canada-holdings/ (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:40+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "market_ops_indicators",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /rates/indicators/market-operations-indicators/ (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:28+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet_group",
+    "group": "AUC_BOND_S_RESULTS_REPURCHASE",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/group/AUC_BOND_S_RESULTS_REPURCHASE/json?start_date=2024-01-01 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:16+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet_group",
+    "group": "AUC_BOND_RESULTS",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/group/AUC_BOND_RESULTS/json?start_date=2024-01-01 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:52:04+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet_group",
+    "group": "AUC_TBILL_RESULTS",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/group/AUC_TBILL_RESULTS/json?start_date=2024-01-01 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:51:52+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet_group",
+    "group": "AUC_RGAM_RESULTS",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/group/AUC_RGAM_RESULTS/json?start_date=2024-01-01 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:51:40+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet_group",
+    "group": "ORR",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/group/ORR/json?start_date=2024-01-01 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:51:28+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet_group",
+    "group": "OR_RESULTS",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/group/OR_RESULTS/json?start_date=2024-01-01 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:51:16+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet_group",
+    "group": "TERM_REPO_RESULTS",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/group/TERM_REPO_RESULTS/json?start_date=2024-01-01 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:51:03+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "statcan",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www150.statcan.gc.ca', port=443): Max retries exceeded with url: /t1/wds/rest/getDataFromVectorsAndLatestNPeriods (Caused by NameResolutionError(\"HTTPSConnection(host='www150.statcan.gc.ca', port=443): Failed to resolve 'www150.statcan.gc.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:50:51+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/V36852,V41552773,V36811,V36875,V36691,V36717/json?recent=60 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:50:39+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/V36628,V36811/json?recent=60 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:50:27+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "receiver_general",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='donnees-data.tpsgc-pwgsc.gc.ca', port=443): Max retries exceeded with url: /ba1/sqt-dcb/sqt-dcb.csv (Caused by NameResolutionError(\"HTTPSConnection(host='donnees-data.tpsgc-pwgsc.gc.ca', port=443): Failed to resolve 'donnees-data.tpsgc-pwgsc.gc.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:50:15+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/V36610,V36636,V36628,V1203435186,V36613,V36612,V1038114416,V44201362,V36634,V36625/json?recent=60 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:50:02+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "valet",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofcanada.ca', port=443): Max retries exceeded with url: /valet/observations/V39079,AVG.INTWO,TB.CDN.90D.MID,BD.CDN.2YR.DQ.YLD,BD.CDN.10YR.DQ.YLD,CORRA_TRIMMED_VOLUME,CORRA_RATE_AT_PERCENTILE_95,V39078,BD.CDN.5YR.DQ.YLD,CORRA_TOTAL_VOLUME,CORRA_RATE_AT_PERCENTILE_5,CORRA_RATE_AT_PERCENTILE_25,CORRA_RATE_AT_PERCENTILE_75,CORRA.COMPOUNDED.INDEX/json?recent=60 (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofcanada.ca', port=443): Failed to resolve 'www.bankofcanada.ca' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
    "timestamp": "2026-10-16T23:47:41+00:00",
    "type": "NOTIFY",
    "category": "system",

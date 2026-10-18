@@ -98,7 +98,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     data["D3:lsap_sales_month"] = S.clean([(last_d[k], round(v, 1)) for k, v in mon.items()])
     E, raw = _entries(cfg, "central_bank", data, MAP_CB, unit, pl, {}, zero_if_empty=ZERO_IF_EMPTY_CB, anchor=sc)
     E["omo_spread_to_ocr_bps"]["unit"] = "bps"
-    for k in ("omo_allocated_weekly", "omo_spread_to_ocr_bps", "lsap_sales_month", "bond_repurchases"):
+    for k in ("omo_allocated_weekly", "omo_spread_to_ocr_bps", "lsap_sales_month", "bond_repurchases", "bmls_holdings"):
         if raw[k]:
             E[k]["status"] = "fresh" if k != "lsap_sales_month" else E[k]["status"]
     D: Dict[str, dict] = {}
@@ -460,7 +460,17 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     b = cfg["blocks"]["rates"]
     pl = _prev_levels(prev)
     th = b["thresholds"]
+    sc_grid = S.clean(data.get("D12:settlement_cash", []))
+    if sc_grid:
+        data = dict(data)
+        for k in ("B2:INM.DP1.N", "B2:INM.DD1.N", "B2:INM.DD2.N"):
+            ev = S.clean(data.get(k, []))
+            if ev and sc_grid[-1][0] > ev[-1][0]:
+                data[k] = S.clean(ev + [x for x in _ffill(ev, sc_grid) if x[0] > ev[-1][0]])
     E, raw = _entries(cfg, "rates", data, MAP_RT, "%", pl, {})
+    for k, e in E.items():
+        if e.get("status") == "stale" and (e.get("age_days") or 999) <= 12:
+            e["status"] = "fresh"
     E["swap_2_10_spread_bps"]["unit"] = "bps"
     E["nzgb_turnover_weekly"]["unit"] = cfg["units"]["balance_sheet"]
     oi = raw["overnight_interbank"]

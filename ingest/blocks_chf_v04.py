@@ -119,6 +119,23 @@ def enrich_fiscal(block: dict, cfg: dict, mm: Dict[str, Series], bfl: Dict[str, 
     D["coupons_market_next_4w"] = _cal_card("Market coupons, next 4 weeks", cal.get("coupons_market_ahead", []), unit)
     D["bonds_outstanding_asof"] = {"label": "Bonds outstanding list — own holdings available (CHF m)", "value": own_available, "as_of": outstanding_asof, "own_available_m": own_available, "status": "fresh" if outstanding_asof else "unavailable",
                                    "date": date.today().isoformat(), "note": "own-holding sales in the secondary market are not dated (S6)"}
+    E = block.get("series") or {}
+    if "bonds_outstanding" in E and outstanding_asof is not None and own_available is not None:
+        E["bonds_outstanding"] = entry("bonds_outstanding", [(outstanding_asof, own_available)],
+                                       "Confederation bonds outstanding — own tranches available (CHF m)", "monthly", unit, cfg,
+                                       "EFV:ausstehende-anleihen.xlsx", status="fresh")
+    ahead_cal = sorted((mm.get("mmdrc_settlements_announced") or []) + (bfl.get("bond_settlements_ahead") or []))
+    if "auction_calendar" in E:
+        cal_ser = ahead_cal or (mm.get("mmdrc_settled") or [])[-4:]
+        if cal_ser:
+            E["auction_calendar"] = entry("auction_calendar", cal_ser,
+                                          "EFV MMDRC + Confederation bond auction settlement calendar", "event", unit, cfg,
+                                          "EFV:resultate-gmbf.xlsx / resultate-anleihen.xlsx", status="fresh")
+    if "source_health" in block and E:
+        wired = {k: e for k, e in E.items() if e.get("source_id")}
+        block["source_health"]["series_loaded"] = sum(1 for e in wired.values() if e.get("status") != "unavailable")
+        block["source_health"]["series_expected"] = len(wired)
+        block["source_health"]["series_pending"] = len(E) - len(wired)
     C = Comps(cfg, "sum")
     if gi_level:
         C.flow("net_issuance_5d_pct", round((wk[-1][1] if wk else 0.0) / gi_level * 100, 4))

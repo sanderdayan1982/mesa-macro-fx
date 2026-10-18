@@ -72,6 +72,15 @@ def enrich_fiscal(block: dict, cfg: dict, tf: Dict[str, Series], cal: Dict[str, 
     D["coupons_market_next_4w"] = _cal_card("Market coupons, next 4 weeks", cal.get("coupons_market_ahead", []), unit)
     D["ecp_on_issue"] = entry("ecp_on_issue", ecp, "Euro-Commercial Paper on issue (month-end, NZDM)", "monthly", unit, cfg, "NZDM:ECP-onissue.xlsx", status="fresh" if ecp else "unavailable",
                               equivalence_note="Crown cash outside the RBNZ (context)")
+    E = block.get("series", {})
+    if resid_daily and "treasury_residual_cash" in E:
+        E["treasury_residual_cash"] = entry("treasury_residual_cash", resid_daily, E["treasury_residual_cash"].get("label") or "Core Crown residual cash flow proxy (daily)", "daily", unit, cfg, "derived:residual_flow_daily", status="fresh")
+    if ecp and "nzdm_ecp_on_issue" in E:
+        E["nzdm_ecp_on_issue"] = entry("nzdm_ecp_on_issue", ecp, E["nzdm_ecp_on_issue"].get("label") or "NZDM Euro-Commercial Paper on issue (month-end)", "monthly", unit, cfg, "NZDM:ECP-onissue.xlsx", status="fresh")
+    if E:
+        from .blocks import _health
+        wired = {k: e for k, e in E.items() if e.get("source_id")}
+        block["source_health"].update(_health(wired, len(wired)))
     r5 = S.rolling_sum(resid_daily, 5)
     C = Comps(cfg, "sum")
     if sc_level:

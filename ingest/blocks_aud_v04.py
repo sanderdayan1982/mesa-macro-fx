@@ -39,6 +39,14 @@ def enrich_central_bank(block: dict, cfg: dict, omo: Dict[str, Series], recon: S
         if tk:
             D["omo_takeup_weekly"] = entry("omo_takeup_weekly", tk, "OMO weekly take-up (allotted, 7-day + 28-day terms; from operations)", "weekly", unit, cfg, src,
                                            status="fresh", lag_days=lag, equivalence_note="v0.4: per-operation file replaces the pending v0.3 parser; surge vs its own history = demand-driven friction (RBA indicator #2)")
+            E = block.get("series") or {}
+            if "omo_takeup_weekly" in E:
+                E["omo_takeup_weekly"] = dict(D["omo_takeup_weekly"])
+                if "source_health" in block:
+                    wired = {k: e for k, e in E.items() if e.get("source_id")}
+                    block["source_health"]["series_loaded"] = sum(1 for e in wired.values() if e.get("status") != "unavailable")
+                    block["source_health"]["series_expected"] = len(wired)
+                    block["source_health"]["series_pending"] = len(E) - len(wired)
     sp = omo.get("omo_wa_spread_bp", [])
     D["omo_wa_spread_bp"] = entry("omo_wa_spread_bp", sp, "OMO weighted-average spread to the cash rate target (bp; full allotment at +10 since 2025-04-09)", "weekly", "bps", cfg, src,
                                   status="fresh" if sp else "unavailable", equivalence_note="A3: a spread above the fixed +10 bp would mean the fixed-price full-allotment framework changed")
@@ -104,6 +112,21 @@ def enrich_fiscal(block: dict, cfg: dict, iss: Dict[str, Series], cal: Dict[str,
     tf = cal.get("tb_face_total", [])
     D["tb_face_total"] = entry("tb_face_total", tf, "Treasury Bonds on issue — face value, all lines (month-end)", "monthly", unit, cfg, "AOFM:portfolio_aggregate_-_treasury_bonds_-_settlement.xlsx", status="fresh" if tf else "unavailable")
     D["aofm_links"] = {"label": "AOFM Data Hub link discovery", "value": None, "status": "fresh", "date": date.today().isoformat(), "note": links_note}
+    E = block.get("series") or {}
+    if "aofm_bond_tenders" in E and iss.get("tb_settled"):
+        E["aofm_bond_tenders"] = entry("aofm_bond_tenders", iss["tb_settled"],
+                                       "AOFM Treasury Bond tenders settled (proceeds)", "daily", unit, cfg,
+                                       "AOFM:treasury bonds - issuance.xlsx", status="fresh")
+    if "aofm_note_tenders" in E and iss.get("tn_settled"):
+        E["aofm_note_tenders"] = entry("aofm_note_tenders", iss["tn_settled"],
+                                       "AOFM Treasury Note tenders settled (proceeds)", "daily", unit, cfg,
+                                       "AOFM:Treasury Notes - Issuance.xlsx", status="fresh")
+    if "tnotes_on_issue" in E and iss.get("tn_stock_daily"):
+        E["tnotes_on_issue"] = entry("tnotes_on_issue", iss["tn_stock_daily"],
+                                     "Treasury Notes on issue — daily from tenders", "daily", unit, cfg,
+                                     "AOFM:Treasury Notes - Issuance.xlsx", status="fresh")
+    if "source_health" in block and E:
+        block["source_health"]["series_loaded"] = sum(1 for v in E.values() if v.get("value") is not None)
     C = Comps(cfg, "sum")
     if es_level:
         C.flow("net_issuance_5d_pct", round((wk[-1][1] if wk else 0.0) / es_level * 100, 4))
@@ -114,7 +137,7 @@ def enrich_fiscal(block: dict, cfg: dict, iss: Dict[str, Series], cal: Dict[str,
     return block
 
 
-def enrich_fiscal_net(block: dict, cfg: dict, iss: Dict[str, Series], netcal: Dict[str, Series], nethist: Dict[str, Series], es_level: Optional[float]) -> dict:
+def enrich_fiscal_net(block: dict, cfg: dict, iss: Dict[str, Series], netcal: Dict[str, Series], nethist: Dict[str, Series], es_level: Optional[float], cb_block: Optional[dict] = None) -> dict:
     """Round-2 netting (RBA A3.1 by line, monthly): Treasury Bond redemptions and coupons to the PRIVATE sector = AOFM face − RBA
     holding of the same line. Adds net calendars, dense daily net history (replay) and net issuance v2 = v0.4 net issuance
     + TB redemptions net + TB coupons net (the v0.4 series left them out because they were only gross)."""
@@ -136,6 +159,20 @@ def enrich_fiscal_net(block: dict, cfg: dict, iss: Dict[str, Series], netcal: Di
     ha = netcal.get("tb_holdings_asof", [])
     D["rba_holdings_asof"] = {"label": "RBA A3.1 snapshot used for netting", "value": None, "cut_date": ha[-1][0] if ha else None, "status": "fresh" if ha else "unavailable",
                               "date": date.today().isoformat(), "unmatched": netcal.get("_unmatched", [])}
+    E = block.get("series") or {}
+    if "ags_redemptions" in E and nethist.get("tb_redemptions_net_daily"):
+        E["ags_redemptions"] = entry("ags_redemptions", nethist["tb_redemptions_net_daily"],
+                                     "Treasury Bond redemptions to the private sector (face − RBA A3.1 holding; daily)", "daily", unit, cfg, src, status="fresh")
+    if "source_health" in block and E:
+        block["source_health"]["series_loaded"] = sum(1 for v in E.values() if v.get("value") is not None)
+    if cb_block and netcal.get("tb_rba_total"):
+        cb_e = cb_block.get("series") or {}
+        if "apf_holdings_a31" in cb_e:
+            cb_e["apf_holdings_a31"] = entry("apf_holdings_a31", netcal["tb_rba_total"],
+                                             "RBA holdings of Treasury Bonds by line (A3.1, month-end)", "monthly", unit, cfg,
+                                             "RBA:a3.1-ags---bonds.csv", status="fresh")
+            if "source_health" in cb_block:
+                cb_block["source_health"]["series_loaded"] = sum(1 for v in cb_e.values() if v.get("value") is not None)
     ni = iss.get("net_issuance_private_daily", [])
     if ni and nethist.get("tb_redemptions_net_daily"):
         m = {d: (v or 0.0) for d, v in ni}
@@ -167,4 +204,9 @@ def enrich_rates(block: dict, cfg: dict, tn_yield: Series) -> dict:
         d, y = tn_yield[-1]
         D["tn_yield_minus_target_bps"] = {"label": "Treasury Note tender yield − cash rate target (bp)", "value": round((y - tgt["value"]) * 100, 1), "unit": "bps", "status": "fresh", "date": d,
                                           "note": "A6: layer-4 context (money-market pricing of the Commonwealth vs the target)"}
+    E = block.get("series") or {}
+    if "tnote_3m" in E and tn_yield:
+        E["tnote_3m"] = entry("tnote_3m", tn_yield, "Treasury Note tender weighted-average yield (%)", "event", "%", cfg, "AOFM:Treasury Notes - Issuance.xlsx", status="fresh")
+        if "source_health" in block:
+            block["source_health"]["series_loaded"] = sum(1 for v in E.values() if v.get("value") is not None)
     return block

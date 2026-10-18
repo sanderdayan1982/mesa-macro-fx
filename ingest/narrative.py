@@ -61,8 +61,8 @@ SPEC: Dict[str, dict] = {
         "reserves": ("central_bank", "series", "reserves", "las reservas bancarias en el BoE", True),
         "portfolio": [("central_bank", "series", "apf_loan", "préstamo al APF (cartera de gilts)")],
         "ops": [("central_bank", "series", "str_lending", "STR", "stock"), ("central_bank", "series", "ltr_lending", "ILTR", "stock")],
-        "govt": None,
-        "fiscal": {"week": None, "month": ("fiscal", "derived", "net_spending", "mes"), "q13": ("fiscal", "derived", "fiscal_flow_3m_cum", "3 meses"), "label": "gasto neto del gobierno central (CGNCR)", "monthly_only": True},
+        "govt": ("central_bank", "series", "government_account", "el residuo semanal del Exchequer en el BoE"),
+        "fiscal": {"week": ("fiscal", "derived", "exchequer_residual_weekly", "residuo semanal del Exchequer"), "month": ("fiscal", "derived", "net_spending", "mes"), "q13": ("fiscal", "derived", "fiscal_flow_3m_cum", "3 meses"), "label": "gasto neto del gobierno central (CGNCR)", "monthly_only": False},
         "issuance": {"gross": ("fiscal", "derived", "tbill_issued"), "redemptions": ("fiscal", "derived", "tbill_matured"), "freq": "daily"},
         "auctions": [("fiscal", "derived", "tbill_cover", "tender de letras: cobertura"), ("central_bank", "derived", "iltr_cover", "ILTR: cobertura")],
         "spread": ("rates", "derived", "overnight_minus_policy_bps", "SONIA − Bank Rate"), "friction": ("rates", "derived", "overnight_minus_policy_bps", "friction_confirmed"),
@@ -88,7 +88,7 @@ SPEC: Dict[str, dict] = {
         "portfolio_monthly": [("central_bank", "series", "fx_investments", "inversiones en divisas"), ("central_bank", "series", "snb_bills", "SNB Bills"), ("central_bank", "series", "absorbing_repos", "repos de absorción")],
         "ops": [("central_bank", "derived", "bills_maturing_week", "SNB Bills que vencen en la semana", "flow")],
         "govt": ("fiscal", "series", "amounts_due_to_confederation", "los saldos de la Confederación en el SNB"),
-        "fiscal": {"week": None, "month": ("fiscal", "derived", "confed_cash_mom", "−Δ saldo"), "q13": None, "label": "flujo fiscal (−Δ saldos de la Confederación)", "monthly_only": True, "month_sign": -1},
+        "fiscal": {"week": ("fiscal", "derived", "net_issuance_private_5d", "cinco sesiones, emisión neta"), "month": ("fiscal", "derived", "confed_cash_mom", "−Δ saldo"), "q13": None, "label": "flujo fiscal (−Δ saldos de la Confederación)", "monthly_only": False, "month_sign": -1},
         "issuance": {"gross": ("fiscal", "derived", "confed_issued_gross"), "redemptions": ("fiscal", "derived", "confed_redeemed_gross"), "freq": "daily", "net": ("fiscal", "derived", "net_issuance_month")},
         "auctions": [("fiscal", "derived", "mmdrc_bid_to_cover", "MMDRC: cobertura"), ("fiscal", "derived", "mmdrc_yield_minus_saron_bps", "rendimiento − SARON"), ("fiscal", "derived", "bond_bid_to_cover", "bono: cobertura")],
         "spread": ("rates", "derived", "saron_minus_policy_bps", "SARON − tipo SNB"), "friction": ("rates", "derived", "friction_confirmed"),
@@ -103,7 +103,7 @@ SPEC: Dict[str, dict] = {
         "fiscal": {"week": ("fiscal", "derived", "fiscal_flow_7d_cum", "7 días"), "month": None, "q13": None, "label": "flujo fiscal proxy (−Δ cuenta del gobierno)"},
         "issuance": {"gross": ("fiscal", "derived", "issued_private"), "redemptions": ("fiscal", "derived", "matured_private"), "freq": "daily"},
         "auctions": [("fiscal", "derived", "rg_am_coverage", "subasta matinal del Receptor General: cobertura")],
-        "spread": ("rates", "derived", "overnight_minus_policy_bps", "CORRA − tipo objetivo"), "friction": None,
+        "spread": ("rates", "derived", "overnight_minus_policy_bps", "CORRA − tipo objetivo"), "friction": ("rates", "derived", "overnight_minus_policy_bps", "friction_confirmed"),
     },
     "aud": {
         "cb": "RBA (Reserve Bank of Australia)", "tsy": "Tesoro australiano / AOFM (Australian Office of Financial Management)",
@@ -313,14 +313,16 @@ def f2_portfolio(ccy: str, blocks: dict, L: Ledger, spec: dict) -> str:
         fld = "%s.%s.%s" % (b, sec, key)
         if len(item) > 4 and item[4] == "flow":
             parts.append("%s: %s (%s); atribución semanal no publicada por la fuente" % (label, _money(L, e["value"], spec, fld + ".value", signed=False), e.get("date")))
-            L.degraded.append("F2: monthly flow only (%s)" % key)
+            if not spec.get("portfolio"):
+                L.degraded.append("F2: monthly flow only (%s)" % key)
             continue
         d = _delta(e, 1)
         txt = "%s: stock de %s %s" % (label, e.get("date"), _money(L, e["value"], spec, fld + ".value", signed=False))
         if d is not None:
             txt += ", %s en el mes" % _money(L, d, spec, fld + ".delta_1")
         parts.append(txt + "; atribución semanal no publicada por la fuente")
-        L.degraded.append("F2: monthly stock only (%s)" % key)
+        if not spec.get("portfolio"):
+            L.degraded.append("F2: monthly stock only (%s)" % key)
     for b, sec, key, label, kind in spec.get("ops", []):
         e = _get(blocks, (b, sec, key))
         if not e or e.get("value") is None:
@@ -654,6 +656,11 @@ def run(ccy: str, root: str = ROOT, jefe: Optional[dict] = None, write: bool = T
         except Exception as e:  # never break ingestion because of the ranking
             jefe = {"status": "unavailable", "reason": "jefe error: %s" % e}
     out = build(ccy, blocks, regime, prev, jefe, cal, al)
+    try:
+        from . import liquidity_reporter as LR
+        out["liquidity_bulletin"] = LR.build_for_ccy(ccy, root=root, write_agent=False)
+    except Exception:
+        pass
     from .gate import check
     out["gate"] = check(out, blocks, regime)
     out["published"] = bool(out["gate"]["pass"])
@@ -664,6 +671,11 @@ def run(ccy: str, root: str = ROOT, jefe: Optional[dict] = None, write: bool = T
         p = os.path.join(root, "data", ccy, "agent.json")
         with open(p, "w", encoding="utf-8") as f:
             json.dump(out, f, indent=1, ensure_ascii=False)
+        try:
+            from . import liquidity_reporter as LR
+            LR.generate_report(root=root, write=True)
+        except Exception:
+            pass
         if jefe and jefe.get("status") == "ok":
             mp = os.path.join(root, "data", "mesa", "jefe.json")
             os.makedirs(os.path.dirname(mp), exist_ok=True)

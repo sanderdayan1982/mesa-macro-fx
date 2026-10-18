@@ -142,9 +142,21 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
               _alert("primary_credit_wow_pct", D["primary_credit_wow_pct"], "+20% weekly = a bank in trouble"),
               _alert("tga", E["tga"], "> 800B rising = active drain"),
               _alert("on_rrp", E["on_rrp"], "rebound > 200B = liquidity retreating")]
+    rrp_dod = S.diff_series(rrp)
+    rrp_imp5 = S.rolling_sum([(d, -v) for d, v in rrp_dod], 5)
+    D["on_rrp_dod"] = entry("on_rrp_dod", rrp_dod, "Δ ON RRP d/d (daily NY Fed)", "daily", unit, cfg, status="fresh" if rrp_dod else "unavailable", z_window=30)
+    D["on_rrp_impulse_5d"] = entry("on_rrp_impulse_5d", rrp_imp5, "−Δ ON RRP 5-session reserve impulse (+ = RRP drain into reserves)", "daily", unit, cfg, status="fresh" if rrp_imp5 else "unavailable", z_window=30)
+    C04_CB = Comps(cfg, "mean2")
+    for k, v in (C.to_dict().get("level") or {}).items():
+        C04_CB.level(k, v)
+    for k, v in (C.to_dict().get("flow") or {}).items():
+        C04_CB.flow(k, v)
+    if rrp_imp5 and rv:
+        C04_CB.flow("on_rrp_impulse_5d_pct_reserves", round(rrp_imp5[-1][1] / rv * 100, 4))
     label = "NO SIGNAL" if not res else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not res else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
     signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": C.to_dict(),
+               "components_v04": dict(C04_CB.to_dict(), note="shadow (U1): daily −ΔON_RRP 5-session impulse in % of WRESBAL + H.4.1 weekly components"),
                "detail": "WRESBAL %s · NL Δ%% %s (%s) · TGA %s · RRP %s · Primary credit %s · phase %s" % (
                    r_status, D["net_liquidity_wow_pct"]["value"], NL_TXT.get(sb["signal"], sb["signal"]), t_status, D["rrp_status"]["badge"], D["primary_credit_wow_pct"]["badge"], phase),
                "alerts": alerts}
@@ -315,12 +327,21 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
         CF.level("structural_ntf_60d", struct, 0.5).flow("daily_surprise", surprise if surprise is not None else 0.0, 0.5)
     score = CF.score()
     D["fiscal_impulse"]["value"] = score
+    C04_FI = Comps(cfg, "weighted")
+    if struct is not None:
+        C04_FI.level("structural_ntf_60d", struct, 0.5)
+    C04_FI.flow("daily_surprise", 0.0 if surprise is None else surprise, 0.5)
+    if imp:
+        C04_FI.flow("tga_reserve_impact_daily", imp[-1][1])
+    if ntf:
+        C04_FI.flow("net_treasury_flow_daily", ntf[-1][1])
     alerts = [_alert("net_treasury_flow", D["net_treasury_flow"], "|Z| ≥ 2 = extraordinary daily flow (check the seasonal flag)"),
               _alert("tga_closing", E["tga_closing"], "≥ 750B / 900B: TGA rebuild drains reserves"),
               _alert("tga_dod", D["tga_dod"], "large TGA build = reserve drain day")]
     label = "NO SIGNAL" if not ntf else ("INJECTION" if score >= 0.5 else "DRAIN" if score <= -0.5 else "NEUTRAL")
     tl = "NONE" if not ntf else "GREEN" if score >= 0.5 else "RED" if score <= -0.75 else "YELLOW"
     signals = {"traffic_light": tl, "score": score, "label": label, "flags": flags, "components": CF.to_dict(),
+               "components_v04": dict(C04_FI.to_dict(), note="shadow (U2–U3): DTS daily −ΔTGA reserve impact + Net Treasury Flow (NFA creation) + 60d structural impulse"),
                "detail": "NTF %s (%s) · Z %s · 7d %s · 60d %s (Z250 %s) · FYTD %s vs prior FY %s%% · structural %s · surprise %s · TGA close %s · −ΔTGA %s%s" % (
                    D["net_treasury_flow"]["value"], D["net_treasury_flow"]["badge"], z, s7, v60, z60, fy_now["value"], yoy, struct, surprise, E["tga_closing"]["value"],
                    D["tga_reserve_impact"]["value"], (" · " + D["seasonal_flag"]["flag"]) if D["seasonal_flag"]["flag"] else ""),

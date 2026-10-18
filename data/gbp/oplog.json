@@ -1,6 +1,478 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-18T11:48:09+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "dry",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:48:09+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "2fee5ec22db5bf7d",
+    "degraded": [
+     "F7: own currency missing (treasury)"
+    ],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 2,
+     "general": 6
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:48:09+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:48:09+00:00",
+   "type": "GBP_V04",
+   "category": "system",
+   "details": {
+    "rows": {
+     "str": 0,
+     "iltr": 0,
+     "ctrf": 0,
+     "apf_sales": 0,
+     "apf_profile": 0,
+     "d1a": 0,
+     "d22d": 0,
+     "d21e": 0,
+     "d1c": 0
+    },
+    "d1a_snapshots": 27,
+    "residual_last": [
+     "2026-10-07",
+     -803.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:48:09+00:00",
+   "type": "GBP_SEED",
+   "category": "system",
+   "details": {
+    "lines_unbased": 0,
+    "lines_based": 0,
+    "first_snapshot": "2026-09-09",
+    "seed_days": 2006,
+    "seed_last": "2026-09-08",
+    "tbill_first": null
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:48:09+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d1c",
+    "error": "dmo_d1c_last_good_copy: D1C export blocked (origin https://www.dmo.gov.uk unreachable (offline)) — served from logs/gbp/raw/dmo_d1c.xls (mtime 2026-10-18); D1C only changes on a redemption day"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:48:07+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d1c",
+    "error": "No module named 'xlrd'"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:54+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d21e",
+    "error": "dmo d21e: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:41+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d22d",
+    "error": "dmo d22d: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:29+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d1a",
+    "error": "dmo d1a: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:16+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "apf_profile",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/asset-purchase-facility/table-for-website.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:14+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "apf_sales",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/asset-purchase-facility/gilt-sales-time-series.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:11+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "ctrf",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/sterling-monetary-framework/contingent-term-repo-operations-results.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:09+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "iltr",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/sterling-monetary-framework/indexed-long-term-repo-omos-by-operation.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:06+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "str",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/other-market-operations/short-term-repo-omos-by-operation.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:47:06+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "monthly",
+    "error": "iadb RPMB53Q: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=20/Jun/2026&Dateto=18/Oct/2026&SeriesCodes=RPMB53Q,RPMB54Q,RPMB57Q,RPMB58Q,LPMBZ2A,LPMBZ2C,LPMVTVJ,LPMVTVX,LPMB3PS,LPMBC57,LPMVWNQ,LPMVVHR,LPMAUYN&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:46:47+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "ons_api",
+    "error": "ons RUUW: failed after 3 tries: HTTPSConnectionPool(host='www.ons.gov.uk', port=443): Max retries exceeded with url: /economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/ruuw/pusf/data (Caused by NameResolutionError(\"HTTPSConnection(host='www.ons.gov.uk', port=443): Failed to resolve 'www.ons.gov.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:46:47+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "weekly",
+    "error": "iadb RPWB56A: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=19/Aug/2026&Dateto=18/Oct/2026&SeriesCodes=RPWB56A,RPWB55A,RPWB72A,RPWB67A,RPWB69A,RPWZ4TM,RPWZOQ4,RPWZ4TL,YWMB84C,RPWZ4TJ,RPWZ4TK,RPWZ4TN,RPWB59A,YWMB85C&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:46:27+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "daily",
+    "error": "iadb IUDBEDR: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=18/Sep/2026&Dateto=18/Oct/2026&SeriesCodes=IUDBEDR,IUDSOIA,IUDMNPY,IUDSNPY,IUDLNPY,XUDLUSS,XUDLERS&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:41:12+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "weekly",
+    "error": "iadb RPWB56A: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=19/Aug/2026&Dateto=18/Oct/2026&SeriesCodes=RPWB56A,RPWB55A,RPWB72A,RPWB67A,RPWB69A,RPWZ4TM,RPWZOQ4,RPWZ4TL,YWMB84C,RPWZ4TJ,RPWZ4TK,RPWZ4TN,RPWB59A,YWMB85C&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:40:52+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "daily",
+    "error": "iadb IUDBEDR: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=18/Sep/2026&Dateto=18/Oct/2026&SeriesCodes=IUDBEDR,IUDSOIA,IUDMNPY,IUDSNPY,IUDLNPY,XUDLUSS,XUDLERS&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:33:29+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "dry",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [],
+    "messages": 4
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:33:29+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "098ebc7653c4b45a",
+    "degraded": [
+     "F7: own currency missing (treasury)"
+    ],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 2,
+     "general": 6
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:33:29+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "dmo[d1a]: dmo d1a: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)",
+     "dmo[d22d]: dmo d22d: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)",
+     "dmo[d21e]: dmo d21e: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)",
+     "dmo[d1c]: No module named 'xlrd'",
+     "dmo_d1c_last_good_copy: D1C export blocked (origin https://www.dmo.gov.uk unreachable (offline)) — served from logs/gbp/raw/dmo_d1c.xls (mtime 2026-10-18); D1C only changes on a redemption day"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:33:29+00:00",
+   "type": "GBP_V04",
+   "category": "system",
+   "details": {
+    "rows": {
+     "str": 0,
+     "iltr": 0,
+     "ctrf": 0,
+     "apf_sales": 0,
+     "apf_profile": 0,
+     "d1a": 0,
+     "d22d": 0,
+     "d21e": 0,
+     "d1c": 0
+    },
+    "d1a_snapshots": 27,
+    "residual_last": [
+     "2026-10-07",
+     -803.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:33:29+00:00",
+   "type": "GBP_SEED",
+   "category": "system",
+   "details": {
+    "lines_unbased": 0,
+    "lines_based": 0,
+    "first_snapshot": "2026-09-09",
+    "seed_days": 2006,
+    "seed_last": "2026-09-08",
+    "tbill_first": null
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:33:29+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d1c",
+    "error": "dmo_d1c_last_good_copy: D1C export blocked (origin https://www.dmo.gov.uk unreachable (offline)) — served from logs/gbp/raw/dmo_d1c.xls (mtime 2026-10-18); D1C only changes on a redemption day"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:33:27+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d1c",
+    "error": "No module named 'xlrd'"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:32:56+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d21e",
+    "error": "dmo d21e: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:32:26+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d22d",
+    "error": "dmo d22d: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:31:55+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "dmo_xml",
+    "kind": "d1a",
+    "error": "dmo d1a: not an XML data report (bot challenge or STRUCTURE CHANGE?) — origin https://www.dmo.gov.uk unreachable (offline)"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:31:24+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "apf_profile",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/asset-purchase-facility/table-for-website.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:31:04+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "apf_sales",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/asset-purchase-facility/gilt-sales-time-series.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:30:43+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "ctrf",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/sterling-monetary-framework/contingent-term-repo-operations-results.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:30:23+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "iltr",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/sterling-monetary-framework/indexed-long-term-repo-omos-by-operation.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:30:02+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_ops",
+    "kind": "str",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /-/media/boe/files/markets/other-market-operations/short-term-repo-omos-by-operation.xlsx (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:29:44+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "monthly",
+    "error": "iadb RPMB53Q: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=20/Jun/2026&Dateto=18/Oct/2026&SeriesCodes=RPMB53Q,RPMB54Q,RPMB57Q,RPMB58Q,LPMBZ2A,LPMBZ2C,LPMVTVJ,LPMVTVX,LPMB3PS,LPMBC57,LPMVWNQ,LPMVVHR,LPMAUYN&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:29:25+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "ons_api",
+    "error": "ons RUUW: failed after 3 tries: HTTPSConnectionPool(host='www.ons.gov.uk', port=443): Max retries exceeded with url: /economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/ruuw/pusf/data (Caused by NameResolutionError(\"HTTPSConnection(host='www.ons.gov.uk', port=443): Failed to resolve 'www.ons.gov.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:29:13+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "weekly",
+    "error": "iadb RPWB56A: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=19/Aug/2026&Dateto=18/Oct/2026&SeriesCodes=RPWB56A,RPWB55A,RPWB72A,RPWB67A,RPWB69A,RPWZ4TM,RPWZOQ4,RPWZ4TL,YWMB84C,RPWZ4TJ,RPWZ4TK,RPWZ4TN,RPWB59A,YWMB85C&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:28:53+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "boe_iadb",
+    "batch": "daily",
+    "error": "iadb IUDBEDR: HTTPSConnectionPool(host='www.bankofengland.co.uk', port=443): Max retries exceeded with url: /boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom=18/Sep/2026&Dateto=18/Oct/2026&SeriesCodes=IUDBEDR,IUDSOIA,IUDMNPY,IUDSNPY,IUDLNPY,XUDLUSS,XUDLERS&CSVF=TN&UsingCodes=Y&VPD=Y&VFD=N (Caused by NameResolutionError(\"HTTPSConnection(host='www.bankofengland.co.uk', port=443): Failed to resolve 'www.bankofengland.co.uk' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
    "timestamp": "2026-10-16T14:58:40+00:00",
    "type": "NOTIFY",
    "category": "system",

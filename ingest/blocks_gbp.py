@@ -32,8 +32,10 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], freq: str, unit: st
         ser = _ser(data, sc)
         st = None if sc.get("id") else "unavailable"
         u = sc.get("unit", unit)
-        e = entry(key, ser, sc["label"], sc.get("freq", freq), u, cfg, sc.get("id"), sc.get("usd_analog"), status=st,
-                  spec=th.get(key), prev_level=pl.get(key), z_window=26 if freq == "weekly" else 12 if freq == "monthly" else 30)
+        fq = sc.get("freq", freq)
+        lag = int(sc.get("lag_days") or (14 if fq == "weekly" else 0))
+        e = entry(key, ser, sc["label"], fq, u, cfg, sc.get("id"), sc.get("usd_analog"), status=st,
+                  spec=th.get(key), prev_level=pl.get(key), z_window=26 if freq == "weekly" else 12 if freq == "monthly" else 30, lag_days=lag)
         if sc.get("freq") == "event" and ser:
             e["status"] = "fresh"  # event series (maintenance-period / per-operation): age is not staleness
             e["equivalence_note"] = sc.get("note") or sc.get("role", "")

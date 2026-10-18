@@ -34,7 +34,7 @@ MAP_FI = {"treasury_funds_daily": "treasury", "treasury_funds_projection": "trea
           "tbills_net_monthly": "MASDM273", "fx_factor_monthly": "MASDM26", "auction_calendar": None, "auction_results": "btc_30y",
           "receipts_payments_monthly": "taxes_receipts", "taxes_monthly": "taxes_receipts", "pension_payments_monthly": "pension_payments",
           "fefsa_receipts_monthly": "fefsa_receipts", "fefsa_payments_monthly": "fefsa_payments", "jgb_issued_monthly_mof": "gov_bonds_over_1y_receipts",
-          "tbills_net_monthly_mof": "tbills_balance", "foreign_jgb_flow_weekly": None}
+          "tbills_net_monthly_mof": "tbills_balance", "foreign_jgb_flow_weekly": "its_foreign_jgb_weekly"}
 MAP_BK = {"loans_total": "FAAP@01", "loans_major_regional": "FAAPOBAL1", "loans_yoy_pct": "FAAPOBAL1@", "deposits_total": "FAAPOBRDCD5",
           "m2": "MAM1NAM2M2MO", "m3": "MAM1NAM3M3MO", "m1": "MAM1NAM3M1MO", "deposit_money": "MAM1NAM3DMMO", "monetary_base_monthly": "MABS1AN11",
           "loan_support_program": "ac_loan_support_program", "cab_by_sector": "MACAB1043"}

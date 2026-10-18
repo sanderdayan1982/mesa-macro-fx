@@ -40,6 +40,8 @@ def _get(url: str, timeout: int = 60, retries: int = 3, binary: bool = False, ac
                 return raw if binary else raw.decode("utf-8", "replace")
         except Exception as e:  # noqa: BLE001
             last = e
+            if any(t in str(e) for t in ("Failed to resolve", "nodename nor servname", "NameResolutionError")):
+                break
             time.sleep(2 * (i + 1))
     raise ProviderError("%s: %s" % (url.split("?")[0], last))
 
@@ -290,22 +292,28 @@ class FinanzagenturProvider:
     def parse(b: bytes) -> List[dict]:
         try:
             import openpyxl  # noqa
-        except ImportError as e:  # pragma: no cover
-            raise ProviderError("openpyxl missing: %s" % e)
-        wb = openpyxl.load_workbook(io.BytesIO(b), data_only=True, read_only=True)
-        ws = wb.worksheets[0]
+            wb = openpyxl.load_workbook(io.BytesIO(b), data_only=True, read_only=True)
+            ws = wb.worksheets[0]
+            raw_rows = [list(r) for r in ws.iter_rows(values_only=True)]
+        except ImportError:
+            from .ops_jpy import read_xlsx_cells
+            raw_rows = read_xlsx_cells(b)
+        from .ops_jpy import _iso
         out = []
-        for r in ws.iter_rows(values_only=True):
-            if len(r) < 19 or not isinstance(r[1], (datetime, date)):
+        for r in raw_rows:
+            if len(r) < 19:
+                continue
+            d_iso = _iso(r[1])
+            if not d_iso:
                 continue
             def f(x):
                 try:
                     return float(x) if x not in (None, "", "-") else None
                 except (TypeError, ValueError):
                     return None
-            out.append({"no": str(r[0]).strip(), "date": r[1].date().isoformat() if isinstance(r[1], datetime) else r[1].isoformat(), "isin": r[2], "bond": (r[3] or "").strip(),
-                        "coupon": f(r[4]), "maturity": r[5].date().isoformat() if isinstance(r[5], datetime) else (r[5].isoformat() if isinstance(r[5], date) else None),
-                        "segment": (r[6] or "").strip(), "volume": f(r[7]), "type": r[8], "process": r[9], "bids": f(r[10]), "competitive": f(r[11]), "non_competitive": f(r[12]),
+            out.append({"no": str(r[0]).strip(), "date": d_iso, "isin": r[2], "bond": (str(r[3]) if r[3] is not None else "").strip(),
+                        "coupon": f(r[4]), "maturity": _iso(r[5]),
+                        "segment": (str(r[6]) if r[6] is not None else "").strip(), "volume": f(r[7]), "type": r[8], "process": r[9], "bids": f(r[10]), "competitive": f(r[11]), "non_competitive": f(r[12]),
                         "allotted": f(r[13]), "lowest_price": f(r[14]), "avg_price": f(r[15]), "avg_yield": f(r[16]), "retention": f(r[17]), "bid_to_cover": f(r[18])})
         return out
 

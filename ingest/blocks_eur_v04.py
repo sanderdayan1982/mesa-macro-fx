@@ -71,6 +71,13 @@ def enrich_fiscal(block: dict, cfg: dict, fl: Dict[str, Series], cal: Dict[str, 
         D["coverage_%s" % iss] = entry("coverage_%s" % iss, ser, "%s auction coverage (mean per auction day)" % iss, "event", "x", cfg, "ops_eur:%s" % iss, status="fresh" if ser else "unavailable")
     D["gfs_context"] = {"label": "GFS.Q structural deficit (quarterly) → context in v0.4", "value": None, "status": "fresh", "date": date.today().isoformat(),
                         "note": "E1: the quarterly deficit leaves the Treasury regime in the replay; weekly net issuance + −ΔL050100 take its place"}
+    E = block.get("series") or {}
+    if "fr_it_es_eu_issuance" in E and fl.get("settled_all"):
+        E["fr_it_es_eu_issuance"] = entry("fr_it_es_eu_issuance", fl["settled_all"],
+                                          "Euro area sovereign + EU auctions settled (DE + FR + ES + IT + EU; − = drain)",
+                                          "daily", unit, cfg, "ops_eur:DE+FR+ES+IT+EU", status="fresh")
+        if "source_health" in block:
+            block["source_health"]["series_loaded"] = sum(1 for v in E.values() if v.get("value") is not None)
     C = Comps(cfg, "sum")
     if exliq_level:
         if ni_weekly:

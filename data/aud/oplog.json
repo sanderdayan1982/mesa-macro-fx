@@ -1,6 +1,329 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-18T11:44:30+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "dry",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:44:30+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "da7ae1d4d92519db",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 4,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:44:30+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:44:29+00:00",
+   "type": "AUD_V04",
+   "category": "system",
+   "details": {
+    "omo_ops": 4441,
+    "omo_cut": "2026-10-14",
+    "unwind_days": 522,
+    "tenders": {
+     "tb": 1996,
+     "tn": 2489,
+     "tib": 425
+    },
+    "buybacks": {
+     "tb": 176,
+     "tib": 13
+    },
+    "tb_lines": 30,
+    "links": "Data Hub unreachable (aofm: origin https://www.aofm.gov.au unreachable (offline)): fallback URLs verified 2026-09-10 · FALLBACK (AOFM unreachable): tb_issuance←history, tn_issuance←history, tib_issuan"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:44:28+00:00",
+   "type": "AUD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "a31_rows": 1519,
+    "rba_asof": "2026-09-30",
+    "unmatched": [],
+    "rba_share": 0.1846
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:44:20+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "d3",
+    "error": "rba d3-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/d3-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:44:02+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "d1",
+    "error": "rba d1-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/d1-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:43:44+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "f11",
+    "error": "rba f11-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/f11-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:43:26+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "f2",
+    "error": "rba f2-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/f2-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:43:08+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "a1",
+    "error": "rba a1-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/a1-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:42:50+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "a2",
+    "error": "rba a2-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/a2-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:42:32+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "f1",
+    "error": "rba f1-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/f1-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T11:42:14+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "a3_es",
+    "error": "rba a3-es-balances-and-repo-agreements: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/a3-es-balances-and-repo-agreements.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:55:26+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "dry",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [],
+    "messages": 4
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:55:26+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "da7ae1d4d92519db",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 4,
+     "general": 3
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:55:26+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "aofm_tb_issuance_last_good_copy: aofm: origin https://www.aofm.gov.au unreachable (offline) (using the last good copy)",
+     "aofm_tn_issuance_last_good_copy: aofm skipped: site unreachable earlier in this run (using the last good copy)",
+     "aofm_tib_issuance_last_good_copy: aofm skipped: site unreachable earlier in this run (using the last good copy)",
+     "aofm_tb_buybacks: aofm skipped: site unreachable earlier in this run (using the fixture)",
+     "aofm_tib_buybacks: aofm skipped: site unreachable earlier in this run (using the fixture)",
+     "aofm_tb_portfolio_last_good_copy: aofm skipped: site unreachable earlier in this run (using the last good copy)"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:55:26+00:00",
+   "type": "AUD_V04",
+   "category": "system",
+   "details": {
+    "omo_ops": 4441,
+    "omo_cut": "2026-10-14",
+    "unwind_days": 522,
+    "tenders": {
+     "tb": 1996,
+     "tn": 2489,
+     "tib": 425
+    },
+    "buybacks": {
+     "tb": 176,
+     "tib": 13
+    },
+    "tb_lines": 30,
+    "links": "Data Hub unreachable (aofm: origin https://www.aofm.gov.au unreachable (offline)): fallback URLs verified 2026-09-10 · FALLBACK (AOFM unreachable): tb_issuance←history, tn_issuance←history, tib_issuan"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:55:25+00:00",
+   "type": "AUD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "a31_rows": 1519,
+    "rba_asof": "2026-09-30",
+    "unmatched": [],
+    "rba_share": 0.1846
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:55:17+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "d3",
+    "error": "rba d3-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/d3-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:54:59+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "d1",
+    "error": "rba d1-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/d1-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:54:41+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "f11",
+    "error": "rba f11-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/f11-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:54:23+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "f2",
+    "error": "rba f2-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/f2-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:54:05+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "a1",
+    "error": "rba a1-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/a1-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:53:47+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "a2",
+    "error": "rba a2-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/a2-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:53:29+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "f1",
+    "error": "rba f1-data: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/f1-data.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
+   "timestamp": "2026-10-18T10:53:10+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "rba_tables",
+    "table": "a3_es",
+    "error": "rba a3-es-balances-and-repo-agreements: HTTPSConnectionPool(host='www.rba.gov.au', port=443): Max retries exceeded with url: /statistics/tables/csv/a3-es-balances-and-repo-agreements.csv (Caused by NameResolutionError(\"HTTPSConnection(host='www.rba.gov.au', port=443): Failed to resolve 'www.rba.gov.au' ([Errno 8] nodename nor servname provided, or not known)\"))"
+   }
+  },
+  {
    "timestamp": "2026-10-16T12:48:29+00:00",
    "type": "NOTIFY",
    "category": "system",

@@ -35,6 +35,8 @@ def _get(url: str, timeout: int = 30, retries: int = 3, as_json: bool = True):
             return r.json() if as_json else r.text
         except Exception as e:  # noqa
             last_err = e
+            if any(t in str(e) for t in ("Failed to resolve", "nodename nor servname", "NameResolutionError")):
+                break
             time.sleep(2 + 2 * i)
     raise ProviderError("failed after %d tries: %s" % (retries, last_err))
 

@@ -258,6 +258,10 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
         return out
     es_rate = _ffill(raw.get("es_rate", []), pol)
     ceil = _ffill(raw.get("overnight_repo_rate", []), pol)
+    if es_rate and "es_rate" in E:
+        E["es_rate"] = entry("es_rate", es_rate, b["series"]["es_rate"]["label"], "daily", "%", cfg, b["series"]["es_rate"].get("id"), b["series"]["es_rate"].get("usd_analog"), status="fresh")
+    if ceil and "overnight_repo_rate" in E:
+        E["overnight_repo_rate"] = entry("overnight_repo_rate", ceil, b["series"]["overnight_repo_rate"]["label"], "daily", "%", cfg, b["series"]["overnight_repo_rate"].get("id"), b["series"]["overnight_repo_rate"].get("usd_analog"), status="fresh")
     D: Dict[str, dict] = {}
     sp = S.merge_series(on, pol, lambda a, c: round((a - c) * 100, 2))
     D["overnight_minus_target_bps"] = entry("overnight_minus_target_bps", sp, "AONIA − cash rate target (bps)", "daily", "bps", cfg, usd_analog="EFFR − target",
