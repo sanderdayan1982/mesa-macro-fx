@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-19T09:44:25+00:00",
- "as_of": "2026-10-16",
+ "generated_at": "2026-10-19T12:27:15+00:00",
+ "as_of": "2026-10-19",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
  "source_health": {
@@ -12,7 +12,9 @@
   "series_loaded": 19,
   "series_expected": 19,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cfc675d89bf5fe-ORD'} body=\u001b?\u0017\u0000d�����~�np���DA��} \u0006�$�(/x�(�$�@d������[\u000e���\u0004�&.��\\�K�DD��u���L�\u0012�\u0012)1\u0013*!�\u001cZ�s#�\u001c�M\u0014{2N@��\u0012T�WM�5���lO���M�\u000fJQ\u000e���E��Eޫ��x\u00141\u0019j2<�IP��1��M\u000b�� �\"2B��K\\y��\rc�"
+  ],
   "series_pending": 3
  },
  "series": {
@@ -995,7 +997,7 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "event",
    "status": "fresh",
-   "value": 900.0,
+   "value": 700.0,
    "date": "2026-10-01",
    "prev_value": null,
    "prev_date": null,
@@ -1006,12 +1008,12 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    900.0
+    700.0
    ],
    "high_low": {
-    "high": 900.0,
+    "high": 700.0,
     "high_date": "2026-10-01",
-    "low": 900.0,
+    "low": 700.0,
     "low_date": "2026-10-01"
    },
    "age_days": 18,
@@ -1189,11 +1191,11 @@
    "status": "fresh",
    "value": -20.0,
    "date": "2026-10-16",
-   "prev_value": 2598.0,
+   "prev_value": 221.0,
    "prev_date": "2026-10-15",
-   "change_abs": -2618.0,
-   "change_pct": -100.7698,
-   "zscore": -0.2607,
+   "change_abs": -241.0,
+   "change_pct": -109.0498,
+   "zscore": -0.2174,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -1248,7 +1250,7 @@
     227.0,
     -295.0,
     86.0,
-    2598.0,
+    221.0,
     -20.0
    ],
    "high_low": {
@@ -2345,7 +2347,7 @@
    "value": 250.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
-   "date": "2026-10-16",
+   "date": "2026-10-19",
    "items": [
     {
      "number": "1893",
@@ -2887,13 +2889,13 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
+   "value": 200.0,
    "date": "2026-10-19",
    "prev_value": 0.0,
    "prev_date": "2026-10-16",
-   "change_abs": 0.0,
+   "change_abs": 200.0,
    "change_pct": null,
-   "zscore": 0.3031,
+   "zscore": 1.0842,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -2949,7 +2951,7 @@
     49.845,
     326.845,
     0.0,
-    0.0
+    200.0
    ],
    "high_low": {
     "high": 800.0,
@@ -2968,13 +2970,13 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -73.31,
+   "value": 126.69,
    "date": "2026-10-19",
    "prev_value": -73.31,
    "prev_date": "2026-10-16",
-   "change_abs": 0.0,
-   "change_pct": 0.0,
-   "zscore": 0.8595,
+   "change_abs": 200.0,
+   "change_pct": 272.8141,
+   "zscore": 1.3377,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -3030,7 +3032,7 @@
     -400.155,
     -73.31,
     -73.31,
-    -73.31
+    126.69
    ],
    "high_low": {
     "high": 519.538,
@@ -3045,7 +3047,7 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 1850.0,
+   "value": 1650.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-19",
@@ -3060,7 +3062,7 @@
     ],
     [
      "2026-10-28",
-     700.0
+     500.0
     ],
     [
      "2026-11-03",
@@ -3304,8 +3306,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": -0.2483,
-    "residual_5d_pct": 8.7925
+    "net_issuance_5d_pct": 0.4291,
+    "residual_5d_pct": 0.7417
    },
    "level": {},
    "weights": {},
@@ -3313,8 +3315,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": 2.0,
-   "score_flows_only": 2.0,
+   "score_v02": 1.17,
+   "score_flows_only": 1.17,
    "note": "shadow: daily residual proxy + weekly net issuance; D10 band stays live until the replay"
   }
  },
@@ -4282,54 +4284,57 @@
    },
    {
     "tender_date": "2026-10-13",
+    "settlement_date": "2026-10-14",
+    "tender_no": "1892",
+    "kind": "tbill",
     "maturity": "2027-01-13",
     "coupon": null,
     "offered": 100.0,
+    "accepted": 100.0,
+    "bid": 205.0,
     "bids_n": 5.0,
     "success_n": 4.0,
-    "bid": 205.0,
-    "accepted": 100.0,
     "coverage": 2.05,
     "low_acc": 3.05,
     "high_acc": 3.085,
     "wavg": 3.0712,
-    "tender_no": "1892",
-    "kind": "tbill",
-    "source": "xlsx"
+    "source": "html"
    },
    {
     "tender_date": "2026-10-13",
+    "settlement_date": "2026-10-14",
+    "tender_no": "1892",
+    "kind": "tbill",
     "maturity": "2027-04-07",
     "coupon": null,
     "offered": 100.0,
+    "accepted": 100.0,
+    "bid": 375.0,
     "bids_n": 11.0,
     "success_n": 5.0,
-    "bid": 375.0,
-    "accepted": 100.0,
     "coverage": 3.75,
     "low_acc": 3.19,
     "high_acc": 3.23,
     "wavg": 3.2105,
-    "tender_no": "1892",
-    "kind": "tbill",
-    "source": "xlsx"
+    "source": "html"
    },
    {
     "tender_date": "2026-10-13",
+    "settlement_date": "2026-10-14",
+    "tender_no": "1892",
+    "kind": "tbill",
     "maturity": "2027-09-22",
     "coupon": null,
     "offered": 50.0,
+    "accepted": 50.0,
+    "bid": 150.0,
     "bids_n": 7.0,
     "success_n": 2.0,
-    "bid": 150.0,
-    "accepted": 50.0,
     "coverage": 3.0,
     "low_acc": 3.595,
     "high_acc": 3.605,
     "wavg": 3.6,
-    "tender_no": "1892",
-    "kind": "tbill",
-    "source": "xlsx"
+    "source": "html"
    },
    {
     "tender_date": "2026-10-15",
@@ -4404,8 +4409,8 @@
    },
    {
     "number": "1014",
-    "lines": "",
-    "volume": 450.0,
+    "lines": "1.5% 15 May 2031",
+    "volume": 250.0,
     "announcement": "2026-10-19",
     "tender": "2026-10-22",
     "settlement": "2026-10-28",
@@ -4721,6 +4726,11 @@
     "date": "2026-07-31",
     "label": "INJECTION",
     "score": 0.5
+   },
+   {
+    "date": "2026-08-31",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-08-31",

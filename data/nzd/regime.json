@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-19T09:44:39+00:00",
- "as_of": "2026-10-16",
+ "generated_at": "2026-10-19T12:27:29+00:00",
+ "as_of": "2026-10-19",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -27,8 +27,8 @@
    "score": 1.0,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-10-16",
-   "detail": "settlement cash 29525.0 (5d 23.0, 20d 1564.0, SAFE) · OMO stock 2183.0 (7.4%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "as_of": "2026-10-19",
+   "detail": "settlement cash 29525.0 (5d 23.0, 20d 1564.0, SAFE) · OMO stock 4560.0 (15.4%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,10 +43,10 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.5,
+    "effective_score": 0.667,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-16",
+    "as_of": "2026-10-19",
     "recent": [
      [
       "2026-10-12",
@@ -54,6 +54,10 @@
      ],
      [
       "2026-10-16",
+      1.0
+     ],
+     [
+      "2026-10-19",
       1.0
      ]
     ],
@@ -87,7 +91,7 @@
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-16",
+   "as_of": "2026-10-19",
    "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.92x at 3.0712% · bond 3.953x tail 0.6 bp · settlements next 5d 250.0 · non-resident 57.5%",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -106,7 +110,7 @@
     "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-16",
+    "as_of": "2026-10-19",
     "recent": [
      [
       "2026-10-12",
@@ -122,6 +126,10 @@
      ],
      [
       "2026-10-16",
+      0.0
+     ],
+     [
+      "2026-10-19",
       0.0
      ]
     ],
@@ -380,8 +388,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_mon",
+  "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cfc675d89bf5fe-ORD'} body=\u001b?\u0017\u0000d�����~�np���DA��} \u0006�$�(/x�(�$�@d������[\u000e���\u0004�&.��\\�K�DD��u���L�\u0012�\u0012)1\u0013*!�\u001cZ�s#�\u001c�M\u0014{2N@��\u0012T�WM�5���lO���M�\u000fJQ\u000e���E��Eޫ��x\u00141\u0019j2<�IP��1��M\u000b�� �\"2B��K\\y��\rc�"
+  ]
  }
 }

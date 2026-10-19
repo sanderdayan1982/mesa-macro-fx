@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-19T09:44:39+00:00",
+ "generated_at": "2026-10-19T12:27:29+00:00",
  "series": {
   "central_bank.settlement_cash_daily": {
    "freshness": "fresh",
@@ -48,8 +48,8 @@
     "score": 100,
     "tier": "HIGH"
    },
-   "last_valid_date": "2026-10-08",
-   "age_days": 11,
+   "last_valid_date": "2026-10-15",
+   "age_days": 4,
    "latest_outlier": false
   },
   "central_bank.omo_outstanding": {
@@ -68,8 +68,8 @@
     "score": 100,
     "tier": "HIGH"
    },
-   "last_valid_date": "2026-10-08",
-   "age_days": 11,
+   "last_valid_date": "2026-10-15",
+   "age_days": 4,
    "latest_outlier": false
   },
   "central_bank.lsap_sales_month": {
@@ -78,8 +78,8 @@
     "score": 100,
     "tier": "HIGH"
    },
-   "last_valid_date": "2026-10-12",
-   "age_days": 7,
+   "last_valid_date": "2026-10-19",
+   "age_days": 0,
    "latest_outlier": false
   },
   "central_bank.bond_repurchases": {
@@ -88,18 +88,18 @@
     "score": 100,
     "tier": "HIGH"
    },
-   "last_valid_date": "2026-02-26",
-   "age_days": 235,
+   "last_valid_date": "2026-10-20",
+   "age_days": -1,
    "latest_outlier": false
   },
   "central_bank.bmls_holdings": {
    "freshness": "fresh",
    "confidence": {
-    "score": 85,
-    "tier": "MEDIUM"
+    "score": 100,
+    "tier": "HIGH"
    },
-   "last_valid_date": "2026-10-09",
-   "age_days": 10,
+   "last_valid_date": "2026-10-16",
+   "age_days": 3,
    "latest_outlier": false
   },
   "central_bank.total_assets": {
@@ -685,12 +685,14 @@
  },
  "system": {
   "average": 100,
-  "abv90": 67,
+  "abv90": 68,
   "blw70": 0,
   "lowest": {
-   "series": "central_bank.bmls_holdings",
-   "score": 85
+   "series": "central_bank.d10_net_reverse_repos",
+   "score": 92
   }
  },
- "errors": []
+ "errors": [
+  "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cfc675d89bf5fe-ORD'} body=\u001b?\u0017\u0000d�����~�np���DA��} \u0006�$�(/x�(�$�@d������[\u000e���\u0004�&.��\\�K�DD��u���L�\u0012�\u0012)1\u0013*!�\u001cZ�s#�\u001c�M\u0014{2N@��\u0012T�WM�5���lO���M�\u000fJQ\u000e���E��Eޫ��x\u00141\u0019j2<�IP��1��M\u000b�� �\"2B��K\\y��\rc�"
+ ]
 }

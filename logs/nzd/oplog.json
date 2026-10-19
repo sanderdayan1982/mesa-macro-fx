@@ -1,6 +1,117 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-19T12:27:30+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 2
+   }
+  },
+  {
+   "timestamp": "2026-10-19T12:27:29+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "00b31314e9c5de88",
+    "degraded": [
+     "F2: monthly stock only (lsap_holdings)",
+     "F2: monthly flow only (lsap_sales_month)"
+    ],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 7,
+     "general": 6
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-19T12:27:29+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cfc675d89bf5fe-ORD'} body=\u001b?\u0017\u0000d\ufffd\ufffd\ufffd\ufffd\ufffd~\ufffdnp\ufffd\ufffd\ufffdDA\ufffd\ufffd} \u0006\ufffd$\ufffd(/x\ufffd(\ufffd$\ufffd@d\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd[\u000e\ufffd\ufffd\ufffd\u0004\ufffd&.\ufffd\ufffd\u007f\\\ufffdK\ufffdDD\ufffd\ufffdu\ufffd\ufffd\ufffdL\ufffd\u0012\ufffd\u0012)1\u0013*!\ufffd\u001cZ\ufffds#\ufffd\u001c\ufffdM\u0014{2N@\ufffd\ufffd\u007f\u0012T\ufffdWM\ufffd5\ufffd\ufffd\ufffdlO\ufffd\ufffd\ufffdM\ufffd\u000fJQ\u000e\ufffd\ufffd\ufffdE\ufffd\ufffdE\u07ab\ufffd\ufffdx\u00141\u0019j2<\ufffdIP\ufffd\ufffd1\ufffd\ufffdM\u000b\ufffd\ufffd \ufffd\"2B\ufffd\ufffdK\\y\ufffd\ufffd\rc\ufffd"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-19T12:27:29+00:00",
+   "type": "NZD_V04",
+   "category": "system",
+   "details": {
+    "tenders": 1803,
+    "omo_ops": 58,
+    "csa_days": 7949,
+    "bond_flows_two_sided_from": "2018-12-28",
+    "bond_month_ends": 94,
+    "lsap_lines": 16,
+    "lsap_unmapped": [],
+    "redemptions_vs_d10": [
+     [
+      "2024-05",
+      7391.0,
+      7391.0,
+      0.0
+     ],
+     [
+      "2025-04",
+      6942.0,
+      6982.0,
+      0.6
+     ],
+     [
+      "2025-09",
+      3066.9,
+      2244.0,
+      -26.8
+     ],
+     [
+      "2026-05",
+      7855.0,
+      6194.0,
+      -21.1
+     ]
+    ],
+    "d10_recon_months": 32,
+    "oia_recon_months": 22
+   }
+  },
+  {
+   "timestamp": "2026-10-19T12:27:15+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_last_good_copy",
+    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots \u2014 nzdm_tbill_listing.html (snapshot 2026-10-19)"
+   }
+  },
+  {
+   "timestamp": "2026-10-19T12:27:15+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_bond_result[1013]",
+    "error": "failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cfc675d89bf5fe-ORD'} body=\u001b?\u0017\u0000d\ufffd\ufffd\ufffd\ufffd\ufffd~\ufffdnp\ufffd\ufffd\ufffdDA\ufffd\ufffd} \u0006\ufffd$\ufffd(/x\ufffd(\ufffd$\ufffd@d\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd[\u000e\ufffd\ufffd\ufffd\u0004\ufffd&.\ufffd\ufffd\u007f\\\ufffdK\ufffdDD\ufffd\ufffdu\ufffd\ufffd\ufffdL\ufffd\u0012\ufffd\u0012)1\u0013*!\ufffd\u001cZ\ufffds#\ufffd\u001c\ufffdM\u0014{2N@\ufffd\ufffd\u007f\u0012T\ufffdWM\ufffd5\ufffd\ufffd\ufffdlO\ufffd\ufffd\ufffdM\ufffd\u000fJQ\u000e\ufffd\ufffd\ufffdE\ufffd\ufffdE\u07ab\ufffd\ufffdx\u00141\u0019j2<\ufffdIP\ufffd\ufffd1\ufffd\ufffdM\u000b\ufffd\ufffd \ufffd\"2B\ufffd\ufffdK\\y\ufffd\ufffd\rc\ufffd"
+   }
+  },
+  {
    "timestamp": "2026-10-19T09:44:39+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -8638,157 +8749,6 @@
      "fiscal": 6,
      "general": 2
     }
-   }
-  },
-  {
-   "timestamp": "2026-09-21T12:15:10+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "LIQUIDITY_INJECTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-21T12:15:10+00:00",
-   "type": "NZD_V04",
-   "category": "system",
-   "details": {
-    "tenders": 1782,
-    "omo_ops": 50,
-    "csa_days": 7949,
-    "bond_flows_two_sided_from": "2018-12-28",
-    "bond_month_ends": 93,
-    "lsap_lines": 16,
-    "lsap_unmapped": [],
-    "redemptions_vs_d10": [
-     [
-      "2024-05",
-      7391.0,
-      7391.0,
-      0.0
-     ],
-     [
-      "2025-04",
-      6942.0,
-      6982.0,
-      0.6
-     ],
-     [
-      "2025-09",
-      3066.9,
-      2244.0,
-      -26.8
-     ],
-     [
-      "2026-05",
-      7855.0,
-      6194.0,
-      -21.1
-     ]
-    ],
-    "d10_recon_months": 31,
-    "oia_recon_months": 22
-   }
-  },
-  {
-   "timestamp": "2026-09-21T09:47:05+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "none",
-    "chunks": 0,
-    "ok": 0,
-    "errors": [],
-    "messages": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-21T09:47:05+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "509b32e08ad4efb2",
-    "degraded": [
-     "F2: monthly stock only (lsap_holdings)",
-     "F2: monthly flow only (lsap_sales_month)"
-    ],
-    "streaks": {
-     "central_bank": 2,
-     "fiscal": 6,
-     "general": 2
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-21T09:47:05+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "weekly_mon",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "LIQUIDITY_INJECTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-21T09:47:04+00:00",
-   "type": "NZD_V04",
-   "category": "system",
-   "details": {
-    "tenders": 1782,
-    "omo_ops": 50,
-    "csa_days": 7949,
-    "bond_flows_two_sided_from": "2018-12-28",
-    "bond_month_ends": 93,
-    "lsap_lines": 16,
-    "lsap_unmapped": [],
-    "redemptions_vs_d10": [
-     [
-      "2024-05",
-      7391.0,
-      7391.0,
-      0.0
-     ],
-     [
-      "2025-04",
-      6942.0,
-      6982.0,
-      0.6
-     ],
-     [
-      "2025-09",
-      3066.9,
-      2244.0,
-      -26.8
-     ],
-     [
-      "2026-05",
-      7855.0,
-      6194.0,
-      -21.1
-     ]
-    ],
-    "d10_recon_months": 31,
-    "oia_recon_months": 22
    }
   }
  ]
