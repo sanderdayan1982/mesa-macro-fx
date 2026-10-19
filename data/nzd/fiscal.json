@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-19T09:38:39+00:00",
+ "generated_at": "2026-10-19T09:41:05+00:00",
  "as_of": "2026-10-16",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -12,9 +12,7 @@
   "series_loaded": 19,
   "series_expected": 19,
   "last_fetch_ok": true,
-  "errors": [
-   "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cecf7b5f8415f3-SJC'} body=\u001b?\u0017\u0000d�����~�np���D1l�>��\u0002���/x\bEH�P�9��c��n9��o�0i����GL�x�DD��u���L�\u0012�\u0012)1\u0013*!�\u001cZ�s#�\u001c�M\u0014{2N@��\"�g�WM�5\u0001��jN���M�\u000f�Q\u0006�\u000fM�0\u0007��W\u0005��(b2�dxL\u0013�<�`^�T5@_+ȋ�\b��/�\u0015�K�C"
-  ],
+  "errors": [],
   "series_pending": 3
  },
  "series": {
@@ -4284,57 +4282,54 @@
    },
    {
     "tender_date": "2026-10-13",
-    "settlement_date": "2026-10-14",
-    "tender_no": "1892",
-    "kind": "tbill",
     "maturity": "2027-01-13",
     "coupon": null,
     "offered": 100.0,
-    "accepted": 100.0,
-    "bid": 205.0,
     "bids_n": 5.0,
     "success_n": 4.0,
+    "bid": 205.0,
+    "accepted": 100.0,
     "coverage": 2.05,
     "low_acc": 3.05,
     "high_acc": 3.085,
     "wavg": 3.0712,
-    "source": "html"
+    "tender_no": "1892",
+    "kind": "tbill",
+    "source": "xlsx"
    },
    {
     "tender_date": "2026-10-13",
-    "settlement_date": "2026-10-14",
-    "tender_no": "1892",
-    "kind": "tbill",
     "maturity": "2027-04-07",
     "coupon": null,
     "offered": 100.0,
-    "accepted": 100.0,
-    "bid": 375.0,
     "bids_n": 11.0,
     "success_n": 5.0,
+    "bid": 375.0,
+    "accepted": 100.0,
     "coverage": 3.75,
     "low_acc": 3.19,
     "high_acc": 3.23,
     "wavg": 3.2105,
-    "source": "html"
+    "tender_no": "1892",
+    "kind": "tbill",
+    "source": "xlsx"
    },
    {
     "tender_date": "2026-10-13",
-    "settlement_date": "2026-10-14",
-    "tender_no": "1892",
-    "kind": "tbill",
     "maturity": "2027-09-22",
     "coupon": null,
     "offered": 50.0,
-    "accepted": 50.0,
-    "bid": 150.0,
     "bids_n": 7.0,
     "success_n": 2.0,
+    "bid": 150.0,
+    "accepted": 50.0,
     "coverage": 3.0,
     "low_acc": 3.595,
     "high_acc": 3.605,
     "wavg": 3.6,
-    "source": "html"
+    "tender_no": "1892",
+    "kind": "tbill",
+    "source": "xlsx"
    },
    {
     "tender_date": "2026-10-15",
@@ -4726,6 +4721,11 @@
     "date": "2026-07-31",
     "label": "INJECTION",
     "score": 0.5
+   },
+   {
+    "date": "2026-08-31",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-08-31",
