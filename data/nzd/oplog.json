@@ -1,19 +1,19 @@
 {
  "entries": [
   {
-   "timestamp": "2026-10-19T04:04:21+00:00",
+   "timestamp": "2026-10-19T04:05:08+00:00",
    "type": "NOTIFY",
    "category": "system",
    "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
     "errors": [],
-    "messages": 1
+    "messages": 0
    }
   },
   {
-   "timestamp": "2026-10-19T04:04:20+00:00",
+   "timestamp": "2026-10-19T04:05:08+00:00",
    "type": "AGENT_DAILY_LOG",
    "category": "system",
    "details": {
@@ -32,11 +32,11 @@
    }
   },
   {
-   "timestamp": "2026-10-19T04:04:20+00:00",
+   "timestamp": "2026-10-19T04:05:08+00:00",
    "type": "REFRESH_AUTO",
    "category": "system",
    "details": {
-    "lane": "daily",
+    "lane": "weekly_mon",
     "backfill": false,
     "blocks": [
      "central_bank",
@@ -44,15 +44,13 @@
      "banking",
      "rates"
     ],
-    "errors": [
-     "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cce5711b7450af-LAX'} body=\u001b?\u0017\u0000d�����~�np���  �۽� \u0002�\u0014�/x (\t��\"Ι�\u001fs�w�a5ۆI\u0013���?b���$\"�ͮs4�d\u0012�H�H��P\t��к�\u001b��(o�ؓq\u0002�|�\u0013�,ݼj�\t��'g�\u001d\u0017n�P�R��55�\u0000\u0016y� ��Q�d���&BY���\bT5D_+ȋ�\b��/����6\ba�>� �_\u0013}"
-    ],
+    "errors": [],
     "regime": "NEUTRAL",
     "new_revisions": 0
    }
   },
   {
-   "timestamp": "2026-10-19T04:04:20+00:00",
+   "timestamp": "2026-10-19T04:05:08+00:00",
    "type": "NZD_V04",
    "category": "system",
    "details": {
@@ -91,24 +89,6 @@
     ],
     "d10_recon_months": 32,
     "oia_recon_months": 22
-   }
-  },
-  {
-   "timestamp": "2026-10-19T04:04:06+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "nzdm_last_good_copy",
-    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-10-19); nzdm_bond_listing.html (snapshot 2026-10-19)"
-   }
-  },
-  {
-   "timestamp": "2026-10-19T04:04:06+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "nzdm_bond_result[1013]",
-    "error": "failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4cce5711b7450af-LAX'} body=\u001b?\u0017\u0000d�����~�np���  �۽� \u0002�\u0014�/x (\t��\"Ι�\u001fs�w�a5ۆI\u0013���?b���$\"�ͮs4�d\u0012�H�H��P\t��к�\u001b��(o�ؓq\u0002�|�\u0013�,ݼj�\t��'g�\u001d\u0017n�P�R��55�\u0000\u0016y� ��Q�d���&BY���\bT5D_+ȋ�\b��/����6\ba�>� �_\u0013}"
    }
   },
   {
@@ -8763,6 +8743,57 @@
     ],
     "regime": "LIQUIDITY_INJECTION",
     "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-09-18T08:47:37+00:00",
+   "type": "NZD_V04",
+   "category": "system",
+   "details": {
+    "tenders": 1782,
+    "omo_ops": 50,
+    "csa_days": 7949,
+    "bond_flows_two_sided_from": "2018-12-28",
+    "bond_month_ends": 93,
+    "lsap_lines": 16,
+    "lsap_unmapped": [],
+    "redemptions_vs_d10": [
+     [
+      "2024-05",
+      7391.0,
+      7391.0,
+      0.0
+     ],
+     [
+      "2025-04",
+      6942.0,
+      6982.0,
+      0.6
+     ],
+     [
+      "2025-09",
+      3066.9,
+      2244.0,
+      -26.8
+     ],
+     [
+      "2026-05",
+      7855.0,
+      6194.0,
+      -21.1
+     ]
+    ],
+    "d10_recon_months": 31,
+    "oia_recon_months": 22
+   }
+  },
+  {
+   "timestamp": "2026-09-18T08:47:33+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_last_good_copy",
+    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-09-18)"
    }
   }
  ]
