@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-20T07:10:36+00:00",
+ "generated_at": "2026-10-20T08:05:33+00:00",
  "as_of": "2026-10-16",
  "equivalence_quality": "high",
  "equivalence_note": "B2 daily close (T-1, 15:00 NZT). Floor system: the overnight interbank rate should sit at/just above the OCR; it is published only on days with trades (sparse) → the daily stress spread is the 30-day bank bill − OCR with a persistence rule, corrected for hike pricing by the 90-day bill and 1-year swap; the OMO price is fixed (OCR + 10) so price stress shows up in ORRF use and bills, not in the operation | v0.2: B2 bank bills are NZFMA/LSEG closing rates (the 10:20 NZT BKBM fixing itself is published by NZFBF; public delayed feed unverified — pending); NZ OIS has no public feed (not available, not proxied)",
@@ -12,9 +12,7 @@
   "series_loaded": 16,
   "series_expected": 16,
   "last_fetch_ok": true,
-  "errors": [
-   "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4d633ff6c9f4cbc-MSP'} body=\u001b?\u0017\u0000d�����~�np���D1l�>\u0004\u0015$ �\u00178\u0005\u0014I�P�9��c��n9��o�0i����GL�x�DD��u���L�\u0012�\u0012)1\u0013*!�\u001cZ�s#�\u001c�M\u0014{2N@��\"���WM�5���bO���M�\u000f�Q ��M�0�Eޫ��x\u00141\u0019j2<��P�n0/\u0002U\r�� �\"2B��Kly���C�"
-  ],
+  "errors": [],
   "series_pending": 0,
   "sparse_by_design": [
    "overnight_interbank"
@@ -4281,6 +4279,11 @@
    },
    {
     "date": "2026-10-07",
+    "label": "HIKE PRICING",
+    "score": 0.25
+   },
+   {
+    "date": "2026-10-16",
     "label": "HIKE PRICING",
     "score": 0.25
    },

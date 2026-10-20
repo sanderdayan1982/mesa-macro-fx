@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-20T07:10:50+00:00",
+ "generated_at": "2026-10-20T08:05:46+00:00",
  "series": {
   "central_bank.settlement_cash_daily": {
    "freshness": "fresh",
@@ -363,13 +363,13 @@
    "latest_outlier": false
   },
   "fiscal.tender_schedule_month": {
-   "freshness": "fresh",
+   "freshness": "unavailable",
    "confidence": {
-    "score": 100,
-    "tier": "HIGH"
+    "score": 0,
+    "tier": "CRITICAL"
    },
-   "last_valid_date": "2026-10-01",
-   "age_days": 19,
+   "last_valid_date": null,
+   "age_days": null,
    "latest_outlier": false
   },
   "fiscal.nzgb_non_resident_holdings": {
@@ -684,15 +684,13 @@
   }
  },
  "system": {
-  "average": 100,
-  "abv90": 68,
-  "blw70": 0,
+  "average": 98,
+  "abv90": 67,
+  "blw70": 1,
   "lowest": {
-   "series": "central_bank.d10_net_reverse_repos",
-   "score": 92
+   "series": "fiscal.tender_schedule_month",
+   "score": 0
   }
  },
- "errors": [
-  "nzdm_bond_result[1013]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1013 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4d633ff6c9f4cbc-MSP'} body=\u001b?\u0017\u0000d�����~�np���D1l�>\u0004\u0015$ �\u00178\u0005\u0014I�P�9��c��n9��o�0i����GL�x�DD��u���L�\u0012�\u0012)1\u0013*!�\u001cZ�s#�\u001c�M\u0014{2N@��\"���WM�5���bO���M�\u000f�Q ��M�0�Eޫ��x\u00141\u0019j2<��P�n0/\u0002U\r�� �\"2B��Kly���C�"
- ]
+ "errors": []
 }
