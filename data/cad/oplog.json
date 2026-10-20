@@ -1,6 +1,96 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-20T00:33:48+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-20T00:33:48+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "c8743b43089b3bdc",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 7,
+     "general": 7
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-20T00:33:48+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "FLOOR_FRICTION",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-20T00:33:47+00:00",
+   "type": "CAD_V04",
+   "category": "system",
+   "details": {
+    "groups": {
+     "term_repo": 437,
+     "or": 331,
+     "orr": 412,
+     "rgam": 2224,
+     "tbill": 2434,
+     "bond": 1165,
+     "bond_repurchase": 1134
+    },
+    "indicator_days": 30,
+    "net_issuance_last": [
+     "2026-10-20",
+     0.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-10-20T00:33:47+00:00",
+   "type": "CAD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "blobs_pending": 57,
+    "holdings_asof": "2026-10-19",
+    "holdings_rows": 52,
+    "history_asofs": 62,
+    "outstanding_asof": "2026-10-15",
+    "outstanding_isins": 83,
+    "unmatched": []
+   }
+  },
+  {
+   "timestamp": "2026-10-20T00:33:40+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "receiver_general",
+    "error": "failed after 3 tries: HTTPSConnectionPool(host='donnees-data.tpsgc-pwgsc.gc.ca', port=443): Max retries exceeded with url: /ba1/sqt-dcb/sqt-dcb.csv (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1016)')))"
+   }
+  },
+  {
    "timestamp": "2026-10-19T11:29:33+00:00",
    "type": "NOTIFY",
    "category": "system",
