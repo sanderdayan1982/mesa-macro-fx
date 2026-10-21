@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-10-21T12:05:52+00:00",
+ "generated_at": "2026-10-21T14:07:59+00:00",
  "as_of": "2026-10-21",
  "equivalence_quality": "high",
  "equivalence_note": "€STR (08:00 CET T+1) is the floor test: trades 5–10 bp below the DFR with abundant excess liquidity and should drift toward the DFR as liquidity falls (ECB Mar-2024 framework). STRESS SPREAD = €STR − DFR. Daily periphery premium = all-euro-area 10Y − AAA 10Y (verified 42 bp); country spreads monthly (IRS) until daily national yields are wired (Phase 3).",
@@ -12,7 +12,10 @@
   "series_loaded": 18,
   "series_expected": 18,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "aft_v04: HTTP 503 for https://www.aft.gouv.fr/en/btf-principaux-chiffres",
+   "aft_reviews(monthly-operations-review): HTTP 503 for https://www.aft.gouv.fr/en/monthly-operations-review"
+  ],
   "series_pending": 0
  },
  "series": {
@@ -1321,18 +1324,17 @@
    "unit": "USD",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1.1215,
-   "date": "2026-10-20",
-   "prev_value": 1.1225,
-   "prev_date": "2026-10-19",
-   "change_abs": -0.001,
-   "change_pct": -0.0891,
-   "zscore": -1.005,
+   "value": 1.1234,
+   "date": "2026-10-21",
+   "prev_value": 1.1215,
+   "prev_date": "2026-10-20",
+   "change_abs": 0.0019,
+   "change_pct": 0.1694,
+   "zscore": -0.8189,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.1555,
     1.154,
     1.1545,
     1.1534,
@@ -1383,7 +1385,8 @@
     1.1208,
     1.1253,
     1.1225,
-    1.1215
+    1.1215,
+    1.1234
    ],
    "high_low": {
     "high": 1.1699,
@@ -1391,7 +1394,7 @@
     "low": 1.1177,
     "low_date": "2026-10-07"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -2373,7 +2376,7 @@
   "flags": [
    "COUNTRY_SPREAD_WATCH"
   ],
-  "detail": "€STR 2.44 (−DFR -6.0 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 4.0 bp · corridor -0.15 · 10−2 41.2 (FLAT) · periphery 65.0 bp (WATCH) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 38.5 · EUR/USD 1.1215",
+  "detail": "€STR 2.44 (−DFR -6.0 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 4.0 bp · corridor -0.15 · 10−2 41.2 (FLAT) · periphery 65.0 bp (WATCH) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 38.5 · EUR/USD 1.1234",
   "alerts": [
    {
     "metric": "estr_minus_dfr_bps",
