@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-22T03:02:04+00:00",
+ "generated_at": "2026-10-22T04:05:29+00:00",
  "as_of": "2026-10-22",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
@@ -96,7 +96,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-22",
-   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.832x at 3.1333% · bond 3.953x tail 0.6 bp · settlements next 5d 250.0 · non-resident 57.5%",
+   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.832x at 3.1333% · bond 3.953x tail 0.6 bp · settlements next 5d 500.0 · non-resident 57.5%",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.25,
@@ -201,11 +201,11 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_LSAP_UNWIND",
-  "OMO_TAKEUP_SURGE"
+  "OMO_TAKEUP_SURGE",
+  "OMO_DEPENDENCE"
  ],
  "overlays": {
-  "OMO_DEPENDENCE_pending_persistence": true,
-  "OMO_DEPENDENCE": "OMO_DEPENDENCE_LOW",
+  "OMO_DEPENDENCE": "OMO_DEPENDENCE_HIGH",
   "OMO_DEPENDENCE_conditions_met": 2
  },
  "inputs": {
@@ -394,7 +394,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_thu",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
