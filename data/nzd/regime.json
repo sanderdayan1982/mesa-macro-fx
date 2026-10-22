@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-21T11:21:36+00:00",
- "as_of": "2026-10-20",
+ "generated_at": "2026-10-22T03:02:04+00:00",
+ "as_of": "2026-10-22",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -27,7 +27,7 @@
    "score": 1.0,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-10-20",
+   "as_of": "2026-10-22",
    "detail": "settlement cash 29525.0 (5d 23.0, 20d 1564.0, SAFE) · OMO stock 4560.0 (15.4%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -46,7 +46,7 @@
     "effective_score": 1.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-20",
+    "as_of": "2026-10-22",
     "recent": [
      [
       "2026-10-16",
@@ -58,6 +58,10 @@
      ],
      [
       "2026-10-20",
+      1.0
+     ],
+     [
+      "2026-10-22",
       1.0
      ]
     ],
@@ -91,8 +95,8 @@
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-20",
-   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.832x at 3.1333% · bond 3.953x tail 0.6 bp · settlements next 5d 500.0 · non-resident 57.5%",
+   "as_of": "2026-10-22",
+   "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.832x at 3.1333% · bond 3.953x tail 0.6 bp · settlements next 5d 250.0 · non-resident 57.5%",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.25,
@@ -110,12 +114,8 @@
     "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-20",
+    "as_of": "2026-10-22",
     "recent": [
-     [
-      "2026-10-13",
-      0.0
-     ],
      [
       "2026-10-15",
       0.0
@@ -130,6 +130,10 @@
      ],
      [
       "2026-10-20",
+      0.0
+     ],
+     [
+      "2026-10-22",
       0.0
      ]
     ],
@@ -196,18 +200,20 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "PHASE_LSAP_UNWIND"
+  "PHASE_LSAP_UNWIND",
+  "OMO_TAKEUP_SURGE"
  ],
  "overlays": {
+  "OMO_DEPENDENCE_pending_persistence": true,
   "OMO_DEPENDENCE": "OMO_DEPENDENCE_LOW",
-  "OMO_DEPENDENCE_conditions_met": 1
+  "OMO_DEPENDENCE_conditions_met": 2
  },
  "inputs": {
   "reserves_level": "SAFE",
   "reserves_in_range": false,
   "reserves_above_range": true,
   "spread_level": "WATCH",
-  "spread_bps": 28.0,
+  "spread_bps": 33.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -249,8 +255,8 @@
    "id": "L2",
    "name": "Reserve scarcity building",
    "bias": "RESERVE SCARCITY",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [
@@ -268,7 +274,7 @@
     },
     {
      "condition": "central_bank.omo_takeup_wow level >= WATCH",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -388,7 +394,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_thu",
   "backfill": false,
   "errors": []
  }
