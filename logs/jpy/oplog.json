@@ -1,6 +1,109 @@
 {
  "entries": [
   {
+   "timestamp": "2026-10-22T02:47:00+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 3
+   }
+  },
+  {
+   "timestamp": "2026-10-22T02:47:00+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "ad48a561a3e5fed7",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 5,
+     "fiscal": 3,
+     "general": 21
+    }
+   }
+  },
+  {
+   "timestamp": "2026-10-22T02:46:59+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "jsda_tokyo_repo_rate: failed after 3 tries: HTTP 429 (throttled) for https://www.jsda.or.jp/shiryoshitsu/toukei/trr/files/trr.xls"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-10-22T02:46:59+00:00",
+   "type": "JPY_V04",
+   "category": "system",
+   "details": {
+    "daily_new": 0,
+    "daily_files": 257,
+    "ops_new": 0,
+    "ops": {
+     "last_date": "2026-10-21",
+     "lag_days": 1,
+     "ope_files": 256,
+     "daily_files": 257
+    },
+    "mei": {
+     "asof": "2026-10-09",
+     "published": "2026-10-14",
+     "total": 5016185.0,
+     "unmapped": [
+      [
+       "2\u5e74\u50b5",
+       489,
+       862.0
+      ]
+     ],
+     "jgb_records": 2609,
+     "tbill_records": 1403,
+     "mof_cut": "2026-09-01",
+     "mof_lag_days": 51
+    },
+    "juqp": "2026-10",
+    "net_issuance_last": [
+     "2026-09-01",
+     583.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-10-22T02:46:37+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "jsda_tokyo_repo_rate",
+    "error": "failed after 3 tries: HTTP 429 (throttled) for https://www.jsda.or.jp/shiryoshitsu/toukei/trr/files/trr.xls"
+   }
+  },
+  {
+   "timestamp": "2026-10-22T02:46:14+00:00",
+   "type": "STRUCTURE_HASH",
+   "category": "system",
+   "details": {
+    "jd_latest": "2026-10-21",
+    "hash": "7f348cffb1e96270"
+   }
+  },
+  {
    "timestamp": "2026-10-21T14:35:22+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -8255,145 +8358,6 @@
     "errors": [],
     "regime": "NEUTRAL",
     "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-25T08:05:13+00:00",
-   "type": "JPY_V04",
-   "category": "system",
-   "details": {
-    "daily_new": 0,
-    "daily_files": 239,
-    "ops_new": 2,
-    "ops": {
-     "last_date": "2026-09-25",
-     "lag_days": 0,
-     "ope_files": 239,
-     "daily_files": 239
-    },
-    "mei": {
-     "asof": "2026-09-18",
-     "published": "2026-09-25",
-     "total": 5182009.0,
-     "unmapped": [
-      [
-       "5\u5e74\u50b5",
-       187,
-       5365.0
-      ],
-      [
-       "10\u5e74\u30af\u30e9\u30a4\u30e1\u30fc\u30c8\u30fb\u30c8\u30e9\u30f3\u30b8\u30b7\u30e7\u30f3\u56fd\u50b5",
-       5,
-       590.0
-      ]
-     ],
-     "jgb_records": 2602,
-     "tbill_records": 1397,
-     "mof_cut": "2026-08-03",
-     "mof_lag_days": 53
-    },
-    "juqp": "2026-09",
-    "net_issuance_last": [
-     "2026-08-03",
-     8265.4
-    ]
-   }
-  },
-  {
-   "timestamp": "2026-09-25T08:04:42+00:00",
-   "type": "STRUCTURE_HASH",
-   "category": "system",
-   "details": {
-    "jd_latest": "2026-09-24",
-    "hash": "6b68f0167ec1f824"
-   }
-  },
-  {
-   "timestamp": "2026-09-24T14:18:54+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
-    "errors": [],
-    "messages": 1
-   }
-  },
-  {
-   "timestamp": "2026-09-24T14:18:54+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "b41476da25e2206a",
-    "degraded": [],
-    "streaks": {
-     "central_bank": 4,
-     "fiscal": 1,
-     "general": 3
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-24T14:18:53+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily_provisional",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-24T14:18:53+00:00",
-   "type": "JPY_V04",
-   "category": "system",
-   "details": {
-    "daily_new": 0,
-    "daily_files": 239,
-    "ops_new": 0,
-    "ops": {
-     "last_date": "2026-09-24",
-     "lag_days": 0,
-     "ope_files": 238,
-     "daily_files": 239
-    },
-    "mei": {
-     "asof": "2026-09-10",
-     "published": "2026-09-14",
-     "total": 5174705.0,
-     "unmapped": [
-      [
-       "5\u5e74\u50b5",
-       187,
-       4157.0
-      ],
-      [
-       "10\u5e74\u30af\u30e9\u30a4\u30e1\u30fc\u30c8\u30fb\u30c8\u30e9\u30f3\u30b8\u30b7\u30e7\u30f3\u56fd\u50b5",
-       5,
-       303.0
-      ]
-     ],
-     "jgb_records": 2602,
-     "tbill_records": 1397,
-     "mof_cut": "2026-08-03",
-     "mof_lag_days": 52
-    },
-    "juqp": "2026-09",
-    "net_issuance_last": [
-     "2026-08-03",
-     8265.4
-    ]
    }
   }
  ]

@@ -1,15 +1,15 @@
 {
  "currency": "JPY",
- "generated_at": "2026-10-21T14:35:21+00:00",
- "as_of": "2026-10-20",
+ "generated_at": "2026-10-22T02:46:59+00:00",
+ "as_of": "2026-10-21",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.088,
+ "weighted_score": 0.294,
  "block_scores": {
-  "central_bank": 0.0,
+  "central_bank": 1.0,
   "rates": 0.0,
-  "fiscal": 0.44,
+  "fiscal": -0.28,
   "banking": 0.0
  },
  "weights": {
@@ -24,11 +24,11 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": 0.0,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
-   "as_of": "2026-10-20",
-   "detail": "CAB 4184000.0 · excess/required 27.78x (SAFE) · ΔCAB d/d 10600.0 · 20d 93500.0 (SAFE) · JGB purchases vs plan -0.412 · CLF 0.0",
+   "score": 1.0,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-10-21",
+   "detail": "CAB 4170800.0 · excess/required 27.72x (SAFE) · ΔCAB d/d -13200.0 · 20d 68100.0 (SAFE) · JGB purchases vs plan -0.452 · CLF 0.0",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.75,
@@ -43,15 +43,11 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": 0.0,
+    "effective_score": 0.167,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-20",
+    "as_of": "2026-10-21",
     "recent": [
-     [
-      "2026-10-13",
-      0.0
-     ],
      [
       "2026-10-14",
       0.0
@@ -71,6 +67,10 @@
      [
       "2026-10-20",
       0.0
+     ],
+     [
+      "2026-10-21",
+      1.0
      ]
     ],
     "pending_days": null
@@ -81,7 +81,7 @@
     "flow": {
      "cab_20d_level": 0.25,
      "cab_dod_level": 0.0,
-     "balance_sheet_band": -1.0
+     "balance_sheet_band": 1.0
     },
     "level": {
      "excess_to_required": 0.75
@@ -91,19 +91,19 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.0,
-    "score_flows_only": -0.38
+    "score_v02": 1.0,
+    "score_flows_only": 0.62
    }
   },
   "fiscal": {
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.7304,
+   "score": 1.7359,
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-10-21",
-   "detail": "flow 10800.0 (Z 0.5812) · 5d 81500.0 · 20d 70200.0 (BAND_HIGH) · FEFSA/py 0.83 · BTC super-long 5.844",
+   "detail": "flow -12900.0 (Z -0.3689) · 5d 72400.0 · 20d 50500.0 (BAND_HIGH) · FEFSA/py 0.83 · BTC super-long 5.844",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.6459,
@@ -124,7 +124,7 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 1.451,
+    "effective_score": 1.452,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-10-21",
@@ -151,7 +151,7 @@
      ],
      [
       "2026-10-21",
-      1.7304
+      1.7359
      ]
     ],
     "pending_days": null,
@@ -161,7 +161,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": 0.44
+     "fiscal_flow_z": -0.28
     },
     "level": {},
     "weights": {},
@@ -169,8 +169,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": 0.44,
-    "score_flows_only": 0.44
+    "score_v02": -0.28,
+    "score_flows_only": -0.28
    },
    "engine": "0.4",
    "component": {
@@ -185,34 +185,30 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": 72400.0,
-    "denominator": 4184000.0,
-    "denominator_date": "2026-10-20",
-    "today": "2026-10-21",
+    "denominator": 4170800.0,
+    "denominator_date": "2026-10-21",
+    "today": "2026-10-22",
     "note": null
    },
    "v03_shadow": {
-    "regime": "INJECTION",
-    "score": 0.44,
-    "raw_regime": "INJECTION",
+    "regime": "NEUTRAL",
+    "score": -0.28,
+    "raw_regime": "NEUTRAL",
     "cuts": {
      "injection_enter": 0.24,
      "injection_exit": 0.13,
      "drain_enter": -0.32,
      "drain_exit": -0.14
     },
-    "as_of": "2026-10-20",
+    "as_of": "2026-10-22",
     "state": {
-     "confirmed": "INJECTION",
-     "raw": "INJECTION",
-     "effective_score": 0.173,
+     "confirmed": "NEUTRAL",
+     "raw": "NEUTRAL",
+     "effective_score": 0.073,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-20",
+     "as_of": "2026-10-22",
      "recent": [
-      [
-       "2026-10-14",
-       0.02
-      ],
       [
        "2026-10-16",
        0.06
@@ -220,6 +216,10 @@
       [
        "2026-10-20",
        0.44
+      ],
+      [
+       "2026-10-22",
+       -0.28
       ]
      ],
      "pending_days": null
@@ -230,8 +230,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.176,
-   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 116 weeks < 150); dual score +0.18 shown for context",
+   "score": 0.488,
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 116 weeks < 150); dual score +0.49 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -285,7 +285,7 @@
   "reserves_in_range": false,
   "reserves_above_range": true,
   "spread_level": "WATCH",
-  "spread_bps": -2.2,
+  "spread_bps": -2.3,
   "friction_confirmed": false
  },
  "rules": {
@@ -491,8 +491,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily_provisional",
+  "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "jsda_tokyo_repo_rate: failed after 3 tries: HTTP 429 (throttled) for https://www.jsda.or.jp/shiryoshitsu/toukei/trr/files/trr.xls"
+  ]
  }
 }
