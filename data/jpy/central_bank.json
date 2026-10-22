@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-10-22T02:46:46+00:00",
+ "generated_at": "2026-10-22T04:04:23+00:00",
  "as_of": "2026-10-21",
  "equivalence_quality": "high",
  "equivalence_note": "DAILY current account balances, excess reserves, required reserves and market operations (T+1 final, same-day provisional) plus a full balance sheet every ten days. Closest G8 analogue to the Fed's daily data.",
@@ -3435,13 +3435,13 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 7229.0,
+   "value": 6946.0,
    "date": "2026-10-22",
    "prev_value": 268.0,
    "prev_date": "2026-10-21",
-   "change_abs": 6961.0,
-   "change_pct": 2597.3881,
-   "zscore": 2.3546,
+   "change_abs": 6678.0,
+   "change_pct": 2491.791,
+   "zscore": 2.2521,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -3497,7 +3497,7 @@
     4151.0,
     -26.0,
     268.0,
-    7229.0
+    6946.0
    ],
    "high_low": {
     "high": 7586.0,
@@ -3516,18 +3516,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -112.0,
-   "date": "2026-10-21",
-   "prev_value": -382.0,
-   "prev_date": "2026-10-20",
-   "change_abs": 270.0,
-   "change_pct": 70.6806,
-   "zscore": 0.8628,
+   "value": -283.0,
+   "date": "2026-10-22",
+   "prev_value": -112.0,
+   "prev_date": "2026-10-21",
+   "change_abs": -171.0,
+   "change_pct": -152.6786,
+   "zscore": 0.3811,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -670.0,
     -1081.0,
     -331.0,
     -604.0,
@@ -3578,7 +3577,8 @@
     -419.0,
     -356.0,
     -382.0,
-    -112.0
+    -112.0,
+    -283.0
    ],
    "high_low": {
     "high": -9.0,
@@ -3586,7 +3586,7 @@
     "low": -1553.0,
     "low_date": "2026-09-24"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -4124,13 +4124,13 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 12041.0,
+   "value": 11758.0,
    "date": "2026-10-22",
    "prev_value": 4453.0,
    "prev_date": "2026-10-21",
-   "change_abs": 7588.0,
-   "change_pct": 170.402,
-   "zscore": 1.8278,
+   "change_abs": 7305.0,
+   "change_pct": 164.0467,
+   "zscore": 1.7683,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -4186,7 +4186,7 @@
     -3767.0,
     -3875.0,
     4453.0,
-    12041.0
+    11758.0
    ],
    "high_low": {
     "high": 14671.0,
@@ -4200,11 +4200,15 @@
   },
   "ops_calendar_next_4w": {
    "label": "Operation end dates next 4 weeks (− repayments of funds-supplying ops, + SLF repurchases)",
-   "value": 2.0,
+   "value": 285.0,
    "unit": "JPY 100m (display: tn = 10^12)",
    "status": "fresh",
    "date": "2026-10-22",
    "calendar": [
+    [
+     "2026-10-23",
+     283.0
+    ],
     [
      "2026-10-30",
      2.0
@@ -4213,11 +4217,11 @@
   },
   "ops_data_cut": {
    "label": "Last operations file parsed",
-   "value": 1,
-   "cut_date": "2026-10-21",
+   "value": 0,
+   "cut_date": "2026-10-22",
    "status": "fresh",
    "date": "2026-10-22",
-   "note": "ope files: 256; daily files: 257"
+   "note": "ope files: 257; daily files: 257"
   }
  },
  "signals": {
@@ -4304,7 +4308,7 @@
    "mode": "mean2",
    "level_weight": 1.0,
    "flow": {
-    "ops_net_5d_pct": 0.2887,
+    "ops_net_5d_pct": 0.2819,
     "ops_cash_5d_pct": 0.0791,
     "cab_20d_level": 0.25,
     "cab_dod_level": 0.0,
@@ -4316,8 +4320,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.65,
-   "score_flows_only": 0.65,
+   "score_v02": 0.64,
+   "score_flows_only": 0.64,
    "note": "shadow (J4): operations by operation (face) + 金融調節 cash line, 5 sessions in % of 当座預金残高; cuts by the v0.4 replay"
   }
  },
