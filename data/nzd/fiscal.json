@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-22T08:21:28+00:00",
+ "generated_at": "2026-10-22T09:11:45+00:00",
  "as_of": "2026-10-22",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -2342,11 +2342,21 @@
   },
   "issuance_ahead_5d": {
    "label": "Tender settlements in the next 5 business days (known drain)",
-   "value": 0,
+   "value": 250.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-22",
-   "items": [],
+   "items": [
+    {
+     "number": "1894",
+     "lines": "",
+     "volume": 250.0,
+     "announcement": "2026-10-23",
+     "tender": "2026-10-27",
+     "settlement": "2026-10-28",
+     "kind": "tbill"
+    }
+   ],
    "level": "SAFE"
   },
   "non_resident_share": {
@@ -3035,14 +3045,14 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 900.0,
+   "value": 1150.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-22",
    "calendar": [
     [
      "2026-10-28",
-     450.0
+     700.0
     ],
     [
      "2026-11-03",
@@ -3192,7 +3202,7 @@
    "score_v02": 0.0,
    "score_flows_only": 0.0
   },
-  "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.832x at 3.1333% · bond 3.907x tail 0.3 bp · settlements next 5d 0 · non-resident 57.5%",
+  "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.832x at 3.1333% · bond 3.907x tail 0.3 bp · settlements next 5d 250.0 · non-resident 57.5%",
   "alerts": [
    {
     "metric": "govt_cash_influence",
@@ -4374,6 +4384,15 @@
   ],
   "upcoming": [
    {
+    "number": "1894",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-10-23",
+    "tender": "2026-10-27",
+    "settlement": "2026-10-28",
+    "kind": "tbill"
+   },
+   {
     "number": "1015",
     "lines": "",
     "volume": 450.0,
@@ -4665,9 +4684,9 @@
     "score": 0.5
    },
    {
-    "date": "2026-07-31",
-    "label": "INJECTION",
-    "score": 0.5
+    "date": "2026-08-31",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-08-31",
