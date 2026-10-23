@@ -1,13 +1,13 @@
 {
  "currency": "CAD",
- "generated_at": "2026-10-23T00:05:49+00:00",
- "as_of": "2026-10-14",
+ "generated_at": "2026-10-23T19:01:12+00:00",
+ "as_of": "2026-10-21",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.035,
+ "weighted_score": -0.001,
  "block_scores": {
-  "central_bank": 0.09,
+  "central_bank": 0.01,
   "rates": 0.25,
   "fiscal": 0.41,
   "banking": -1.5
@@ -24,10 +24,10 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.09,
+   "score": 0.01,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-14",
+   "as_of": "2026-10-21",
    "detail": "NetLiq NEUTRAL · reserves SAFE (out of range) · phase NORMALIZATION",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -43,18 +43,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.1,
+    "effective_score": 0.05,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-21",
     "recent": [
-     [
-      "2026-10-07",
-      -0.29
-     ],
      [
       "2026-10-14",
       0.09
+     ],
+     [
+      "2026-10-21",
+      0.01
      ]
     ],
     "pending_days": null
@@ -64,7 +64,7 @@
     "level_weight": 1.0,
     "flow": {
      "net_liquidity_band": 0.0,
-     "reserves_wow": 0.13935999999999998
+     "reserves_wow": 0.0126
     },
     "level": {
      "reserves_vs_range": 0.0
@@ -74,19 +74,19 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.09,
-    "score_flows_only": 0.09
+    "score_v02": 0.01,
+    "score_flows_only": 0.01
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -1.1114,
+   "score": 0.7006,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-14",
-   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check -900.0",
+   "as_of": "2026-10-21",
+   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check 568.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
@@ -107,18 +107,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.102,
+    "effective_score": -0.205,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-21",
     "recent": [
-     [
-      "2026-10-07",
-      1.316
-     ],
      [
       "2026-10-14",
       -1.1114
+     ],
+     [
+      "2026-10-21",
+      0.7006
      ]
     ],
     "pending_days": null,
@@ -151,9 +151,9 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -900.0,
-    "denominator": 80977.0,
-    "denominator_date": "2026-10-14",
+    "raw": 568.0,
+    "denominator": 81079.0,
+    "denominator_date": "2026-10-21",
     "today": "2026-10-23",
     "note": null
    },
@@ -167,21 +167,21 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-21",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
      "effective_score": 0.41,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-14",
+     "as_of": "2026-10-21",
      "recent": [
       [
-       "2026-10-07",
+       "2026-10-14",
        0.41
       ],
       [
-       "2026-10-14",
+       "2026-10-21",
        0.41
       ]
      ],
@@ -193,8 +193,8 @@
    "regime": "FLOOR_FRICTION",
    "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
-   "score": 0.218,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.22 shown for context",
+   "score": 0.17,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.17 shown for context",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -224,7 +224,7 @@
    ],
    "agreement_only": true,
    "era_start": "2020-03-23",
-   "era_weeks": 342,
+   "era_weeks": 343,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -418,7 +418,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
