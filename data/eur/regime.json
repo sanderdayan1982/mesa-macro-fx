@@ -1,6 +1,6 @@
 {
  "currency": "EUR",
- "generated_at": "2026-10-23T18:32:44+00:00",
+ "generated_at": "2026-10-26T08:54:22+00:00",
  "as_of": "2026-10-22",
  "config_version": "0.4.1",
  "regime": "LIQUIDITY_DRAIN",
@@ -102,10 +102,10 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -1.0756,
+   "score": -1.2066,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-22",
+   "as_of": "2026-10-23",
    "detail": "govt deposits 93146.0 M (Δw -1577.0, p53.66) · impulse 4w -2520.0 (p28.95) · 13w 9909.0 · deficit -3.0627% GDP (LARGE DEFICIT (injection)) · DE b/c 1.799 (NORMAL, avg26 1.66) · TARGET Δ3m -28939.4 · rule NEUTRAL",
    "raw_regime": "DRAIN",
    "cuts": {
@@ -127,15 +127,11 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.549,
+    "effective_score": -0.99,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-22",
+    "as_of": "2026-10-23",
     "recent": [
-     [
-      "2026-10-15",
-      1.4362
-     ],
      [
       "2026-10-16",
       -0.0675
@@ -155,6 +151,10 @@
      [
       "2026-10-22",
       -1.0756
+     ],
+     [
+      "2026-10-23",
+      -1.2066
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -22610.407,
+    "raw": -25362.96,
     "denominator": 2102066.0,
     "denominator_date": "2026-10-22",
-    "today": "2026-10-23",
+    "today": "2026-10-26",
     "note": null
    },
    "v03_shadow": {
@@ -445,8 +445,12 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly",
+  "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
+   "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
+   "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
+  ]
  }
 }
