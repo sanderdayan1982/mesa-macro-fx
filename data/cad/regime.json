@@ -1,16 +1,16 @@
 {
  "currency": "CAD",
- "generated_at": "2026-10-23T23:57:20+00:00",
+ "generated_at": "2026-10-26T11:48:50+00:00",
  "as_of": "2026-10-21",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": -0.001,
+ "weighted_score": 0.249,
  "block_scores": {
   "central_bank": 0.01,
   "rates": 0.25,
   "fiscal": 0.41,
-  "banking": -1.5
+  "banking": 1.0
  },
  "weights": {
   "central_bank": 0.45,
@@ -154,7 +154,7 @@
     "raw": 568.0,
     "denominator": 81079.0,
     "denominator_date": "2026-10-21",
-    "today": "2026-10-23",
+    "today": "2026-10-26",
     "note": null
    },
    "v03_shadow": {
@@ -236,7 +236,6 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "TRANSMISSION_FAILURE",
   "PHASE_NORMALIZATION"
  ],
  "overlays": {},
@@ -395,8 +394,8 @@
    "id": "L6",
    "name": "Transmission Break",
    "bias": "TRANSMISSION BREAK",
-   "active": true,
-   "conditions_met": 2,
+   "active": false,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -404,7 +403,7 @@
    "details": [
     {
      "condition": "banking.transmission_signal == RED",
-     "met": true
+     "met": false
     },
     {
      "condition": "rates.corra_dispersion_bps level >= WATCH",
@@ -412,13 +411,13 @@
     },
     {
      "condition": "banking.deposits_public mom_pct zscore <= -1",
-     "met": true
+     "met": false
     }
    ]
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "monthly",
   "backfill": false,
   "errors": []
  }
