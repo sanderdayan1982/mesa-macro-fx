@@ -566,6 +566,20 @@ def main_activation() -> int:
     check(len(gate_ev) == 1 and "INVENTARIO" in gate_ev[0] and "PUERTA" not in gate_ev[0], "notify: the anti-invention inventory is never called 'puerta'", fails)
     dg = N.digest()
     check(len(dg) == 1 and len(dg[0]) <= 3900 and "<pre>" in dg[0] and "<!DOCTYPE" not in dg[0] and dg[0].count("\n") >= 12, "notify: the digest is ONE message ≤ 3900 chars with the eight rows", fails)
+    # A1 structural labels are whole tokens (EUR 2026-10-22: replace("4 semanas") ate the 4 inside "214 semanas")
+    from . import gate as G
+    import hashlib as _hl
+    def _a1_out(narr, structural, numbers):
+        return {"narrative": narr, "numbers": [{"token": t, "field": "t"} for t in numbers],
+                "structural": structural, "daily_log": {"F5": "DRENAJE DE LIQUIDEZ"},
+                "regime": "LIQUIDITY_DRAIN", "hash": _hl.sha256(narr.encode("utf-8")).hexdigest()[:16],
+                "verbs": [], "glossary": {}, "blocks_meta": {}, "streaks": {}}
+    g214 = G.check(_a1_out("cortes de era de 214 semanas y mes (4 semanas).", ["4 semanas"], ["214"]))
+    check("A1 untraced number: '21'" not in g214["failures"] and g214["pass"],
+          "gate A1: label '4 semanas' does not eat the 4 inside '214 semanas' (era_weeks stays traced)", fails)
+    g4 = G.check(_a1_out("mes (4 semanas) sin cifra de era.", ["4 semanas"], []))
+    check(g4["pass"] and "A1 untraced number: '4'" not in g4["failures"],
+          "gate A1: isolated label '4 semanas' is still stripped", fails)
     main_jefe_v2(fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0
