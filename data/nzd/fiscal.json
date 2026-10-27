@@ -3,13 +3,13 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-27T08:33:30+00:00",
+ "generated_at": "2026-10-27T09:39:09+00:00",
  "as_of": "2026-10-22",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
  "source_health": {
-  "status": "stale",
-  "series_loaded": 18,
+  "status": "fresh",
+  "series_loaded": 19,
   "series_expected": 19,
   "last_fetch_ok": true,
   "errors": [],
@@ -994,9 +994,9 @@
    "usd_analog": null,
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "event",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
+   "status": "fresh",
+   "value": 450.0,
+   "date": "2026-10-01",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -1004,16 +1004,18 @@
    "zscore": null,
    "percentile": null,
    "window": null,
-   "level": "NO DATA",
-   "sparkline": [],
+   "level": "SAFE",
+   "sparkline": [
+    450.0
+   ],
    "high_low": {
-    "high": null,
-    "high_date": null,
-    "low": null,
-    "low_date": null
+    "high": 450.0,
+    "high_date": "2026-10-01",
+    "low": 450.0,
+    "low_date": "2026-10-01"
    },
-   "age_days": null,
-   "confidence": 0,
+   "age_days": 26,
+   "confidence": 100,
    "latest_outlier": false
   },
   "nzgb_non_resident_holdings": {
@@ -3043,7 +3045,7 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 550.0,
+   "value": 1000.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-27",
@@ -3051,6 +3053,10 @@
     [
      "2026-10-28",
      550.0
+    ],
+    [
+     "2026-11-03",
+     450.0
     ]
    ]
   },
@@ -4385,6 +4391,15 @@
     "tender": "2026-10-27",
     "settlement": "2026-10-28",
     "kind": "tbill"
+   },
+   {
+    "number": "1015",
+    "lines": "",
+    "volume": 450.0,
+    "announcement": "2026-10-27",
+    "tender": "2026-10-29",
+    "settlement": "2026-11-03",
+    "kind": "bond"
    }
   ],
   "signal_log": [
@@ -4599,9 +4614,9 @@
     "score": 0.5
    },
    {
-    "date": "2026-07-31",
-    "label": "INJECTION",
-    "score": 0.5
+    "date": "2026-08-31",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-08-31",
