@@ -56,7 +56,7 @@ def check(out: dict, blocks: Optional[dict] = None, regime: Optional[dict] = Non
             fails.append("A1 date not in JSON: %s" % d)
     body = DATE.sub(" ", body)
     for lit in out.get("structural") or []:
-        body = body.replace(lit, " ")
+        body = re.sub(r"(?<![\w.,])" + re.escape(lit) + r"(?!\w)", " ", body)
     for pat in STRUCTURAL:
         body = re.sub(pat, " ", body)
     for m in NUM.finditer(body):
