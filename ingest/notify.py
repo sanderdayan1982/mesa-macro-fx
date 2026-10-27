@@ -331,22 +331,9 @@ def digest(root: str = ROOT) -> List[str]:
         body += "jefe de mesa: sin ranking publicado\n"
     body += ("<b>Excepciones (%d)</b>\n%s\n" % (len(exc), "\n".join("• " + esc(x) for x in exc))) if exc else "<b>Sin excepciones</b>: 32 bloques frescos, sin errores de fuente.\n"
     body += "inventario anti-invención A1–A5: %d/8 PASA · ⧗ otro reloj (Tesoro v0.3 vs fiscal v0.4) · LAG por cadencia · cob.parcial = equivalencia media-baja" % gates_ok
-    liq_lines = []
-    rep_lines = []
-    for c in CCYS:
-        lb = snaps[c].get("liquidity_bulletin") or {}
-        if lb.get("cb_message"):
-            liq_lines.append("• " + esc(lb["cb_message"]))
-        if lb.get("treasury_message"):
-            liq_lines.append("• " + esc(lb["treasury_message"]))
-        for act in snaps[c].get("auto_repair_actions") or []:
-            rep_lines.append("• " + esc(act))
-    msgs = [head + table + "\n" + body]
-    if liq_lines:
-        msgs.append("<b>FLUJOS OPERATIVOS DE LIQUIDEZ MMT (BC Y TESOROS G8)</b>\n" + "\n".join(liq_lines))
-    if rep_lines:
-        msgs.append("<b>AGENTE DOCTOR · AUTO-REPARACIÓN Y SUSTITUCIÓN DE FEEDS</b>\n" + "\n".join(rep_lines))
-    return msgs
+    # The blotter is ONE Telegram message (≤ 3900). Liquidity narratives and auto-repair
+    # stay in agent.json / events_for() / agent_doctor — they do not split the 08:00 map.
+    return [head + table + "\n" + body]
 
 
 # ───────────────────────────── transport ─────────────────────────────
