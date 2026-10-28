@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-10-28T06:07:36+00:00",
+ "generated_at": "2026-10-28T10:22:31+00:00",
  "as_of": "2026-10-27",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -509,18 +509,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 2.832,
-   "date": "2026-10-20",
-   "prev_value": 2.92,
-   "prev_date": "2026-10-13",
-   "change_abs": -0.088,
-   "change_pct": -3.0137,
-   "zscore": -0.0728,
+   "value": 0.44,
+   "date": "2026-10-27",
+   "prev_value": 2.832,
+   "prev_date": "2026-10-20",
+   "change_abs": -2.392,
+   "change_pct": -84.4633,
+   "zscore": -4.2254,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.46,
     3.2,
     2.18,
     2.2,
@@ -571,17 +570,18 @@
     3.08,
     2.912,
     2.92,
-    2.832
+    2.832,
+    0.44
    ],
    "high_low": {
     "high": 4.84,
     "high_date": "2026-04-21",
-    "low": 0.86,
-    "low_date": "2025-12-09"
+    "low": 0.44,
+    "low_date": "2026-10-27"
    },
-   "age_days": 8,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 1,
+   "confidence": 92,
+   "latest_outlier": true
   },
   "tbill_tender_yield": {
    "source_id": "NZDM:tbill_wavg_yield",
@@ -590,18 +590,17 @@
    "unit": "%",
    "frequency": "event",
    "status": "fresh",
-   "value": 3.1333,
-   "date": "2026-10-20",
-   "prev_value": 3.0712,
-   "prev_date": "2026-10-13",
-   "change_abs": 0.0621,
-   "change_pct": 2.022,
-   "zscore": 1.9268,
+   "value": 3.1919,
+   "date": "2026-10-27",
+   "prev_value": 3.1333,
+   "prev_date": "2026-10-20",
+   "change_abs": 0.0586,
+   "change_pct": 1.8702,
+   "zscore": 2.0016,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.68,
     2.61,
     2.4711,
     2.485,
@@ -652,15 +651,16 @@
     3.0838,
     3.06,
     3.0712,
-    3.1333
+    3.1333,
+    3.1919
    ],
    "high_low": {
-    "high": 3.14,
-    "high_date": "2026-09-22",
+    "high": 3.1919,
+    "high_date": "2026-10-27",
     "low": 2.36,
     "low_date": "2026-02-17"
    },
-   "age_days": 8,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -671,18 +671,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "event",
    "status": "fresh",
-   "value": 227.0,
-   "date": "2026-10-20",
-   "prev_value": 250.0,
-   "prev_date": "2026-10-13",
-   "change_abs": -23.0,
-   "change_pct": -9.2,
-   "zscore": 0.1212,
+   "value": 45.0,
+   "date": "2026-10-27",
+   "prev_value": 227.0,
+   "prev_date": "2026-10-20",
+   "change_abs": -182.0,
+   "change_pct": -80.1762,
+   "zscore": -4.2399,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    20.0,
     250.0,
     240.0,
     250.0,
@@ -733,17 +732,18 @@
     250.0,
     250.0,
     250.0,
-    227.0
+    227.0,
+    45.0
    ],
    "high_low": {
     "high": 250.0,
     "high_date": "2025-10-07",
-    "low": 20.0,
-    "low_date": "2025-09-30"
+    "low": 45.0,
+    "low_date": "2026-10-27"
    },
-   "age_days": 8,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 1,
+   "confidence": 92,
+   "latest_outlier": true
   },
   "bond_tender_coverage": {
    "source_id": "NZDM:bond_coverage",
@@ -1268,18 +1268,17 @@
    "unit": "ratio",
    "frequency": "event",
    "status": "fresh",
-   "value": 0.908,
-   "date": "2026-10-20",
-   "prev_value": 1.0,
-   "prev_date": "2026-10-13",
-   "change_abs": -0.092,
-   "change_pct": -9.2,
-   "zscore": 0.1212,
+   "value": 0.18,
+   "date": "2026-10-27",
+   "prev_value": 0.908,
+   "prev_date": "2026-10-20",
+   "change_abs": -0.728,
+   "change_pct": -80.1762,
+   "zscore": -4.2399,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.08,
     1.0,
     0.96,
     1.0,
@@ -1330,17 +1329,18 @@
     1.0,
     1.0,
     1.0,
-    0.908
+    0.908,
+    0.18
    ],
    "high_low": {
     "high": 1.0,
     "high_date": "2025-10-07",
-    "low": 0.08,
-    "low_date": "2025-09-30"
+    "low": 0.18,
+    "low_date": "2026-10-27"
    },
-   "age_days": 8,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 1,
+   "confidence": 92,
+   "latest_outlier": true
   },
   "tbill_1y_yield": {
    "source_id": "NZDM:tbill_1y_wavg",
@@ -1349,18 +1349,17 @@
    "unit": "%",
    "frequency": "event",
    "status": "fresh",
-   "value": 3.7075,
-   "date": "2026-10-20",
-   "prev_value": 3.6,
-   "prev_date": "2026-10-13",
-   "change_abs": 0.1075,
-   "change_pct": 2.9861,
-   "zscore": 2.087,
+   "value": 3.3615,
+   "date": "2026-10-27",
+   "prev_value": 3.7075,
+   "prev_date": "2026-10-20",
+   "change_abs": -0.346,
+   "change_pct": -9.3324,
+   "zscore": 0.4609,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.645,
     2.5425,
     2.443,
     2.4242,
@@ -1411,7 +1410,8 @@
     3.693,
     3.6176,
     3.6,
-    3.7075
+    3.7075,
+    3.3615
    ],
    "high_low": {
     "high": 3.7075,
@@ -1419,7 +1419,7 @@
     "low": 2.385,
     "low_date": "2025-11-11"
    },
-   "age_days": 8,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1892,18 +1892,17 @@
    "unit": "bps",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 38.3,
-   "date": "2026-10-20",
-   "prev_value": 32.1,
-   "prev_date": "2026-10-13",
-   "change_abs": 6.2,
-   "change_pct": 19.3146,
-   "zscore": 1.7287,
-   "percentile": 98.08,
+   "value": 44.2,
+   "date": "2026-10-27",
+   "prev_value": 38.3,
+   "prev_date": "2026-10-20",
+   "change_abs": 5.9,
+   "change_pct": 15.4047,
+   "zscore": 2.4527,
+   "percentile": 100.0,
    "window": null,
-   "level": "WATCH",
+   "level": "STRESS",
    "sparkline": [
-    -32.0,
     -39.0,
     -2.9,
     -1.5,
@@ -1954,22 +1953,23 @@
     33.4,
     31.0,
     32.1,
-    38.3
+    38.3,
+    44.2
    ],
    "high_low": {
-    "high": 39.3,
-    "high_date": "2026-09-01",
+    "high": 44.2,
+    "high_date": "2026-10-27",
     "low": -39.0,
     "low_date": "2025-10-07"
    },
-   "age_days": 8,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
     "levels": {
-     "WATCH_high": 27.94,
+     "WATCH_high": 29.89,
      "WATCH_low": -35.14,
      "STRESS_high": null,
      "STRESS_low": null
@@ -1986,18 +1986,17 @@
    "unit": "x",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 2.832,
-   "date": "2026-10-20",
-   "prev_value": 2.92,
-   "prev_date": "2026-10-13",
-   "change_abs": -0.088,
-   "change_pct": -3.0137,
-   "zscore": -0.0728,
-   "percentile": 61.54,
+   "value": 0.44,
+   "date": "2026-10-27",
+   "prev_value": 2.832,
+   "prev_date": "2026-10-20",
+   "change_abs": -2.392,
+   "change_pct": -84.4633,
+   "zscore": -4.2254,
+   "percentile": 0.0,
    "window": null,
-   "level": "SAFE",
+   "level": "WATCH",
    "sparkline": [
-    1.46,
     3.2,
     2.18,
     2.2,
@@ -2048,17 +2047,18 @@
     3.08,
     2.912,
     2.92,
-    2.832
+    2.832,
+    0.44
    ],
    "high_low": {
     "high": 4.84,
     "high_date": "2026-04-21",
-    "low": 0.86,
-    "low_date": "2025-12-09"
+    "low": 0.44,
+    "low_date": "2026-10-27"
    },
-   "age_days": 8,
-   "confidence": 100,
-   "latest_outlier": false,
+   "age_days": 1,
+   "confidence": 92,
+   "latest_outlier": true,
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -2068,7 +2068,7 @@
     "note": "capped at WATCH unless 2 of the last 3 tenders (N6)"
    },
    "in_range": null,
-   "secondary_level": "SAFE"
+   "secondary_level": "WATCH"
   },
   "bond_bid_to_cover": {
    "source_id": null,
@@ -2258,18 +2258,17 @@
    "unit": "ratio",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 0.908,
-   "date": "2026-10-20",
-   "prev_value": 1.0,
-   "prev_date": "2026-10-13",
-   "change_abs": -0.092,
-   "change_pct": -9.2,
-   "zscore": 0.1212,
+   "value": 0.18,
+   "date": "2026-10-27",
+   "prev_value": 0.908,
+   "prev_date": "2026-10-20",
+   "change_abs": -0.728,
+   "change_pct": -80.1762,
+   "zscore": -4.2399,
    "percentile": null,
    "window": null,
-   "level": "SAFE",
+   "level": "WATCH",
    "sparkline": [
-    0.08,
     1.0,
     0.96,
     1.0,
@@ -2320,17 +2319,18 @@
     1.0,
     1.0,
     1.0,
-    0.908
+    0.908,
+    0.18
    ],
    "high_low": {
     "high": 1.0,
     "high_date": "2025-10-07",
-    "low": 0.08,
-    "low_date": "2025-09-30"
+    "low": 0.18,
+    "low_date": "2026-10-27"
    },
-   "age_days": 8,
-   "confidence": 100,
-   "latest_outlier": false,
+   "age_days": 1,
+   "confidence": 92,
+   "latest_outlier": true,
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -2342,20 +2342,11 @@
   },
   "issuance_ahead_5d": {
    "label": "Tender settlements in the next 5 business days (known drain)",
-   "value": 550.0,
+   "value": 450.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-27",
    "items": [
-    {
-     "number": "1894",
-     "lines": "13 Jan 2027",
-     "volume": 100.0,
-     "announcement": "2026-10-23",
-     "tender": "2026-10-27",
-     "settlement": "2026-10-28",
-     "kind": "tbill"
-    },
     {
      "number": "1015",
      "lines": "",
@@ -2562,13 +2553,13 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 450.0,
+   "value": 495.0,
    "date": "2026-10-28",
    "prev_value": 0.0,
    "prev_date": "2026-10-27",
-   "change_abs": 450.0,
+   "change_abs": 495.0,
    "change_pct": null,
-   "zscore": 1.9021,
+   "zscore": 2.1622,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -2624,11 +2615,11 @@
     0.0,
     0.0,
     0.0,
-    450.0
+    495.0
    ],
    "high_low": {
-    "high": 450.0,
-    "high_date": "2026-08-18",
+    "high": 495.0,
+    "high_date": "2026-10-28",
     "low": 0.0,
     "low_date": "2026-08-20"
    },
@@ -2815,18 +2806,17 @@
    "unit": "ratio",
    "frequency": "daily",
    "status": "fresh",
-   "value": 3.897,
-   "date": "2026-10-22",
-   "prev_value": 2.927,
-   "prev_date": "2026-10-20",
-   "change_abs": 0.97,
-   "change_pct": 33.1397,
-   "zscore": 0.4963,
+   "value": 0.4,
+   "date": "2026-10-27",
+   "prev_value": 3.897,
+   "prev_date": "2026-10-22",
+   "change_abs": -3.497,
+   "change_pct": -89.7357,
+   "zscore": -4.4685,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    3.504,
     2.667,
     3.499,
     4.1,
@@ -2877,15 +2867,16 @@
     2.933,
     3.842,
     2.927,
-    3.897
+    3.897,
+    0.4
    ],
    "high_low": {
     "high": 5.244,
     "high_date": "2026-06-11",
-    "low": 1.783,
-    "low_date": "2026-06-09"
+    "low": 0.4,
+    "low_date": "2026-10-27"
    },
-   "age_days": 6,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2896,13 +2887,13 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -450.0,
+   "value": -495.0,
    "date": "2026-10-28",
    "prev_value": 0.0,
    "prev_date": "2026-10-27",
-   "change_abs": -450.0,
+   "change_abs": -495.0,
    "change_pct": null,
-   "zscore": -1.6149,
+   "zscore": -1.7802,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -2958,13 +2949,13 @@
     0.0,
     0.0,
     0.0,
-    -450.0
+    -495.0
    ],
    "high_low": {
     "high": 800.0,
     "high_date": "2026-08-26",
-    "low": -450.0,
-    "low_date": "2026-08-18"
+    "low": -495.0,
+    "low_date": "2026-10-28"
    },
    "age_days": 0,
    "confidence": 100,
@@ -2977,13 +2968,13 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -450.0,
+   "value": -495.0,
    "date": "2026-10-28",
    "prev_value": 703.0,
    "prev_date": "2026-10-27",
-   "change_abs": -1153.0,
-   "change_pct": -164.0114,
-   "zscore": -0.5361,
+   "change_abs": -1198.0,
+   "change_pct": -170.4125,
+   "zscore": -0.6075,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -3039,7 +3030,7 @@
     892.25,
     692.25,
     703.0,
-    -450.0
+    -495.0
    ],
    "high_low": {
     "high": 1219.095,
@@ -3054,7 +3045,7 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 450.0,
+   "value": 1450.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-10-28",
@@ -3062,6 +3053,22 @@
     [
      "2026-11-03",
      450.0
+    ],
+    [
+     "2026-11-04",
+     250.0
+    ],
+    [
+     "2026-11-11",
+     250.0
+    ],
+    [
+     "2026-11-18",
+     250.0
+    ],
+    [
+     "2026-11-25",
+     250.0
     ]
    ]
   },
@@ -3191,7 +3198,10 @@
   "traffic_light": "YELLOW",
   "score": 0.0,
   "label": "NEUTRAL",
-  "flags": [],
+  "flags": [
+   "TENDER_WEAK",
+   "TBILL_UNDERALLOCATED"
+  ],
   "components": {
    "mode": "sum",
    "level_weight": 1.0,
@@ -3207,7 +3217,7 @@
    "score_v02": 0.0,
    "score_flows_only": 0.0
   },
-  "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 2.832x at 3.1333% · bond 3.907x tail 0.3 bp · settlements next 5d 550.0 · non-resident 57.5%",
+  "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 0.44x at 3.1919% · bond 3.907x tail 0.3 bp · settlements next 5d 450.0 · non-resident 57.5%",
   "alerts": [
    {
     "metric": "govt_cash_influence",
@@ -3237,8 +3247,8 @@
    },
    {
     "metric": "tbill_bid_to_cover",
-    "level": "SAFE",
-    "value": 2.832,
+    "level": "WATCH",
+    "value": 0.44,
     "threshold": {
      "WATCH": 2.0,
      "STRESS": 1.5
@@ -3270,8 +3280,8 @@
    },
    {
     "metric": "tbill_allocation",
-    "level": "SAFE",
-    "value": 0.908,
+    "level": "WATCH",
+    "value": 0.18,
     "threshold": {
      "WATCH": 0.75,
      "STRESS": 0.5
@@ -3281,10 +3291,10 @@
    },
    {
     "metric": "tbill_yield_minus_ocr_bps",
-    "level": "WATCH",
-    "value": 38.3,
+    "level": "STRESS",
+    "value": 44.2,
     "threshold": {
-     "WATCH_high": 27.94,
+     "WATCH_high": 29.89,
      "WATCH_low": -35.14,
      "STRESS_high": null,
      "STRESS_low": null
@@ -3297,7 +3307,7 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": -1.5632,
+    "net_issuance_5d_pct": -1.7195,
     "residual_5d_pct": -10.56
    },
    "level": {},
@@ -3695,57 +3705,6 @@
    ]
   },
   "tenders": [
-   {
-    "tender_date": "2026-09-03",
-    "maturity": "2030-05-15",
-    "coupon": 0.045,
-    "offered": 275.0,
-    "bids_n": 48.0,
-    "success_n": 18.0,
-    "bid": 1115.0,
-    "accepted": 275.0,
-    "coverage": 4.0545,
-    "low_acc": 4.015,
-    "high_acc": 4.0275,
-    "wavg": 4.0227,
-    "tender_no": "1007",
-    "kind": "bond",
-    "source": "xlsx"
-   },
-   {
-    "tender_date": "2026-09-03",
-    "maturity": "2037-04-15",
-    "coupon": 0.0275,
-    "offered": 175.0,
-    "bids_n": 50.0,
-    "success_n": 13.0,
-    "bid": 767.0,
-    "accepted": 175.0,
-    "coverage": 4.3829,
-    "low_acc": 4.8725,
-    "high_acc": 4.8875,
-    "wavg": 4.8797,
-    "tender_no": "1007",
-    "kind": "bond",
-    "source": "xlsx"
-   },
-   {
-    "tender_date": "2026-09-08",
-    "maturity": "2026-11-18",
-    "coupon": null,
-    "offered": 100.0,
-    "bids_n": 8.0,
-    "success_n": 3.0,
-    "bid": 255.0,
-    "accepted": 100.0,
-    "coverage": 2.55,
-    "low_acc": 2.875,
-    "high_acc": 2.88,
-    "wavg": 2.8775,
-    "tender_no": "1887",
-    "kind": "tbill",
-    "source": "xlsx"
-   },
    {
     "tender_date": "2026-09-08",
     "maturity": "2027-03-10",
@@ -4385,16 +4344,97 @@
     "high_acc": 4.9975,
     "wavg": 4.9948,
     "source": "html"
+   },
+   {
+    "tender_date": "2026-10-27",
+    "settlement_date": "2026-10-28",
+    "tender_no": "1894",
+    "kind": "tbill",
+    "maturity": "2027-01-13",
+    "coupon": null,
+    "offered": 100.0,
+    "accepted": 20.0,
+    "bid": 50.0,
+    "bids_n": 4.0,
+    "success_n": 2.0,
+    "coverage": 0.5,
+    "low_acc": 3.16,
+    "high_acc": 3.2025,
+    "wavg": 3.1919,
+    "source": "html"
+   },
+   {
+    "tender_date": "2026-10-27",
+    "settlement_date": "2026-10-28",
+    "tender_no": "1894",
+    "kind": "tbill",
+    "maturity": "2027-04-07",
+    "coupon": null,
+    "offered": 100.0,
+    "accepted": 25.0,
+    "bid": 30.0,
+    "bids_n": 3.0,
+    "success_n": 2.0,
+    "coverage": 0.3,
+    "low_acc": 3.3575,
+    "high_acc": 3.3675,
+    "wavg": 3.3615,
+    "source": "html"
+   },
+   {
+    "tender_date": "2026-10-27",
+    "settlement_date": "2026-10-28",
+    "tender_no": "1894",
+    "kind": "tbill",
+    "maturity": "2027-10-20",
+    "coupon": null,
+    "offered": 50.0,
+    "accepted": 0.0,
+    "bid": 30.0,
+    "bids_n": 1.0,
+    "success_n": 0.0,
+    "coverage": 0.6,
+    "low_acc": null,
+    "high_acc": null,
+    "wavg": null,
+    "source": "html"
    }
   ],
   "upcoming": [
    {
-    "number": "1894",
-    "lines": "13 Jan 2027",
-    "volume": 100.0,
-    "announcement": "2026-10-23",
-    "tender": "2026-10-27",
-    "settlement": "2026-10-28",
+    "number": "1895",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-11-02",
+    "tender": "2026-11-03",
+    "settlement": "2026-11-04",
+    "kind": "tbill"
+   },
+   {
+    "number": "1896",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-11-09",
+    "tender": "2026-11-10",
+    "settlement": "2026-11-11",
+    "kind": "tbill"
+   },
+   {
+    "number": "1897",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-11-16",
+    "tender": "2026-11-17",
+    "settlement": "2026-11-18",
+    "kind": "tbill"
+   },
+   {
+    "number": "1898",
+    "lines": "",
+    "volume": 250.0,
+    "announcement": "2026-11-23",
+    "tender": "2026-11-24",
+    "settlement": "2026-11-25",
     "kind": "tbill"
    },
    {
@@ -4599,9 +4639,9 @@
     "score": 0.5
    },
    {
-    "date": "2026-07-31",
-    "label": "INJECTION",
-    "score": 0.5
+    "date": "2026-08-31",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-08-31",
