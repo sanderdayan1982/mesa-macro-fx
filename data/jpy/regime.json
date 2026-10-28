@@ -1,10 +1,10 @@
 {
  "currency": "JPY",
- "generated_at": "2026-10-27T15:29:50+00:00",
- "as_of": "2026-10-26",
+ "generated_at": "2026-10-28T03:18:31+00:00",
+ "as_of": "2026-10-27",
  "config_version": "0.2.4",
- "regime": "NEUTRAL",
- "traffic_light": "YELLOW",
+ "regime": "LIQUIDITY_INJECTION",
+ "traffic_light": "GREEN",
  "weighted_score": 0.372,
  "block_scores": {
   "central_bank": 1.0,
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
    "score": 1.0,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-10-26",
-   "detail": "CAB 4183000.0 · excess/required 27.71x (SAFE) · ΔCAB d/d 0.0 · 20d 6600.0 (SAFE) · JGB purchases vs plan -0.182 · CLF 0.0",
-   "raw_regime": "NEUTRAL",
+   "as_of": "2026-10-27",
+   "detail": "CAB 4182700.0 · excess/required 27.75x (SAFE) · ΔCAB d/d -300.0 · 20d 2900.0 (SAFE) · JGB purchases vs plan -0.225 · CLF 0.0",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.75,
     "injection_exit": 0.75,
@@ -41,17 +41,13 @@
     "drain": "provisional_era_corta"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.667,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.833,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-26",
+    "as_of": "2026-10-27",
     "recent": [
-     [
-      "2026-10-19",
-      0.0
-     ],
      [
       "2026-10-20",
       0.0
@@ -70,6 +66,10 @@
      ],
      [
       "2026-10-26",
+      1.0
+     ],
+     [
+      "2026-10-27",
       1.0
      ]
     ],
@@ -99,11 +99,11 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": -0.141,
+   "score": -0.1411,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-27",
-   "detail": "flow 100.0 (Z 0.1473) · 5d 4800.0 · 20d -16500.0 (NEUTRAL) · FEFSA/py 0.83 · BTC super-long 5.844",
+   "detail": "flow 100.0 (Z 0.1453) · 5d -5900.0 · 20d -18800.0 (NEUTRAL) · FEFSA/py 0.83 · BTC super-long 5.844",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.6459,
@@ -151,7 +151,7 @@
      ],
      [
       "2026-10-27",
-      -0.141
+      -0.1411
      ]
     ],
     "pending_days": null,
@@ -185,9 +185,9 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": -5900.0,
-    "denominator": 4183000.0,
-    "denominator_date": "2026-10-26",
-    "today": "2026-10-27",
+    "denominator": 4182700.0,
+    "denominator_date": "2026-10-27",
+    "today": "2026-10-28",
     "note": null
    },
    "v03_shadow": {
@@ -200,19 +200,15 @@
      "drain_enter": -0.32,
      "drain_exit": -0.14
     },
-    "as_of": "2026-10-26",
+    "as_of": "2026-10-28",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
-     "effective_score": 0.112,
+     "effective_score": 0.03,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-26",
+     "as_of": "2026-10-28",
      "recent": [
-      [
-       "2026-10-20",
-       0.44
-      ],
       [
        "2026-10-21",
        -0.28
@@ -224,6 +220,10 @@
       [
        "2026-10-26",
        0.11
+      ],
+      [
+       "2026-10-28",
+       0.11
       ]
      ],
      "pending_days": null
@@ -231,11 +231,11 @@
    }
   },
   "general": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "LIQUIDITY_INJECTION",
+   "confirmed": "LIQUIDITY_INJECTION",
    "canonical": "confirmed",
    "score": 0.644,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 116 weeks < 150); dual score +0.64 shown for context",
+   "rule": "agreement: both inject",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -277,7 +277,8 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "PHASE_QT"
+  "PHASE_QT",
+  "JGB_PURCHASES_VS_PLAN_FASTER_QT"
  ],
  "overlays": {
   "QT_STRESS": null,
@@ -494,7 +495,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily_provisional",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
