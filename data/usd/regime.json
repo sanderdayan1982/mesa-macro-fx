@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-10-29T01:58:59+00:00",
- "as_of": "2026-10-28",
+ "generated_at": "2026-10-29T20:21:59+00:00",
+ "as_of": "2026-10-29",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.03,
+ "weighted_score": 0.392,
  "block_scores": {
   "central_bank": -1.1,
-  "rates": 0.5,
-  "fiscal": 0.9,
+  "rates": 1.5,
+  "fiscal": 1.35,
   "banking": 1.2
  },
  "weights": {
@@ -27,7 +27,7 @@
    "score": -1.1,
    "label": "DRAIN",
    "traffic_light": "RED",
-   "as_of": "2026-10-28",
+   "as_of": "2026-10-29",
    "detail": "WRESBAL NERVOUS · NL Δ% -1.204 (NL DOWN) · TGA HEAVY DRAIN · RRP LOW · Primary credit LOW · phase STEADY",
    "raw_regime": "DRAIN",
    "cuts": {
@@ -46,7 +46,7 @@
     "effective_score": -1.1,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-28",
+    "as_of": "2026-10-29",
     "recent": [
      [
       "2026-10-26",
@@ -58,6 +58,10 @@
      ],
      [
       "2026-10-28",
+      -1.1
+     ],
+     [
+      "2026-10-29",
       -1.1
      ]
     ],
@@ -88,11 +92,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.9,
+   "score": 1.35,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-10-27",
-   "detail": "NTF 7286.0 (within normal range) · Z 0.1597 · 7d 28570.0 · 60d 381181.0 (Z250 -0.1306) · FYTD 154254.0 vs prior FY 94.19% · structural 1.18 · surprise 0.62 · TGA close 1052530.0 · −ΔTGA -31830.0 · Payments Window",
+   "as_of": "2026-10-28",
+   "detail": "NTF 33286.0 (notable inject) · Z 1.2287 · 7d 78611.0 · 60d 417177.0 (Z250 0.082) · FYTD 187540.0 vs prior FY 124.42% · structural 1.29 · surprise 1.42 · TGA close 1015632.0 · −ΔTGA 36898.0 · Payments Window",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.215,
@@ -107,10 +111,10 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.883,
+    "effective_score": 1.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-27",
+    "as_of": "2026-10-28",
     "recent": [
      [
       "2026-10-23",
@@ -123,6 +127,10 @@
      [
       "2026-10-27",
       0.9
+     ],
+     [
+      "2026-10-28",
+      1.35
      ]
     ],
     "pending_days": null
@@ -131,10 +139,10 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "daily_surprise": 0.62
+     "daily_surprise": 1.42
     },
     "level": {
-     "structural_ntf_60d": 1.18
+     "structural_ntf_60d": 1.29
     },
     "weights": {
      "structural_ntf_60d": 0.5,
@@ -144,16 +152,16 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.9,
-    "score_flows_only": 0.31
+    "score_v02": 1.35,
+    "score_flows_only": 0.71
    }
   },
   "general": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.3,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.30 shown for context",
+   "score": -0.12,
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.12 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -202,8 +210,8 @@
   "reserves_level": "WATCH",
   "reserves_in_range": false,
   "reserves_above_range": false,
-  "spread_level": "WATCH",
-  "spread_bps": 5.0,
+  "spread_level": "SAFE",
+  "spread_bps": 4.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -219,7 +227,7 @@
    "name": "Ample reserves, calm floor",
    "bias": "NEUTRAL",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -231,7 +239,7 @@
     },
     {
      "condition": "rates.sofr_minus_iorb_bps level == SAFE",
-     "met": false
+     "met": true
     },
     {
      "condition": "central_bank.on_rrp level == SAFE",
@@ -243,14 +251,14 @@
    "id": "L2",
    "name": "Reserve scarcity building (Sept-2019 pattern)",
    "bias": "RESERVE SCARCITY",
-   "active": true,
-   "conditions_met": 3,
+   "active": false,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [
     "rates.sofr_minus_iorb_bps level >= WATCH"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "central_bank.reserves level >= WATCH",
@@ -258,7 +266,7 @@
     },
     {
      "condition": "rates.sofr_minus_iorb_bps level >= WATCH",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.tga level >= WATCH",
@@ -329,7 +337,7 @@
    "name": "Fiscal injection / TGA drawdown",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -351,7 +359,7 @@
     },
     {
      "condition": "fiscal.net_treasury_flow level >= WATCH",
-     "met": false
+     "met": true
     }
    ]
   },
