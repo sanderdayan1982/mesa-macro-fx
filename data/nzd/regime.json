@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-28T12:20:12+00:00",
- "as_of": "2026-10-27",
+ "generated_at": "2026-10-29T03:10:02+00:00",
+ "as_of": "2026-10-29",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "INJECTION",
-   "confirmed": "INJECTION",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.25,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-27",
+   "as_of": "2026-10-29",
    "detail": "settlement cash 28788.0 (5d -735.0, 20d 433.0, SAFE) · OMO stock 6865.0 (23.8%) · ORRF 0.0 · phase LSAP_UNWIND",
-   "raw_regime": "INJECTION",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
     "injection_exit": 0.25,
@@ -41,23 +41,23 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "INJECTION",
-    "raw": "INJECTION",
-    "effective_score": 0.25,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-27",
+    "as_of": "2026-10-29",
     "recent": [
-     [
-      "2026-10-20",
-      1.0
-     ],
      [
       "2026-10-22",
       -0.5
      ],
      [
       "2026-10-27",
+      0.25
+     ],
+     [
+      "2026-10-29",
       0.25
      ]
     ],
@@ -91,7 +91,7 @@
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-27",
+   "as_of": "2026-10-29",
    "detail": "CSA 29804.0 (mom 724.0) · D10 govt cash -59.6 · T-bill 0.44x at 3.1919% · bond 3.907x tail 0.3 bp · settlements next 5d 450.0 · non-resident 57.5%",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -110,18 +110,18 @@
     "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-27",
+    "as_of": "2026-10-29",
     "recent": [
-     [
-      "2026-10-20",
-      0.0
-     ],
      [
       "2026-10-22",
       0.0
      ],
      [
       "2026-10-27",
+      0.0
+     ],
+     [
+      "2026-10-29",
       0.0
      ]
     ],
@@ -148,7 +148,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.15,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.15 shown for context",
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.15 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -384,7 +384,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_thu",
   "backfill": false,
   "errors": []
  }
