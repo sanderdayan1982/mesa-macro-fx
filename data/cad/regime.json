@@ -1,13 +1,13 @@
 {
  "currency": "CAD",
- "generated_at": "2026-10-30T01:17:37+00:00",
- "as_of": "2026-10-21",
+ "generated_at": "2026-10-30T19:02:23+00:00",
+ "as_of": "2026-10-28",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.499,
+ "weighted_score": 0.504,
  "block_scores": {
-  "central_bank": 0.01,
+  "central_bank": 0.02,
   "rates": 1.25,
   "fiscal": 0.41,
   "banking": 1.0
@@ -24,10 +24,10 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.01,
+   "score": 0.02,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-21",
+   "as_of": "2026-10-28",
    "detail": "NetLiq NEUTRAL · reserves SAFE (out of range) · phase NORMALIZATION",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -43,18 +43,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.05,
+    "effective_score": 0.015,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-21",
+    "as_of": "2026-10-28",
     "recent": [
-     [
-      "2026-10-14",
-      0.09
-     ],
      [
       "2026-10-21",
       0.01
+     ],
+     [
+      "2026-10-28",
+      0.02
      ]
     ],
     "pending_days": null
@@ -64,7 +64,7 @@
     "level_weight": 1.0,
     "flow": {
      "net_liquidity_band": 0.0,
-     "reserves_wow": 0.0126
+     "reserves_wow": 0.025779999999999997
     },
     "level": {
      "reserves_vs_range": 0.0
@@ -74,19 +74,19 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.01,
-    "score_flows_only": 0.01
+    "score_v02": 0.02,
+    "score_flows_only": 0.02
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.7006,
+   "score": -0.62,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-21",
-   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check 568.0",
+   "as_of": "2026-10-28",
+   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check -504.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
@@ -107,18 +107,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.205,
+    "effective_score": 0.04,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-21",
+    "as_of": "2026-10-28",
     "recent": [
-     [
-      "2026-10-14",
-      -1.1114
-     ],
      [
       "2026-10-21",
       0.7006
+     ],
+     [
+      "2026-10-28",
+      -0.62
      ]
     ],
     "pending_days": null,
@@ -151,9 +151,9 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 568.0,
-    "denominator": 81079.0,
-    "denominator_date": "2026-10-21",
+    "raw": -504.0,
+    "denominator": 81288.0,
+    "denominator_date": "2026-10-28",
     "today": "2026-10-30",
     "note": null
    },
@@ -167,21 +167,21 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-10-21",
+    "as_of": "2026-10-28",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
      "effective_score": 0.41,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-21",
+     "as_of": "2026-10-28",
      "recent": [
       [
-       "2026-10-14",
+       "2026-10-21",
        0.41
       ],
       [
-       "2026-10-21",
+       "2026-10-28",
        0.41
       ]
      ],
@@ -193,8 +193,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.17,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.17 shown for context",
+   "score": 0.176,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.18 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -224,7 +224,7 @@
    ],
    "agreement_only": true,
    "era_start": "2020-03-23",
-   "era_weeks": 343,
+   "era_weeks": 344,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -417,7 +417,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
