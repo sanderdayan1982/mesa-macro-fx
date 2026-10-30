@@ -1,7 +1,7 @@
 {
  "currency": "AUD",
- "generated_at": "2026-10-29T08:49:17+00:00",
- "as_of": "2026-10-28",
+ "generated_at": "2026-10-30T02:32:46+00:00",
+ "as_of": "2026-10-29",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -28,7 +28,7 @@
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-10-28",
-   "detail": "ES SAFE (above demand range) · ΔES d/d -3045.0 · BS liq NEUTRAL · OMO/ES 0.2229 · SF+25 0.0",
+   "detail": "ES SAFE (above demand range) · ΔES d/d -1787.0 · BS liq NEUTRAL · OMO/ES 0.2252 · SF+25 0.0",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.466,
@@ -103,7 +103,7 @@
     "raw": -1908.0,
     "denominator": 185332.0,
     "denominator_date": "2026-10-21",
-    "today": "2026-10-29",
+    "today": "2026-10-30",
     "note": null
    },
    "v03_shadow": {
@@ -116,19 +116,15 @@
      "drain_enter": 0.085,
      "drain_exit": 0.335
     },
-    "as_of": "2026-10-28",
+    "as_of": "2026-10-29",
     "state": {
      "confirmed": "NEUTRAL",
      "raw": "NEUTRAL",
      "effective_score": 0.67,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-28",
+     "as_of": "2026-10-29",
      "recent": [
-      [
-       "2026-10-21",
-       0.67
-      ],
       [
        "2026-10-22",
        0.67
@@ -147,6 +143,10 @@
       ],
       [
        "2026-10-28",
+       0.67
+      ],
+      [
+       "2026-10-29",
        0.67
       ]
      ],
@@ -230,7 +230,7 @@
     "raw": -7214.0,
     "denominator": 185332.0,
     "denominator_date": "2026-10-21",
-    "today": "2026-10-29",
+    "today": "2026-10-30",
     "note": null
    },
    "v03_shadow": {
@@ -313,7 +313,8 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "PHASE_RUN_OFF"
+  "PHASE_RUN_OFF",
+  "REPO_DEPENDENCE_HEALTHY"
  ],
  "overlays": {},
  "inputs": {
@@ -364,7 +365,7 @@
    "name": "OMO-led Absorption",
    "bias": "NEUTRAL",
    "active": true,
-   "conditions_met": 2,
+   "conditions_met": 3,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -372,7 +373,7 @@
    "details": [
     {
      "condition": "central_bank.omo_share_of_es >= p80",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.overnight_minus_target_bps level == SAFE",
