@@ -1,13 +1,13 @@
 {
  "currency": "NZD",
- "generated_at": "2026-10-30T06:50:41+00:00",
+ "generated_at": "2026-10-30T10:44:44+00:00",
  "as_of": "2026-10-29",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.025,
+ "weighted_score": 0.225,
  "block_scores": {
-  "central_bank": -0.5,
+  "central_bank": 0.0,
   "rates": 0.25,
   "fiscal": 0.0,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.5,
+   "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-29",
-   "detail": "settlement cash 25185.0 (5d -1044.0, 20d -2963.0, SAFE) · OMO stock 6865.0 (27.3%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "detail": "settlement cash 28281.0 (5d 1017.0, 20d -228.0, SAFE) · OMO stock 10634.0 (37.6%) · ORRF 10.0 · phase LSAP_UNWIND",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,7 +43,7 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.25,
+    "effective_score": -0.083,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-10-29",
@@ -58,7 +58,7 @@
      ],
      [
       "2026-10-29",
-      -0.5
+      0.0
      ]
     ],
     "pending_days": null
@@ -67,7 +67,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "settlement_cash_wow": 0.0,
+     "settlement_cash_wow": 0.5,
      "settlement_cash_20d": -0.25,
      "orrf_used": 0.0
     },
@@ -80,8 +80,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": -0.5,
-    "score_flows_only": -0.25
+    "score_v02": 0.0,
+    "score_flows_only": 0.25
    }
   },
   "fiscal": {
@@ -147,8 +147,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.3,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.30 shown for context",
+   "score": 0.0,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.00 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -204,7 +204,7 @@
   "reserves_in_range": false,
   "reserves_above_range": true,
   "spread_level": "WATCH",
-  "spread_bps": 38.0,
+  "spread_bps": 18.0,
   "friction_confirmed": false
  },
  "rules": {
@@ -274,7 +274,7 @@
    "name": "Funding stress",
    "bias": "FUNDING STRESS",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 1,
    "required": [
@@ -288,7 +288,7 @@
     },
     {
      "condition": "central_bank.orrf_usage_daily > 0",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.friction_confirmed == true",
@@ -362,8 +362,8 @@
    "id": "L6",
    "name": "Curve repricing (hiking cycle)",
    "bias": "CURVE REPRICING",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -371,7 +371,7 @@
    "details": [
     {
      "condition": "rates.nzgb_10y_5d_change_bps level >= WATCH",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.hike_pricing_bps >= p90",
