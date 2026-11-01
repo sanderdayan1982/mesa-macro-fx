@@ -1,6 +1,141 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-01T11:46:25+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-11-01T11:46:25+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "252c107a6f3d7544",
+    "degraded": [
+     "F2: monthly stock only (lsap_holdings)",
+     "F2: monthly flow only (lsap_sales_month)"
+    ],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 12,
+     "general": 10
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-01T11:46:24+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "all",
+    "backfill": true,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "nzdm_history: https://debtmanagement.treasury.govt.nz/sites/default/files/2026-10/govtbonds-tender-history-2026-10-22.xlsx"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-01T11:46:24+00:00",
+   "type": "NZD_V04",
+   "category": "system",
+   "details": {
+    "tenders": 1813,
+    "omo_ops": 62,
+    "csa_days": 7949,
+    "bond_flows_two_sided_from": "2018-12-28",
+    "bond_month_ends": 94,
+    "lsap_lines": 16,
+    "lsap_unmapped": [],
+    "redemptions_vs_d10": [
+     [
+      "2019-03",
+      4509.0,
+      4509.3,
+      0.0
+     ],
+     [
+      "2020-04",
+      3410.0,
+      3329.1,
+      -2.4
+     ],
+     [
+      "2021-05",
+      6368.0,
+      6413.0,
+      0.7
+     ],
+     [
+      "2023-04",
+      7010.0,
+      7030.0,
+      0.3
+     ],
+     [
+      "2024-05",
+      7391.0,
+      7391.0,
+      0.0
+     ],
+     [
+      "2025-04",
+      6942.0,
+      6982.0,
+      0.6
+     ],
+     [
+      "2025-09",
+      3066.9,
+      2244.0,
+      -26.8
+     ],
+     [
+      "2026-05",
+      7855.0,
+      6194.0,
+      -21.1
+     ]
+    ],
+    "d10_recon_months": 32,
+    "oia_recon_months": 22
+   }
+  },
+  {
+   "timestamp": "2026-11-01T11:46:10+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_last_good_copy",
+    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots \u2014 nzdm_tbill_listing.html (snapshot 2026-11-01); nzdm_tbill_1894.html (snapshot 2026-11-01); nzdm_tbill_1893.html (snapshot 2026-11-01); nzdm_tbill_1892.html (snapshot 2026-11-01); nzdm_tbill_1891.html (snapshot 2026-11-01); nzdm_bond_listing.html (snapshot 2026-11-01); nzdm_bond_1014.html (snapshot 2026-11-01); nzdm_bond_1013.html (snapshot 2026-11-01); nzdm_bond_1012.html (snapshot 2026-11-01); nzdm_data.html (snapshot 2026-11-01)"
+   }
+  },
+  {
+   "timestamp": "2026-11-01T11:46:10+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_history",
+    "error": "https://debtmanagement.treasury.govt.nz/sites/default/files/2026-10/govtbonds-tender-history-2026-10-22.xlsx"
+   }
+  },
+  {
    "timestamp": "2026-10-30T12:19:49+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -8949,127 +9084,6 @@
     "ok": 1,
     "errors": [],
     "messages": 1
-   }
-  },
-  {
-   "timestamp": "2026-10-08T11:09:47+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "f7c054e37984d8d2",
-    "degraded": [
-     "F2: monthly stock only (lsap_holdings)",
-     "F2: monthly flow only (lsap_sales_month)"
-    ],
-    "streaks": {
-     "central_bank": 11,
-     "fiscal": 2,
-     "general": 3
-    }
-   }
-  },
-  {
-   "timestamp": "2026-10-08T11:09:47+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [
-     "nzdm_last_good_copy: NZDM blocked (HTTP 403): served from the committed raw snapshots \u2014 nzdm_tbill_listing.html (snapshot 2026-10-08)"
-    ],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-08T11:09:47+00:00",
-   "type": "NZD_V04",
-   "category": "system",
-   "details": {
-    "tenders": 1797,
-    "omo_ops": 56,
-    "csa_days": 7949,
-    "bond_flows_two_sided_from": "2018-12-28",
-    "bond_month_ends": 94,
-    "lsap_lines": 16,
-    "lsap_unmapped": [],
-    "redemptions_vs_d10": [
-     [
-      "2024-05",
-      7391.0,
-      7391.0,
-      0.0
-     ],
-     [
-      "2025-04",
-      6942.0,
-      6982.0,
-      0.6
-     ],
-     [
-      "2025-09",
-      3066.9,
-      2244.0,
-      -26.8
-     ],
-     [
-      "2026-05",
-      7855.0,
-      6194.0,
-      -21.1
-     ]
-    ],
-    "d10_recon_months": 32,
-    "oia_recon_months": 22
-   }
-  },
-  {
-   "timestamp": "2026-10-08T11:09:44+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "nzdm_last_good_copy",
-    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots \u2014 nzdm_tbill_listing.html (snapshot 2026-10-08)"
-   }
-  },
-  {
-   "timestamp": "2026-10-08T10:06:54+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
-    "errors": [],
-    "messages": 2
-   }
-  },
-  {
-   "timestamp": "2026-10-08T10:06:54+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "d856b6093804196a",
-    "degraded": [
-     "F2: monthly stock only (lsap_holdings)",
-     "F2: monthly flow only (lsap_sales_month)"
-    ],
-    "streaks": {
-     "central_bank": 10,
-     "fiscal": 1,
-     "general": 2
-    }
    }
   }
  ]
