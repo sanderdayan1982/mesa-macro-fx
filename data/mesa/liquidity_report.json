@@ -1,17 +1,16 @@
 {
- "generated_at": "2026-11-02T21:24:22Z",
+ "generated_at": "2026-11-02T21:34:20Z",
  "title": "Boletín Operativo de Liquidez MMT G8 (Bancos Centrales y Tesoros)",
  "priority_rule": "1º Diaria (prioridad máxima) → 2º Semanal → 3º Mensual (solo cuando no queda más remedio)",
  "changes_count": 1,
  "changes": [
   {
-   "ccy": "USD",
+   "ccy": "CAD",
    "reasons": [
-    "nuevo dato Tesoro (2026-10-30)",
-    "giro flujo Tesoro (DRAIN → INJECTION)"
+    "cambio régimen general (NEUTRAL → FLOOR_FRICTION)"
    ],
-   "cb_message": "🇺🇸 La Reserva Federal (Fed) drena liquidez: las reservas bancarias (WRESBAL) varían a la baja en US$68,8 mm en la semana hasta US$2.893,8 mm (2026-10-28), con variación de Treasuries en cartera de US$+3,9 mm y flujo diario en ON RRP de US$+0,7 mm (impulso a reservas −ΔON_RRP en 5 sesiones de US$−4,9 mm; stock ON RRP US$5,1 mm).",
-   "treasury_message": "🇺🇸 El Tesoro de EE. UU. (DTS) realizó un retiro neto desde su cuenta TGA de US$88,6 mm (inyección de reservas −ΔTGA de US$+88,6 mm el 2026-10-30, dejando el saldo TGA en US$951,6 mm; el flujo fiscal neto (NTF, creación de activos financieros netos MMT) fue de US$+114,4 mm en el día y US$+152,4 mm en 7 sesiones)."
+   "cb_message": "🇨🇦 El Banco de Canadá (BoC) inyecta liquidez: las reservas (settlement balances) varían C$+0,21 mm hasta C$81,29 mm (2026-10-28), con repos de liquidez a plazo en C$61,91 mm (Δ C$+0,01 mm) y variación de bonos soberanos en cartera de C$−0,01 mm.",
+   "treasury_message": "🇨🇦 El Tesoro de Canadá (Receptor General) tuvo un depósito neto en su cuenta del BoC de C$0,50 mm (drenaje de reservas al 2026-10-28, con saldo en cuenta de C$23,62 mm; impulso fiscal acumulado de 7 días: C$+1,52 mm; emisión neta al sector privado en 5 sesiones: C$0,00 mm)."
   }
  ],
  "currencies": {
@@ -28,11 +27,8 @@
    "treasury_date": "2026-10-30",
    "cb_direction": "DRAIN",
    "treasury_direction": "INJECTION",
-   "changed": true,
-   "change_reasons": [
-    "nuevo dato Tesoro (2026-10-30)",
-    "giro flujo Tesoro (DRAIN → INJECTION)"
-   ]
+   "changed": false,
+   "change_reasons": []
   },
   "EUR": {
    "ccy": "EUR",
@@ -102,7 +98,7 @@
    "ccy": "CAD",
    "flag": "🇨🇦",
    "as_of": "2026-10-28",
-   "general_regime": "NEUTRAL",
+   "general_regime": "FLOOR_FRICTION",
    "cb_regime": "NEUTRAL",
    "fiscal_regime": "NEUTRAL",
    "cb_message": "🇨🇦 El Banco de Canadá (BoC) inyecta liquidez: las reservas (settlement balances) varían C$+0,21 mm hasta C$81,29 mm (2026-10-28), con repos de liquidez a plazo en C$61,91 mm (Δ C$+0,01 mm) y variación de bonos soberanos en cartera de C$−0,01 mm.",
@@ -111,8 +107,10 @@
    "treasury_date": "2026-10-28",
    "cb_direction": "INJECTION",
    "treasury_direction": "DRAIN",
-   "changed": false,
-   "change_reasons": []
+   "changed": true,
+   "change_reasons": [
+    "cambio régimen general (NEUTRAL → FLOOR_FRICTION)"
+   ]
   },
   "AUD": {
    "ccy": "AUD",
