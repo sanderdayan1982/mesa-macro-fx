@@ -1,13 +1,13 @@
 {
  "currency": "CHF",
- "generated_at": "2026-11-01T11:45:33+00:00",
- "as_of": "2026-10-23",
+ "generated_at": "2026-11-02T09:58:41+00:00",
+ "as_of": "2026-10-30",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.375,
+ "weighted_score": 0.825,
  "block_scores": {
-  "central_bank": 0.0,
+  "central_bank": 1.0,
   "rates": 0.75,
   "fiscal": 0.0,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.0,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
-   "as_of": "2026-10-23",
-   "detail": "GI 434743.0 (wow -612.0, 13w -1.7892%, NEUTRAL) · absorption 150169.5928 (26.3%) · ratio 8.85x · factor 13.5 · phase STEADY",
+   "score": 1.0,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-10-30",
+   "detail": "GI 436893.0 (wow 2150.0, 13w 0.3773%, BAND_HIGH) · absorption 150169.5928 (26.3%) · ratio 8.89x · factor 13.5 · phase FX_EXPANSION",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.0,
@@ -43,18 +43,18 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.25,
+    "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-23",
+    "as_of": "2026-10-30",
     "recent": [
-     [
-      "2026-10-16",
-      -0.5
-     ],
      [
       "2026-10-23",
       0.0
+     ],
+     [
+      "2026-10-30",
+      1.0
      ]
     ],
     "pending_days": null
@@ -63,7 +63,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "sight_deposits_13w_band": 0.0
+     "sight_deposits_13w_band": 1.0
     },
     "level": {
      "absorption_share_level": 0.0
@@ -73,15 +73,15 @@
      -1.5,
      1.5
     ],
-    "score_v02": 0.0,
-    "score_flows_only": 0.0
+    "score_v02": 1.0,
+    "score_flows_only": 1.0
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.085,
+   "score": -0.0846,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-30",
@@ -129,7 +129,7 @@
      ],
      [
       "2026-10-30",
-      -0.085
+      -0.0846
      ]
     ],
     "pending_days": null,
@@ -163,9 +163,9 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": -369.422,
-    "denominator": 434743.0,
-    "denominator_date": "2026-10-23",
-    "today": "2026-11-01",
+    "denominator": 436893.0,
+    "denominator_date": "2026-10-30",
+    "today": "2026-11-02",
     "note": null
    },
    "v03_shadow": {
@@ -204,8 +204,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.0,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.00 shown for context",
+   "score": 0.6,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.60 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -247,7 +247,7 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "PHASE_STEADY",
+  "PHASE_FX_EXPANSION",
   "TIER_ARBITRAGE_BID"
  ],
  "overlays": {
@@ -432,8 +432,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "all",
-  "backfill": true,
+  "lane": "weekly",
+  "backfill": false,
   "errors": []
  }
 }
