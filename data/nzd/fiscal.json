@@ -3,13 +3,13 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-03T04:47:49+00:00",
- "as_of": "2026-10-30",
+ "generated_at": "2026-11-03T06:06:06+00:00",
+ "as_of": "2026-11-02",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
  "source_health": {
-  "status": "stale",
-  "series_loaded": 18,
+  "status": "fresh",
+  "series_loaded": 19,
   "series_expected": 19,
   "last_fetch_ok": true,
   "errors": [],
@@ -994,9 +994,9 @@
    "usd_analog": null,
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "event",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
+   "status": "fresh",
+   "value": 1225.0,
+   "date": "2026-11-01",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -1004,16 +1004,18 @@
    "zscore": null,
    "percentile": null,
    "window": null,
-   "level": "NO DATA",
-   "sparkline": [],
+   "level": "SAFE",
+   "sparkline": [
+    1225.0
+   ],
    "high_low": {
-    "high": null,
-    "high_date": null,
-    "low": null,
-    "low_date": null
+    "high": 1225.0,
+    "high_date": "2026-11-01",
+    "low": 1225.0,
+    "low_date": "2026-11-01"
    },
-   "age_days": null,
-   "confidence": 0,
+   "age_days": 2,
+   "confidence": 100,
    "latest_outlier": false
   },
   "nzgb_non_resident_holdings": {
@@ -1255,9 +1257,9 @@
     "low": -6302.0,
     "low_date": "2026-08-28"
    },
-   "age_days": 4,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 1,
+   "confidence": 85,
+   "latest_outlier": true
   },
   "tbill_allocation_ratio": {
    "source_id": "NZDM:tbill_allocated_over_offered",
@@ -3043,7 +3045,7 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 850.0,
+   "value": 2075.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-11-03",
@@ -3053,12 +3055,24 @@
      100.0
     ],
     [
+     "2026-11-10",
+     175.0
+    ],
+    [
      "2026-11-11",
      250.0
     ],
     [
+     "2026-11-17",
+     350.0
+    ],
+    [
      "2026-11-18",
      250.0
+    ],
+    [
+     "2026-11-24",
+     350.0
     ],
     [
      "2026-11-25",
@@ -3305,8 +3319,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": -2.9308,
-    "residual_5d_pct": -14.8307
+    "net_issuance_5d_pct": -2.4705,
+    "residual_5d_pct": 3.7424
    },
    "level": {},
    "weights": {},
@@ -4432,6 +4446,42 @@
     "tender": "2026-11-24",
     "settlement": "2026-11-25",
     "kind": "tbill"
+   },
+   {
+    "number": "1016",
+    "lines": "2.00% 15 May 2032",
+    "volume": 175.0,
+    "announcement": "2026-11-02",
+    "tender": "2026-11-05",
+    "settlement": "2026-11-10",
+    "kind": "bond"
+   },
+   {
+    "number": "1017",
+    "lines": "",
+    "volume": 350.0,
+    "announcement": "2026-11-09",
+    "tender": "2026-11-12",
+    "settlement": "2026-11-17",
+    "kind": "bond"
+   },
+   {
+    "number": "1018",
+    "lines": "",
+    "volume": 350.0,
+    "announcement": "2026-11-16",
+    "tender": "2026-11-19",
+    "settlement": "2026-11-24",
+    "kind": "bond"
+   },
+   {
+    "number": "1019",
+    "lines": "",
+    "volume": 350.0,
+    "announcement": "2026-11-23",
+    "tender": "2026-11-26",
+    "settlement": "2026-12-01",
+    "kind": "bond"
    }
   ],
   "signal_log": [
@@ -4531,9 +4581,9 @@
     "score": 0.5
    },
    {
-    "date": "2026-07-31",
-    "label": "INJECTION",
-    "score": 0.5
+    "date": "2026-08-31",
+    "label": "NEUTRAL",
+    "score": 0.0
    },
    {
     "date": "2026-08-31",
