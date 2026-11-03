@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-03T14:24:43+00:00",
+ "generated_at": "2026-11-03T16:34:59+00:00",
  "as_of": "2026-11-02",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.394,
+ "weighted_score": -0.286,
  "block_scores": {
-  "central_bank": -0.9,
+  "central_bank": -0.63,
   "rates": -0.5,
   "fiscal": -0.23,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -0.9,
+   "score": -0.63,
    "label": "DRAIN",
-   "traffic_light": "RED",
+   "traffic_light": "YELLOW",
    "as_of": "2026-11-02",
-   "detail": "excess liquidity 2066532.0 M (SAFE) · Δ5s -27388.0 (p17.59) · TOMO 48572.0 M (STRUCTURAL (no price confirmation)) · MLF 31.0 M · €STR−DFR -5.9 bp (SAFE) · MonPol 13w -98272.0 · phase QT · APP+PEPP rec RECONCILED",
+   "detail": "excess liquidity 2083514.0 M (SAFE) · Δ5s -7243.0 (p50.46) · TOMO 48572.0 M (STRUCTURAL (no price confirmation)) · MLF 31.0 M · €STR−DFR -5.9 bp (SAFE) · MonPol 13w -98272.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,7 +45,7 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.562,
+    "effective_score": -0.517,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-11-02",
@@ -72,7 +72,7 @@
      ],
      [
       "2026-11-02",
-      -0.9
+      -0.63
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -1.0,
-     "excess_20s_vs_stock": -1.0
+     "excess_wow_vs_stock": -0.35,
+     "excess_20s_vs_stock": -0.97
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,15 +94,15 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.9,
-    "score_flows_only": -0.8
+    "score_v02": -0.63,
+    "score_flows_only": -0.53
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.9799,
+   "score": 0.9719,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-11-02",
@@ -127,7 +127,7 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.194,
+    "effective_score": -0.195,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-11-02",
@@ -154,7 +154,7 @@
      ],
      [
       "2026-11-02",
-      0.9799
+      0.9719
      ]
     ],
     "pending_days": null,
@@ -195,8 +195,8 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": 20249.662,
-    "denominator": 2066532.0,
-    "denominator_date": "2026-11-01",
+    "denominator": 2083514.0,
+    "denominator_date": "2026-11-02",
     "today": "2026-11-03",
     "note": null
    },
@@ -240,8 +240,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.699,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.70 shown for context",
+   "score": -0.51,
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.51 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -450,10 +450,9 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_tue",
+  "lane": "daily",
   "backfill": false,
   "errors": [
-   "ecb_weekly: ILM.W.U2.C.A080000.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/W.U2.C.A080000.U2.EUR: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"

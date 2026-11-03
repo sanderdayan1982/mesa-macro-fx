@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-03T14:23:15+00:00",
+ "generated_at": "2026-11-03T16:33:24+00:00",
  "as_of": "2026-11-03",
  "equivalence_quality": "high",
  "equivalence_note": "€STR (08:00 CET T+1) is the floor test: trades 5–10 bp below the DFR with abundant excess liquidity and should drift toward the DFR as liquidity falls (ECB Mar-2024 framework). STRESS SPREAD = €STR − DFR. Daily periphery premium = all-euro-area 10Y − AAA 10Y (verified 42 bp); country spreads monthly (IRS) until daily national yields are wired (Phase 3).",
@@ -13,7 +13,6 @@
   "series_expected": 18,
   "last_fetch_ok": true,
   "errors": [
-   "ecb_weekly: ILM.W.U2.C.A080000.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/W.U2.C.A080000.U2.EUR: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
@@ -1326,18 +1325,17 @@
    "unit": "USD",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1.1216,
-   "date": "2026-11-02",
-   "prev_value": 1.1172,
-   "prev_date": "2026-10-30",
-   "change_abs": 0.0044,
-   "change_pct": 0.3938,
-   "zscore": -0.3996,
+   "value": 1.1179,
+   "date": "2026-11-03",
+   "prev_value": 1.1216,
+   "prev_date": "2026-11-02",
+   "change_abs": -0.0037,
+   "change_pct": -0.3299,
+   "zscore": -0.7612,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.1699,
     1.1664,
     1.1662,
     1.1669,
@@ -1388,15 +1386,16 @@
     1.1133,
     1.113,
     1.1172,
-    1.1216
+    1.1216,
+    1.1179
    ],
    "high_low": {
-    "high": 1.1699,
-    "high_date": "2026-08-21",
+    "high": 1.1669,
+    "high_date": "2026-08-26",
     "low": 1.113,
     "low_date": "2026-10-29"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -2379,7 +2378,7 @@
    "PERIPHERY_STRESS",
    "COUNTRY_SPREAD_WATCH"
   ],
-  "detail": "€STR 2.441 (−DFR -5.9 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 4.0 bp · corridor -0.148 · 10−2 33.3 (FLAT) · periphery 64.5 bp (STRESS) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 38.5 · EUR/USD 1.1216",
+  "detail": "€STR 2.441 (−DFR -5.9 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 4.0 bp · corridor -0.148 · 10−2 33.3 (FLAT) · periphery 64.5 bp (STRESS) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 38.5 · EUR/USD 1.1179",
   "alerts": [
    {
     "metric": "estr_minus_dfr_bps",
