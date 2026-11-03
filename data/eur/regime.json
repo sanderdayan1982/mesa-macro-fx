@@ -1,10 +1,10 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-02T21:40:51+00:00",
+ "generated_at": "2026-11-03T08:50:13+00:00",
  "as_of": "2026-11-01",
  "config_version": "0.4.1",
- "regime": "LIQUIDITY_DRAIN",
- "traffic_light": "RED",
+ "regime": "NEUTRAL",
+ "traffic_light": "YELLOW",
  "weighted_score": -0.359,
  "block_scores": {
   "central_bank": -0.9,
@@ -28,7 +28,7 @@
    "label": "DRAIN",
    "traffic_light": "RED",
    "as_of": "2026-11-01",
-   "detail": "excess liquidity 2066532.0 M (SAFE) · Δ5s -27388.0 (p17.59) · TOMO 48572.0 M (STRUCTURAL (no price confirmation)) · MLF 195.01721202 M · €STR−DFR -6.0 bp (SAFE) · MonPol 13w -98272.0 · phase QT · APP+PEPP rec RECONCILED",
+   "detail": "excess liquidity 2066532.0 M (SAFE) · Δ5s -27388.0 (p17.59) · TOMO 48572.0 M (STRUCTURAL (no price confirmation)) · MLF 195.01721202 M · €STR−DFR -5.9 bp (SAFE) · MonPol 13w -98272.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.02,
@@ -99,15 +99,15 @@
    }
   },
   "fiscal": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.6758,
+   "score": 0.9799,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-30",
+   "as_of": "2026-11-02",
    "detail": "govt deposits 89583.0 M (Δw -3563.0, p38.1) · impulse 4w -988.0 (p38.46) · 13w 6104.0 · deficit -3.2404% GDP (LARGE DEFICIT (injection)) · DE b/c 1.1 (WEAK, avg26 1.63) · TARGET Δ3m -28939.4 · rule NEUTRAL",
-   "raw_regime": "DRAIN",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.1427,
     "injection_exit": -0.0359,
@@ -125,17 +125,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -0.559,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.194,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-30",
+    "as_of": "2026-11-02",
     "recent": [
-     [
-      "2026-10-23",
-      -1.2113
-     ],
      [
       "2026-10-26",
       -0.6639
@@ -155,6 +151,10 @@
      [
       "2026-10-30",
       -0.6758
+     ],
+     [
+      "2026-11-02",
+      0.9799
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -13966.332,
+    "raw": 20249.662,
     "denominator": 2066532.0,
     "denominator_date": "2026-11-01",
-    "today": "2026-11-02",
+    "today": "2026-11-03",
     "note": null
    },
    "v03_shadow": {
@@ -233,11 +233,11 @@
    }
   },
   "general": {
-   "regime": "LIQUIDITY_DRAIN",
-   "confirmed": "LIQUIDITY_DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": -0.627,
-   "rule": "agreement: both drain",
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.63 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -292,7 +292,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -6.0,
+  "spread_bps": -5.9,
   "friction_confirmed": false
  },
  "rules": {
@@ -387,17 +387,17 @@
    "name": "Government cash drain",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == DRAIN"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "regime.fiscal == DRAIN",
-     "met": true
+     "met": false
     },
     {
      "condition": "fiscal.fiscal_regime == DRAIN",
@@ -449,6 +449,7 @@
   "lane": "daily",
   "backfill": false,
   "errors": [
+   "ecb_daily: EXR.D.USD.EUR.SP00.A: https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
