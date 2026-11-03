@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T14:59:39+00:00",
+ "generated_at": "2026-11-03T04:47:13+00:00",
  "alerts": [
   {
    "id": "alert_2026-09-14T093629+0000_curve_spike",
@@ -223,58 +223,6 @@
    "resolved_at": "2026-10-30T12:19:48+00:00"
   },
   {
-   "id": "alert_2026-09-08T215238+0000_bills_at_watch",
-   "rule_id": "bills_at_watch",
-   "timestamp": "2026-09-08T21:52:38+00:00",
-   "severity": "WARNING",
-   "category": "funding",
-   "metric": "rates.bank_bill_30d_minus_ocr_bps",
-   "value": 18.0,
-   "level": "WATCH",
-   "message": "funding: rates.bank_bill_30d_minus_ocr_bps (level >= WATCH)",
-   "status": "active",
-   "last_seen": "2026-11-02T14:59:39+00:00"
-  },
-  {
-   "id": "alert_2026-10-23T090736+0000_omo_reliance",
-   "rule_id": "omo_reliance",
-   "timestamp": "2026-10-23T09:07:36+00:00",
-   "severity": "WARNING",
-   "category": "reserves",
-   "metric": "central_bank.omo_reliance_share",
-   "value": 0.3688,
-   "level": "WATCH",
-   "message": "reserves: central_bank.omo_reliance_share (level >= WATCH)",
-   "status": "active",
-   "last_seen": "2026-11-02T14:59:39+00:00"
-  },
-  {
-   "id": "alert_2026-10-22T030204+0000_omo_surge",
-   "rule_id": "omo_surge",
-   "timestamp": "2026-10-22T03:02:04+00:00",
-   "severity": "WARNING",
-   "category": "reserves",
-   "metric": "central_bank.omo_takeup_wow",
-   "value": 2619.0,
-   "level": "STRESS",
-   "message": "reserves: central_bank.omo_takeup_wow (level >= WATCH)",
-   "status": "active",
-   "last_seen": "2026-11-02T14:59:39+00:00"
-  },
-  {
-   "id": "alert_2026-10-28T102236+0000_tbill_weak",
-   "rule_id": "tbill_weak",
-   "timestamp": "2026-10-28T10:22:36+00:00",
-   "severity": "WARNING",
-   "category": "fiscal",
-   "metric": "fiscal.tbill_bid_to_cover",
-   "value": 0.44,
-   "level": "WATCH",
-   "message": "fiscal: fiscal.tbill_bid_to_cover (level >= WATCH)",
-   "status": "active",
-   "last_seen": "2026-11-02T14:59:39+00:00"
-  },
-  {
    "id": "alert_2026-10-30T104444+0000_curve_spike",
    "rule_id": "curve_spike",
    "timestamp": "2026-10-30T10:44:44+00:00",
@@ -289,6 +237,70 @@
    "resolved_at": "2026-11-02T14:59:39+00:00"
   },
   {
+   "id": "alert_2026-09-08T215238+0000_bills_at_watch",
+   "rule_id": "bills_at_watch",
+   "timestamp": "2026-09-08T21:52:38+00:00",
+   "severity": "WARNING",
+   "category": "funding",
+   "metric": "rates.bank_bill_30d_minus_ocr_bps",
+   "value": 17.0,
+   "level": "WATCH",
+   "message": "funding: rates.bank_bill_30d_minus_ocr_bps (level >= WATCH)",
+   "status": "active",
+   "last_seen": "2026-11-03T04:47:13+00:00"
+  },
+  {
+   "id": "alert_2026-10-23T090736+0000_omo_reliance",
+   "rule_id": "omo_reliance",
+   "timestamp": "2026-10-23T09:07:36+00:00",
+   "severity": "WARNING",
+   "category": "reserves",
+   "metric": "central_bank.omo_reliance_share",
+   "value": 0.3109,
+   "level": "WATCH",
+   "message": "reserves: central_bank.omo_reliance_share (level >= WATCH)",
+   "status": "active",
+   "last_seen": "2026-11-03T04:47:13+00:00"
+  },
+  {
+   "id": "alert_2026-10-22T030204+0000_omo_surge",
+   "rule_id": "omo_surge",
+   "timestamp": "2026-10-22T03:02:04+00:00",
+   "severity": "WARNING",
+   "category": "reserves",
+   "metric": "central_bank.omo_takeup_wow",
+   "value": 2619.0,
+   "level": "STRESS",
+   "message": "reserves: central_bank.omo_takeup_wow (level >= WATCH)",
+   "status": "active",
+   "last_seen": "2026-11-03T04:47:13+00:00"
+  },
+  {
+   "id": "alert_2026-11-03T044713+0000_big_residual_day",
+   "rule_id": "big_residual_day",
+   "timestamp": "2026-11-03T04:47:13+00:00",
+   "severity": "INFO",
+   "category": "fiscal",
+   "metric": "central_bank.residual_flow_daily",
+   "value": 5371.0,
+   "level": "SAFE",
+   "message": "fiscal: central_bank.residual_flow_daily (abs >= 2000)",
+   "status": "active"
+  },
+  {
+   "id": "alert_2026-10-28T102236+0000_tbill_weak",
+   "rule_id": "tbill_weak",
+   "timestamp": "2026-10-28T10:22:36+00:00",
+   "severity": "WARNING",
+   "category": "fiscal",
+   "metric": "fiscal.tbill_bid_to_cover",
+   "value": 0.44,
+   "level": "WATCH",
+   "message": "fiscal: fiscal.tbill_bid_to_cover (level >= WATCH)",
+   "status": "active",
+   "last_seen": "2026-11-03T04:47:13+00:00"
+  },
+  {
    "id": "alert_2026-10-23T090736+0000_omo_outstanding_watch",
    "rule_id": "omo_outstanding_watch",
    "timestamp": "2026-10-23T09:07:36+00:00",
@@ -299,7 +311,7 @@
    "level": "WATCH",
    "message": "reserves: central_bank.omo_outstanding_level (level >= WATCH)",
    "status": "active",
-   "last_seen": "2026-11-02T14:59:39+00:00"
+   "last_seen": "2026-11-03T04:47:13+00:00"
   },
   {
    "id": "alert_2026-10-28T102236+0000_tbill_underallocated",
@@ -312,7 +324,7 @@
    "level": "WATCH",
    "message": "fiscal: fiscal.tbill_allocation (level >= WATCH)",
    "status": "active",
-   "last_seen": "2026-11-02T14:59:39+00:00"
+   "last_seen": "2026-11-03T04:47:13+00:00"
   }
  ]
 }
