@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-03T13:26:13+00:00",
+ "generated_at": "2026-11-03T14:23:14+00:00",
  "as_of": "2026-11-02",
  "equivalence_quality": "high",
  "equivalence_note": "ILM daily (T+1) = WRESBAL analog on a daily grid; WFS weekly Tuesday 15:00 CET. Floor system with full allotment: quantity taken at MRO/LTRO is the scarcity signal (like NZD OMO).",
@@ -13,6 +13,7 @@
   "series_expected": 15,
   "last_fetch_ok": true,
   "errors": [
+   "ecb_weekly: ILM.W.U2.C.A080000.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/W.U2.C.A080000.U2.EUR: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
@@ -947,18 +948,17 @@
    "unit": "EUR millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 2270159.0,
-   "date": "2026-10-23",
-   "prev_value": 2290965.0,
-   "prev_date": "2026-10-16",
-   "change_abs": -20806.0,
-   "change_pct": -0.9082,
-   "zscore": -1.6794,
+   "value": 2242852.0,
+   "date": "2026-10-30",
+   "prev_value": 2270159.0,
+   "prev_date": "2026-10-23",
+   "change_abs": -27307.0,
+   "change_pct": -1.2029,
+   "zscore": -2.2975,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2663630.0,
     2680879.0,
     2677845.0,
     2666478.0,
@@ -1009,15 +1009,16 @@
     2289875.0,
     2286292.0,
     2290965.0,
-    2270159.0
+    2270159.0,
+    2242852.0
    ],
    "high_low": {
     "high": 2680879.0,
     "high_date": "2025-11-07",
-    "low": 2270159.0,
-    "low_date": "2026-10-23"
+    "low": 2242852.0,
+    "low_date": "2026-10-30"
    },
-   "age_days": 11,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
