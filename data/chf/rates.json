@@ -3,8 +3,8 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-03T10:01:49+00:00",
- "as_of": "2026-11-02",
+ "generated_at": "2026-11-03T17:32:50+00:00",
+ "as_of": "2026-11-03",
  "equivalence_quality": "high",
  "equivalence_note": "SARON daily (T-1). Market anchor = policy − 5 bp (absorbing repos). SARON compound / term repo rates lag 3 weeks (SNB) until SIX is wired. Confederation curve daily from the SNB warehouse (NSS, 11:00).",
  "source_health": {
@@ -1244,18 +1244,17 @@
    "unit": "%",
    "frequency": "event",
    "status": "fresh",
-   "value": -0.1107,
-   "date": "2026-10-27",
-   "prev_value": -0.111,
-   "prev_date": "2026-10-20",
-   "change_abs": 0.0003,
-   "change_pct": 0.2703,
-   "zscore": -0.1142,
+   "value": -0.0039,
+   "date": "2026-11-03",
+   "prev_value": -0.1107,
+   "prev_date": "2026-10-27",
+   "change_abs": 0.1068,
+   "change_pct": 96.477,
+   "zscore": 0.7027,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -0.0672,
     -0.1028,
     -0.1186,
     -0.059,
@@ -1306,7 +1305,8 @@
     -0.075,
     -0.107,
     -0.111,
-    -0.1107
+    -0.1107,
+    -0.0039
    ],
    "high_low": {
     "high": 0.0079,
@@ -1314,7 +1314,7 @@
     "low": -0.75,
     "low_date": "2026-06-16"
    },
-   "age_days": 7,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -2139,18 +2139,17 @@
    "unit": "bps",
    "frequency": "event",
    "status": "fresh",
-   "value": -5.1,
-   "date": "2026-10-27",
-   "prev_value": -6.1,
-   "prev_date": "2026-10-20",
-   "change_abs": 1.0,
-   "change_pct": 16.3934,
-   "zscore": -0.8574,
+   "value": 5.6,
+   "date": "2026-11-03",
+   "prev_value": -5.1,
+   "prev_date": "2026-10-27",
+   "change_abs": 10.7,
+   "change_pct": 209.8039,
+   "zscore": 3.0158,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -1.7,
     -6.3,
     -7.9,
     -1.9,
@@ -2201,17 +2200,18 @@
     -3.5,
     -6.7,
     -6.1,
-    -5.1
+    -5.1,
+    5.6
    ],
    "high_low": {
-    "high": 4.8,
-    "high_date": "2026-09-22",
+    "high": 5.6,
+    "high_date": "2026-11-03",
     "low": -71.0,
     "low_date": "2026-06-16"
    },
-   "age_days": 7,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 0,
+   "confidence": 92,
+   "latest_outlier": true
   },
   "friction_confirmed": {
    "label": "friction_confirmed (SARON ≥ policy 3 sessions)",
@@ -2231,7 +2231,7 @@
   "score": 0.75,
   "label": "CORRIDOR CALM",
   "flags": [],
-  "detail": "SARON -0.06 vs anchor -1.0 bp (vs policy -6.0 bp) · band 0.38 · SAR3M−SARON 0.5 · 2y−policy 23.5 · 10y−2y 25.7 · MMDRC−SARON -5.1",
+  "detail": "SARON -0.06 vs anchor -1.0 bp (vs policy -6.0 bp) · band 0.38 · SAR3M−SARON 0.5 · 2y−policy 23.5 · 10y−2y 25.7 · MMDRC−SARON 5.6",
   "alerts": [
    {
     "metric": "saron_minus_absorption_rate_bps",
@@ -3864,6 +3864,11 @@
    },
    {
     "date": "2026-10-23",
+    "label": "CORRIDOR CALM",
+    "score": 0.75
+   },
+   {
+    "date": "2026-10-30",
     "label": "CORRIDOR CALM",
     "score": 0.75
    },
