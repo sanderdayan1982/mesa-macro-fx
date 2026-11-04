@@ -1,15 +1,15 @@
 {
  "currency": "CAD",
- "generated_at": "2026-11-04T01:36:09+00:00",
+ "generated_at": "2026-11-04T11:53:12+00:00",
  "as_of": "2026-10-28",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.004,
+ "weighted_score": 0.322,
  "block_scores": {
   "central_bank": 0.02,
   "rates": -0.75,
-  "fiscal": 0.41,
+  "fiscal": 2.0,
   "banking": 1.0
  },
  "weights": {
@@ -86,7 +86,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-10-28",
-   "detail": "7d cum 1519.403 · Z 0.4137 · weekly Valet cross-check -504.0",
+   "detail": "7d cum 204.024 · Z 2.1459 · weekly Valet cross-check -504.0",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
@@ -128,7 +128,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "fiscal_flow_z": 0.41
+     "fiscal_flow_z": 2.0
     },
     "level": {},
     "weights": {},
@@ -136,8 +136,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.41,
-    "score_flows_only": 0.41
+    "score_v02": 2.0,
+    "score_flows_only": 2.0
    },
    "engine": "0.4",
    "component": {
@@ -159,7 +159,7 @@
    },
    "v03_shadow": {
     "regime": "INJECTION",
-    "score": 0.41,
+    "score": 2.0,
     "raw_regime": "INJECTION",
     "cuts": {
      "injection_enter": 0.55,
@@ -167,22 +167,22 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-10-28",
+    "as_of": "2026-11-02",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
-     "effective_score": 0.41,
+     "effective_score": 1.205,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-10-28",
+     "as_of": "2026-11-02",
      "recent": [
-      [
-       "2026-10-21",
-       0.41
-      ],
       [
        "2026-10-28",
        0.41
+      ],
+      [
+       "2026-11-02",
+       2.0
       ]
      ],
      "pending_days": null
@@ -193,8 +193,8 @@
    "regime": "FLOOR_FRICTION",
    "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
-   "score": 0.176,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.18 shown for context",
+   "score": 0.812,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.81 shown for context",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -417,7 +417,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "all",
   "backfill": false,
   "errors": []
  }
