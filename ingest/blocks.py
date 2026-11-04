@@ -177,6 +177,12 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     E["government_account_cb"] = entry("government_account_cb", gcb, "GoC deposits at BoC (weekly, Valet)", "weekly", unit, cfg, "V36628", "WTREGEN")
     gdb = S.clean(valet.get("V36811", []))
     E["government_deposits_banks"] = entry("government_deposits_banks", gdb, "GoC deposits at chartered banks (monthly)", "monthly", unit, cfg, "V36811", lag_days=20)
+    # Frescura mensual (calidad de datos, no umbral G8): la fecha Valet es el 1.º del mes de referencia. «fresh» solo si
+    # age ≤ 75 días (mes + ~45 días de publicación C2). Si no, «stale» con nota de latencia oficial; el valor no se toca.
+    _g = E["government_deposits_banks"]
+    if _g.get("status") == "fresh" and (_g.get("age_days") or 0) > 75:
+        _g["status"] = "stale"
+        _g["equivalence_note"] = "LATENCIA_CALENDARIO_OFICIAL: último dato publicado en BoC Valet V36811 = %s (mensual C2)" % _g.get("date")
     # derived (daily)
     cb, td = S.clean(rg.get("rg_closing_balance", [])), S.clean(rg.get("rg_term_deposits", []))
     D: Dict[str, dict] = {}
