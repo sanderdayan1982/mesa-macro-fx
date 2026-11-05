@@ -1,6 +1,6 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-04T19:45:35+00:00",
+ "generated_at": "2026-11-05T08:57:17+00:00",
  "as_of": "2026-11-03",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -28,7 +28,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-11-03",
-   "detail": "excess liquidity 2092659.0 M (SAFE) · Δ5s 2862.0 (p72.51) · TOMO 48572.0 M (STRUCTURAL (no price confirmation)) · MLF 60.95455055 M · €STR−DFR -5.5 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec MONTH LAG",
+   "detail": "excess liquidity 2092659.0 M (SAFE) · Δ5s 2862.0 (p72.51) · TOMO 48572.0 M (STRUCTURAL (no price confirmation)) · MLF 60.95455055 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec MONTH LAG",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.02,
@@ -99,15 +99,15 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 0.9667,
+   "score": 1.2111,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-03",
+   "as_of": "2026-11-04",
    "detail": "govt deposits 130215.0 M (Δw 40632.0, p100.0) · impulse 4w -33429.0 (p0.0) · 13w -31678.0 · deficit -3.2404% GDP (LARGE DEFICIT (injection)) · DE b/c 1.4 (SOFT, avg26 1.63) · TARGET Δ3m -28939.4 · rule DRAIN",
-   "raw_regime": "NEUTRAL",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.1427,
     "injection_exit": -0.0359,
@@ -125,17 +125,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.076,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.309,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-03",
+    "as_of": "2026-11-04",
     "recent": [
-     [
-      "2026-10-27",
-      -0.1847
-     ],
      [
       "2026-10-28",
       -0.0843
@@ -155,6 +151,10 @@
      [
       "2026-11-03",
       0.9667
+     ],
+     [
+      "2026-11-04",
+      1.2111
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 20229.123,
+    "raw": 25343.443,
     "denominator": 2092659.0,
     "denominator_date": "2026-11-03",
-    "today": "2026-11-04",
+    "today": "2026-11-05",
     "note": null
    },
    "v03_shadow": {
@@ -241,7 +241,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": -0.293,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.29 shown for context",
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.29 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -271,7 +271,7 @@
    ],
    "agreement_only": true,
    "era_start": "2022-09-14",
-   "era_weeks": 215,
+   "era_weeks": 216,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -296,7 +296,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -5.5,
+  "spread_bps": -5.8,
   "friction_confirmed": false
  },
  "rules": {
@@ -421,18 +421,18 @@
    "id": "L5",
    "name": "Fiscal injection into excess liquidity",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 2,
+   "active": true,
+   "conditions_met": 3,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == INJECTION"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == INJECTION",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
@@ -453,8 +453,8 @@
   "lane": "daily",
   "backfill": false,
   "errors": [
-   "ecb_daily: ILM.D.U2.C.L020100.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.L020100.U2.EUR: HTTP Error 504: Gateway Time-out",
-   "ecb_daily: YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y: https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: EST.B.EU000A2X2A25.NB: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.NB: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: ILM.D.U2.C.EXLIQ.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.EXLIQ.U2.EUR: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"

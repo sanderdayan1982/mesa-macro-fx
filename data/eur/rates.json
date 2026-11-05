@@ -3,8 +3,8 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-04T19:43:58+00:00",
- "as_of": "2026-11-04",
+ "generated_at": "2026-11-05T08:55:46+00:00",
+ "as_of": "2026-11-05",
  "equivalence_quality": "high",
  "equivalence_note": "€STR (08:00 CET T+1) is the floor test: trades 5–10 bp below the DFR with abundant excess liquidity and should drift toward the DFR as liquidity falls (ECB Mar-2024 framework). STRESS SPREAD = €STR − DFR. Daily periphery premium = all-euro-area 10Y − AAA 10Y (verified 42 bp); country spreads monthly (IRS) until daily national yields are wired (Phase 3).",
  "source_health": {
@@ -13,8 +13,8 @@
   "series_expected": 18,
   "last_fetch_ok": true,
   "errors": [
-   "ecb_daily: ILM.D.U2.C.L020100.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.L020100.U2.EUR: HTTP Error 504: Gateway Time-out",
-   "ecb_daily: YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y: https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: EST.B.EU000A2X2A25.NB: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.NB: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: ILM.D.U2.C.EXLIQ.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.EXLIQ.U2.EUR: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
@@ -29,18 +29,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 2.445,
-   "date": "2026-11-03",
-   "prev_value": 2.441,
-   "prev_date": "2026-11-02",
-   "change_abs": 0.004,
-   "change_pct": 0.1639,
-   "zscore": 4.2557,
+   "value": 2.442,
+   "date": "2026-11-04",
+   "prev_value": 2.445,
+   "prev_date": "2026-11-03",
+   "change_abs": -0.003,
+   "change_pct": -0.1227,
+   "zscore": 1.3353,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.189,
     2.189,
     2.187,
     2.188,
@@ -91,7 +90,8 @@
     2.439,
     2.44,
     2.441,
-    2.445
+    2.445,
+    2.442
    ],
    "high_low": {
     "high": 2.445,
@@ -102,7 +102,7 @@
    "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
-   "change_bps": 0.4
+   "change_bps": -0.3
   },
   "estr_volume": {
    "source_id": "EST.B.EU000A2X2A25.TT",
@@ -111,18 +111,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 71348.0,
-   "date": "2026-11-03",
-   "prev_value": 68877.0,
-   "prev_date": "2026-11-02",
-   "change_abs": 2471.0,
-   "change_pct": 3.5876,
-   "zscore": 1.4425,
+   "value": 70010.0,
+   "date": "2026-11-04",
+   "prev_value": 71348.0,
+   "prev_date": "2026-11-03",
+   "change_abs": -1338.0,
+   "change_pct": -1.8753,
+   "zscore": 1.1421,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    64621.0,
     62081.0,
     59956.0,
     58270.0,
@@ -173,7 +172,8 @@
     63109.0,
     50848.0,
     68877.0,
-    71348.0
+    71348.0,
+    70010.0
    ],
    "high_low": {
     "high": 73354.0,
@@ -193,17 +193,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 2.42,
-   "date": "2026-11-03",
-   "prev_value": 2.41,
-   "prev_date": "2026-11-02",
-   "change_abs": 0.01,
-   "change_pct": 0.4149,
-   "zscore": 2.2738,
+   "date": "2026-11-04",
+   "prev_value": 2.42,
+   "prev_date": "2026-11-03",
+   "change_abs": 0.0,
+   "change_pct": 0.0,
+   "zscore": 2.0303,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.16,
     2.16,
     2.16,
     2.16,
@@ -254,13 +253,14 @@
     2.41,
     2.41,
     2.41,
+    2.42,
     2.42
    ],
    "high_low": {
     "high": 2.42,
     "high_date": "2026-10-01",
     "low": 2.16,
-    "low_date": "2026-08-24"
+    "low_date": "2026-08-25"
    },
    "age_days": 1,
    "confidence": 100,
@@ -275,17 +275,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 2.46,
-   "date": "2026-11-03",
-   "prev_value": 2.45,
-   "prev_date": "2026-11-02",
-   "change_abs": 0.01,
-   "change_pct": 0.4082,
-   "zscore": 5.3852,
+   "date": "2026-11-04",
+   "prev_value": 2.46,
+   "prev_date": "2026-11-03",
+   "change_abs": 0.0,
+   "change_pct": 0.0,
+   "zscore": 3.7417,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.2,
     2.2,
     2.2,
     2.2,
@@ -336,13 +335,14 @@
     2.45,
     2.45,
     2.45,
+    2.46,
     2.46
    ],
    "high_low": {
     "high": 2.46,
     "high_date": "2026-10-01",
     "low": 2.2,
-    "low_date": "2026-08-24"
+    "low_date": "2026-08-25"
    },
    "age_days": 1,
    "confidence": 100,
@@ -426,7 +426,7 @@
     "low": 45.0,
     "low_date": "2026-08-25"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -438,18 +438,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 2.32897,
-   "date": "2026-11-04",
-   "prev_value": 2.32613,
-   "prev_date": "2026-11-03",
+   "value": 2.33178,
+   "date": "2026-11-05",
+   "prev_value": 2.32897,
+   "prev_date": "2026-11-04",
    "change_abs": 0.0028,
-   "change_pct": 0.1221,
-   "zscore": 1.7856,
+   "change_pct": 0.1207,
+   "zscore": 1.7523,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.12667,
     2.12949,
     2.13228,
     2.13508,
@@ -500,13 +499,14 @@
     2.31493,
     2.32471,
     2.32613,
-    2.32897
+    2.32897,
+    2.33178
    ],
    "high_low": {
-    "high": 2.32897,
-    "high_date": "2026-11-04",
-    "low": 2.12667,
-    "low_date": "2026-08-25"
+    "high": 2.33178,
+    "high_date": "2026-11-05",
+    "low": 2.12949,
+    "low_date": "2026-08-26"
    },
    "age_days": 0,
    "confidence": 100,
@@ -558,7 +558,7 @@
     "low": -0.5,
     "low_date": "2019-09-18"
    },
-   "age_days": 49,
+   "age_days": 50,
    "confidence": 100,
    "latest_outlier": false,
    "effective_since": "2026-09-16",
@@ -610,7 +610,7 @@
     "low": 0.0,
     "low_date": "2019-09-18"
    },
-   "age_days": 49,
+   "age_days": 50,
    "confidence": 100,
    "latest_outlier": false,
    "effective_since": "2026-09-16",
@@ -662,7 +662,7 @@
     "low": 0.25,
     "low_date": "2019-09-18"
    },
-   "age_days": 49,
+   "age_days": 50,
    "confidence": 100,
    "latest_outlier": false,
    "effective_since": "2026-09-16",
@@ -745,7 +745,7 @@
     "low": 2.7504426576,
     "low_date": "2026-08-25"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
    "change_bps": -0.7
@@ -827,7 +827,7 @@
     "low": 3.2448308736,
     "low_date": "2026-08-25"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
    "change_bps": 2.0
@@ -909,7 +909,7 @@
     "low": 3.6685076859,
     "low_date": "2026-08-25"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
    "change_bps": 1.0
@@ -991,7 +991,7 @@
     "low": 1.033,
     "low_date": "2022-08-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1072,7 +1072,7 @@
     "low": 1.69,
     "low_date": "2022-08-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -1153,7 +1153,7 @@
     "low": 3.297,
     "low_date": "2022-08-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -1234,7 +1234,7 @@
     "low": 2.146,
     "low_date": "2022-08-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 92,
    "latest_outlier": true
   },
@@ -1315,7 +1315,7 @@
     "low": -0.2392273,
     "low_date": "2022-06-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "no public daily feed on the ECB portal (EMMI delayed) — Phase 3"
@@ -1397,7 +1397,7 @@
     "low": 1.113,
     "low_date": "2026-10-29"
    },
-   "age_days": 0,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -1411,18 +1411,17 @@
    "unit": "bps",
    "frequency": "daily",
    "status": "fresh",
-   "value": -5.5,
-   "date": "2026-11-03",
-   "prev_value": -5.9,
-   "prev_date": "2026-11-02",
-   "change_abs": 0.4,
-   "change_pct": 6.7797,
-   "zscore": 4.2557,
+   "value": -5.8,
+   "date": "2026-11-04",
+   "prev_value": -5.5,
+   "prev_date": "2026-11-03",
+   "change_abs": -0.3,
+   "change_pct": -5.4545,
+   "zscore": 1.3353,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -6.1,
     -6.1,
     -6.3,
     -6.2,
@@ -1473,7 +1472,8 @@
     -6.1,
     -6.0,
     -5.9,
-    -5.5
+    -5.5,
+    -5.8
    ],
    "high_low": {
     "high": -5.5,
@@ -1506,7 +1506,7 @@
    "label": "€STR − DFR ≥ WATCH on the latest print and ≥ 1 of the 2 prior sessions",
    "value": false,
    "status": "fresh",
-   "date": "2026-11-03"
+   "date": "2026-11-04"
   },
   "estr_dispersion_bps": {
    "source_id": null,
@@ -1516,17 +1516,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 4.0,
-   "date": "2026-11-03",
+   "date": "2026-11-04",
    "prev_value": 4.0,
-   "prev_date": "2026-11-02",
+   "prev_date": "2026-11-03",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 0.1857,
-   "percentile": 42.56,
+   "percentile": 42.69,
    "window": "156w",
    "level": "SAFE",
    "sparkline": [
-    4.0,
     4.0,
     4.0,
     4.0,
@@ -1577,6 +1576,7 @@
     4.0,
     4.0,
     4.0,
+    4.0,
     4.0
    ],
    "high_low": {
@@ -1607,18 +1607,17 @@
    "unit": "bps",
    "frequency": "daily",
    "status": "fresh",
-   "value": -17.1,
-   "date": "2026-11-04",
-   "prev_value": -17.4,
-   "prev_date": "2026-11-03",
+   "value": -16.8,
+   "date": "2026-11-05",
+   "prev_value": -17.1,
+   "prev_date": "2026-11-04",
    "change_abs": 0.3,
-   "change_pct": 1.7241,
-   "zscore": 1.7858,
+   "change_pct": 1.7544,
+   "zscore": 1.7585,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -12.3,
     -12.1,
     -11.8,
     -11.5,
@@ -1669,7 +1668,8 @@
     -18.5,
     -17.5,
     -17.4,
-    -17.1
+    -17.1,
+    -16.8
    ],
    "high_low": {
     "high": -6.4,
@@ -1688,18 +1688,17 @@
    "unit": "x",
    "frequency": "daily",
    "status": "fresh",
-   "value": -0.138,
-   "date": "2026-11-03",
-   "prev_value": -0.148,
-   "prev_date": "2026-11-02",
-   "change_abs": 0.01,
-   "change_pct": 6.7568,
-   "zscore": 4.1665,
+   "value": -0.145,
+   "date": "2026-11-04",
+   "prev_value": -0.138,
+   "prev_date": "2026-11-03",
+   "change_abs": -0.007,
+   "change_pct": -5.0725,
+   "zscore": 1.3663,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -0.152,
     -0.152,
     -0.158,
     -0.155,
@@ -1750,7 +1749,8 @@
     -0.152,
     -0.15,
     -0.148,
-    -0.138
+    -0.138,
+    -0.145
    ],
    "high_low": {
     "high": -0.138,
@@ -1759,8 +1759,8 @@
     "low_date": "2026-08-31"
    },
    "age_days": 1,
-   "confidence": 92,
-   "latest_outlier": true
+   "confidence": 100,
+   "latest_outlier": false
   },
   "curve_10y_2y_bps": {
    "source_id": null,
@@ -1839,7 +1839,7 @@
     "low": 30.5,
     "low_date": "2026-09-23"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1928,7 +1928,7 @@
     "low": 42.1,
     "low_date": "2026-09-04"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2021,7 +2021,7 @@
     "low": 64.4,
     "low_date": "2026-02-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2110,7 +2110,7 @@
     "low": 47.1,
     "low_date": "2024-03-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 92,
    "latest_outlier": true,
    "thresholds": {
@@ -2198,7 +2198,7 @@
     "low": 43.0,
     "low_date": "2026-02-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -2286,7 +2286,7 @@
     "low": -47.5,
     "low_date": "2025-02-01"
    },
-   "age_days": 64,
+   "age_days": 65,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -2367,7 +2367,7 @@
     "low": -15.0732,
     "low_date": "2026-10-02"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false
   }
@@ -2380,12 +2380,12 @@
    "PERIPHERY_STRESS",
    "COUNTRY_SPREAD_WATCH"
   ],
-  "detail": "€STR 2.445 (−DFR -5.5 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 4.0 bp · corridor -0.138 · 10−2 36.0 (FLAT) · periphery 63.5 bp (STRESS) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 38.5 · EUR/USD 1.1267",
+  "detail": "€STR 2.442 (−DFR -5.8 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 4.0 bp · corridor -0.145 · 10−2 36.0 (FLAT) · periphery 63.5 bp (STRESS) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 38.5 · EUR/USD 1.1267",
   "alerts": [
    {
     "metric": "estr_minus_dfr_bps",
     "level": "SAFE",
-    "value": -5.5,
+    "value": -5.8,
     "threshold": {
      "WATCH": 0,
      "STRESS": 5,
@@ -2432,7 +2432,6 @@
  },
  "history": {
   "dates": [
-   "2026-08-12",
    "2026-08-13",
    "2026-08-14",
    "2026-08-17",
@@ -2491,11 +2490,11 @@
    "2026-10-29",
    "2026-10-30",
    "2026-11-02",
-   "2026-11-03"
+   "2026-11-03",
+   "2026-11-04"
   ],
   "rows": {
    "estr": [
-    2.185,
     2.188,
     2.189,
     2.187,
@@ -2554,7 +2553,8 @@
     2.439,
     2.44,
     2.441,
-    2.445
+    2.445,
+    2.442
    ],
    "dfr": [
     2.25,
@@ -2581,7 +2581,7 @@
     2.25,
     2.25,
     2.25,
-    2.25,
+    2.5,
     2.5,
     2.5,
     2.5,
@@ -2643,7 +2643,7 @@
     2.4,
     2.4,
     2.4,
-    2.4,
+    2.65,
     2.65,
     2.65,
     2.65,
@@ -2705,7 +2705,7 @@
     2.65,
     2.65,
     2.65,
-    2.65,
+    2.9,
     2.9,
     2.9,
     2.9,
@@ -2743,7 +2743,6 @@
     2.9
    ],
    "estr_minus_dfr_bps": [
-    -6.5,
     -6.2,
     -6.1,
     -6.3,
@@ -2802,10 +2801,10 @@
     -6.1,
     -6.0,
     -5.9,
-    -5.5
+    -5.5,
+    -5.8
    ],
    "estr_volume": [
-    61438.0,
     62828.0,
     62262.0,
     61263.0,
@@ -2864,10 +2863,10 @@
     63109.0,
     50848.0,
     68877.0,
-    71348.0
+    71348.0,
+    70010.0
    ],
    "estr_dispersion_bps": [
-    4.0,
     4.0,
     4.0,
     4.0,
@@ -2926,10 +2925,10 @@
     4.0,
     4.0,
     4.0,
+    4.0,
     4.0
    ],
    "estr_banks": [
-    45.0,
     46.0,
     46.0,
     47.0,
@@ -2988,10 +2987,10 @@
     48.0,
     46.0,
     49.0,
-    48.0
+    48.0,
+    null
    ],
    "corridor_position": [
-    -0.162,
     -0.155,
     -0.152,
     -0.158,
@@ -3050,10 +3049,10 @@
     -0.152,
     -0.15,
     -0.148,
-    -0.138
+    -0.138,
+    -0.145
    ],
    "aaa_2y": [
-    2.700507465,
     2.6909507954,
     2.7276488205,
     2.7360418851,
@@ -3112,10 +3111,10 @@
     3.0080012626,
     3.0051075689,
     2.9935059176,
-    2.9868124907
+    2.9868124907,
+    null
    ],
    "aaa_10y": [
-    3.1654173208,
     3.155665028,
     3.2125620965,
     3.2423179071,
@@ -3174,10 +3173,10 @@
     3.3733145545,
     3.3650469366,
     3.3265191239,
-    3.3466052064
+    3.3466052064,
+    null
    ],
    "all_10y": [
-    3.5723183846,
     3.5681337553,
     3.6250413829,
     3.6566681992,
@@ -3236,10 +3235,10 @@
     4.0085648841,
     4.0332303276,
     3.9713304528,
-    3.9817398519
+    3.9817398519,
+    null
    ],
    "curve_10y_2y_bps": [
-    46.5,
     46.5,
     48.5,
     50.6,
@@ -3298,10 +3297,10 @@
     36.5,
     36.0,
     33.3,
-    36.0
+    36.0,
+    null
    ],
    "periphery_premium_bps": [
-    40.7,
     41.2,
     41.2,
     41.4,
@@ -3360,10 +3359,10 @@
     63.5,
     66.8,
     64.5,
-    63.5
+    63.5,
+    null
    ],
    "eurusd": [
-    1.1545,
     1.1534,
     1.1567,
     1.1593,
@@ -3422,7 +3421,8 @@
     1.113,
     1.1172,
     1.1216,
-    1.1179
+    1.1179,
+    1.1267
    ]
   },
   "monthly_dates": [
