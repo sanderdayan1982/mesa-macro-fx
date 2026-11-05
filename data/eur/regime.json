@@ -1,14 +1,14 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-05T08:57:17+00:00",
- "as_of": "2026-11-03",
+ "generated_at": "2026-11-05T12:29:13+00:00",
+ "as_of": "2026-11-04",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.163,
+ "weighted_score": -0.258,
  "block_scores": {
-  "central_bank": -0.32,
-  "rates": -0.5,
+  "central_bank": -0.86,
+  "rates": -0.1,
   "fiscal": -0.23,
   "banking": 1.0
  },
@@ -24,11 +24,11 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -0.32,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
-   "as_of": "2026-11-03",
-   "detail": "excess liquidity 2092659.0 M (SAFE) · Δ5s 2862.0 (p72.51) · TOMO 48572.0 M (STRUCTURAL (no price confirmation)) · MLF 60.95455055 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec MONTH LAG",
+   "score": -0.86,
+   "label": "DRAIN",
+   "traffic_light": "RED",
+   "as_of": "2026-11-04",
+   "detail": "excess liquidity 2080976.0 M (SAFE) · Δ5s -31594.0 (p13.81) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 60.95455055 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec MONTH LAG",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.477,
+    "effective_score": -0.572,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-03",
+    "as_of": "2026-11-04",
     "recent": [
-     [
-      "2026-10-27",
-      -0.29
-     ],
      [
       "2026-10-28",
       0.18
@@ -73,6 +69,10 @@
      [
       "2026-11-03",
       -0.32
+     ],
+     [
+      "2026-11-04",
+      -0.86
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": 0.14,
-     "excess_20s_vs_stock": -0.7
+     "excess_wow_vs_stock": -1.0,
+     "excess_20s_vs_stock": -0.91
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,15 +94,15 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.32,
-    "score_flows_only": -0.22
+    "score_v02": -0.86,
+    "score_flows_only": -0.76
    }
   },
   "fiscal": {
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.2111,
+   "score": 1.2179,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-11-04",
@@ -127,7 +127,7 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.309,
+    "effective_score": 0.31,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-11-04",
@@ -154,7 +154,7 @@
      ],
      [
       "2026-11-04",
-      1.2111
+      1.2179
      ]
     ],
     "pending_days": null,
@@ -195,8 +195,8 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": 25343.443,
-    "denominator": 2092659.0,
-    "denominator_date": "2026-11-03",
+    "denominator": 2080976.0,
+    "denominator_date": "2026-11-04",
     "today": "2026-11-05",
     "note": null
    },
@@ -240,8 +240,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.293,
-   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.29 shown for context",
+   "score": -0.671,
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.67 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -287,7 +287,6 @@
   "MRO_RELIANCE",
   "GOVT_DEPOSIT_JUMP",
   "STRUCTURAL_DEFICIT_INJECTION",
-  "PERIPHERY_STRESS",
   "COUNTRY_SPREAD_WATCH"
  ],
  "overlays": {},
@@ -364,17 +363,17 @@
    "name": "Fragmentation stress",
    "bias": "FRAGMENTATION STRESS",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [
     "rates.periphery_premium_bps level >= STRESS"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "rates.periphery_premium_bps level >= STRESS",
-     "met": true
+     "met": false
     },
     {
      "condition": "rates.btp_bund_bps level >= WATCH",
@@ -453,8 +452,7 @@
   "lane": "daily",
   "backfill": false,
   "errors": [
-   "ecb_daily: EST.B.EU000A2X2A25.NB: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.NB: HTTP Error 504: Gateway Time-out",
-   "ecb_daily: ILM.D.U2.C.EXLIQ.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.EXLIQ.U2.EUR: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: ILM.D.U2.C.A050500.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.A050500.U2.EUR: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"

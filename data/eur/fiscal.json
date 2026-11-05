@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-05T08:55:46+00:00",
+ "generated_at": "2026-11-05T12:27:27+00:00",
  "as_of": "2026-11-03",
  "equivalence_quality": "medium-low",
  "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
@@ -13,8 +13,7 @@
   "series_expected": 13,
   "last_fetch_ok": true,
   "errors": [
-   "ecb_daily: EST.B.EU000A2X2A25.NB: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.NB: HTTP Error 504: Gateway Time-out",
-   "ecb_daily: ILM.D.U2.C.EXLIQ.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.EXLIQ.U2.EUR: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: ILM.D.U2.C.A050500.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.A050500.U2.EUR: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
@@ -3978,7 +3977,7 @@
    "unit": "EUR millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 255049.75,
+   "value": 253451.75,
    "date": "2026-11-05",
    "prev_value": null,
    "prev_date": null,
@@ -3989,12 +3988,12 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    255049.75
+    253451.75
    ],
    "high_low": {
-    "high": 255049.75,
+    "high": 253451.75,
     "high_date": "2026-11-05",
-    "low": 255049.75,
+    "low": 253451.75,
     "low_date": "2026-11-05"
    },
    "age_days": 0,
@@ -4006,7 +4005,7 @@
    "value": null,
    "status": "fresh",
    "date": "2026-11-05",
-   "note": "336 bill records (0 new); outstanding list 117 issues"
+   "note": "336 bill records (0 new); outstanding list 116 issues"
   }
  },
  "signals": {
@@ -4084,8 +4083,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_weekly_pct": -0.6674,
-    "fiscal_impulse_v04_pct": -1.2742
+    "net_issuance_weekly_pct": -0.6711,
+    "fiscal_impulse_v04_pct": -1.2814
    },
    "level": {},
    "weights": {},
@@ -4093,8 +4092,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": -1.94,
-   "score_flows_only": -1.94,
+   "score_v02": -1.95,
+   "score_flows_only": -1.95,
    "note": "shadow (E1–E3): weekly net issuance by settlement + −ΔL050100; GFS.Q out; cuts by the v0.4 replay"
   }
  },
