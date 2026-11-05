@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-11-05T02:33:50+00:00",
+ "generated_at": "2026-11-05T03:36:13+00:00",
  "as_of": "2026-11-05",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
@@ -663,9 +663,9 @@
    "date": "2026-11-04",
    "next": {
     "date": "2026-11-05",
-    "issue": "10-year",
+    "issue": "10-year(384)",
     "tenor": "10y",
-    "result_href": null
+    "result_href": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/eresul/eresul20261105.htm"
    },
    "next_superlong": {
     "date": "2026-11-10",
@@ -678,7 +678,7 @@
     {
      "date": "2026-11-05",
      "tenor": "10y",
-     "issue": "10-year"
+     "issue": "10-year(384)"
     },
     {
      "date": "2026-11-10",
@@ -1860,12 +1860,12 @@
    "unit": "bps",
    "frequency": "event",
    "status": "fresh",
-   "value": 0.2,
-   "date": "2026-10-06",
-   "prev_value": 1.6,
-   "prev_date": "2026-09-01",
-   "change_abs": -1.4,
-   "change_pct": -87.5,
+   "value": 3.2,
+   "date": "2026-11-05",
+   "prev_value": 0.2,
+   "prev_date": "2026-10-06",
+   "change_abs": 3.0,
+   "change_pct": 1500.0,
    "zscore": null,
    "percentile": null,
    "window": null,
@@ -1873,7 +1873,8 @@
    "sparkline": [
     6.0,
     1.6,
-    0.2
+    0.2,
+    3.2
    ],
    "high_low": {
     "high": 6.0,
@@ -1881,7 +1882,7 @@
     "low": 0.2,
     "low_date": "2026-10-06"
    },
-   "age_days": 30,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -4410,12 +4411,6 @@
   },
   "auctions": [
    {
-    "date": "2026-05-20",
-    "tenor": "20y",
-    "btc": 4.011,
-    "hy": 3.711
-   },
-   {
     "date": "2026-05-27",
     "tenor": "40y",
     "btc": 2.702,
@@ -4620,6 +4615,14 @@
     "hy": 1.912,
     "avg_yield": 1.905,
     "tail_bp": 0.7
+   },
+   {
+    "date": "2026-11-05",
+    "tenor": "10y",
+    "btc": 3.213,
+    "hy": 2.8,
+    "avg_yield": 2.768,
+    "tail_bp": 3.2
    }
   ],
   "signal_log": [
@@ -4669,11 +4672,6 @@
     "score": 0.09
    },
    {
-    "date": "2026-10-08",
-    "label": "NEUTRAL",
-    "score": 0.09
-   },
-   {
     "date": "2026-10-09",
     "label": "NEUTRAL",
     "score": -0.03
@@ -5217,6 +5215,11 @@
     "date": "2026-11-02",
     "label": "INJECTION",
     "score": -0.39
+   },
+   {
+    "date": "2026-11-04",
+    "label": "INJECTION",
+    "score": -0.57
    },
    {
     "date": "2026-11-04",
