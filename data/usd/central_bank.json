@@ -3,8 +3,8 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.1.1",
- "generated_at": "2026-11-06T02:55:44+00:00",
- "as_of": "2026-11-05",
+ "generated_at": "2026-11-06T20:23:11+00:00",
+ "as_of": "2026-11-06",
  "equivalence_quality": "high",
  "equivalence_note": "H.4.1 Wednesday levels via FRED (Thu 16:30 ET = 22:30 WAT). Net Liquidity = WALCL − WTREGEN − RRPONTTLD (RRP = latest observation ≤ the H.4.1 date). All $M.",
  "source_health": {
@@ -436,18 +436,17 @@
    "unit": "USD millions (FRED $B × 1000)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 125.0,
-   "date": "2026-11-05",
-   "prev_value": 225.0,
-   "prev_date": "2026-11-04",
-   "change_abs": -100.0,
-   "change_pct": -44.4444,
-   "zscore": -0.485,
+   "value": 150.0,
+   "date": "2026-11-06",
+   "prev_value": 125.0,
+   "prev_date": "2026-11-05",
+   "change_abs": 25.0,
+   "change_pct": 20.0,
+   "zscore": -0.4718,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    380.0,
     405.0,
     702.0,
     456.0,
@@ -498,7 +497,8 @@
     5087.0,
     427.0,
     225.0,
-    125.0
+    125.0,
+    150.0
    ],
    "high_low": {
     "high": 11539.0,
@@ -506,7 +506,7 @@
     "low": 100.0,
     "low_date": "2026-10-16"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -814,9 +814,9 @@
   },
   "rrp_status": {
    "label": "ON RRP status (H.4.1: ≥ 200B WATCH = capital parked)",
-   "value": 125.0,
+   "value": 150.0,
    "status": "fresh",
-   "date": "2026-11-05",
+   "date": "2026-11-06",
    "unit": "USD millions",
    "level": "SAFE",
    "badge": "LOW"
@@ -1178,18 +1178,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": -100.0,
-   "date": "2026-11-05",
-   "prev_value": -202.0,
-   "prev_date": "2026-11-04",
-   "change_abs": 102.0,
-   "change_pct": 50.495,
-   "zscore": -0.0298,
+   "value": 25.0,
+   "date": "2026-11-06",
+   "prev_value": -100.0,
+   "prev_date": "2026-11-05",
+   "change_abs": 125.0,
+   "change_pct": 125.0,
+   "zscore": 0.0117,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    180.0,
     25.0,
     297.0,
     -246.0,
@@ -1240,7 +1239,8 @@
     712.0,
     -4660.0,
     -202.0,
-    -100.0
+    -100.0,
+    25.0
    ],
    "high_low": {
     "high": 10595.0,
@@ -1248,7 +1248,7 @@
     "low": -11189.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -1259,18 +1259,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 228.0,
-   "date": "2026-11-05",
-   "prev_value": -49.0,
-   "prev_date": "2026-11-04",
-   "change_abs": 277.0,
-   "change_pct": 565.3061,
-   "zscore": 0.0804,
+   "value": 4225.0,
+   "date": "2026-11-06",
+   "prev_value": 228.0,
+   "prev_date": "2026-11-05",
+   "change_abs": 3997.0,
+   "change_pct": 1753.0702,
+   "zscore": 1.1054,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -125.0,
     -250.0,
     -385.0,
     -231.0,
@@ -1321,7 +1320,8 @@
     -4887.0,
     -201.0,
     -49.0,
-    228.0
+    228.0,
+    4225.0
    ],
    "high_low": {
     "high": 11032.0,
@@ -1329,9 +1329,9 @@
     "low": -11078.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 1,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 0,
+   "confidence": 85,
+   "latest_outlier": true
   }
  },
  "signals": {
@@ -1367,7 +1367,7 @@
    "flow": {
     "net_liquidity_band": 0.0,
     "tga_status": -1.0,
-    "on_rrp_impulse_5d_pct_reserves": 0.0078
+    "on_rrp_impulse_5d_pct_reserves": 0.1442
    },
    "level": {
     "reserves_status": -1.0,
@@ -1379,8 +1379,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": -0.58,
-   "score_flows_only": -0.33,
+   "score_v02": -0.54,
+   "score_flows_only": -0.29,
    "note": "shadow (U1): daily −ΔON_RRP 5-session impulse in % of WRESBAL + H.4.1 weekly components"
   },
   "detail": "WRESBAL NERVOUS · NL Δ% 0.7834 (NEUTRAL) · TGA HEAVY DRAIN · RRP LOW · Primary credit LOW · phase STEADY",
@@ -1422,7 +1422,7 @@
    {
     "metric": "on_rrp",
     "level": "SAFE",
-    "value": 125.0,
+    "value": 150.0,
     "threshold": {
      "WATCH": 200000
     },
