@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-06T01:44:42+00:00",
+ "generated_at": "2026-11-06T19:03:08+00:00",
  "alerts": [
   {
    "id": "alert_2026-09-08T030800+0000_corra_stress",
@@ -179,7 +179,19 @@
    "level": "WATCH",
    "message": "funding: rates.overnight_minus_policy_bps (level == WATCH)",
    "status": "active",
-   "last_seen": "2026-11-06T01:44:42+00:00"
+   "last_seen": "2026-11-06T19:03:08+00:00"
+  },
+  {
+   "id": "alert_2026-11-06T190308+0000_net_liq_drain",
+   "rule_id": "net_liq_drain",
+   "timestamp": "2026-11-06T19:03:08+00:00",
+   "severity": "WARNING",
+   "category": "liquidity",
+   "metric": "central_bank.net_liquidity_wow_pct",
+   "value": -3.2723,
+   "level": "SAFE",
+   "message": "liquidity: central_bank.net_liquidity_wow_pct (<= band_low)",
+   "status": "active"
   },
   {
    "id": "alert_2026-11-04T115312+0000_fiscal_extraordinary",
@@ -192,7 +204,7 @@
    "level": "SAFE",
    "message": "fiscal: fiscal.fiscal_flow_zscore (abs >= 2)",
    "status": "active",
-   "last_seen": "2026-11-06T01:44:42+00:00"
+   "last_seen": "2026-11-06T19:03:08+00:00"
   }
  ]
 }

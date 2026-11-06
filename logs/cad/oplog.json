@@ -1,6 +1,98 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-06T19:03:10+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 3
+   }
+  },
+  {
+   "timestamp": "2026-11-06T19:03:08+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "7e9efd55d4b2bb7c",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 10,
+     "general": 2
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-06T19:03:08+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "weekly",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "market_ops_indicators: market ops indicators: settlement balances table not found (STRUCTURE CHANGE?)"
+    ],
+    "regime": "FLOOR_FRICTION",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-06T19:03:08+00:00",
+   "type": "CAD_V04",
+   "category": "system",
+   "details": {
+    "groups": {
+     "term_repo": 444,
+     "or": 331,
+     "orr": 412,
+     "rgam": 2253,
+     "tbill": 2442,
+     "bond": 1173,
+     "bond_repurchase": 1134
+    },
+    "indicator_days": 41,
+    "net_issuance_last": [
+     "2026-11-06",
+     0.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-06T19:03:08+00:00",
+   "type": "CAD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "blobs_pending": 57,
+    "holdings_asof": "2026-11-06",
+    "holdings_rows": 52,
+    "history_asofs": 76,
+    "outstanding_asof": "2026-11-04",
+    "outstanding_isins": 85,
+    "unmatched": []
+   }
+  },
+  {
+   "timestamp": "2026-11-06T19:03:05+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "market_ops_indicators",
+    "error": "market ops indicators: settlement balances table not found (STRUCTURE CHANGE?)"
+   }
+  },
+  {
    "timestamp": "2026-11-06T01:44:42+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7990,105 +8082,6 @@
      "fiscal": 1,
      "general": 1
     }
-   }
-  },
-  {
-   "timestamp": "2026-09-10T00:04:10+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-09T23:41:43+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "b5add7eea238b9e1",
-    "degraded": [
-     "F4: no issuance fields",
-     "F6: friction flag missing"
-    ],
-    "streaks": {
-     "central_bank": 1,
-     "fiscal": 1,
-     "general": 1
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-09T23:41:43+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": true,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-09T23:28:08+00:00",
-   "type": "AGENT_DAILY_LOG_ERROR",
-   "category": "system",
-   "details": {
-    "error": "No module named 'numpy'"
-   }
-  },
-  {
-   "timestamp": "2026-09-09T23:28:08+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-09T12:20:07+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
    }
   }
  ]
