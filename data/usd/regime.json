@@ -1,15 +1,15 @@
 {
  "currency": "USD",
- "generated_at": "2026-11-06T20:28:09+00:00",
+ "generated_at": "2026-11-06T21:23:19+00:00",
  "as_of": "2026-11-06",
  "config_version": "0.1.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.423,
+ "weighted_score": 0.465,
  "block_scores": {
   "central_bank": -0.7,
   "rates": 1.5,
-  "fiscal": 0.99,
+  "fiscal": 1.16,
   "banking": 0.8
  },
  "weights": {
@@ -100,11 +100,11 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 0.99,
+   "score": 1.16,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-04",
-   "detail": "NTF 1677.0 (within normal range) · Z -0.3705 · 7d 202447.0 · 60d 579574.0 (Z250 1.0354) · FYTD 349414.0 vs prior FY 61.96% · structural 1.77 · surprise 0.22 · TGA close 936248.0 · −ΔTGA 1960.0",
+   "as_of": "2026-11-05",
+   "detail": "NTF 13329.0 (within normal range) · Z 0.0341 · 7d 208490.0 · 60d 585914.0 (Z250 1.0671) · FYTD 362744.0 vs prior FY 70.5% · structural 1.78 · surprise 0.53 · TGA close 922752.0 · −ΔTGA 13496.0",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 1.215,
@@ -119,15 +119,11 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 1.242,
+    "effective_score": 1.21,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-05",
     "recent": [
-     [
-      "2026-10-28",
-      1.35
-     ],
      [
       "2026-10-29",
       0.94
@@ -147,6 +143,10 @@
      [
       "2026-11-04",
       0.99
+     ],
+     [
+      "2026-11-05",
+      1.16
      ]
     ],
     "pending_days": null
@@ -155,10 +155,10 @@
     "mode": "weighted",
     "level_weight": 1.0,
     "flow": {
-     "daily_surprise": 0.22
+     "daily_surprise": 0.53
     },
     "level": {
-     "structural_ntf_60d": 1.77
+     "structural_ntf_60d": 1.78
     },
     "weights": {
      "structural_ntf_60d": 0.5,
@@ -168,16 +168,16 @@
      -2.0,
      2.0
     ],
-    "score_v02": 0.99,
-    "score_flows_only": 0.11
+    "score_v02": 1.16,
+    "score_flows_only": 0.27
    }
   },
   "general": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.024,
-   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.02 shown for context",
+   "score": 0.044,
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.04 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -406,7 +406,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
