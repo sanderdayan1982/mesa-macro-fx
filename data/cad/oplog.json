@@ -1,6 +1,101 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-06T01:44:42+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-06T01:44:42+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "2f6420fee611fba5",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 3,
+     "fiscal": 9,
+     "general": 1
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-06T01:44:42+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "market_ops_indicators: market ops indicators: settlement balances table not found (STRUCTURE CHANGE?)"
+    ],
+    "regime": "FLOOR_FRICTION",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-06T01:44:42+00:00",
+   "type": "CAD_V04",
+   "category": "system",
+   "details": {
+    "groups": {
+     "term_repo": 444,
+     "or": 331,
+     "orr": 412,
+     "rgam": 2253,
+     "tbill": 2442,
+     "bond": 1173,
+     "bond_repurchase": 1134
+    },
+    "indicator_days": 41,
+    "net_issuance_last": [
+     "2026-11-06",
+     0.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-06T01:44:41+00:00",
+   "type": "CAD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "blobs_pending": 57,
+    "holdings_asof": "2026-11-05",
+    "holdings_rows": 52,
+    "history_asofs": 75,
+    "outstanding_asof": "2026-11-03",
+    "outstanding_isins": 84,
+    "unmatched": [
+     "CA1350Z7FP47",
+     "CA1350Z7FQ20"
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-06T01:44:39+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "market_ops_indicators",
+    "error": "market ops indicators: settlement balances table not found (STRUCTURE CHANGE?)"
+   }
+  },
+  {
    "timestamp": "2026-11-05T21:34:19+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7990,60 +8085,6 @@
      "fiscal",
      "banking",
      "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-08T23:35:26+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-08T04:01:01+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": true,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-08T03:08:00+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": true,
-    "blocks": [
-     "rates",
-     "central_bank",
-     "fiscal",
-     "banking"
     ],
     "errors": [],
     "regime": "FLOOR_FRICTION",
