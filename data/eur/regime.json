@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-06T09:47:55+00:00",
- "as_of": "2026-11-04",
+ "generated_at": "2026-11-06T12:06:21+00:00",
+ "as_of": "2026-11-05",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": -0.258,
+ "weighted_score": 0.013,
  "block_scores": {
-  "central_bank": -0.86,
+  "central_bank": -0.18,
   "rates": -0.1,
   "fiscal": -0.23,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -0.86,
-   "label": "DRAIN",
-   "traffic_light": "RED",
-   "as_of": "2026-11-04",
-   "detail": "excess liquidity 2080976.0 M (SAFE) · Δ5s -31594.0 (p13.81) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 30.2696105 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec MONTH LAG",
+   "score": -0.18,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-11-05",
+   "detail": "excess liquidity 2087586.0 M (SAFE) · Δ5s 11752.0 (p85.11) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 72.6 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec MONTH LAG",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.572,
+    "effective_score": -0.632,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-05",
     "recent": [
-     [
-      "2026-10-28",
-      0.18
-     ],
      [
       "2026-10-29",
       -0.9
@@ -73,6 +69,10 @@
      [
       "2026-11-04",
       -0.86
+     ],
+     [
+      "2026-11-05",
+      -0.18
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -1.0,
-     "excess_20s_vs_stock": -0.91
+     "excess_wow_vs_stock": 0.56,
+     "excess_20s_vs_stock": -0.76
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,15 +94,15 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.86,
-    "score_flows_only": -0.76
+    "score_v02": -0.18,
+    "score_flows_only": -0.08
    }
   },
   "fiscal": {
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.3989,
+   "score": 1.3944,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-11-05",
@@ -154,7 +154,7 @@
      ],
      [
       "2026-11-05",
-      1.3989
+      1.3944
      ]
     ],
     "pending_days": null,
@@ -195,8 +195,8 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": 29109.759,
-    "denominator": 2080976.0,
-    "denominator_date": "2026-11-04",
+    "denominator": 2087586.0,
+    "denominator_date": "2026-11-05",
     "today": "2026-11-06",
     "note": null
    },
@@ -240,8 +240,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.671,
-   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.67 shown for context",
+   "score": -0.195,
+   "rule": "conflict (DRAIN vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.20 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
