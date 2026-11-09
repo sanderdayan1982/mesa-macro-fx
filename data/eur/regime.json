@@ -1,6 +1,6 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-06T20:40:18+00:00",
+ "generated_at": "2026-11-09T08:59:29+00:00",
  "as_of": "2026-11-05",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -28,7 +28,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-11-05",
-   "detail": "excess liquidity 2087586.0 M (SAFE) · Δ5s 11752.0 (p85.11) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 72.6 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec RECONCILED",
+   "detail": "excess liquidity 2087586.0 M (SAFE) · Δ5s 11752.0 (p85.11) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 72.6 M · €STR−DFR -5.7 bp (SAFE) · MonPol 13w -92753.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.02,
@@ -102,10 +102,10 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.3944,
+   "score": 2.0668,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-06",
    "detail": "govt deposits 130215.0 M (Δw 40632.0, p100.0) · impulse 4w -33429.0 (p0.0) · 13w -31678.0 · deficit -3.2404% GDP (LARGE DEFICIT (injection)) · DE b/c 1.4 (SOFT, avg26 1.63) · TARGET Δ3m -28939.4 · rule DRAIN",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -127,15 +127,11 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.557,
+    "effective_score": 0.99,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-05",
+    "as_of": "2026-11-06",
     "recent": [
-     [
-      "2026-10-29",
-      -0.5358
-     ],
      [
       "2026-10-30",
       -0.6758
@@ -155,6 +151,10 @@
      [
       "2026-11-05",
       1.3944
+     ],
+     [
+      "2026-11-06",
+      2.0668
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 29109.759,
+    "raw": 43146.159,
     "denominator": 2087586.0,
     "denominator_date": "2026-11-05",
-    "today": "2026-11-06",
+    "today": "2026-11-09",
     "note": null
    },
    "v03_shadow": {
@@ -295,7 +295,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -5.8,
+  "spread_bps": -5.7,
   "friction_confirmed": false
  },
  "rules": {
@@ -449,9 +449,10 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly",
+  "lane": "daily",
   "backfill": false,
   "errors": [
+   "ecb_daily: EST.B.EU000A2X2A25.R75: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.R75: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
