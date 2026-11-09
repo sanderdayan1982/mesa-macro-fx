@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-09T10:36:24+00:00",
+ "generated_at": "2026-11-09T12:11:42+00:00",
  "as_of": "2026-11-03",
  "equivalence_quality": "medium-low",
  "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
@@ -13,7 +13,8 @@
   "series_expected": 13,
   "last_fetch_ok": true,
   "errors": [
-   "ecb_daily: YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_2Y: https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_2Y: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: ILM.D.U2.C.MRR.U2.EUR: https://data-api.ecb.europa.eu/service/data/ILM/D.U2.C.MRR.U2.EUR: HTTP Error 504: Gateway Time-out",
+   "ecb_daily: YC.B.U2.EUR.4F.G_N_C.SV_C_YM.SR_10Y: https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_C.SV_C_YM.SR_10Y: HTTP Error 504: Gateway Time-out",
    "aft_v04: HTTP 403 for https://www.aft.gouv.fr/en/principaux-chiffres-oat",
    "aft_syndications: HTTP 403 for https://www.aft.gouv.fr/files/medias-aft/3_Dette/3.2_OATMLT/3.2.1_OAT/Principaux%20chif (fixture 2026-09-11)",
    "aft_reviews(monthly-operations-review): HTTP 403 for https://www.aft.gouv.fr/en/monthly-operations-review"
@@ -2205,7 +2206,7 @@
    "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-11-06"
+   "equivalence_note": "last record 2026-11-11"
   },
   "settled_FR": {
    "source_id": "ops_eur:FR",
@@ -3091,11 +3092,16 @@
   },
   "settlements_ahead": {
    "label": "Auction settlements ahead (scheduled drain; results published, not yet settled)",
-   "value": null,
+   "value": 3478.375,
    "unit": "EUR millions",
-   "status": "unavailable",
+   "status": "fresh",
    "date": "2026-11-09",
-   "calendar": []
+   "calendar": [
+    [
+     "2026-11-11",
+     3478.375
+    ]
+   ]
   },
   "bill_maturities_next_4w": {
    "label": "Bill maturities next 4 weeks — all wired issuers (scheduled injection)",
@@ -3263,18 +3269,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.49,
-   "date": "2026-11-04",
-   "prev_value": 1.7,
-   "prev_date": "2026-11-03",
-   "change_abs": -0.21,
-   "change_pct": -12.3529,
-   "zscore": -0.4935,
+   "value": 1.8,
+   "date": "2026-11-09",
+   "prev_value": 1.49,
+   "prev_date": "2026-11-04",
+   "change_abs": 0.31,
+   "change_pct": 20.8054,
+   "zscore": 0.1699,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.102,
     2.523,
     3.117,
     2.42,
@@ -3325,7 +3330,8 @@
     1.71,
     1.5,
     1.7,
-    1.49
+    1.49,
+    1.8
    ],
    "high_low": {
     "high": 9.767,
@@ -3333,7 +3339,7 @@
     "low": 1.1,
     "low_date": "2026-08-19"
    },
-   "age_days": 5,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -3426,17 +3432,16 @@
    "frequency": "event",
    "status": "fresh",
    "value": 1.8,
-   "date": "2026-11-04",
-   "prev_value": 1.4,
-   "prev_date": "2026-11-03",
-   "change_abs": 0.4,
-   "change_pct": 28.5714,
-   "zscore": 1.3983,
+   "date": "2026-11-09",
+   "prev_value": 1.8,
+   "prev_date": "2026-11-04",
+   "change_abs": 0.0,
+   "change_pct": 0.0,
+   "zscore": 1.3562,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.133,
     1.7,
     1.4,
     1.6,
@@ -3487,6 +3492,7 @@
     1.1,
     1.5,
     1.4,
+    1.8,
     1.8
    ],
    "high_low": {
@@ -3495,7 +3501,7 @@
     "low": 1.0,
     "low_date": "2026-07-08"
    },
-   "age_days": 5,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
