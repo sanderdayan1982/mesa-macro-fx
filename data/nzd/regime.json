@@ -1,7 +1,7 @@
 {
  "currency": "NZD",
- "generated_at": "2026-11-06T13:53:59+00:00",
- "as_of": "2026-11-05",
+ "generated_at": "2026-11-09T04:55:06+00:00",
+ "as_of": "2026-11-09",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -27,7 +27,7 @@
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-09",
    "detail": "settlement cash 29647.0 (5d 1366.0, 20d -2707.0, SAFE) · OMO stock 6707.0 (22.6%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -43,19 +43,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.0,
+    "effective_score": 0.125,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-05",
+    "as_of": "2026-11-09",
     "recent": [
-     [
-      "2026-10-29",
-      0.0
-     ],
-     [
-      "2026-10-30",
-      -0.5
-     ],
      [
       "2026-11-02",
       0.25
@@ -66,6 +58,10 @@
      ],
      [
       "2026-11-05",
+      0.0
+     ],
+     [
+      "2026-11-09",
       0.0
      ]
     ],
@@ -93,15 +89,15 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-09",
    "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 2.22x at 2.958% · bond 5.266x tail 1.0 bp · settlements next 5d 250.0 · non-resident 58.0%",
-   "raw_regime": "NEUTRAL",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.25,
     "injection_exit": 0.25,
@@ -113,21 +109,13 @@
     "drain": "banda_por_diseño"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.2,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.375,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-05",
+    "as_of": "2026-11-09",
     "recent": [
-     [
-      "2026-10-29",
-      0.0
-     ],
-     [
-      "2026-10-30",
-      0.0
-     ],
      [
       "2026-11-02",
       0.0
@@ -138,6 +126,10 @@
      ],
      [
       "2026-11-05",
+      0.5
+     ],
+     [
+      "2026-11-09",
       0.5
      ]
     ],
@@ -164,7 +156,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.2,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -192,7 +184,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-07-01",
-   "era_weeks": 226,
+   "era_weeks": 227,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -343,18 +335,18 @@
    "id": "L5",
    "name": "Fiscal injection",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == INJECTION"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == INJECTION",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
