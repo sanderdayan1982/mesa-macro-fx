@@ -170,15 +170,16 @@ class ValetGroupProvider:
 
 class MarketOpsIndicatorsProvider:
     """Bank of Canada 'Indicators related to market operations' — daily Lynx settlement balances, OR/ORR, term repos and
-    securities lending as an HTML table with a 6-business-day rolling window (no Valet series, no download; verified
-    2026-09-10). run.py archives every fetch into history/cad/market_ops_indicators.csv so the daily history accumulates."""
+    securities lending. Live fetch uses the Valet series in ops_cad.INDICATOR_VALET (millions of CAD, no rescaling;
+    verified 2026-11-09). The HTML table remains the fallback: since 2026-11 the dates are non-breaking hyphens and
+    the old 'Actual' row is 'Amount in Lynx'. run.py archives every fetch into history/cad/market_ops_indicators.csv."""
     name = "boc_market_ops_indicators"
 
     def __init__(self, url: str = "https://www.bankofcanada.ca/rates/indicators/market-operations-indicators/", fixtures_dir: Optional[str] = None):
         self.url, self.fixtures_dir = url, fixtures_dir
 
     def fetch(self) -> Dict[str, Series]:
-        from .ops_cad import parse_indicators_html, IND_KEYS
+        from .ops_cad import parse_indicators_html, IND_KEYS, INDICATOR_VALET
         if self.fixtures_dir:
             p = os.path.join(self.fixtures_dir, "market_ops_indicators.csv")
             out: Dict[str, List] = {k: [] for k in IND_KEYS.values()}
@@ -190,8 +191,16 @@ class MarketOpsIndicatorsProvider:
                             if v not in ("", None):
                                 out[k].append((row["date"], float(v)))
             return {k: clean(v) for k, v in out.items()}
-        html = _get(self.url, as_json=False, timeout=60)
-        got = parse_indicators_html(html)
+        got: Dict[str, Series] = {}
+        try:
+            mapping = dict(INDICATOR_VALET)
+            raw = ValetProvider().fetch(list(mapping), recent=16)
+            got = {dst: raw.get(src, []) for src, dst in mapping.items()}
+        except ProviderError:
+            got = {}
+        if not got.get("settlement_actual"):
+            html = _get(self.url, as_json=False, timeout=60)
+            got = parse_indicators_html(html)
         if not got.get("settlement_actual"):
             raise ProviderError("market ops indicators: settlement balances table not found (STRUCTURE CHANGE?)")
         return got

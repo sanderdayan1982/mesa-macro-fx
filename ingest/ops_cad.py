@@ -8,8 +8,9 @@ Sources verified 2026-09-10 (VERIFICACIONES_V04.md):
       AUC_RGAM_RESULTS    2 164 auctions since 2024-02-21  AUC_RGAM_SETTLEMENT_DATE / _MATURITY_DATE / _AMOUNT / _COVERAGE
       AUC_TBILL_RESULTS / AUC_BOND_RESULTS  issue date, maturity date, amount, BoC purchase (already in fixtures)
       AUC_BOND_S_RESULTS_REPURCHASE  bond switch repurchases: settlement date, amount repurchased
-  * Daily table "Indicators related to market operations" (HTML, 6-business-day rolling window, no Valet series):
-      Lynx settlement balances (Actual), OR, ORR, Term Repos, Securities Lending — archived daily by run.py.
+  * Daily table "Indicators related to market operations" (HTML, 6-business-day rolling window).
+      As of 2026-11-09 the same quantities are also Valet series in $M (ACTUAL, SPRA_OUT, SRA_OUT, TERMREPOS, SEC_LEND);
+      the HTML dates use a non-breaking hyphen and the old "Actual" row is "Amount in Lynx". Archived daily by run.py.
 
 Reserve mechanics (MMT / Mosler sign convention, + = settlement balances created):
   term repo / OR allocated at settlement → +; matures → −.  ORR allocated → −; matures → +.
@@ -20,6 +21,7 @@ Nothing here decides a regime: every series is published, and the new flow compo
 (signals.components_v04) until the replay recalibrates the cuts (CAMBIOS_V04_PENDIENTES.md, step 5)."""
 from __future__ import annotations
 import csv
+import html as html_lib
 import io
 import os
 import re
@@ -227,35 +229,73 @@ def weekly_sum(daily: Series, end_dates: List[str]) -> Series:
 IND_KEYS = {"Actual": "settlement_actual", "Overnight Repos (OR)": "ind_or", "Overnight Reverse Repos (ORR)": "ind_orr",
             "Term Repos": "ind_term_repos", "Securities Lending": "ind_securities_lending", "Target (Available)": "settlement_target"}
 
+# Same quantities, same unit ($M), published on Valet since the page was rebuilt (verified 2026-11-09 against the
+# HTML table and against history/cad/market_ops_indicators.csv: ACTUAL equals every archived "Actual" point).
+# TOTAL_SETTLEMENT_BALANCES is Lynx + Real-Time Rail and is $2M above ACTUAL from 2026-11-04; not used, so the
+# Lynx series does not jump. TARGET ended 2020-03-20 and is not fetched.
+INDICATOR_VALET = (("ACTUAL", "settlement_actual"), ("SPRA_OUT", "ind_or"), ("SRA_OUT", "ind_orr"),
+                   ("TERMREPOS", "ind_term_repos"), ("SEC_LEND", "ind_securities_lending"))
+
+_DASHES = str.maketrans({"\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2014": "-", "\u2212": "-"})
+
+
+def _cell_text(fragment: str) -> str:
+    t = html_lib.unescape(re.sub(r"<[^>]+>", "", fragment)).replace("\xa0", " ").translate(_DASHES)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def _indicator_row_key(label: str) -> Optional[str]:
+    """Row label → archive key. Accepts the pre-2026-11 table and the rebuilt one (case, footnote digit, Lynx rename)."""
+    s = re.sub(r"\d+$", "", label).strip().casefold()
+    if s.startswith("amount in lynx"):
+        return "settlement_target" if "target" in s else "settlement_actual"
+    if s.startswith("total settlement balances"):
+        return "total_settlement_balances"  # Lynx + RTR; used only if the Lynx / Actual row is missing
+    if s.startswith("overnight reverse repo"):
+        return "ind_orr"
+    if s.startswith("overnight repo"):
+        return "ind_or"
+    if s.startswith("term repo"):
+        return "ind_term_repos"
+    if s.startswith("securities lending"):
+        return "ind_securities_lending"
+    if s.startswith("target (available)"):
+        return "settlement_target"
+    if s == "actual" or s.startswith("actual "):
+        return "settlement_actual"
+    return None
+
 
 def parse_indicators_html(html: str) -> Dict[str, Series]:
-    """Second table of bankofcanada.ca/rates/indicators/market-operations-indicators/: header row of ISO dates,
-    rows labelled per IND_KEYS. Returns {key: [(date, $M)]} for the visible window (6 business days)."""
+    """Second table of bankofcanada.ca/rates/indicators/market-operations-indicators/: header row of ISO dates
+    (ASCII hyphen or &#8209;), rows labelled per IND_KEYS or the 2026-11 names. Returns {key: [(date, $M)]}."""
     tables = re.findall(r"<table.*?</table>", html, flags=re.S | re.I)
     out: Dict[str, List] = {k: [] for k in IND_KEYS.values()}
+    total: List = []
     for t in tables:
         rows = re.findall(r"<tr.*?</tr>", t, flags=re.S | re.I)
         if not rows:
             continue
-        cells0 = [re.sub(r"<[^>]+>", "", c).strip() for c in re.findall(r"<t[hd][^>]*>(.*?)</t[hd]>", rows[0], flags=re.S | re.I)]
+        cells0 = [_cell_text(c) for c in re.findall(r"<t[hd][^>]*>(.*?)</t[hd]>", rows[0], flags=re.S | re.I)]
         dates = [c for c in cells0 if re.match(r"^\d{4}-\d{2}-\d{2}$", c)]
         if len(dates) < 3:
             continue
         for r in rows[1:]:
-            cells = [re.sub(r"<[^>]+>", "", c).strip() for c in re.findall(r"<t[hd][^>]*>(.*?)</t[hd]>", r, flags=re.S | re.I)]
+            cells = [_cell_text(c) for c in re.findall(r"<t[hd][^>]*>(.*?)</t[hd]>", r, flags=re.S | re.I)]
             if not cells:
                 continue
-            label = cells[0]
-            key = next((v for k, v in IND_KEYS.items() if label.startswith(k)), None)
+            key = _indicator_row_key(cells[0])
             if not key:
                 continue
-            vals = cells[1:1 + len(dates)]
-            for d, v in zip(dates, vals):
+            dest = total if key == "total_settlement_balances" else out[key]
+            for d, v in zip(dates, cells[1:1 + len(dates)]):
                 n = _num(v)
                 if n is not None:
-                    out[key].append((d, n))
+                    dest.append((d, n))
         if out["settlement_actual"] or out["ind_term_repos"]:
             break  # the first table on the page is the policy-rate table (also dated columns): keep scanning until the Lynx table
+    if not out["settlement_actual"] and total:
+        out["settlement_actual"] = total
     return {k: clean(v) for k, v in out.items()}
 
 
