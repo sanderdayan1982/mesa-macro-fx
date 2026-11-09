@@ -1,6 +1,108 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-09T09:35:06+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-11-09T09:35:06+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "d00f63dbba446a3a",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 7,
+     "general": 7
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-09T09:35:06+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily_provisional",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-09T09:35:05+00:00",
+   "type": "JPY_V04",
+   "category": "system",
+   "details": {
+    "daily_new": 0,
+    "daily_files": 269,
+    "ops_new": 0,
+    "ops": {
+     "last_date": "2026-11-09",
+     "lag_days": 0,
+     "ope_files": 268,
+     "daily_files": 269
+    },
+    "mei": {
+     "asof": "2026-10-30",
+     "published": "2026-11-04",
+     "total": 5034069.0,
+     "unmapped": [
+      [
+       "5年債",
+       188,
+       906.0
+      ],
+      [
+       "10年債",
+       384,
+       832.0
+      ],
+      [
+       "30年債",
+       92,
+       273.0
+      ]
+     ],
+     "jgb_records": 2615,
+     "tbill_records": 1409,
+     "mof_cut": "2026-10-01",
+     "mof_lag_days": 39
+    },
+    "juqp": "2026-11",
+    "net_issuance_last": [
+     "2026-10-01",
+     -2480.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-09T09:34:51+00:00",
+   "type": "STRUCTURE_HASH",
+   "category": "system",
+   "details": {
+    "jd_latest": "2026-11-06",
+    "hash": "710ec883494ec085"
+   }
+  },
+  {
    "timestamp": "2026-11-09T04:54:41+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -9017,51 +9119,6 @@
    "details": {
     "source": "mof_auction_results",
     "error": "failed after 3 tries: HTTPSConnectionPool(host='www.mof.go.jp', port=443): Max retries exceeded with url: /english/policy/jgbs/auction/past_auction_results/Auction_Results_for_JGBs.xls (Caused by NameResolutionError(\"HTTPSConnection(host='www.mof.go.jp', port=443): Failed to resolve 'www.mof.go.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:25+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_accounts",
-    "error": "accounts 2026-10-10: failed after 3 tries: HTTPSConnectionPool(host='www.boj.or.jp', port=443): Max retries exceeded with url: /en/statistics/boj/other/acmai/release/2026/ac261010.htm (Caused by NameResolutionError(\"HTTPSConnection(host='www.boj.or.jp', port=443): Failed to resolve 'www.boj.or.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:25+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_accounts",
-    "error": "accounts 2026-09-30: failed after 3 tries: HTTPSConnectionPool(host='www.boj.or.jp', port=443): Max retries exceeded with url: /en/statistics/boj/other/acmai/release/2026/ac260930.htm (Caused by NameResolutionError(\"HTTPSConnection(host='www.boj.or.jp', port=443): Failed to resolve 'www.boj.or.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:25+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_accounts",
-    "error": "accounts 2026-09-20: failed after 3 tries: HTTPSConnectionPool(host='www.boj.or.jp', port=443): Max retries exceeded with url: /en/statistics/boj/other/acmai/release/2026/ac260920.htm (Caused by NameResolutionError(\"HTTPSConnection(host='www.boj.or.jp', port=443): Failed to resolve 'www.boj.or.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:25+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boj_accounts",
-    "error": "accounts 2026-09-10: failed after 3 tries: HTTPSConnectionPool(host='www.boj.or.jp', port=443): Max retries exceeded with url: /en/statistics/boj/other/acmai/release/2026/ac260910.htm (Caused by NameResolutionError(\"HTTPSConnection(host='www.boj.or.jp', port=443): Failed to resolve 'www.boj.or.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:22+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "jsda_tokyo_repo_rate",
-    "error": "failed after 3 tries: HTTPSConnectionPool(host='www.jsda.or.jp', port=443): Max retries exceeded with url: /shiryoshitsu/toukei/trr/files/trr.xls (Caused by NameResolutionError(\"HTTPSConnection(host='www.jsda.or.jp', port=443): Failed to resolve 'www.jsda.or.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
    }
   }
  ]
