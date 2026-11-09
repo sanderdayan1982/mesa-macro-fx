@@ -1,6 +1,108 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-09T19:57:52+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-09T19:57:52+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "bd8d98ae27054539",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 7,
+     "general": 7
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-09T19:57:52+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily_provisional",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-09T19:57:52+00:00",
+   "type": "JPY_V04",
+   "category": "system",
+   "details": {
+    "daily_new": 0,
+    "daily_files": 269,
+    "ops_new": 0,
+    "ops": {
+     "last_date": "2026-11-09",
+     "lag_days": 0,
+     "ope_files": 268,
+     "daily_files": 269
+    },
+    "mei": {
+     "asof": "2026-10-30",
+     "published": "2026-11-04",
+     "total": 5034069.0,
+     "unmapped": [
+      [
+       "5\u5e74\u50b5",
+       188,
+       906.0
+      ],
+      [
+       "10\u5e74\u50b5",
+       384,
+       832.0
+      ],
+      [
+       "30\u5e74\u50b5",
+       92,
+       273.0
+      ]
+     ],
+     "jgb_records": 2615,
+     "tbill_records": 1409,
+     "mof_cut": "2026-10-01",
+     "mof_lag_days": 39
+    },
+    "juqp": "2026-11",
+    "net_issuance_last": [
+     "2026-10-01",
+     -2480.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-09T19:57:37+00:00",
+   "type": "STRUCTURE_HASH",
+   "category": "system",
+   "details": {
+    "jd_latest": "2026-11-06",
+    "hash": "710ec883494ec085"
+   }
+  },
+  {
    "timestamp": "2026-11-09T12:00:22+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -9175,64 +9277,6 @@
     "errors": [],
     "regime": "NEUTRAL",
     "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:40+00:00",
-   "type": "JPY_V04",
-   "category": "system",
-   "details": {
-    "daily_new": 0,
-    "daily_files": 253,
-    "ops_new": 0,
-    "ops": {
-     "last_date": "2026-10-16",
-     "lag_days": 2,
-     "ope_files": 253,
-     "daily_files": 253
-    },
-    "mei": {},
-    "juqp": "2026-09",
-    "net_issuance_last": [
-     "2026-09-01",
-     583.0
-    ]
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:40+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "jpy_net_issuance",
-    "error": "No module named 'xlrd'"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:34+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_treasury_receipts_payments",
-    "error": "mof receipts 2026-10: failed after 3 tries: HTTPSConnectionPool(host='www.mof.go.jp', port=443): Max retries exceeded with url: /english/policy/exchequer/receipts_payments/e202610.xls (Caused by NameResolutionError(\"HTTPSConnection(host='www.mof.go.jp', port=443): Failed to resolve 'www.mof.go.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:34+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_treasury_receipts_payments",
-    "error": "mof receipts 2026-09: failed after 3 tries: HTTPSConnectionPool(host='www.mof.go.jp', port=443): Max retries exceeded with url: /english/policy/exchequer/receipts_payments/e202609.xls (Caused by NameResolutionError(\"HTTPSConnection(host='www.mof.go.jp', port=443): Failed to resolve 'www.mof.go.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T11:41:34+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "mof_treasury_receipts_payments",
-    "error": "mof receipts 2026-08: failed after 3 tries: HTTPSConnectionPool(host='www.mof.go.jp', port=443): Max retries exceeded with url: /english/policy/exchequer/receipts_payments/e202608.xls (Caused by NameResolutionError(\"HTTPSConnection(host='www.mof.go.jp', port=443): Failed to resolve 'www.mof.go.jp' ([Errno 8] nodename nor servname provided, or not known)\"))"
    }
   }
  ]
