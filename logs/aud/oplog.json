@@ -1,6 +1,84 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-10T10:16:26+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:16:26+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "3fa671d01bc257dc",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 7,
+     "fiscal": 3,
+     "general": 20
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:16:25+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:16:25+00:00",
+   "type": "AUD_V04",
+   "category": "system",
+   "details": {
+    "omo_ops": 4447,
+    "omo_cut": "2026-11-04",
+    "unwind_days": 524,
+    "tenders": {
+     "tb": 2002,
+     "tn": 2496,
+     "tib": 426
+    },
+    "buybacks": {
+     "tb": 176,
+     "tib": 13
+    },
+    "tb_lines": 30,
+    "links": "resolved on the Data Hub: tb_issuance=2025-06-20, tn_issuance=2025-06-05, tib_issuance=2025-07-10, tb_buybacks=2025-06-06, tib_buybacks=2025-06-06, tb_portfolio=2025-05-02"
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:16:25+00:00",
+   "type": "AUD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "a31_rows": 1532,
+    "rba_asof": "2026-10-30",
+    "unmatched": [],
+    "rba_share": 0.183
+   }
+  },
+  {
    "timestamp": "2026-11-10T03:45:50+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7630,77 +7708,6 @@
     "errors": [
      "aofm_v04: HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=180)"
     ],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-10T10:20:56+00:00",
-   "type": "AUD_V04",
-   "category": "system",
-   "details": {
-    "omo_ops": 4431,
-    "omo_cut": "2026-09-09",
-    "unwind_days": 522,
-    "tenders": {},
-    "buybacks": {},
-    "tb_lines": 0,
-    "links": "Data Hub unreachable (HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=120)): fallback URLs verified 2026-09-10"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T10:20:56+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "aofm_v04",
-    "error": "HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=180)"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T07:29:12+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
-    "errors": [],
-    "messages": 1
-   }
-  },
-  {
-   "timestamp": "2026-09-10T07:29:11+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "8ace78685013bcb0",
-    "degraded": [
-     "F4: no issuance fields"
-    ],
-    "streaks": {
-     "central_bank": 3,
-     "fiscal": 1,
-     "general": 3
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-10T07:29:11+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
     "regime": "NEUTRAL",
     "new_revisions": 0
    }
