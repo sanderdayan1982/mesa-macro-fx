@@ -1,6 +1,6 @@
 {
  "currency": "JPY",
- "generated_at": "2026-11-10T03:47:09+00:00",
+ "generated_at": "2026-11-10T10:14:08+00:00",
  "as_of": "2026-11-09",
  "config_version": "0.2.4",
  "regime": "NEUTRAL",
@@ -92,15 +92,15 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "DRAIN",
+   "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -1.3423,
+   "score": -0.9191,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-09",
+   "as_of": "2026-11-10",
    "detail": "flow 5500.0 (Z 0.3893) · 5d -55500.0 · 20d 27900.0 (BAND_HIGH) · FEFSA/py 0.83 · BTC super-long 3.356",
-   "raw_regime": "NEUTRAL",
+   "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.6459,
     "injection_exit": 0.1934,
@@ -118,17 +118,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": -1.039,
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -1.129,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "recent": [
-     [
-      "2026-11-02",
-      -0.4703
-     ],
      [
       "2026-11-04",
       -1.0157
@@ -144,6 +140,10 @@
      [
       "2026-11-09",
       -1.3423
+     ],
+     [
+      "2026-11-10",
+      -0.9191
      ]
     ],
     "pending_days": null,
@@ -176,7 +176,7 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -55500.0,
+    "raw": -38000.0,
     "denominator": 4134700.0,
     "denominator_date": "2026-11-09",
     "today": "2026-11-10",
@@ -223,7 +223,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.416,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 118 weeks < 150); dual score +0.42 shown for context",
+   "rule": "partial (NEUTRAL vs DRAIN) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 118 weeks < 150); dual score +0.42 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -347,17 +347,17 @@
    "name": "Fiscal Drain (tax / issuance settlement)",
    "bias": "FISCAL DRAIN",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 0,
    "required": [
     "regime.fiscal == DRAIN"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == DRAIN",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_flow_20d_cum <= drain",
