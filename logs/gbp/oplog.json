@@ -1,6 +1,96 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-10T10:36:12+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:36:12+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "de888cc9e7e59d50",
+    "degraded": [
+     "F7: own currency missing (treasury)"
+    ],
+    "streaks": {
+     "central_bank": 4,
+     "fiscal": 3,
+     "general": 9
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:36:11+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:36:11+00:00",
+   "type": "GBP_V04",
+   "category": "system",
+   "details": {
+    "rows": {
+     "str": 210,
+     "iltr": 464,
+     "ctrf": 30,
+     "apf_sales": 1499,
+     "apf_profile": 39,
+     "d1a": 104,
+     "d22d": 3768,
+     "d21e": 2708,
+     "d1c": 238
+    },
+    "d1a_snapshots": 44,
+    "residual_last": [
+     "2026-10-28",
+     39549.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-10T10:36:11+00:00",
+   "type": "GBP_SEED",
+   "category": "system",
+   "details": {
+    "d21e_issue": 1764,
+    "d21e_cancel": 101,
+    "d21e_collateral": 791,
+    "d21e_exchange": 41,
+    "d21e_buyback": 11,
+    "negative_base": 11,
+    "lines_unbased": 62,
+    "lines_based": 341,
+    "first_snapshot": "2026-09-09",
+    "seed_days": 2006,
+    "seed_last": "2026-09-08",
+    "tbill_first": "2002-05-31"
+   }
+  },
+  {
    "timestamp": "2026-11-09T20:56:49+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -8690,86 +8780,6 @@
     "source": "boe_ops",
     "kind": "apf_profile",
     "error": "boe_ops apf_profile: no rows parsed (STRUCTURE CHANGE?)"
-   }
-  },
-  {
-   "timestamp": "2026-09-11T00:28:19+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "boe_ops",
-    "kind": "apf_sales",
-    "error": "boe_ops apf_sales: no rows parsed (STRUCTURE CHANGE?)"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T08:39:59+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
-    "errors": [],
-    "messages": 1
-   }
-  },
-  {
-   "timestamp": "2026-09-10T08:39:59+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "8dfb92c93a2a0ce0",
-    "degraded": [
-     "F3: government account not in JSON",
-     "F3: monthly fiscal series only",
-     "F4: no issuance fields"
-    ],
-    "streaks": {
-     "central_bank": 1,
-     "fiscal": 1,
-     "general": 1
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-10T08:39:59+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-09T23:53:27+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "8dfb92c93a2a0ce0",
-    "degraded": [
-     "F3: government account not in JSON",
-     "F3: monthly fiscal series only",
-     "F4: no issuance fields"
-    ],
-    "streaks": {
-     "central_bank": 1,
-     "fiscal": 1,
-     "general": 1
-    }
    }
   }
  ]
