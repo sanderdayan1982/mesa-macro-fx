@@ -1,6 +1,106 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-10T05:06:23+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-10T05:06:23+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "5f18a1721f149621",
+    "degraded": [
+     "F2: monthly stock only (lsap_holdings)",
+     "F2: monthly flow only (lsap_sales_month)"
+    ],
+    "streaks": {
+     "central_bank": 6,
+     "fiscal": 1,
+     "general": 15
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-10T05:06:22+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-10T05:06:22+00:00",
+   "type": "NZD_V04",
+   "category": "system",
+   "details": {
+    "tenders": 1819,
+    "omo_ops": 64,
+    "csa_days": 7949,
+    "bond_flows_two_sided_from": "2018-12-28",
+    "bond_month_ends": 95,
+    "lsap_lines": 16,
+    "lsap_unmapped": [],
+    "redemptions_vs_d10": [
+     [
+      "2024-05",
+      7391.0,
+      7391.0,
+      0.0
+     ],
+     [
+      "2025-04",
+      6942.0,
+      6982.0,
+      0.6
+     ],
+     [
+      "2025-09",
+      3066.9,
+      2244.0,
+      -26.8
+     ],
+     [
+      "2026-05",
+      7855.0,
+      6194.0,
+      -21.1
+     ]
+    ],
+    "d10_recon_months": 33,
+    "oia_recon_months": 22
+   }
+  },
+  {
+   "timestamp": "2026-11-10T05:06:09+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_last_good_copy",
+    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots \u2014 nzdm_tbill_listing.html (snapshot 2026-11-10); nzdm_tbill_1895.html (snapshot 2026-11-10); nzdm_bond_listing.html (snapshot 2026-11-10); nzdm_bond_1016.html (snapshot 2026-11-10)"
+   }
+  },
+  {
    "timestamp": "2026-11-10T03:46:04+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -9504,114 +9604,6 @@
    "details": {
     "source": "rbnz_d12",
     "error": "failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d12/hd12.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ae51b06e26acf6-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name"
-   }
-  },
-  {
-   "timestamp": "2026-10-15T11:00:06+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "rbnz_b2",
-    "error": "failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily-close.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ae513e1b57a20d-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name"
-   }
-  },
-  {
-   "timestamp": "2026-10-15T08:59:01+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
-    "errors": [],
-    "messages": 1
-   }
-  },
-  {
-   "timestamp": "2026-10-15T08:59:00+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "e75aedb1ea07ea76",
-    "degraded": [
-     "F2: monthly stock only (lsap_holdings)",
-     "F2: monthly flow only (lsap_sales_month)"
-    ],
-    "streaks": {
-     "central_bank": 1,
-     "fiscal": 5,
-     "general": 4
-    }
-   }
-  },
-  {
-   "timestamp": "2026-10-15T08:59:00+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "monthly",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [
-     "rbnz_r1: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/r1/hr1.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad9c7f88eea1bb-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-     "rbnz_r3: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/r3/hr3.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad9cf1eda2a1bb-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-     "rbnz_d30: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d/d30/hd30.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad9d64bba3a1bb-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-     "rbnz_c5: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/c/c5/hc5.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad9dd73f75a1bb-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-     "rbnz_c50: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/c/c50/hc50.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad9e49aea0a1bb-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-     "rbnz_l2: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/l-s/l2/hl2.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad9ebc5884a1bb-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name",
-     "rbnz_d10: failed after 3 tries: HTTP 403 (blocked/throttled) for https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/d-f-r/d10/hd10.xlsx \u2014 HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a4ad9f2ebda0acea-MSP'} body=<!DOCTYPE html>\r <html lang=\"en\">\r <head>\r <title>Website unavailable - Reserve Bank of New Zealand - Te P\u016btea Matua</title>\r <meta charset=\"utf-8\">\r <meta name"
-    ],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-15T08:59:00+00:00",
-   "type": "NZD_V04",
-   "category": "system",
-   "details": {
-    "tenders": 1803,
-    "omo_ops": 56,
-    "csa_days": 7949,
-    "bond_flows_two_sided_from": "2018-12-28",
-    "bond_month_ends": 94,
-    "lsap_lines": 16,
-    "lsap_unmapped": [],
-    "redemptions_vs_d10": [
-     [
-      "2024-05",
-      7391.0,
-      7391.0,
-      0.0
-     ],
-     [
-      "2025-04",
-      6942.0,
-      6982.0,
-      0.6
-     ],
-     [
-      "2025-09",
-      3066.9,
-      2244.0,
-      -26.8
-     ],
-     [
-      "2026-05",
-      7855.0,
-      6194.0,
-      -21.1
-     ]
-    ],
-    "d10_recon_months": 32,
-    "oia_recon_months": 22
    }
   }
  ]
