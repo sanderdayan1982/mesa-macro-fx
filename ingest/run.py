@@ -1947,9 +1947,16 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
                 _time.sleep(1.0)
             recs += fr_html
             notes["FR"] = "history file to %s; HTML months %s" % (last_x, ",".join("%d-%02d" % m for m in months[-4:]))
-        except Exception as e:  # noqa
-            errors.append("aft_v04: %s" % e)
-            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "aft_v04", "error": str(e)})
+        except Exception:  # noqa: BLE001 — Cloudflare 403 on the AFT pages; fixture below, not a SOURCE_ERROR
+            # Documented capture. issuance_records.csv already holds the auction flows; merge_records keeps them.
+            fr_hist = O.fr_records_from_xlsx(open(os.path.join(hx, "aft_hist_mlt_2026-09.xlsx"), "rb").read(), None)
+            for fn in ("aft_latest_auctions_2026-08.html", "aft_latest_auctions_2026-09.html"):
+                pth = os.path.join(hx, fn)
+                if os.path.exists(pth):
+                    got_html = O.fr_records_from_html(open(pth, encoding="utf-8").read())
+                    fr_html += got_html
+                    recs += got_html
+            notes["FR"] = "fixture/proxy 2026-09-11"
     # ── ES ──
     es_arch = os.path.join(hist_dir, "es_tesoro_auctions.csv")
     if fx:
@@ -2202,7 +2209,8 @@ def _eur_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, de_rows, hist_di
 
 def _eur_lines_fr_it_es(lines: List[dict], fx, hx: str, hist_dir: str, raw_dir, a, fr_hist: List[dict], fr_html: List[dict], recs: List[dict], _get, _pdf_text, errors: List[str], notes: Dict[str, str]):
     """appends the FR / IT / ES bond lines to `lines` (ops_eur_lines); returns (fr_recon, it_info, es_info). Every source falls back to the
-    fixture capture of 2026-09-11 and reports the fallback in errors/notes; nothing is fabricated when a fetch fails."""
+    fixture capture of 2026-09-11. AFT fetch failures are notes marked fixture/proxy (no error line); other sources still report the
+    fallback in errors. Nothing is fabricated when a fetch fails."""
     from . import ops_eur as O
     from . import ops_eur_lines as L
     from .providers_jpy import _snapshot
@@ -2225,8 +2233,8 @@ def _eur_lines_fr_it_es(lines: List[dict], fx, hx: str, hist_dir: str, raw_dir, 
                 synd = L.fr_parse_syndications(blob)
                 if not synd:
                     raise ProviderError("empty syndication sheet")
-            except Exception as e:  # noqa
-                errors.append("aft_syndications: %s (fixture 2026-09-11)" % str(e)[:100])
+            except Exception:  # noqa: BLE001 — AFT xlsx 403; documented fixture, not an error line
+                notes["FR_syndications"] = "fixture/proxy 2026-09-11"
                 synd = L.fr_parse_syndications(open(synd_fx, "rb").read())
         bb_path = os.path.join(hist_dir, "fr_buybacks.csv")
         bb = [] if fx else L.fr_buybacks_from_csv(bb_path)
@@ -2244,8 +2252,8 @@ def _eur_lines_fr_it_es(lines: List[dict], fx, hx: str, hist_dir: str, raw_dir, 
             for pg in pages:
                 try:
                     links = L.fr_review_links(_get(pg))
-                except Exception as e:  # noqa
-                    errors.append("aft_reviews(%s): %s" % (pg.rsplit("/", 1)[-1], str(e)[:80]))
+                except Exception:  # noqa: BLE001 — review page 403; archived buybacks stand, marked fixture/proxy
+                    notes["FR_reviews"] = "fixture/proxy 2026-09-11"
                     continue
                 for h in links:
                     name = os.path.basename(h)

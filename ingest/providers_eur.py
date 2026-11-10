@@ -1,6 +1,8 @@
 """EUR providers — ECB Data Portal (SDMX csvdata, no key), ECB APP/PEPP history CSVs, Deutsche Finanzagentur issuance XLSX.
 Verified 2026-09-09 from the data.ecb.europa.eu / ecb.europa.eu / deutsche-finanzagentur.de origins (config/eur.json v0.2 source map):
-  • ECB Data Portal: https://data-api.ecb.europa.eu/service/data/<FLOW>/<KEY>?format=csvdata&startPeriod=YYYY-MM-DD
+  • ECB Data Portal: https://data-api.ecb.europa.eu/service/data/<FLOW>/<KEY>?format=csvdata&lastNObservations=<N>
+    (startPeriod=YYYY-MM-DD is the other documented bound). Unbounded csvdata and startPeriod-only windows 504 after ~31s;
+    lastNObservations sized to the lane window returns in <1s. The runner merges the history CSV, so the tail does not drop history.
     FLOW = text before the first dot of the desk key (ILM, EST, FM, YC, IRS, TGB, BSI, MIR, BLS, GFS, EXR, ICP) — E14.
     CSV columns used: KEY, TIME_PERIOD, OBS_VALUE, UNIT, UNIT_MULT. TIME_PERIOD formats: YYYY-MM-DD (daily), YYYY-Wnn (weekly →
     Friday of the ISO week = WFS 'position as at' date), YYYY-MM (monthly → 1st of month), YYYY-Qn (quarterly → quarter end).
@@ -74,6 +76,18 @@ def _split_key(key: str) -> Tuple[str, str]:
     return key[:i], key[i + 1:]
 
 
+def _bounded_last_n(since: str) -> int:
+    """Observations to request. Full-history and startPeriod-only csvdata 504 (~31s) on the ECB gateway;
+    lastNObservations=5..60 returns 200 in <1s. One point per day is the densest frequency these keys use,
+    so days+10 covers the incremental window (45/120/400). The cap keeps a backfill off the full history;
+    older points stay in the history CSV the runner merges."""
+    try:
+        days = (date.today() - date.fromisoformat(str(since)[:10])).days
+    except (ValueError, TypeError):
+        return 60
+    return max(5, min(60, int(days) + 10))
+
+
 class EcbProvider:
     """One SDMX key per request; csvdata parsed by header names (column order is not guaranteed)."""
 
@@ -137,21 +151,42 @@ class EcbProvider:
             ser, meta = self.parse_fixture(open(p, encoding="utf-8").read(), key)
         else:
             flow, rest = _split_key(key)
-            url = "%s/%s/%s?format=csvdata&startPeriod=%s" % (self.base, flow, rest, since)
-            try:
-                text = _get(url, retries=2)
-            except ProviderError as e:
-                # the portal answers 404 when a valid key has no observation after startPeriod (step series such as the key rates,
-                # quarterly flows on a short incremental window): not an error — the runner keeps the history CSV
-                if "404" in str(e) and since > "2000":
-                    self.meta[key] = {"no_new_observations": True}
-                    self.no_new.append(key)
-                    return []
-                raise
+            n = _bounded_last_n(since)
+            # lastNObservations bounds the pull. startPeriod= is the lane window (it sizes n);
+            # sending startPeriod as the only filter is a request the gateway 504s on.
+            # A 504 also lands at random on a short window (~31s) and the next try is usually <1s,
+            # so the same bounded URL is retried, still ≥ pause apart. Only the last failure is an error.
+            url = "%s/%s/%s?format=csvdata&lastNObservations=%d" % (self.base, flow, rest, n)
+            text = None
+            attempts = 5
+            for i in range(attempts):
+                try:
+                    text = _get(url, timeout=40, retries=1)
+                    break
+                except ProviderError as e:
+                    msg = str(e)
+                    # the portal answers 404 when a valid key has no observation after startPeriod (step series such as the key rates,
+                    # quarterly flows on a short incremental window): not an error — the runner keeps the history CSV
+                    if "404" in msg and since > "2000":
+                        self.meta[key] = {"no_new_observations": True}
+                        self.no_new.append(key)
+                        return []
+                    if i < attempts - 1 and any(t in msg for t in ("504", "timed out", "Timeout", "timeout")):
+                        time.sleep(self.pause)
+                        continue
+                    raise
             if self.raw_dir:
                 os.makedirs(self.raw_dir, exist_ok=True)
                 open(os.path.join(self.raw_dir, "ecb_%s.csv" % key), "w", encoding="utf-8").write(text)
             ser, meta = self.parse_csvdata(text, key)
+            # Same window startPeriod= used to express. Points older than `since` stay in the history CSV;
+            # a step series whose latest print is before the window keeps that one point (the level) and not the older tail.
+            if since and since > "1900":
+                cut = str(since)[:10]
+                tail = [(d, v) for d, v in ser if d >= cut]
+                if not tail and ser:
+                    tail = [ser[-1]]
+                ser = tail
             time.sleep(self.pause)
         self.meta[key] = meta
         return ser
