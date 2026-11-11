@@ -1,6 +1,84 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-11T03:04:34+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-11-11T03:04:33+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "3983d89c55273344",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 8,
+     "fiscal": 3,
+     "general": 21
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-11T03:04:33+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-11T03:04:33+00:00",
+   "type": "AUD_V04",
+   "category": "system",
+   "details": {
+    "omo_ops": 4449,
+    "omo_cut": "2026-11-11",
+    "unwind_days": 523,
+    "tenders": {
+     "tb": 2003,
+     "tn": 2496,
+     "tib": 426
+    },
+    "buybacks": {
+     "tb": 176,
+     "tib": 13
+    },
+    "tb_lines": 30,
+    "links": "resolved on the Data Hub: tb_issuance=2025-06-20, tn_issuance=2025-06-05, tib_issuance=2025-07-10, tb_buybacks=2025-06-06, tib_buybacks=2025-06-06, tb_portfolio=2025-05-02"
+   }
+  },
+  {
+   "timestamp": "2026-11-11T03:04:32+00:00",
+   "type": "AUD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "a31_rows": 1532,
+    "rba_asof": "2026-10-30",
+    "unmatched": [],
+    "rba_share": 0.183
+   }
+  },
+  {
    "timestamp": "2026-11-10T10:16:26+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7621,95 +7699,6 @@
      "fiscal": 1,
      "general": 3
     }
-   }
-  },
-  {
-   "timestamp": "2026-09-10T11:22:54+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-10T11:22:54+00:00",
-   "type": "AUD_V04",
-   "category": "system",
-   "details": {
-    "omo_ops": 4431,
-    "omo_cut": "2026-09-09",
-    "unwind_days": 522,
-    "tenders": {
-     "tb": 1984,
-     "tn": 2473,
-     "tib": 423
-    },
-    "buybacks": {
-     "tb": 176,
-     "tib": 13
-    },
-    "tb_lines": 31,
-    "links": "resolved on the Data Hub: tb_issuance=2025-06-20, tn_issuance=2025-06-05, tib_issuance=2025-07-10, tb_buybacks=2025-06-06, tib_buybacks=2025-06-06, tb_portfolio=2025-05-02"
-   }
-  },
-  {
-   "timestamp": "2026-09-10T10:20:57+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
-    "errors": [],
-    "messages": 1
-   }
-  },
-  {
-   "timestamp": "2026-09-10T10:20:56+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "8ace78685013bcb0",
-    "degraded": [
-     "F4: no issuance fields"
-    ],
-    "streaks": {
-     "central_bank": 3,
-     "fiscal": 1,
-     "general": 3
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-10T10:20:56+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [
-     "aofm_v04: HTTPSConnectionPool(host='www.aofm.gov.au', port=443): Read timed out. (read timeout=180)"
-    ],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
    }
   }
  ]
