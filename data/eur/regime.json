@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-10T20:59:26+00:00",
- "as_of": "2026-11-09",
+ "generated_at": "2026-11-11T12:05:51+00:00",
+ "as_of": "2026-11-10",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.191,
+ "weighted_score": 0.151,
  "block_scores": {
-  "central_bank": -0.38,
+  "central_bank": -0.48,
   "rates": 0.2,
   "fiscal": 0.89,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.38,
+   "score": -0.48,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-09",
-   "detail": "excess liquidity 2081623.0 M (SAFE) · Δ5s -1891.0 (p61.17) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 70.0 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -104598.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-11-10",
+   "detail": "excess liquidity 2084863.0 M (SAFE) · Δ5s -7796.0 (p47.71) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 81.0 M · €STR−DFR -5.8 bp (SAFE) · MonPol 13w -104598.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.378,
+    "effective_score": -0.353,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "recent": [
-     [
-      "2026-11-02",
-      -0.63
-     ],
      [
       "2026-11-03",
       -0.32
@@ -73,6 +69,10 @@
      [
       "2026-11-09",
       -0.38
+     ],
+     [
+      "2026-11-10",
+      -0.48
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -0.09,
-     "excess_20s_vs_stock": -0.6
+     "excess_wow_vs_stock": -0.37,
+     "excess_20s_vs_stock": -0.58
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,18 +94,18 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.38,
-    "score_flows_only": -0.28
+    "score_v02": -0.48,
+    "score_flows_only": -0.38
    }
   },
   "fiscal": {
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 0.429,
+   "score": 0.4283,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-09",
+   "as_of": "2026-11-10",
    "detail": "govt deposits 86440.0 M (Δw -43775.0, p0.0) · impulse 4w 8283.0 (p82.93) · 13w 4790.0 · deficit -3.2404% GDP (LARGE DEFICIT (injection)) · DE b/c 1.784 (NORMAL, avg26 1.63) · TARGET Δ3m -16708.1 · rule INJECTION",
    "raw_regime": "INJECTION",
    "cuts": {
@@ -127,15 +127,11 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 1.174,
+    "effective_score": 1.084,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "recent": [
-     [
-      "2026-11-02",
-      0.9719
-     ],
      [
       "2026-11-03",
       0.9667
@@ -155,6 +151,10 @@
      [
       "2026-11-09",
       0.429
+     ],
+     [
+      "2026-11-10",
+      0.4283
      ]
     ],
     "pending_days": null,
@@ -195,9 +195,9 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": 8930.165,
-    "denominator": 2081623.0,
-    "denominator_date": "2026-11-09",
-    "today": "2026-11-10",
+    "denominator": 2084863.0,
+    "denominator_date": "2026-11-10",
+    "today": "2026-11-11",
     "note": null
    },
    "v03_shadow": {
@@ -236,8 +236,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.001,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.00 shown for context",
+   "score": -0.069,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.07 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -445,7 +445,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_tue",
+  "lane": "daily",
   "backfill": false,
   "errors": [
    "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
