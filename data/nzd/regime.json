@@ -1,13 +1,13 @@
 {
  "currency": "NZD",
- "generated_at": "2026-11-11T04:07:24+00:00",
- "as_of": "2026-11-09",
+ "generated_at": "2026-11-11T06:34:04+00:00",
+ "as_of": "2026-11-10",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.3,
+ "weighted_score": 0.2,
  "block_scores": {
-  "central_bank": 0.0,
+  "central_bank": -0.25,
   "rates": 0.25,
   "fiscal": 0.5,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.0,
+   "score": -0.25,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-09",
-   "detail": "settlement cash 29647.0 (5d 1366.0, 20d -2707.0, SAFE) · OMO stock 6707.0 (22.6%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "as_of": "2026-11-10",
+   "detail": "settlement cash 30011.0 (5d -4087.0, 20d 282.0, SAFE) · OMO stock 6707.0 (22.4%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,15 +43,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.125,
+    "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "recent": [
-     [
-      "2026-11-02",
-      0.25
-     ],
      [
       "2026-11-03",
       0.25
@@ -63,6 +59,10 @@
      [
       "2026-11-09",
       0.0
+     ],
+     [
+      "2026-11-10",
+      -0.25
      ]
     ],
     "pending_days": null
@@ -71,8 +71,8 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "settlement_cash_wow": 0.5,
-     "settlement_cash_20d": -0.25,
+     "settlement_cash_wow": -0.5,
+     "settlement_cash_20d": 0.5,
      "orrf_used": 0.0
     },
     "level": {
@@ -84,8 +84,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": 0.0,
-    "score_flows_only": 0.25
+    "score_v02": -0.25,
+    "score_flows_only": 0.0
    }
   },
   "fiscal": {
@@ -95,8 +95,8 @@
    "score": 0.5,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-09",
-   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 2.22x at 2.958% · bond 5.266x tail 1.0 bp · settlements next 5d 250.0 · non-resident 58.0%",
+   "as_of": "2026-11-10",
+   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 2.22x at 2.958% · bond 5.266x tail 1.0 bp · settlements next 5d 600.0 · non-resident 58.0%",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.25,
@@ -111,15 +111,11 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.375,
+    "effective_score": 0.5,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "recent": [
-     [
-      "2026-11-02",
-      0.0
-     ],
      [
       "2026-11-03",
       0.5
@@ -130,6 +126,10 @@
      ],
      [
       "2026-11-09",
+      0.5
+     ],
+     [
+      "2026-11-10",
       0.5
      ]
     ],
@@ -155,8 +155,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.2,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.20 shown for context",
+   "score": 0.05,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.05 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -354,11 +354,11 @@
     },
     {
      "condition": "central_bank.settlement_cash_wow level >= WATCH",
-     "met": false
+     "met": true
     },
     {
      "condition": "central_bank.residual_flow_5d_cum >= p80",
-     "met": true
+     "met": false
     }
    ]
   },
