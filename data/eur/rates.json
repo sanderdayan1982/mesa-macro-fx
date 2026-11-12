@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-12T12:09:54+00:00",
+ "generated_at": "2026-11-12T17:06:45+00:00",
  "as_of": "2026-11-12",
  "equivalence_quality": "high",
  "equivalence_note": "€STR (08:00 CET T+1) is the floor test: trades 5–10 bp below the DFR with abundant excess liquidity and should drift toward the DFR as liquidity falls (ECB Mar-2024 framework). STRESS SPREAD = €STR − DFR. Daily periphery premium = all-euro-area 10Y − AAA 10Y (verified 42 bp); country spreads monthly (IRS) until daily national yields are wired (Phase 3).",
@@ -13,11 +13,7 @@
   "series_expected": 18,
   "last_fetch_ok": true,
   "errors": [
-   "ecb_daily: EST.B.EU000A2QQF32.CR: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2QQF32.CR: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: EST.B.EU000A2X2A25.R25: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.R25: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: EST.B.EU000A2X2A25.WT: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: FM.B.U2.EUR.4F.KR.MLFR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MLFR.LEV: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: FM.B.U2.EUR.4F.KR.MRR_FR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MRR_FR.LEV: HTTP Error 503: Service Temporarily Unavailable"
+   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
   ],
   "series_pending": 0
  },
@@ -1327,18 +1323,17 @@
    "unit": "USD",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1.1127,
-   "date": "2026-11-11",
-   "prev_value": 1.1214,
-   "prev_date": "2026-11-10",
-   "change_abs": -0.0087,
-   "change_pct": -0.7758,
-   "zscore": -1.7695,
+   "value": 1.1081,
+   "date": "2026-11-12",
+   "prev_value": 1.1127,
+   "prev_date": "2026-11-11",
+   "change_abs": -0.0046,
+   "change_pct": -0.4134,
+   "zscore": -3.0358,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.159,
     1.1578,
     1.1615,
     1.1622,
@@ -1389,15 +1384,16 @@
     1.1165,
     1.1193,
     1.1214,
-    1.1127
+    1.1127,
+    1.1081
    ],
    "high_low": {
     "high": 1.1652,
     "high_date": "2026-09-09",
-    "low": 1.1127,
-    "low_date": "2026-11-11"
+    "low": 1.1081,
+    "low_date": "2026-11-12"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "display_only": true
@@ -2379,7 +2375,7 @@
   "flags": [
    "COUNTRY_SPREAD_WATCH"
   ],
-  "detail": "€STR 2.439 (−DFR -6.1 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 6.0 bp · corridor -0.152 · 10−2 29.5 (FLAT) · periphery 58.6 bp (SAFE) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 13.5 · EUR/USD 1.1127",
+  "detail": "€STR 2.439 (−DFR -6.1 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 6.0 bp · corridor -0.152 · 10−2 29.5 (FLAT) · periphery 58.6 bp (SAFE) · BTP−Bund 88.9 (SAFE) · OAT 96.7 · Bonos 45.4 · EURIBOR−DFR 13.5 · EUR/USD 1.1081",
   "alerts": [
    {
     "metric": "estr_minus_dfr_bps",

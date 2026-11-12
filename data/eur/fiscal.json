@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-12T12:09:54+00:00",
+ "generated_at": "2026-11-12T17:06:45+00:00",
  "as_of": "2026-11-09",
  "equivalence_quality": "medium-low",
  "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
@@ -13,11 +13,7 @@
   "series_expected": 13,
   "last_fetch_ok": true,
   "errors": [
-   "ecb_daily: EST.B.EU000A2QQF32.CR: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2QQF32.CR: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: EST.B.EU000A2X2A25.R25: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.R25: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: EST.B.EU000A2X2A25.WT: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: FM.B.U2.EUR.4F.KR.MLFR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MLFR.LEV: HTTP Error 503: Service Temporarily Unavailable",
-   "ecb_daily: FM.B.U2.EUR.4F.KR.MRR_FR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MRR_FR.LEV: HTTP Error 503: Service Temporarily Unavailable"
+   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
   ],
   "series_pending": 1
  },
@@ -3099,14 +3095,14 @@
   },
   "settlements_ahead": {
    "label": "Auction settlements ahead (scheduled drain; results published, not yet settled)",
-   "value": 24996.637,
+   "value": 25044.028,
    "unit": "EUR millions",
    "status": "fresh",
    "date": "2026-11-12",
    "calendar": [
     [
      "2026-11-13",
-     9987.278
+     10034.669
     ],
     [
      "2026-11-16",
