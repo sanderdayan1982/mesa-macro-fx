@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-11-12T02:36:13+00:00",
+ "generated_at": "2026-11-12T04:06:42+00:00",
  "as_of": "2026-11-11",
  "equivalence_quality": "high",
  "equivalence_note": "DAILY current account balances, excess reserves, required reserves and market operations (T+1 final, same-day provisional) plus a full balance sheet every ten days. Closest G8 analogue to the Fed's daily data.",
@@ -3438,13 +3438,13 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
+   "value": -838.0,
    "date": "2026-11-12",
    "prev_value": 129.0,
    "prev_date": "2026-11-11",
-   "change_abs": -129.0,
-   "change_pct": -100.0,
-   "zscore": -0.2751,
+   "change_abs": -967.0,
+   "change_pct": -749.6124,
+   "zscore": -0.5979,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -3500,7 +3500,7 @@
     949.0,
     63.0,
     129.0,
-    0.0
+    -838.0
    ],
    "high_low": {
     "high": 7405.0,
@@ -3519,18 +3519,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -129.0,
-   "date": "2026-11-10",
-   "prev_value": -192.0,
-   "prev_date": "2026-11-09",
-   "change_abs": 63.0,
-   "change_pct": 32.8125,
-   "zscore": 0.6264,
+   "value": -838.0,
+   "date": "2026-11-12",
+   "prev_value": -129.0,
+   "prev_date": "2026-11-10",
+   "change_abs": -709.0,
+   "change_pct": -549.6124,
+   "zscore": -1.3033,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -254.0,
     -1452.0,
     -370.0,
     -387.0,
@@ -3581,7 +3580,8 @@
     -141.0,
     -1141.0,
     -192.0,
-    -129.0
+    -129.0,
+    -838.0
    ],
    "high_low": {
     "high": -9.0,
@@ -3589,9 +3589,9 @@
     "low": -1553.0,
     "low_date": "2026-09-24"
    },
-   "age_days": 2,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 0,
+   "confidence": 92,
+   "latest_outlier": true
   },
   "pooled_supplied": {
    "source_id": "boj:ope XLSX by operation",
@@ -4135,13 +4135,13 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 141.0,
+   "value": -697.0,
    "date": "2026-11-12",
    "prev_value": 5052.0,
    "prev_date": "2026-11-11",
-   "change_abs": -4911.0,
-   "change_pct": -97.209,
-   "zscore": -0.7973,
+   "change_abs": -5749.0,
+   "change_pct": -113.7965,
+   "zscore": -0.9742,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -4197,7 +4197,7 @@
     4896.0,
     4959.0,
     5052.0,
-    141.0
+    -697.0
    ],
    "high_low": {
     "high": 11758.0,
@@ -4211,19 +4211,24 @@
   },
   "ops_calendar_next_4w": {
    "label": "Operation end dates next 4 weeks (− repayments of funds-supplying ops, + SLF repurchases)",
-   "value": null,
+   "value": 838.0,
    "unit": "JPY 100m (display: tn = 10^12)",
-   "status": "unavailable",
+   "status": "fresh",
    "date": "2026-11-12",
-   "calendar": []
+   "calendar": [
+    [
+     "2026-11-13",
+     838.0
+    ]
+   ]
   },
   "ops_data_cut": {
    "label": "Last operations file parsed",
-   "value": 1,
-   "cut_date": "2026-11-11",
+   "value": 0,
+   "cut_date": "2026-11-12",
    "status": "fresh",
    "date": "2026-11-12",
-   "note": "ope files: 270; daily files: 271"
+   "note": "ope files: 271; daily files: 271"
   }
  },
  "signals": {
@@ -4310,7 +4315,7 @@
    "mode": "mean2",
    "level_weight": 1.0,
    "flow": {
-    "ops_net_5d_pct": 0.0034,
+    "ops_net_5d_pct": -0.0169,
     "ops_cash_5d_pct": 0.1308,
     "cab_20d_level": 0.25,
     "cab_dod_level": 0.0,
