@@ -1,7 +1,7 @@
 {
  "currency": "GBP",
- "generated_at": "2026-11-12T10:33:01+00:00",
- "as_of": "2026-10-28",
+ "generated_at": "2026-11-12T15:34:17+00:00",
+ "as_of": "2026-11-04",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "INJECTION",
-   "confirmed": "INJECTION",
+   "regime": "DRAIN",
+   "confirmed": "DRAIN",
    "canonical": "confirmed",
    "score": -0.17,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-10-28",
-   "detail": "reserves SAFE (above PMRR) · PBS BAND_LOW · QT -1528.8/w · repo/reserves 0.352",
-   "raw_regime": "INJECTION",
+   "as_of": "2026-11-04",
+   "detail": "reserves SAFE (above PMRR) · PBS BAND_LOW · QT -1528.8/w · repo/reserves 0.3513",
+   "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.665,
     "injection_exit": 0.5,
@@ -41,19 +41,19 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "INJECTION",
-    "raw": "INJECTION",
-    "effective_score": 0.5,
+    "confirmed": "DRAIN",
+    "raw": "DRAIN",
+    "effective_score": -0.17,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-10-28",
+    "as_of": "2026-11-04",
     "recent": [
      [
-      "2026-10-21",
-      1.17
+      "2026-10-28",
+      -0.17
      ],
      [
-      "2026-10-28",
+      "2026-11-04",
       -0.17
      ]
     ],
@@ -134,7 +134,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": -0.102,
-   "rule": "partial (INJECTION vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.10 shown for context",
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.10 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -162,7 +162,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-11-01",
-   "era_weeks": 208,
+   "era_weeks": 209,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -303,7 +303,7 @@
    "name": "Fiscal Injection",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 4,
    "unknown": 0,
    "required": [
@@ -325,7 +325,7 @@
     },
     {
      "condition": "central_bank.reserves_wow_pct >= p80",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -356,7 +356,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
