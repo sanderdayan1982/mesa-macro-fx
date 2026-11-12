@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-12T09:49:06+00:00",
+ "generated_at": "2026-11-12T12:09:54+00:00",
  "as_of": "2026-11-09",
  "equivalence_quality": "medium-low",
  "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
@@ -13,7 +13,11 @@
   "series_expected": 13,
   "last_fetch_ok": true,
   "errors": [
-   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
+   "ecb_daily: EST.B.EU000A2QQF32.CR: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2QQF32.CR: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: EST.B.EU000A2X2A25.R25: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.R25: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: EST.B.EU000A2X2A25.WT: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: FM.B.U2.EUR.4F.KR.MLFR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MLFR.LEV: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: FM.B.U2.EUR.4F.KR.MRR_FR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MRR_FR.LEV: HTTP Error 503: Service Temporarily Unavailable"
   ],
   "series_pending": 1
  },
@@ -2453,7 +2457,7 @@
    "age_days": 10,
    "confidence": 85,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-11-13"
+   "equivalence_note": "last record 2026-11-16"
   },
   "settled_EU": {
    "source_id": "ops_eur:EU",
@@ -3095,7 +3099,7 @@
   },
   "settlements_ahead": {
    "label": "Auction settlements ahead (scheduled drain; results published, not yet settled)",
-   "value": 17987.278,
+   "value": 24996.637,
    "unit": "EUR millions",
    "status": "fresh",
    "date": "2026-11-12",
@@ -3103,6 +3107,10 @@
     [
      "2026-11-13",
      9987.278
+    ],
+    [
+     "2026-11-16",
+     7009.359
     ],
     [
      "2026-11-17",
@@ -3280,18 +3288,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.52,
-   "date": "2026-11-11",
-   "prev_value": 18.975,
-   "prev_date": "2026-11-10",
-   "change_abs": -17.455,
-   "change_pct": -91.9895,
-   "zscore": -0.3237,
+   "value": 1.59,
+   "date": "2026-11-12",
+   "prev_value": 1.52,
+   "prev_date": "2026-11-11",
+   "change_abs": 0.07,
+   "change_pct": 4.6053,
+   "zscore": -0.3006,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.42,
     1.583,
     3.365,
     1.1,
@@ -3342,7 +3349,8 @@
     1.49,
     1.8,
     18.975,
-    1.52
+    1.52,
+    1.59
    ],
    "high_low": {
     "high": 18.975,
@@ -3350,7 +3358,7 @@
     "low": 1.1,
     "low_date": "2026-08-19"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -3766,18 +3774,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.46,
-   "date": "2026-11-11",
-   "prev_value": 1.71,
-   "prev_date": "2026-10-29",
-   "change_abs": -0.25,
-   "change_pct": -14.6199,
-   "zscore": -1.4249,
+   "value": 1.59,
+   "date": "2026-11-12",
+   "prev_value": 1.46,
+   "prev_date": "2026-11-11",
+   "change_abs": 0.13,
+   "change_pct": 8.9041,
+   "zscore": -0.2069,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.41,
     1.747,
     1.45,
     1.45,
@@ -3828,15 +3835,16 @@
     1.863,
     1.64,
     1.71,
-    1.46
+    1.46,
+    1.59
    ],
    "high_low": {
     "high": 1.863,
     "high_date": "2026-10-27",
-    "low": 1.41,
-    "low_date": "2025-12-10"
+    "low": 1.43,
+    "low_date": "2026-02-11"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -3849,7 +3857,7 @@
   },
   "eu_redemptions_gross_next_12m": {
    "label": "EU-Bonds/Bills redemptions next 12 months — GROSS (Commission outstanding by ISIN)",
-   "value": 69819.0,
+   "value": 75334.0,
    "unit": "EUR millions",
    "status": "fresh",
    "date": "2026-11-12",
@@ -3864,7 +3872,7 @@
     ],
     [
      "2027-02-05",
-     3883.0
+     5303.0
     ],
     [
      "2027-03-05",
@@ -3909,8 +3917,8 @@
    "unit": "EUR millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 865347.0,
-   "date": "2026-10-29",
+   "value": 874317.0,
+   "date": "2026-11-18",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -3920,16 +3928,16 @@
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    865347.0
+    874317.0
    ],
    "high_low": {
-    "high": 865347.0,
-    "high_date": "2026-10-29",
-    "low": 865347.0,
-    "low_date": "2026-10-29"
+    "high": 874317.0,
+    "high_date": "2026-11-18",
+    "low": 874317.0,
+    "low_date": "2026-11-18"
    },
-   "age_days": 14,
-   "confidence": 70,
+   "age_days": -6,
+   "confidence": 100,
    "latest_outlier": false
   },
   "esm_redemptions_next_12m": {
@@ -4104,8 +4112,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_weekly_pct": 2.0695,
-    "fiscal_impulse_v04_pct": 0.0302
+    "net_issuance_weekly_pct": 2.0619,
+    "fiscal_impulse_v04_pct": 0.0301
    },
    "level": {},
    "weights": {},

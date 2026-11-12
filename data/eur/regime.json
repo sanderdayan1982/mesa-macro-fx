@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-12T09:50:37+00:00",
- "as_of": "2026-11-10",
+ "generated_at": "2026-11-12T12:11:29+00:00",
+ "as_of": "2026-11-11",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.151,
+ "weighted_score": 0.287,
  "block_scores": {
-  "central_bank": -0.48,
+  "central_bank": -0.14,
   "rates": 0.2,
   "fiscal": 0.89,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.48,
+   "score": -0.14,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-10",
-   "detail": "excess liquidity 2084863.0 M (SAFE) · Δ5s -7796.0 (p47.71) · TOMO 38363.0 M (STRUCTURAL (no price confirmation)) · MLF 81.0 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -104598.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-11-11",
+   "detail": "excess liquidity 2092536.0 M (SAFE) · Δ5s 11560.0 (p84.49) · TOMO 37526.0 M (STRUCTURAL (no price confirmation)) · MLF 32.0 M · €STR−DFR -6.1 bp (SAFE) · MonPol 13w -104598.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.353,
+    "effective_score": -0.323,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-10",
+    "as_of": "2026-11-11",
     "recent": [
-     [
-      "2026-11-03",
-      -0.32
-     ],
      [
       "2026-11-04",
       -0.86
@@ -73,6 +69,10 @@
      [
       "2026-11-10",
       -0.48
+     ],
+     [
+      "2026-11-11",
+      -0.14
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -0.37,
-     "excess_20s_vs_stock": -0.58
+     "excess_wow_vs_stock": 0.55,
+     "excess_20s_vs_stock": -0.66
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,15 +94,15 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.48,
-    "score_flows_only": -0.38
+    "score_v02": -0.14,
+    "score_flows_only": -0.04
    }
   },
   "fiscal": {
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 0.3066,
+   "score": 0.3055,
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-11-11",
@@ -154,7 +154,7 @@
      ],
      [
       "2026-11-11",
-      0.3066
+      0.3055
      ]
     ],
     "pending_days": null,
@@ -195,8 +195,8 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": 6392.379,
-    "denominator": 2084863.0,
-    "denominator_date": "2026-11-10",
+    "denominator": 2092536.0,
+    "denominator_date": "2026-11-11",
     "today": "2026-11-12",
     "note": null
    },
@@ -236,8 +236,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.069,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.07 shown for context",
+   "score": 0.169,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.17 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -448,7 +448,11 @@
   "lane": "daily",
   "backfill": false,
   "errors": [
-   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
+   "ecb_daily: EST.B.EU000A2QQF32.CR: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2QQF32.CR: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: EST.B.EU000A2X2A25.R25: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.R25: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: EST.B.EU000A2X2A25.WT: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: FM.B.U2.EUR.4F.KR.MLFR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MLFR.LEV: HTTP Error 503: Service Temporarily Unavailable",
+   "ecb_daily: FM.B.U2.EUR.4F.KR.MRR_FR.LEV: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.4F.KR.MRR_FR.LEV: HTTP Error 503: Service Temporarily Unavailable"
   ]
  }
 }
