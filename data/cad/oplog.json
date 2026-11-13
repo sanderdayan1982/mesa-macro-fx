@@ -1,6 +1,96 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-13T19:01:55+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 4
+   }
+  },
+  {
+   "timestamp": "2026-11-13T19:01:54+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "3ceb386566a76970",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 2,
+     "fiscal": 1,
+     "general": 1
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-13T19:01:54+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "weekly",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "LIQUIDITY_DRAIN",
+    "new_revisions": 1
+   }
+  },
+  {
+   "timestamp": "2026-11-13T19:01:53+00:00",
+   "type": "REGIME_CHANGE",
+   "category": "system",
+   "details": {
+    "old": "FLOOR_FRICTION",
+    "new": "LIQUIDITY_DRAIN"
+   }
+  },
+  {
+   "timestamp": "2026-11-13T19:01:53+00:00",
+   "type": "CAD_V04",
+   "category": "system",
+   "details": {
+    "groups": {
+     "term_repo": 445,
+     "or": 331,
+     "orr": 412,
+     "rgam": 2265,
+     "tbill": 2442,
+     "bond": 1175,
+     "bond_repurchase": 1134
+    },
+    "indicator_days": 47,
+    "net_issuance_last": [
+     "2026-11-13",
+     -5500.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-13T19:01:53+00:00",
+   "type": "CAD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "blobs_pending": 57,
+    "holdings_asof": "2026-11-13",
+    "holdings_rows": 52,
+    "history_asofs": 80,
+    "outstanding_asof": "2026-11-11",
+    "outstanding_isins": 84,
+    "unmatched": []
+   }
+  },
+  {
    "timestamp": "2026-11-13T02:03:45+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7923,101 +8013,6 @@
     "outstanding_asof": "2026-09-11",
     "outstanding_isins": 83,
     "unmatched": []
-   }
-  },
-  {
-   "timestamp": "2026-09-14T23:57:46+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "none",
-    "chunks": 0,
-    "ok": 0,
-    "errors": [],
-    "messages": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-14T23:57:46+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "2a2caa830a82bdd2",
-    "degraded": [
-     "F6: friction flag missing"
-    ],
-    "streaks": {
-     "central_bank": 1,
-     "fiscal": 2,
-     "general": 2
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-14T23:57:46+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-14T23:57:45+00:00",
-   "type": "CAD_V04",
-   "category": "system",
-   "details": {
-    "groups": {
-     "term_repo": 428,
-     "or": 327,
-     "orr": 412,
-     "rgam": 2171,
-     "tbill": 2426,
-     "bond": 1153,
-     "bond_repurchase": 1134
-    },
-    "indicator_days": 7,
-    "net_issuance_last": [
-     "2026-09-14",
-     0.0
-    ]
-   }
-  },
-  {
-   "timestamp": "2026-09-14T23:57:45+00:00",
-   "type": "CAD_HOLDINGS",
-   "category": "system",
-   "details": {
-    "blobs_pending": 57,
-    "holdings_asof": "2026-09-14",
-    "holdings_rows": 53,
-    "history_asofs": 39,
-    "outstanding_asof": "2026-09-10",
-    "outstanding_isins": 84,
-    "unmatched": []
-   }
-  },
-  {
-   "timestamp": "2026-09-14T11:11:02+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "none",
-    "chunks": 0,
-    "ok": 0,
-    "errors": [],
-    "messages": 0
    }
   }
  ]

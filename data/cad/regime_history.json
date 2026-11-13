@@ -262,9 +262,43 @@
    "flags": [
     "PHASE_QE"
    ]
+  },
+  {
+   "week_of": "2026-11-11",
+   "regime": "LIQUIDITY_DRAIN",
+   "score": 0.113,
+   "cells": {
+    "central_bank": {
+     "traffic_light": "RED",
+     "score": -1.0
+    },
+    "fiscal": {
+     "traffic_light": "YELLOW",
+     "score": 2.0
+    },
+    "banking": {
+     "traffic_light": "GREEN",
+     "score": 1.0
+    },
+    "rates": {
+     "traffic_light": "YELLOW",
+     "score": 0.25
+    }
+   },
+   "flags": [
+    "FLOOR_FRICTION",
+    "PHASE_NORMALIZATION"
+   ]
   }
  ],
  "changelog": [
+  {
+   "timestamp": "2026-11-13T19:01:53+00:00",
+   "old": "FLOOR_FRICTION",
+   "new": "LIQUIDITY_DRAIN",
+   "score": 0.113,
+   "cause": "DATA_DRIVEN"
+  },
   {
    "timestamp": "2026-11-02T21:34:18+00:00",
    "old": "NEUTRAL",
@@ -280,5 +314,5 @@
    "cause": "DATA_DRIVEN"
   }
  ],
- "current": "FLOOR_FRICTION"
+ "current": "LIQUIDITY_DRAIN"
 }
