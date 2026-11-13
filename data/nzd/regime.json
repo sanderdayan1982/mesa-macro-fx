@@ -1,13 +1,13 @@
 {
  "currency": "NZD",
- "generated_at": "2026-11-13T11:54:00+00:00",
+ "generated_at": "2026-11-13T14:06:44+00:00",
  "as_of": "2026-11-13",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.2,
+ "weighted_score": 0.6,
  "block_scores": {
-  "central_bank": -0.25,
+  "central_bank": 0.75,
   "rates": 0.25,
   "fiscal": 0.5,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.25,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
+   "score": 0.75,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
    "as_of": "2026-11-13",
-   "detail": "settlement cash 30011.0 (5d -4087.0, 20d 282.0, SAFE) · OMO stock 6707.0 (22.4%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "detail": "settlement cash 30311.0 (5d 664.0, 20d 791.0, SAFE) · OMO stock 7006.0 (23.1%) · ORRF 41.0 · phase LSAP_UNWIND",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,7 +43,7 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.167,
+    "effective_score": 0.167,
     "candidate": null,
     "candidate_since": null,
     "as_of": "2026-11-13",
@@ -58,7 +58,7 @@
      ],
      [
       "2026-11-13",
-      -0.25
+      0.75
      ]
     ],
     "pending_days": null
@@ -67,7 +67,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "settlement_cash_wow": -0.5,
+     "settlement_cash_wow": 0.5,
      "settlement_cash_20d": 0.5,
      "orrf_used": 0.0
     },
@@ -80,8 +80,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": -0.25,
-    "score_flows_only": 0.0
+    "score_v02": 0.75,
+    "score_flows_only": 1.0
    }
   },
   "fiscal": {
@@ -147,8 +147,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.05,
-   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.05 shown for context",
+   "score": 0.65,
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.65 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -270,7 +270,7 @@
    "name": "Funding stress",
    "bias": "FUNDING STRESS",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 1,
    "required": [
@@ -284,7 +284,7 @@
     },
     {
      "condition": "central_bank.orrf_usage_daily > 0",
-     "met": false
+     "met": true
     },
     {
      "condition": "rates.friction_confirmed == true",
@@ -327,8 +327,8 @@
    "id": "L5",
    "name": "Fiscal injection",
    "bias": "FISCAL INJECTION",
-   "active": true,
-   "conditions_met": 2,
+   "active": false,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -346,7 +346,7 @@
     },
     {
      "condition": "central_bank.settlement_cash_wow level >= WATCH",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.residual_flow_5d_cum >= p80",
