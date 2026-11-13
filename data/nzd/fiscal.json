@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-13T06:18:29+00:00",
- "as_of": "2026-11-10",
+ "generated_at": "2026-11-13T11:53:58+00:00",
+ "as_of": "2026-11-13",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
  "source_health": {
@@ -2346,15 +2346,15 @@
    "value": 600.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
-   "date": "2026-11-10",
+   "date": "2026-11-13",
    "items": [
     {
-     "number": "1896",
+     "number": "1897",
      "lines": "",
      "volume": 250.0,
-     "announcement": "2026-11-09",
-     "tender": "2026-11-10",
-     "settlement": "2026-11-11",
+     "announcement": "2026-11-16",
+     "tender": "2026-11-17",
+     "settlement": "2026-11-18",
      "kind": "tbill"
     },
     {
@@ -2897,13 +2897,13 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
+   "value": 195.0,
    "date": "2026-11-13",
    "prev_value": 0.0,
    "prev_date": "2026-11-12",
-   "change_abs": 0.0,
+   "change_abs": 195.0,
    "change_pct": null,
-   "zscore": 0.1821,
+   "zscore": 1.0171,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -2959,7 +2959,7 @@
     -350.0,
     0.0,
     0.0,
-    0.0
+    195.0
    ],
    "high_low": {
     "high": 725.0,
@@ -2978,13 +2978,13 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -350.0,
+   "value": -155.0,
    "date": "2026-11-13",
    "prev_value": -350.0,
    "prev_date": "2026-11-12",
-   "change_abs": 0.0,
-   "change_pct": 0.0,
-   "zscore": -0.1903,
+   "change_abs": 195.0,
+   "change_pct": 55.7143,
+   "zscore": 0.1609,
    "percentile": null,
    "window": null,
    "level": "SAFE",
@@ -3040,7 +3040,7 @@
     -550.0,
     -350.0,
     -350.0,
-    -350.0
+    -155.0
    ],
    "high_low": {
     "high": 1219.095,
@@ -3314,7 +3314,7 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": -1.1662,
+    "net_issuance_5d_pct": -0.5165,
     "residual_5d_pct": -0.5331
    },
    "level": {},
@@ -3323,8 +3323,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": -1.7,
-   "score_flows_only": -1.7,
+   "score_v02": -1.05,
+   "score_flows_only": -1.05,
    "note": "shadow: daily residual proxy + weekly net issuance; D10 band stays live until the replay"
   }
  },
@@ -4864,9 +4864,9 @@
     "score": 0.0
    },
    {
-    "date": "2026-08-31",
-    "label": "NEUTRAL",
-    "score": 0.0
+    "date": "2026-09-30",
+    "label": "INJECTION",
+    "score": 0.5
    },
    {
     "date": "2026-09-30",

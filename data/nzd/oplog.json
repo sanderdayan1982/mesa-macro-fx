@@ -1,6 +1,106 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-13T11:54:00+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-13T11:54:00+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "9b6b18e4c476489d",
+    "degraded": [
+     "F2: monthly stock only (lsap_holdings)",
+     "F2: monthly flow only (lsap_sales_month)"
+    ],
+    "streaks": {
+     "central_bank": 8,
+     "fiscal": 3,
+     "general": 17
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-13T11:54:00+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-13T11:54:00+00:00",
+   "type": "NZD_V04",
+   "category": "system",
+   "details": {
+    "tenders": 1819,
+    "omo_ops": 66,
+    "csa_days": 7949,
+    "bond_flows_two_sided_from": "2018-12-28",
+    "bond_month_ends": 95,
+    "lsap_lines": 16,
+    "lsap_unmapped": [],
+    "redemptions_vs_d10": [
+     [
+      "2024-05",
+      7391.0,
+      7391.0,
+      0.0
+     ],
+     [
+      "2025-04",
+      6942.0,
+      6982.0,
+      0.6
+     ],
+     [
+      "2025-09",
+      3066.9,
+      2244.0,
+      -26.8
+     ],
+     [
+      "2026-05",
+      7855.0,
+      6194.0,
+      -21.1
+     ]
+    ],
+    "d10_recon_months": 33,
+    "oia_recon_months": 22
+   }
+  },
+  {
+   "timestamp": "2026-11-13T11:53:58+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "nzdm_last_good_copy",
+    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-11-13); nzdm_tbill_1895.html (snapshot 2026-11-13); nzdm_bond_listing.html (snapshot 2026-11-13); nzdm_bond_1016.html (snapshot 2026-11-13)"
+   }
+  },
+  {
    "timestamp": "2026-11-13T06:18:43+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -9948,51 +10048,6 @@
    "details": {
     "source": "nzdm_bond_result[1013]",
     "error": "origin https://debtmanagement.treasury.govt.nz unreachable (offline)"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T09:37:26+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "rbnz_r3",
-    "error": "failed after 3 tries: Failed to perform, curl: (6) Could not resolve host: www.rbnz.govt.nz. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
-   }
-  },
-  {
-   "timestamp": "2026-10-18T09:37:08+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "rbnz_r1",
-    "error": "failed after 3 tries: Failed to perform, curl: (6) Could not resolve host: www.rbnz.govt.nz. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
-   }
-  },
-  {
-   "timestamp": "2026-10-18T09:36:50+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "nzdm_bond",
-    "error": "failed after 3 tries: Failed to perform, curl: (6) Could not resolve host: debtmanagement.treasury.govt.nz. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
-   }
-  },
-  {
-   "timestamp": "2026-10-18T09:36:32+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "nzdm_tbill",
-    "error": "failed after 3 tries: Failed to perform, curl: (6) Could not resolve host: debtmanagement.treasury.govt.nz. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
-   }
-  },
-  {
-   "timestamp": "2026-10-18T09:36:14+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "rbnz_d9",
-    "error": "failed after 3 tries: Failed to perform, curl: (6) Could not resolve host: www.rbnz.govt.nz. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
    }
   }
  ]
