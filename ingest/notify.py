@@ -156,8 +156,14 @@ def events_for(ccy: str, cur: dict, prev: Optional[dict], jefe: dict, jefe_prev:
     lb = cur.get("liquidity_bulletin") or {}
     plb = (prev.get("liquidity_bulletin") or {}) if isinstance(prev, dict) else {}
     if on("liquidity_flow_change") and lb:
-        cb_changed = (lb.get("cb_date") != plb.get("cb_date")) or (lb.get("cb_direction") != plb.get("cb_direction")) or (lb.get("cb_message") != plb.get("cb_message"))
-        tr_changed = (lb.get("treasury_date") != plb.get("treasury_date")) or (lb.get("treasury_direction") != plb.get("treasury_direction")) or (lb.get("treasury_message") != plb.get("treasury_message"))
+        # Never alert by comparing a missing side (None): an absent flow is not a «giro».
+        # orden INTEGRIDAD-01 de Sander 14-nov-2026.
+        def _differs(a, b) -> bool:
+            if a is None or b is None:
+                return False
+            return a != b
+        cb_changed = _differs(lb.get("cb_date"), plb.get("cb_date")) or _differs(lb.get("cb_direction"), plb.get("cb_direction")) or _differs(lb.get("cb_message"), plb.get("cb_message"))
+        tr_changed = _differs(lb.get("treasury_date"), plb.get("treasury_date")) or _differs(lb.get("treasury_direction"), plb.get("treasury_direction")) or _differs(lb.get("treasury_message"), plb.get("treasury_message"))
         if cb_changed and lb.get("cb_message"):
             out.append("<b>%s · FLUJO LIQUIDEZ BC</b>\n%s" % (C, esc(lb["cb_message"])))
         if tr_changed and lb.get("treasury_message"):

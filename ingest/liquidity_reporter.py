@@ -82,7 +82,46 @@ def _chg(blk: dict, sec: str, key: str, n: int = 1) -> Optional[float]:
 
 
 def _dt(blk: dict, sec: str, key: str) -> str:
-    return str(_entry(blk, sec, key).get("date") or (blk or {}).get("as_of") or "—")
+    """The series' own date. A missing date stays missing — it does not inherit the block as_of.
+    orden INTEGRIDAD-01 de Sander 14-nov-2026."""
+    d = _entry(blk, sec, key).get("date")
+    return str(d) if d else "—"
+
+
+def _div(v: Optional[float], div: float, absolute: bool = False) -> Optional[float]:
+    """Scale a published number. None stays None (never coerced to 0)."""
+    if v is None:
+        return None
+    return (abs(v) if absolute else v) / div
+
+
+def _direction(v: Optional[float], invert: bool = False) -> Optional[str]:
+    """INJECTION / DRAIN / NEUTRAL, or None when the input is missing. A real zero is NEUTRAL."""
+    if v is None:
+        return None
+    if v > 0:
+        return "DRAIN" if invert else "INJECTION"
+    if v < 0:
+        return "INJECTION" if invert else "DRAIN"
+    return "NEUTRAL"
+
+
+def _ge_word(v: Optional[float], pos: str, neg: str, missing: str) -> str:
+    """Old `(v or 0) >= 0` wording: zero counts as pos. A missing input does not."""
+    if v is None:
+        return missing
+    return pos if v >= 0 else neg
+
+
+def _tri(v: Optional[float], pos: str, neg: str, zero: str, missing: str) -> str:
+    """Old `(v or 0) > 0 / < 0 / else` wording. A missing input is not the zero branch."""
+    if v is None:
+        return missing
+    if v > 0:
+        return pos
+    if v < 0:
+        return neg
+    return zero
 
 
 def _last_nonzero_from_csv(ccy: str, fname: str) -> Tuple[Optional[str], Optional[float]]:
@@ -148,18 +187,18 @@ def _build_jpy(cb: dict, fi: dict, reg: dict) -> dict:
             % (
                 ", ".join(active_buckets),
                 tot_txt,
-                _es_num((ops5 or 0.0) / 10.0, 1, signed=True),
-                _es_num((cab_v or 0.0) / 10000.0, 2),
+                _es_num(_div(ops5, 10.0), 1, signed=True),
+                _es_num(_div(cab_v, 10000.0), 2),
                 cab_d,
-                "inyección de" if (cab_chg5 or 0) >= 0 else "drenaje de",
-                _es_num(abs(cab_chg5 or 0.0) / 10.0, 1),
+                _ge_word(cab_chg5, "inyección de", "drenaje de", "variación no publicada de"),
+                _es_num(_div(cab_chg5, 10.0, absolute=True), 1),
             )
         )
     else:
         cb_msg = (
             "🇯🇵 El Banco Central Japonés (BoJ) registra un flujo neto de operaciones de ¥%s bn en 5 sesiones, "
             "con los saldos en cuenta corriente (CAB) en ¥%s tn (%s)."
-            % (_es_num((ops5 or 0.0) / 10.0, 1, signed=True), _es_num((cab_v or 0.0) / 10000.0, 2), cab_d)
+            % (_es_num(_div(ops5, 10.0), 1, signed=True), _es_num(_div(cab_v, 10000.0), 2), cab_d)
         )
 
     # Treasury (MoF)
@@ -180,10 +219,10 @@ def _build_jpy(cb: dict, fi: dict, reg: dict) -> dict:
             % (
                 action,
                 tf_d_dt,
-                "inyección" if (tf_5d_v or 0) >= 0 else "drenaje",
-                _es_num(abs(tf_5d_v or 0.0) / 10000.0, 2),
-                _es_num((ni_5d_v or 0.0) / 10000.0, 2, signed=True),
-                _es_num((gov_v or 0.0) / 10000.0, 2),
+                _ge_word(tf_5d_v, "inyección", "drenaje", "sin dato"),
+                _es_num(_div(tf_5d_v, 10000.0, absolute=True), 2),
+                _es_num(_div(ni_5d_v, 10000.0), 2, signed=True),
+                _es_num(_div(gov_v, 10000.0), 2),
             )
         )
     else:
@@ -193,8 +232,8 @@ def _build_jpy(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": cab_d,
         "treasury_date": tf_d_dt,
-        "cb_direction": "INJECTION" if (ops5 or 0) > 0 else "DRAIN" if (ops5 or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (tf_d_v or 0) > 0 else "DRAIN" if (tf_d_v or 0) < 0 else "NEUTRAL",
+        "cb_direction": _direction(ops5),
+        "treasury_direction": _direction(tf_d_v),
     }
 
 
@@ -205,18 +244,22 @@ def _build_nzd(cb: dict, fi: dict, reg: dict) -> dict:
     omo_v = _val(cb, "series", "omo_outstanding")
     omo_chg = _chg(cb, "series", "omo_outstanding", 1)
     lsap_v = _val(cb, "series", "lsap_sales_month")
-    cb_dir = "inyecta liquidez" if (omo_chg or sc_chg or 0) > 0 else "drena liquidez" if (omo_chg or sc_chg or 0) < 0 else "mantiene neutral la liquidez"
+    if omo_chg is None and sc_chg is None:
+        cb_dir = "sin dato de variación de liquidez"
+    else:
+        _nzd_drv = omo_chg or sc_chg or 0
+        cb_dir = "inyecta liquidez" if _nzd_drv > 0 else "drena liquidez" if _nzd_drv < 0 else "mantiene neutral la liquidez"
     cb_msg = (
         "🇳🇿 El Banco de la Reserva de Nueva Zelanda (RBNZ) %s mediante operaciones de mercado abierto (OMO vivas NZ$%s mm, Δ diario NZ$%s mm; ventas LSAP del mes NZ$%s mm), "
         "situando el settlement cash en NZ$%s mm (%s, Δ NZ$%s mm)."
         % (
             cb_dir,
-            _es_num((omo_v or 0.0) / 1000.0, 2),
-            _es_num((omo_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((lsap_v or 0.0) / 1000.0, 2),
-            _es_num((sc_v or 0.0) / 1000.0, 2),
+            _es_num(_div(omo_v, 1000.0), 2),
+            _es_num(_div(omo_chg, 1000.0), 2, signed=True),
+            _es_num(_div(lsap_v, 1000.0), 2),
+            _es_num(_div(sc_v, 1000.0), 2),
             sc_d,
-            _es_num((sc_chg or 0.0) / 1000.0, 2, signed=True),
+            _es_num(_div(sc_chg, 1000.0), 2, signed=True),
         )
     )
 
@@ -232,17 +275,19 @@ def _build_nzd(cb: dict, fi: dict, reg: dict) -> dict:
         fi_action = "realizó un desembolso neto desde su cuenta de NZ$%s mm (inyección de reservas" % _es_num(res_d_v / 1000.0, 2)
     elif crown_chg is not None and crown_chg > 0:
         fi_action = "tuvo un depósito en la Cuenta de la Corona de NZ$%s mm (drenaje" % _es_num(crown_chg / 1000.0, 2)
-    else:
+    elif res_d_v == 0:
         fi_action = "registró un flujo residual diario neutro de NZ$0,0 mm (sin drenaje neto"
+    else:
+        fi_action = "no publica el flujo residual diario (sin dato"
     fi_msg = (
         "🇳🇿 El Tesoro de Nueva Zelanda (NZDM) %s el %s; flujo residual acumulado en 5 sesiones: NZ$%s mm; "
         "emisión neta de bonos y letras en 5 sesiones: NZ$%s mm; saldo en la Cuenta de la Corona en el RBNZ: NZ$%s mm)."
         % (
             fi_action,
             res_d_dt,
-            _es_num((res_5d_v or 0.0) / 1000.0, 2, signed=True),
-            _es_num((ni_5d_v or 0.0) / 1000.0, 2, signed=True),
-            _es_num((crown_v or 0.0) / 1000.0, 2),
+            _es_num(_div(res_5d_v, 1000.0), 2, signed=True),
+            _es_num(_div(ni_5d_v, 1000.0), 2, signed=True),
+            _es_num(_div(crown_v, 1000.0), 2),
         )
     )
     return {
@@ -250,8 +295,8 @@ def _build_nzd(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": sc_d,
         "treasury_date": res_d_dt,
-        "cb_direction": "INJECTION" if (sc_chg or 0) > 0 else "DRAIN" if (sc_chg or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (res_d_v or 0) > 0 else "DRAIN" if (res_d_v or 0) < 0 else "NEUTRAL",
+        "cb_direction": _direction(sc_chg),
+        "treasury_direction": _direction(res_d_v),
     }
 
 
@@ -263,20 +308,20 @@ def _build_usd(cb: dict, fi: dict, reg: dict) -> dict:
     rrp_dod = _val(cb, "derived", "on_rrp_dod")
     rrp_imp5 = _val(cb, "derived", "on_rrp_impulse_5d")
     tsy_chg = _chg(cb, "series", "treasury_securities", 1)
-    cb_dir = "inyecta liquidez" if (res_chg or 0) > 0 else "drena liquidez" if (res_chg or 0) < 0 else "mantiene estables las reservas"
+    cb_dir = _tri(res_chg, "inyecta liquidez", "drena liquidez", "mantiene estables las reservas", "sin dato de variación de liquidez")
     cb_msg = (
         "🇺🇸 La Reserva Federal (Fed) %s: las reservas bancarias (WRESBAL) varían %s US$%s mm en la semana hasta US$%s mm (%s), "
         "con variación de Treasuries en cartera de US$%s mm y flujo diario en ON RRP de US$%s mm (impulso a reservas −ΔON_RRP en 5 sesiones de US$%s mm; stock ON RRP US$%s mm)."
         % (
             cb_dir,
-            "al alza en" if (res_chg or 0) >= 0 else "a la baja en",
-            _es_num(abs(res_chg or 0.0) / 1000.0, 1),
-            _es_num((res_v or 0.0) / 1000.0, 1),
+            _ge_word(res_chg, "al alza en", "a la baja en", "sin dato,"),
+            _es_num(_div(res_chg, 1000.0, absolute=True), 1),
+            _es_num(_div(res_v, 1000.0), 1),
             res_d,
-            _es_num((tsy_chg or 0.0) / 1000.0, 1, signed=True),
-            _es_num((rrp_dod or 0.0) / 1000.0, 1, signed=True),
-            _es_num((rrp_imp5 or 0.0) / 1000.0, 1, signed=True),
-            _es_num((rrp_v or 0.0) / 1000.0, 1),
+            _es_num(_div(tsy_chg, 1000.0), 1, signed=True),
+            _es_num(_div(rrp_dod, 1000.0), 1, signed=True),
+            _es_num(_div(rrp_imp5, 1000.0), 1, signed=True),
+            _es_num(_div(rrp_v, 1000.0), 1),
         )
     )
 
@@ -286,15 +331,17 @@ def _build_usd(cb: dict, fi: dict, reg: dict) -> dict:
     tga_imp = _val(fi, "derived", "tga_reserve_impact")
     ntf_v = _val(fi, "derived", "net_treasury_flow")
     ntf_7d = _val(fi, "derived", "net_treasury_flow_7d")
-    if (tga_dod or 0) > 0:
+    if tga_dod is None:
+        fi_action = "no publica la variación diaria de su cuenta TGA (sin dato"
+    elif tga_dod > 0:
         fi_action = "tuvo un depósito neto en su cuenta TGA de US$%s mm (drenaje de reservas −ΔTGA de US$%s mm" % (
-            _es_num(abs(tga_dod or 0.0) / 1000.0, 1),
-            _es_num((tga_imp or 0.0) / 1000.0, 1, signed=True),
+            _es_num(_div(tga_dod, 1000.0, absolute=True), 1),
+            _es_num(_div(tga_imp, 1000.0), 1, signed=True),
         )
-    elif (tga_dod or 0) < 0:
+    elif tga_dod < 0:
         fi_action = "realizó un retiro neto desde su cuenta TGA de US$%s mm (inyección de reservas −ΔTGA de US$%s mm" % (
-            _es_num(abs(tga_dod or 0.0) / 1000.0, 1),
-            _es_num((tga_imp or 0.0) / 1000.0, 1, signed=True),
+            _es_num(_div(tga_dod, 1000.0, absolute=True), 1),
+            _es_num(_div(tga_imp, 1000.0), 1, signed=True),
         )
     else:
         fi_action = "mantuvo sin cambios su cuenta TGA (US$0,0 mm"
@@ -304,9 +351,9 @@ def _build_usd(cb: dict, fi: dict, reg: dict) -> dict:
         % (
             fi_action,
             tga_d,
-            _es_num((tga_v or 0.0) / 1000.0, 1),
-            _es_num((ntf_v or 0.0) / 1000.0, 1, signed=True),
-            _es_num((ntf_7d or 0.0) / 1000.0, 1, signed=True),
+            _es_num(_div(tga_v, 1000.0), 1),
+            _es_num(_div(ntf_v, 1000.0), 1, signed=True),
+            _es_num(_div(ntf_7d, 1000.0), 1, signed=True),
         )
     )
     return {
@@ -314,8 +361,8 @@ def _build_usd(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": res_d,
         "treasury_date": tga_d,
-        "cb_direction": "INJECTION" if (res_chg or 0) > 0 else "DRAIN" if (res_chg or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (tga_imp or 0) > 0 else "DRAIN" if (tga_imp or 0) < 0 else "NEUTRAL",
+        "cb_direction": _direction(res_chg),
+        "treasury_direction": _direction(tga_imp),
     }
 
 
@@ -326,18 +373,18 @@ def _build_eur(cb: dict, fi: dict, reg: dict) -> dict:
     mp_chg = _chg(cb, "series", "monpol_securities", 1)
     mro_v = _val(cb, "series", "mro_weekly")
     ltro_v = _val(cb, "series", "ltro_weekly")
-    cb_dir = "inyecta liquidez" if (ex_chg or 0) > 0 else "drena liquidez" if (ex_chg or 0) < 0 else "mantiene estable la liquidez"
+    cb_dir = _tri(ex_chg, "inyecta liquidez", "drena liquidez", "mantiene estable la liquidez", "sin dato de variación de liquidez")
     cb_msg = (
         "🇪🇺 El Banco Central Europeo (BCE) %s: el exceso de liquidez varía €%s mm en la semana hasta €%s mm (%s), "
         "con variación en la cartera de bonos de política monetaria de €%s mm y operaciones de refinanciación MRO (€%s mm) y LTRO (€%s mm)."
         % (
             cb_dir,
-            _es_num((ex_chg or 0.0) / 1000.0, 1, signed=True),
-            _es_num((ex_v or 0.0) / 1000.0, 1),
+            _es_num(_div(ex_chg, 1000.0), 1, signed=True),
+            _es_num(_div(ex_v, 1000.0), 1),
             ex_d,
-            _es_num((mp_chg or 0.0) / 1000.0, 1, signed=True),
-            _es_num((mro_v or 0.0) / 1000.0, 2),
-            _es_num((ltro_v or 0.0) / 1000.0, 2),
+            _es_num(_div(mp_chg, 1000.0), 1, signed=True),
+            _es_num(_div(mro_v, 1000.0), 2),
+            _es_num(_div(ltro_v, 1000.0), 2),
         )
     )
 
@@ -345,10 +392,12 @@ def _build_eur(cb: dict, fi: dict, reg: dict) -> dict:
     gd_d = _dt(fi, "series", "govt_deposits")
     gd_wow = _val(fi, "derived", "govt_deposits_wow")
     ni5 = _val(fi, "derived", "net_issuance_private_5d")
-    if (gd_wow or 0) > 0:
-        fi_action = "tuvieron un depósito neto en el Eurosistema de €%s mm en la semana (drenaje de reservas" % _es_num(abs(gd_wow or 0.0) / 1000.0, 1)
-    elif (gd_wow or 0) < 0:
-        fi_action = "realizaron retiros/pagos netos desde el Eurosistema de €%s mm en la semana (inyección de reservas" % _es_num(abs(gd_wow or 0.0) / 1000.0, 1)
+    if gd_wow is None:
+        fi_action = "no publican la variación semanal de sus depósitos en el Eurosistema (sin dato"
+    elif gd_wow > 0:
+        fi_action = "tuvieron un depósito neto en el Eurosistema de €%s mm en la semana (drenaje de reservas" % _es_num(_div(gd_wow, 1000.0, absolute=True), 1)
+    elif gd_wow < 0:
+        fi_action = "realizaron retiros/pagos netos desde el Eurosistema de €%s mm en la semana (inyección de reservas" % _es_num(_div(gd_wow, 1000.0, absolute=True), 1)
     else:
         fi_action = "mantuvieron sin cambios sus depósitos en el Eurosistema (€0,0 mm"
     fi_msg = (
@@ -357,8 +406,8 @@ def _build_eur(cb: dict, fi: dict, reg: dict) -> dict:
         % (
             fi_action,
             gd_d,
-            _es_num((gd_v or 0.0) / 1000.0, 1),
-            _es_num((ni5 or 0.0) / 1000.0, 1, signed=True),
+            _es_num(_div(gd_v, 1000.0), 1),
+            _es_num(_div(ni5, 1000.0), 1, signed=True),
         )
     )
     return {
@@ -366,8 +415,8 @@ def _build_eur(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": ex_d,
         "treasury_date": gd_d,
-        "cb_direction": "INJECTION" if (ex_chg or 0) > 0 else "DRAIN" if (ex_chg or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (gd_wow or 0) < 0 else "DRAIN" if (gd_wow or 0) > 0 else "NEUTRAL",
+        "cb_direction": _direction(ex_chg),
+        "treasury_direction": _direction(gd_wow, invert=True),
     }
 
 
@@ -380,20 +429,20 @@ def _build_gbp(cb: dict, fi: dict, reg: dict) -> dict:
     iltr_v = _val(cb, "series", "ltr_lending")
     iltr_chg = _chg(cb, "series", "ltr_lending", 1)
     apf_chg = _chg(cb, "series", "apf_loan", 1)
-    cb_dir = "inyecta liquidez" if (res_chg or 0) > 0 else "drena liquidez" if (res_chg or 0) < 0 else "mantiene estables las reservas"
+    cb_dir = _tri(res_chg, "inyecta liquidez", "drena liquidez", "mantiene estables las reservas", "sin dato de variación de liquidez")
     cb_msg = (
         "🇬🇧 El Banco de Inglaterra (BoE) %s: las reservas bancarias varían £%s mm en la semana hasta £%s mm (%s), "
         "mediante facilidades de repo STR (£%s mm vivos, Δ £%s mm) e ILTR (£%s mm vivos, Δ £%s mm) frente a la variación del préstamo APF (Δ £%s mm)."
         % (
             cb_dir,
-            _es_num((res_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((res_v or 0.0) / 1000.0, 1),
+            _es_num(_div(res_chg, 1000.0), 2, signed=True),
+            _es_num(_div(res_v, 1000.0), 1),
             res_d,
-            _es_num((str_v or 0.0) / 1000.0, 2),
-            _es_num((str_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((iltr_v or 0.0) / 1000.0, 2),
-            _es_num((iltr_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((apf_chg or 0.0) / 1000.0, 2, signed=True),
+            _es_num(_div(str_v, 1000.0), 2),
+            _es_num(_div(str_chg, 1000.0), 2, signed=True),
+            _es_num(_div(iltr_v, 1000.0), 2),
+            _es_num(_div(iltr_chg, 1000.0), 2, signed=True),
+            _es_num(_div(apf_chg, 1000.0), 2, signed=True),
         )
     )
 
@@ -402,10 +451,12 @@ def _build_gbp(cb: dict, fi: dict, reg: dict) -> dict:
     ni5 = _val(fi, "derived", "net_issuance_private_5d")
     gilt_d = _val(fi, "series", "dmo_gilt_auction")
     tbill_d = _val(fi, "series", "dmo_tbill_tender")
-    if (ex_v or 0) < 0:
-        fi_action = "registró un drenaje fiscal en el residuo semanal del Exchequer de £%s mm" % _es_num(abs(ex_v or 0.0) / 1000.0, 2)
-    elif (ex_v or 0) > 0:
-        fi_action = "registró una inyección fiscal en el residuo semanal del Exchequer de £%s mm" % _es_num((ex_v or 0.0) / 1000.0, 2)
+    if ex_v is None:
+        fi_action = "no publica el residuo semanal del Exchequer (sin dato"
+    elif ex_v < 0:
+        fi_action = "registró un drenaje fiscal en el residuo semanal del Exchequer de £%s mm" % _es_num(_div(ex_v, 1000.0, absolute=True), 2)
+    elif ex_v > 0:
+        fi_action = "registró una inyección fiscal en el residuo semanal del Exchequer de £%s mm" % _es_num(_div(ex_v, 1000.0), 2)
     else:
         fi_action = "mantuvo neutro el residuo semanal del Exchequer (£0,0 mm"
     fi_msg = (
@@ -414,9 +465,9 @@ def _build_gbp(cb: dict, fi: dict, reg: dict) -> dict:
         % (
             fi_action,
             ex_d,
-            _es_num((ni5 or 0.0) / 1000.0, 2, signed=True),
-            _es_num((gilt_d or 0.0) / 1000.0, 2),
-            _es_num((tbill_d or 0.0) / 1000.0, 2),
+            _es_num(_div(ni5, 1000.0), 2, signed=True),
+            _es_num(_div(gilt_d, 1000.0), 2),
+            _es_num(_div(tbill_d, 1000.0), 2),
         )
     )
     return {
@@ -424,8 +475,8 @@ def _build_gbp(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": res_d,
         "treasury_date": ex_d,
-        "cb_direction": "INJECTION" if (res_chg or 0) > 0 else "DRAIN" if (res_chg or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (ex_v or 0) > 0 else "DRAIN" if (ex_v or 0) < 0 else "NEUTRAL",
+        "cb_direction": _direction(res_chg),
+        "treasury_direction": _direction(ex_v),
     }
 
 
@@ -436,18 +487,18 @@ def _build_cad(cb: dict, fi: dict, reg: dict) -> dict:
     repo_v = _val(cb, "series", "liquidity_repos")
     repo_chg = _chg(cb, "series", "liquidity_repos", 1)
     bonds_chg = _chg(cb, "series", "sovereign_bonds", 1)
-    cb_dir = "inyecta liquidez" if (res_chg or 0) > 0 else "drena liquidez" if (res_chg or 0) < 0 else "mantiene estables los saldos de liquidación"
+    cb_dir = _tri(res_chg, "inyecta liquidez", "drena liquidez", "mantiene estables los saldos de liquidación", "sin dato de variación de liquidez")
     cb_msg = (
         "🇨🇦 El Banco de Canadá (BoC) %s: las reservas (settlement balances) varían C$%s mm hasta C$%s mm (%s), "
         "con repos de liquidez a plazo en C$%s mm (Δ C$%s mm) y variación de bonos soberanos en cartera de C$%s mm."
         % (
             cb_dir,
-            _es_num((res_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((res_v or 0.0) / 1000.0, 2),
+            _es_num(_div(res_chg, 1000.0), 2, signed=True),
+            _es_num(_div(res_v, 1000.0), 2),
             res_d,
-            _es_num((repo_v or 0.0) / 1000.0, 2),
-            _es_num((repo_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((bonds_chg or 0.0) / 1000.0, 2, signed=True),
+            _es_num(_div(repo_v, 1000.0), 2),
+            _es_num(_div(repo_chg, 1000.0), 2, signed=True),
+            _es_num(_div(bonds_chg, 1000.0), 2, signed=True),
         )
     )
 
@@ -456,10 +507,12 @@ def _build_cad(cb: dict, fi: dict, reg: dict) -> dict:
     ga_chg = _chg(cb, "series", "government_account", 1)
     ff7 = _val(fi, "derived", "fiscal_flow_7d_cum")
     ni5 = _val(fi, "derived", "net_issuance_private_5d")
-    if (ga_chg or 0) > 0:
-        fi_action = "tuvo un depósito neto en su cuenta del BoC de C$%s mm (drenaje de reservas" % _es_num(abs(ga_chg or 0.0) / 1000.0, 2)
-    elif (ga_chg or 0) < 0:
-        fi_action = "realizó un retiro/desembolso neto desde su cuenta del BoC de C$%s mm (inyección de reservas" % _es_num(abs(ga_chg or 0.0) / 1000.0, 2)
+    if ga_chg is None:
+        fi_action = "no publica la variación de su cuenta en el BoC (sin dato"
+    elif ga_chg > 0:
+        fi_action = "tuvo un depósito neto en su cuenta del BoC de C$%s mm (drenaje de reservas" % _es_num(_div(ga_chg, 1000.0, absolute=True), 2)
+    elif ga_chg < 0:
+        fi_action = "realizó un retiro/desembolso neto desde su cuenta del BoC de C$%s mm (inyección de reservas" % _es_num(_div(ga_chg, 1000.0, absolute=True), 2)
     else:
         fi_action = "mantuvo estable su cuenta en el BoC (C$0,0 mm"
     fi_msg = (
@@ -468,9 +521,9 @@ def _build_cad(cb: dict, fi: dict, reg: dict) -> dict:
         % (
             fi_action,
             ga_d,
-            _es_num((ga_v or 0.0) / 1000.0, 2),
-            _es_num((ff7 or 0.0) / 1000.0, 2, signed=True),
-            _es_num((ni5 or 0.0) / 1000.0, 2, signed=True),
+            _es_num(_div(ga_v, 1000.0), 2),
+            _es_num(_div(ff7, 1000.0), 2, signed=True),
+            _es_num(_div(ni5, 1000.0), 2, signed=True),
         )
     )
     return {
@@ -478,8 +531,8 @@ def _build_cad(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": res_d,
         "treasury_date": ga_d,
-        "cb_direction": "INJECTION" if (res_chg or 0) > 0 else "DRAIN" if (res_chg or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (ga_chg or 0) < 0 else "DRAIN" if (ga_chg or 0) > 0 else "NEUTRAL",
+        "cb_direction": _direction(res_chg),
+        "treasury_direction": _direction(ga_chg, invert=True),
     }
 
 
@@ -489,17 +542,17 @@ def _build_aud(cb: dict, fi: dict, reg: dict) -> dict:
     es_chg = _chg(cb, "series", "es_balances_daily", 1)
     omo_v = _val(cb, "derived", "omo_outstanding")
     inv_chg = _chg(cb, "series", "aud_investments", 1)
-    cb_dir = "inyecta liquidez" if (es_chg or 0) > 0 else "drena liquidez" if (es_chg or 0) < 0 else "mantiene estables las cuentas ES"
+    cb_dir = _tri(es_chg, "inyecta liquidez", "drena liquidez", "mantiene estables las cuentas ES", "sin dato de variación de liquidez")
     cb_msg = (
         "🇦🇺 El Banco de la Reserva de Australia (RBA) %s: los saldos de liquidación (ES balances) varían A$%s mm hasta A$%s mm (%s), "
         "con operaciones OMO vivas en A$%s mm y variación semanal de bonos en AUD de A$%s mm."
         % (
             cb_dir,
-            _es_num((es_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((es_v or 0.0) / 1000.0, 2),
+            _es_num(_div(es_chg, 1000.0), 2, signed=True),
+            _es_num(_div(es_v, 1000.0), 2),
             es_d,
-            _es_num((omo_v or 0.0) / 1000.0, 2),
-            _es_num((inv_chg or 0.0) / 1000.0, 2, signed=True),
+            _es_num(_div(omo_v, 1000.0), 2),
+            _es_num(_div(inv_chg, 1000.0), 2, signed=True),
         )
     )
 
@@ -507,10 +560,12 @@ def _build_aud(cb: dict, fi: dict, reg: dict) -> dict:
     ga_d = _dt(cb, "series", "government_account")
     ff_w = _val(fi, "derived", "fiscal_flow_weekly")
     ni5 = _val(fi, "derived", "net_issuance_5d")
-    if (ff_w or 0) < 0:
-        fi_action = "tuvo un depósito neto en su cuenta del RBA de A$%s mm en la semana (drenaje de reservas" % _es_num(abs(ff_w or 0.0) / 1000.0, 2)
-    elif (ff_w or 0) > 0:
-        fi_action = "realizó pagos netos desde su cuenta del RBA de A$%s mm en la semana (inyección de reservas" % _es_num((ff_w or 0.0) / 1000.0, 2)
+    if ff_w is None:
+        fi_action = "no publica el flujo semanal de su cuenta en el RBA (sin dato"
+    elif ff_w < 0:
+        fi_action = "tuvo un depósito neto en su cuenta del RBA de A$%s mm en la semana (drenaje de reservas" % _es_num(_div(ff_w, 1000.0, absolute=True), 2)
+    elif ff_w > 0:
+        fi_action = "realizó pagos netos desde su cuenta del RBA de A$%s mm en la semana (inyección de reservas" % _es_num(_div(ff_w, 1000.0), 2)
     else:
         fi_action = "mantuvo sin cambios su cuenta en el RBA (A$0,0 mm"
     fi_msg = (
@@ -519,8 +574,8 @@ def _build_aud(cb: dict, fi: dict, reg: dict) -> dict:
         % (
             fi_action,
             ga_d,
-            _es_num((ga_v or 0.0) / 1000.0, 2),
-            _es_num((ni5 or 0.0) / 1000.0, 2, signed=True),
+            _es_num(_div(ga_v, 1000.0), 2),
+            _es_num(_div(ni5, 1000.0), 2, signed=True),
         )
     )
     return {
@@ -528,8 +583,8 @@ def _build_aud(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": es_d,
         "treasury_date": ga_d,
-        "cb_direction": "INJECTION" if (es_chg or 0) > 0 else "DRAIN" if (es_chg or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (ff_w or 0) > 0 else "DRAIN" if (ff_w or 0) < 0 else "NEUTRAL",
+        "cb_direction": _direction(es_chg),
+        "treasury_direction": _direction(ff_w),
     }
 
 
@@ -540,18 +595,18 @@ def _build_chf(cb: dict, fi: dict, reg: dict) -> dict:
     bills_w = _val(cb, "derived", "bills_maturing_week")
     bills_stock = _val(cb, "series", "snb_bills")
     repos_stock = _val(cb, "series", "absorbing_repos")
-    cb_dir = "inyecta liquidez" if (sd_chg or 0) > 0 else "absorbe liquidez" if (sd_chg or 0) < 0 else "mantiene estables los depósitos a la vista"
+    cb_dir = _tri(sd_chg, "inyecta liquidez", "absorbe liquidez", "mantiene estables los depósitos a la vista", "sin dato de variación de liquidez")
     cb_msg = (
         "🇨🇭 El Banco Nacional Suizo (SNB) %s: los depósitos a la vista domésticos varían CHF %s mm en la semana hasta CHF %s mm (%s), "
         "con vencimientos semanales de SNB Bills por CHF %s mm (stock SNB Bills CHF %s mm, repos de absorción CHF %s mm)."
         % (
             cb_dir,
-            _es_num((sd_chg or 0.0) / 1000.0, 2, signed=True),
-            _es_num((sd_v or 0.0) / 1000.0, 1),
+            _es_num(_div(sd_chg, 1000.0), 2, signed=True),
+            _es_num(_div(sd_v, 1000.0), 1),
             sd_d,
-            _es_num((bills_w or 0.0) / 1000.0, 2),
-            _es_num((bills_stock or 0.0) / 1000.0, 1),
-            _es_num((repos_stock or 0.0) / 1000.0, 1),
+            _es_num(_div(bills_w, 1000.0), 2),
+            _es_num(_div(bills_stock, 1000.0), 1),
+            _es_num(_div(repos_stock, 1000.0), 1),
         )
     )
 
@@ -559,10 +614,12 @@ def _build_chf(cb: dict, fi: dict, reg: dict) -> dict:
     ni5_d = _dt(fi, "derived", "net_issuance_private_5d")
     conf_v = _val(fi, "series", "amounts_due_to_confederation")
     conf_mom = _val(fi, "derived", "confed_cash_mom")
-    if (ni5 or 0) < 0:
-        fi_action = "drenó liquidez mediante emisión neta de letras MMDRC y bonos al sector privado de CHF %s mm en 5 sesiones" % _es_num(abs(ni5 or 0.0) / 1000.0, 2)
-    elif (ni5 or 0) > 0:
-        fi_action = "inyectó liquidez por vencimientos netos de letras MMDRC y bonos de CHF %s mm en 5 sesiones" % _es_num((ni5 or 0.0) / 1000.0, 2)
+    if ni5 is None:
+        fi_action = "no publica el flujo neto de emisión soberana en 5 sesiones (sin dato)"
+    elif ni5 < 0:
+        fi_action = "drenó liquidez mediante emisión neta de letras MMDRC y bonos al sector privado de CHF %s mm en 5 sesiones" % _es_num(_div(ni5, 1000.0, absolute=True), 2)
+    elif ni5 > 0:
+        fi_action = "inyectó liquidez por vencimientos netos de letras MMDRC y bonos de CHF %s mm en 5 sesiones" % _es_num(_div(ni5, 1000.0), 2)
     else:
         fi_action = "mantuvo un flujo neto nulo de emisión soberana en 5 sesiones (CHF 0,00 mm)"
     fi_msg = (
@@ -570,8 +627,8 @@ def _build_chf(cb: dict, fi: dict, reg: dict) -> dict:
         % (
             fi_action,
             ni5_d,
-            _es_num((conf_v or 0.0) / 1000.0, 2),
-            _es_num((conf_mom or 0.0) / 1000.0, 2, signed=True),
+            _es_num(_div(conf_v, 1000.0), 2),
+            _es_num(_div(conf_mom, 1000.0), 2, signed=True),
         )
     )
     return {
@@ -579,8 +636,8 @@ def _build_chf(cb: dict, fi: dict, reg: dict) -> dict:
         "treasury_message": fi_msg,
         "cb_date": sd_d,
         "treasury_date": ni5_d,
-        "cb_direction": "INJECTION" if (sd_chg or 0) > 0 else "DRAIN" if (sd_chg or 0) < 0 else "NEUTRAL",
-        "treasury_direction": "INJECTION" if (ni5 or 0) > 0 else "DRAIN" if (ni5 or 0) < 0 else "NEUTRAL",
+        "cb_direction": _direction(sd_chg),
+        "treasury_direction": _direction(ni5),
     }
 
 
@@ -638,15 +695,17 @@ def generate_report(root: str = ROOT, write: bool = True, write_out: Optional[st
         p = prev_ccys.get(C) or {}
         changed_reasons = []
         if p:
-            if b.get("cb_date") != p.get("cb_date"):
+            def _moved(a, b_):
+                return a is not None and b_ is not None and a != b_
+            if _moved(b.get("cb_date"), p.get("cb_date")):
                 changed_reasons.append("nuevo dato BC (%s)" % b.get("cb_date"))
-            if b.get("treasury_date") != p.get("treasury_date"):
+            if _moved(b.get("treasury_date"), p.get("treasury_date")):
                 changed_reasons.append("nuevo dato Tesoro (%s)" % b.get("treasury_date"))
-            if b.get("cb_direction") != p.get("cb_direction"):
+            if _moved(b.get("cb_direction"), p.get("cb_direction")):
                 changed_reasons.append("giro flujo BC (%s → %s)" % (p.get("cb_direction"), b.get("cb_direction")))
-            if b.get("treasury_direction") != p.get("treasury_direction"):
+            if _moved(b.get("treasury_direction"), p.get("treasury_direction")):
                 changed_reasons.append("giro flujo Tesoro (%s → %s)" % (p.get("treasury_direction"), b.get("treasury_direction")))
-            if b.get("general_regime") != p.get("general_regime"):
+            if _moved(b.get("general_regime"), p.get("general_regime")):
                 changed_reasons.append("cambio régimen general (%s → %s)" % (p.get("general_regime"), b.get("general_regime")))
         else:
             changed_reasons.append("boletín inicial")

@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from typing import Dict
 from . import series as S
 from .series import Series
-from .blocks import entry
+from .blocks import entry, clamp_status
 from .scoring import Comps
 from . import ops_nzd as O
 
@@ -33,7 +33,7 @@ def enrich_central_bank(block: dict, cfg: dict, omo: Dict[str, Series], recon_d1
     D["csa_daily_oia"] = entry("csa_daily_oia", csa_oia, "Crown Settlement Account — DAILY balance (NZ Treasury OIA-20250819, 1997-11-10 → 2025-10-31)", "daily", unit, cfg, "treasury.govt.nz:oia-20250819-overdraft-facility-csa.xlsx",
                                status="fresh" if csa_oia else "unavailable", equivalence_note="historical release for replay and proxy validation; not updated by the Treasury", lag_days=400)
     if csa_oia:
-        D["csa_daily_oia"]["status"] = "proxy"
+        D["csa_daily_oia"]["status"] = clamp_status(D["csa_daily_oia"]["status"], "proxy")
     D["proxy_vs_csa_error"] = entry("proxy_vs_csa_error", recon_oia.get("error", []), "Validation: Σ monthly residual flow − (−ΔCSA) over the OIA overlap (2024-01 → 2025-10)", "monthly", unit, cfg, "derived",
                                     status="fresh" if recon_oia.get("error") else "unavailable")
     if recon_oia.get("error"):

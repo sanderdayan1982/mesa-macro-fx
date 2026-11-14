@@ -65,8 +65,12 @@ def enrich_central_bank(block: dict, cfg: dict, ops: Dict[str, Series], apf: Dic
     lvl = S.last(reserves_w)
     lv = lvl[1] if lvl else None
     if lv:
-        C.flow("repo_net_5d_pct", round((D["repo_net_5d"]["value"] or 0.0) / lv * 100, 4))
-        C.flow("apf_sales_5d_pct", round((D["apf_sales_5d"]["value"] or 0.0) / lv * 100, 4))
+        # a stale or missing print does not enter the shadow vote (orden INTEGRIDAD-01)
+        for name, key in (("repo_net_5d_pct", "repo_net_5d"), ("apf_sales_5d_pct", "apf_sales_5d")):
+            ev = D[key]
+            v = ev.get("value")
+            if ev.get("status") in ("fresh", "proxy") and isinstance(v, (int, float)):
+                C.flow(name, round(v / lv * 100, 4))
         so = S.last(ops.get("str_outstanding_ops", []))
         io_ = S.last(ops.get("iltr_outstanding_ops", []))
         C.level("repo_dependence_ops_pct", round(((so[1] if so else 0.0) + (io_[1] if io_ else 0.0)) / lv * 100, 4))
