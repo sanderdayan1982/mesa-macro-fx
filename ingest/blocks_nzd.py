@@ -15,7 +15,7 @@ from . import series as S
 from .series import Series
 from .thresholds import classify
 from .scoring import Comps
-from .blocks import entry, _prev_levels, _alert, _health
+from .blocks import entry, clamp_status, _prev_levels, _alert, _health
 from .blocks_jpy import _entries, _base, _ffill, _spec, _cap_watch
 from .blocks_chf import _two_sided, _apply
 from .blocks_gbp import _persistent_level
@@ -100,7 +100,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     E["omo_spread_to_ocr_bps"]["unit"] = "bps"
     for k in ("omo_allocated_weekly", "omo_spread_to_ocr_bps", "lsap_sales_month", "bond_repurchases", "bmls_holdings"):
         if raw[k]:
-            E[k]["status"] = "fresh" if k != "lsap_sales_month" else E[k]["status"]
+            E[k]["status"] = clamp_status(E[k]["status"], "fresh") if k != "lsap_sales_month" else E[k]["status"]
     D: Dict[str, dict] = {}
     # ── reserves: dead-man switch (N1) ──
     spec_r = _spec(th, "reserves") or {}
@@ -141,7 +141,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     if tk and sp_t.get("secondary_absolute"):
         _cap_watch(D["omo_takeup_wow"], sp_t["secondary_absolute"])
     if tk:
-        D["omo_takeup_wow"]["status"] = "fresh"
+        D["omo_takeup_wow"]["status"] = clamp_status(D["omo_takeup_wow"]["status"], "fresh")
     # ── residual flow (N4) ──
     fxs, orrf = raw["fx_swaps_daily"], raw["orrf_usage_daily"]
     d_omo = S.diff_series(omo_out, 1)
@@ -273,7 +273,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     E, raw = _entries(cfg, "fiscal", data, MAP_FI, unit, pl, {})
     for k in ("tbill_tender_btc", "tbill_tender_yield", "tbill_tender_volume", "tbill_allocation_ratio", "tbill_1y_yield", "bond_tender_coverage", "bond_tender_tail_bp", "bond_tender_volume", "tender_schedule_month"):
         E[k]["frequency"] = "event"
-        E[k]["status"] = "fresh" if raw[k] else E[k]["status"]
+        E[k]["status"] = clamp_status(E[k]["status"], "fresh") if raw[k] else E[k]["status"]
     for k in ("tbill_tender_btc", "bond_tender_coverage", "tbill_allocation_ratio"):
         E[k]["unit"] = "x" if k != "tbill_allocation_ratio" else "ratio"
     for k in ("tbill_tender_yield", "tbill_1y_yield"):
@@ -310,13 +310,13 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     D["tbill_yield_minus_ocr_bps"] = entry("tbill_yield_minus_ocr_bps", tyo, "T-bill (~3m) tender yield − OCR (bp)", "weekly", "bps", cfg, z_window=26)
     _apply(D["tbill_yield_minus_ocr_bps"], _two_sided("tbill_yield_minus_ocr_bps", tyo, dict(_spec(th, "tbill_yield_minus_ocr_bps") or {}, window="104w"), "weekly", pl.get("tbill_yield_minus_ocr_bps")))
     if tyo:
-        D["tbill_yield_minus_ocr_bps"]["status"] = "fresh"
+        D["tbill_yield_minus_ocr_bps"]["status"] = clamp_status(D["tbill_yield_minus_ocr_bps"]["status"], "fresh")
     # tender levels capped at WATCH unless persistent (N6)
 
     def _capped(key: str, ser: Series, spec: dict, low: bool) -> dict:
         e = entry(key, ser, E[key]["label"] if key in E else key, "weekly", E[key]["unit"] if key in E else "x", cfg, spec=dict(spec, secondary_percentile=dict(spec.get("secondary_percentile", {}), window="52w")), prev_level=pl.get(key), z_window=26)
         if ser:
-            e["status"] = "fresh"
+            e["status"] = clamp_status(e["status"], "fresh")
             vals = [v for _, v in ser[-3:]]
             thr_w, thr_s = spec.get("watch_below", spec.get("watch_above")), spec.get("stress_below", spec.get("stress_above"))
             hit = (lambda v, t: v < t) if low else (lambda v, t: v >= t)
@@ -468,14 +468,12 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
             if ev and sc_grid[-1][0] > ev[-1][0]:
                 data[k] = S.clean(ev + [x for x in _ffill(ev, sc_grid) if x[0] > ev[-1][0]])
     E, raw = _entries(cfg, "rates", data, MAP_RT, "%", pl, {})
-    for k, e in E.items():
-        if e.get("status") == "stale" and (e.get("age_days") or 999) <= 12:
-            e["status"] = "fresh"
+    # age <= 12 used to promote stale → fresh. That override is not allowed (INTEGRIDAD-01).
     E["swap_2_10_spread_bps"]["unit"] = "bps"
     E["nzgb_turnover_weekly"]["unit"] = cfg["units"]["balance_sheet"]
     oi = raw["overnight_interbank"]
     if oi:
-        E["overnight_interbank"]["status"] = "fresh" if E["overnight_interbank"]["status"] != "unavailable" else "unavailable"
+        E["overnight_interbank"]["status"] = clamp_status(E["overnight_interbank"]["status"], "fresh") if E["overnight_interbank"]["status"] != "unavailable" else "unavailable"
         E["overnight_interbank"]["equivalence_note"] = "published only on days with trades (sparse) — last %s" % oi[-1][0]
     ocr, b30, b90, s1 = raw["ocr"], raw["bank_bill_30d"], raw["bank_bill_90d"], raw["swap_1y"]
     D: Dict[str, dict] = {}
@@ -486,7 +484,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     oi_spr = S.merge_series(oi, _ffill(ocr, oi), lambda a, c: round((a - c) * 100, 1)) if oi else []
     D["overnight_interbank_minus_ocr_bps"] = entry("overnight_interbank_minus_ocr_bps", oi_spr, "Overnight interbank − OCR (bp; sparse)", "daily", "bps", cfg, spec=_spec(th, "overnight_interbank_minus_ocr_bps"), z_window=30)
     if oi_spr:
-        D["overnight_interbank_minus_ocr_bps"]["status"] = "fresh"
+        D["overnight_interbank_minus_ocr_bps"]["status"] = clamp_status(D["overnight_interbank_minus_ocr_bps"]["status"], "fresh")
     orrf_used = S.clean(data.get("D12:overnight_reverse_repo", []))
     fc = False
     if spr:
@@ -510,7 +508,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     bp = S.merge_series(S.merge_series(oi, _ffill(odr, oi), lambda a, c: a - c), _ffill(S.merge_series(orr, odr, lambda a, c: a - c), oi), lambda a, c: round(a / c, 2) if c else None) if oi else []
     D["band_position"] = entry("band_position", S.clean([(d, v) for d, v in bp if v is not None]), "Position in the corridor (0 = ODR floor · 1 = ORRF ceiling; sparse)", "daily", "ratio", cfg, z_window=30)
     if D["band_position"]["value"] is not None:
-        D["band_position"]["status"] = "fresh"
+        D["band_position"]["status"] = clamp_status(D["band_position"]["status"], "fresh")
         D["band_position"]["level"] = "WATCH" if D["band_position"]["value"] >= 0.5 else "SAFE"
     b90s = S.merge_series(b90, ocr, lambda a, c: round((a - c) * 100, 1))
     D["bank_bill_90d_minus_ocr_bps"] = entry("bank_bill_90d_minus_ocr_bps", b90s, "Bank bill 90 d (BKBM) − OCR (bp)", "daily", "bps", cfg, z_window=30)

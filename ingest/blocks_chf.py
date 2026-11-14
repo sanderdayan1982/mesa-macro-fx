@@ -14,7 +14,7 @@ from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
 from .scoring import Comps
-from .blocks import entry, _prev_levels, _alert, _health
+from .blocks import entry, clamp_status, _prev_levels, _alert, _health
 from .blocks_jpy import _entries, _base, _ffill, _spec, _cap_watch
 from .blocks_gbp import _persistent_level
 
@@ -112,11 +112,11 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     for k in ("threshold_factor",):
         E[k]["unit"] = "x"
         E[k]["frequency"] = "event"  # set at policy decisions (SNB), not a daily print: dated by the last cube row, never stale by age
-        E[k]["status"] = "fresh" if raw[k] else "unavailable"
+        E[k]["status"] = clamp_status(E[k]["status"], "fresh") if raw[k] else "unavailable"
     for k in ("policy_rate", "rate_up_to_threshold", "rate_above_threshold", "special_rate"):
         E[k]["unit"] = "%"
         E[k]["frequency"] = "event"
-        E[k]["status"] = "fresh" if raw[k] else "unavailable"
+        E[k]["status"] = clamp_status(E[k]["status"], "fresh") if raw[k] else "unavailable"
     E["min_reserve_compliance_pct"]["unit"] = "%"
     E["fx_transactions_quarterly"]["frequency"] = "quarterly"
     E["snb_bills_auction_month"]["unit"] = "x"
@@ -175,9 +175,9 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     D["fx_investments_change_pct"] = entry("fx_investments_change_pct", S.pct_change_series(fxi, 1), "Foreign currency investments — month-on-month %", "monthly", "%", cfg, z_window=12)
     # ── bills ladder / FX intervention proxy (weekly) ──
     D["bills_maturing_week"] = entry("bills_maturing_week", S.clean(data.get("bills_maturing_week", [])), "SNB Bills maturing in the coming week (register shape × balance-sheet stock)", "weekly", unit, cfg, z_window=26)
-    D["bills_maturing_week"]["status"] = "fresh" if data.get("bills_maturing_week") else "unavailable"
+    D["bills_maturing_week"]["status"] = clamp_status(D["bills_maturing_week"]["status"], "fresh") if data.get("bills_maturing_week") else "unavailable"
     D["bills_roll_off_4w"] = entry("bills_roll_off_4w", S.clean(data.get("bills_maturing_4w", [])), "SNB Bills maturing in the next 4 weeks", "weekly", unit, cfg, z_window=26)
-    D["bills_roll_off_4w"]["status"] = "fresh" if data.get("bills_maturing_4w") else "unavailable"
+    D["bills_roll_off_4w"]["status"] = clamp_status(D["bills_roll_off_4w"]["status"], "fresh") if data.get("bills_maturing_4w") else "unavailable"
     mw = D["bills_maturing_week"]["value"] or 0.0
     fxp = [(d, round(v - (mw if d == wow[-1][0] else 0.0), 1)) for d, v in wow] if wow else []
     D["fx_intervention_proxy_weekly"] = entry("fx_intervention_proxy_weekly", fxp, "Weekly sight-deposit jump not explained by Bills maturities (FX purchase proxy)", "weekly", unit, cfg, z_window=26)
@@ -201,7 +201,7 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     byms = S.merge_series(by, _ffill(saron, by), lambda y, s: round((y - s) * 100, 1)) if by and saron else []
     D["bills_yield_minus_saron_bps"] = entry("bills_yield_minus_saron_bps", byms, "SNB Bills 28-day auction yield − SARON (bps)", "event", "bps", cfg, z_window=12)
     if byms:
-        D["bills_yield_minus_saron_bps"]["status"] = "fresh"
+        D["bills_yield_minus_saron_bps"]["status"] = clamp_status(D["bills_yield_minus_saron_bps"]["status"], "fresh")
         D["bills_yield_minus_saron_bps"]["level"] = "WATCH" if abs(byms[-1][1]) > 3 else "SAFE"
     bb = S.clean(data.get("bills_btc", []))
     # ── phase ──
@@ -292,22 +292,22 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     btc = S.clean(data.get("mmdrc_btc", []))
     D["mmdrc_bid_to_cover"] = entry("mmdrc_bid_to_cover", btc, "MMDRC (3-month) auction bid-to-cover", "event", "x", cfg, spec=_spec(th, "mmdrc_bid_to_cover"), prev_level=pl.get("mmdrc_bid_to_cover"), z_window=12)
     if btc:
-        D["mmdrc_bid_to_cover"]["status"] = "fresh"
+        D["mmdrc_bid_to_cover"]["status"] = clamp_status(D["mmdrc_bid_to_cover"]["status"], "fresh")
     my = S.clean(data.get("mmdrc_yield", []))
     mys = S.merge_series(my, _ffill(saron, my), lambda y, s: round((y - s) * 100, 1)) if my and saron else []
     D["mmdrc_yield_minus_saron_bps"] = entry("mmdrc_yield_minus_saron_bps", mys, "MMDRC 3m auction yield − SARON (bps; negative = tier-arbitrage bid, positive = weak demand)", "event", "bps", cfg,
                                              spec=_spec(th, "mmdrc_yield_minus_saron_bps"), prev_level=pl.get("mmdrc_yield_minus_saron_bps"), z_window=12)
     if mys:
-        D["mmdrc_yield_minus_saron_bps"]["status"] = "fresh"
+        D["mmdrc_yield_minus_saron_bps"]["status"] = clamp_status(D["mmdrc_yield_minus_saron_bps"]["status"], "fresh")
     bbtc = S.clean(data.get("bond_btc", []))
     D["bond_bid_to_cover"] = entry("bond_bid_to_cover", bbtc, "Confederation bond auction bid-to-cover (mean per auction day)", "event", "x", cfg, z_window=12)
     if bbtc:
-        D["bond_bid_to_cover"]["status"] = "fresh"
+        D["bond_bid_to_cover"]["status"] = clamp_status(D["bond_bid_to_cover"]["status"], "fresh")
         D["bond_bid_to_cover"]["level"] = "WATCH" if bbtc[-1][1] < 1.2 else "SAFE"
     own = S.clean(data.get("bond_own_share", []))
     D["bond_own_holdings_share"] = entry("bond_own_holdings_share", own, "Own holdings retained / (issued + retained) per auction", "event", "ratio", cfg, z_window=12)
     if own:
-        D["bond_own_holdings_share"]["status"] = "fresh"
+        D["bond_own_holdings_share"]["status"] = clamp_status(D["bond_own_holdings_share"]["status"], "fresh")
         D["bond_own_holdings_share"]["level"] = "WATCH" if (own[-1][1] > 0.30 and D["bond_bid_to_cover"].get("level") == "WATCH") else "SAFE"
     D["bond_tail_bp"] = {"label": "Bond auction tail (bp)", "value": None, "status": "unavailable", "date": None, "note": b["derived"]["bond_tail_bp"]["formula"], "pending_by_design": True}
     iss = S.clean(data.get("mmdrc_issued", []))
@@ -423,10 +423,10 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
             E[k]["equivalence_note"] = "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
     for k in ("policy_rate", "rate_above_threshold", "special_rate"):
         E[k]["frequency"] = "event"
-        E[k]["status"] = "fresh" if raw[k] else "unavailable"
+        E[k]["status"] = clamp_status(E[k]["status"], "fresh") if raw[k] else "unavailable"
     E["mmdrc_3m_yield"]["frequency"] = "event"
     if raw["mmdrc_3m_yield"]:
-        E["mmdrc_3m_yield"]["status"] = "fresh"
+        E["mmdrc_3m_yield"]["status"] = clamp_status(E["mmdrc_3m_yield"]["status"], "fresh")
     saron, pol, zig, eng = raw["saron"], raw["policy_rate"], raw["rate_above_threshold"], raw["special_rate"]
     saron_lag = int((b["series"].get("saron") or {}).get("lag_days", 0) or 0)
     # Extend saron_1m_compound (H6) and saron_3m_compound (H7) beyond SNB's 3-week zirepo embargo using ACT/360 daily SARON compounding
@@ -502,7 +502,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     D["sar3m_minus_saron_bps"] = entry("sar3m_minus_saron_bps", t3, "SAR3M − SARON (bps; term premium / cut-hike pricing; lagged)", "daily", "bps", cfg, spec=_spec(th, "sar3m_minus_saron_bps"), prev_level=pl.get("sar3m_minus_saron_bps"), z_window=30)
     if t3:
         _apply(D["sar3m_minus_saron_bps"], _two_sided("sar3m_minus_saron_bps", t3, _spec(th, "sar3m_minus_saron_bps") or {}, "daily", pl.get("sar3m_minus_saron_bps")))
-        D["sar3m_minus_saron_bps"]["status"] = "stale" if E["sar3m"]["status"] != "fresh" else "fresh"
+        D["sar3m_minus_saron_bps"]["status"] = clamp_status(D["sar3m_minus_saron_bps"]["status"], "stale" if E["sar3m"]["status"] != "fresh" else "fresh")
     c3 = raw["saron_3m_compound"]
     D["saron_3m_compound_minus_policy_bps"] = entry("saron_3m_compound_minus_policy_bps", S.merge_series(c3, _ffill(pol, c3), lambda a, c: round((a - c) * 100, 2)), "SARON 3M compound − policy (bps; lagged)", "daily", "bps", cfg, z_window=30, lag_days=saron_lag)
     y1, y2, y5, y10, y20, y30 = raw["confed_1y"], raw["confed_2y"], raw["confed_5y"], raw["confed_10y"], raw["confed_20y"], raw["confed_30y"]
@@ -520,7 +520,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     mys = S.merge_series(my, _ffill(saron, my), lambda a, s: round((a - s) * 100, 1)) if my and saron else []
     D["mmdrc_3m_minus_saron_bps"] = entry("mmdrc_3m_minus_saron_bps", mys, "MMDRC 3m auction yield − SARON (bps)", "event", "bps", cfg, z_window=12)
     if mys:
-        D["mmdrc_3m_minus_saron_bps"]["status"] = "fresh"
+        D["mmdrc_3m_minus_saron_bps"]["status"] = clamp_status(D["mmdrc_3m_minus_saron_bps"]["status"], "fresh")
     D["friction_confirmed"] = {"label": "friction_confirmed (SARON ≥ policy 3 sessions)", "value": fc, "status": "fresh" if anchor else "unavailable", "date": anchor[-1][0] if anchor else None}
     D["floor_leak"] = {"label": "floor_leak (SARON ≤ anchor − 10 bp for 5 sessions)", "value": fl, "status": "fresh" if anchor else "unavailable", "date": anchor[-1][0] if anchor else None}
     lvl = D["saron_minus_absorption_rate_bps"].get("level", "NO DATA")

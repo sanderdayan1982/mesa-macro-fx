@@ -16,7 +16,7 @@ from . import series as S
 from .series import Series
 from .thresholds import classify
 from .scoring import Comps
-from .blocks import entry, _prev_levels, _alert, _health, _base as _base0
+from .blocks import entry, clamp_status, _prev_levels, _alert, _health, _base as _base0
 from .blocks_gbp import _ser
 from .blocks_usd import _freq, _latest_at_or_before, _clamp, _lvl
 
@@ -412,7 +412,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None,
     D: Dict[str, dict] = {}
     # policy rates are step series: show the current level with its effective date
     for k in ("dfr", "mro_rate", "mlf_rate"):
-        E[k]["status"] = "fresh" if E[k]["value"] is not None else "unavailable"
+        E[k]["status"] = clamp_status(E[k]["status"], "fresh") if E[k]["value"] is not None else "unavailable"
         E[k]["effective_since"] = E[k]["date"]
         E[k]["confidence"] = 100 if E[k]["value"] is not None else 0
         E[k]["equivalence_note"] = "step series: published on change dates only (FM); level in force since effective_since"

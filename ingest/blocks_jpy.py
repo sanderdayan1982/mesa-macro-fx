@@ -16,7 +16,7 @@ from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
 from .scoring import Comps
-from .blocks import entry, _prev_levels, _alert, _health, _base as _base0
+from .blocks import entry, clamp_status, _prev_levels, _alert, _health, _base as _base0
 from .blocks_gbp import _persistent_level
 
 # config series key -> data key (None = pending by design)
@@ -111,7 +111,7 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], MAP: Dict[str, Opti
                       "equivalence_note": ("no usage on %s (last use %s = %s)" % (latest, ser[-1][0], ser[-1][1])) if ser else "empty cell in the daily file = no usage (0)"})
             raw[key] = ser + [(latest, 0.0)]
         if fq == "event" and ser:
-            e["status"] = "fresh"
+            e["status"] = clamp_status(e["status"], "fresh")
         if sc.get("display_only"):
             e["display_only"] = True
         if sc.get("note") or sc.get("role"):
@@ -325,7 +325,7 @@ def build_fiscal(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None
     D["bid_to_cover_superlong"] = entry("bid_to_cover_superlong", bsl, "Bid-to-cover — 20Y/30Y/40Y auctions (mean per auction date)", "event", "x", cfg, status="fresh" if bsl else "unavailable",
                                         spec=dict(th.get("bid_to_cover_superlong", {}), direction="low_is_risk", window="36w", min_n=12), prev_level=pl.get("bid_to_cover_superlong"), z_window=12)
     if bsl:
-        D["bid_to_cover_superlong"]["status"] = "fresh"
+        D["bid_to_cover_superlong"]["status"] = clamp_status(D["bid_to_cover_superlong"]["status"], "fresh")
     # ── auction tail (yield at lowest accepted − yield at average, bp) from the MoF per-auction result pages ──
     tails: Dict[str, List[float]] = {}
     for k in ("tail_20y", "tail_30y", "tail_40y"):
@@ -470,9 +470,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
     pl = _prev_levels(prev)
     th = b["thresholds"]
     E, raw = _entries(cfg, "rates", data, MAP_RT, "%", pl, {})
-    for k in ("call_1w", "call_1m", "call_3m", "collateralized_on", "call_market_outstanding"):
-        if raw[k] and E[k]["status"] == "stale":
-            E[k]["status"] = "proxy"  # fcall snapshot history builds up run by run
+    # fcall history used to relabel stale call rates as proxy. That improves a stale freshness (INTEGRIDAD-01): leave them stale.
     tona, th_, tl_ = raw["tona"], raw["tona_high"], raw["tona_low"]
     # BoJ API lags 2 business days; the fcall summary (T-1) carries the same uncollateralized O/N average/max/min → splice the newest sessions
     spliced = 0

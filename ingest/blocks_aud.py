@@ -12,7 +12,7 @@ from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
 from .scoring import Comps
-from .blocks import entry, _prev_levels, _alert, _health, _base as _base0
+from .blocks import entry, clamp_status, _prev_levels, _alert, _health, _base as _base0
 from .blocks_gbp import _ser, _persistent_level
 
 
@@ -43,7 +43,7 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], unit: str, pl: Dict
                           "level": "SAFE", "confidence": 100, "date": latest, "age_days": 0,
                           "equivalence_note": ("no usage on %s (last use %s = %s)" % (latest, ser[-1][0], ser[-1][1])) if ser else "column empty in A3 = no usage (0)"})
         if sc.get("freq") == "event" and ser:
-            e["status"] = "fresh"
+            e["status"] = clamp_status(e["status"], "fresh")
         if sc.get("display_only"):
             e["display_only"] = True
         if sc.get("note") or sc.get("role"):
@@ -242,7 +242,7 @@ def build_rates(cfg: dict, data: Dict[str, Series], prev: Optional[dict] = None)
             raw[key] = _ser(data, sc)
             E[key] = entry(key, raw[key], sc["label"], "event" if sc.get("freq") == "event" else freq, "AUD_mn" if "volume" in key else "%", cfg, sid, sc.get("usd_analog"))
             if sc.get("freq") == "event" and raw[key]:
-                E[key]["status"] = "fresh"
+                E[key]["status"] = clamp_status(E[key]["status"], "fresh")
         else:
             E[key] = {"source_id": None, "label": sc["label"], "unit": "%", "frequency": freq, "status": "unavailable", "value": None, "date": None, "level": "NO DATA",
                       "equivalence_note": sc.get("status", "")}

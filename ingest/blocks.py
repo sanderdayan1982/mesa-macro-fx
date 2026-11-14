@@ -11,6 +11,21 @@ from .quality import evaluate_series, system_summary
 
 SCHEMA_VERSION = "0.3.0"
 
+# Lower is fresher. proxy is healthier than stale: source_health treats ("fresh", "proxy") as ok.
+_FRESH_RANK = {"fresh": 0, "proxy": 1, "stale": 2, "degraded": 3, "unavailable": 4}
+
+
+def clamp_status(computed: str, requested: Optional[str]) -> str:
+    """An explicit status may restate or worsen freshness. It must not improve a stale
+    (or worse) computed freshness. orden INTEGRIDAD-01 de Sander 14-nov-2026."""
+    if not requested:
+        return computed
+    rc = _FRESH_RANK.get(computed, _FRESH_RANK["stale"])
+    rr = _FRESH_RANK.get(requested, _FRESH_RANK["fresh"])
+    if rc >= _FRESH_RANK["stale"] and rr < rc:
+        return computed
+    return requested
+
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
@@ -23,9 +38,9 @@ def entry(name: str, ser: Series, label: str, freq: str, unit: str, cfg: dict, s
     ser = S.clean(ser)
     L, P = S.last(ser), S.last(ser, 1)
     q = quality or evaluate_series(name, ser, freq, cfg, lag_days=lag_days)
-    st = status or q["freshness"]
-    if not ser:
-        st = "unavailable"
+    # status="fresh" if ser must not paint a stale print fresh (blocks.py and every blocks_*).
+    computed = "unavailable" if not ser else q["freshness"]
+    st = clamp_status(computed, status)
     val = L[1] if L else None
     e = {"source_id": source_id, "label": label, "usd_analog": usd_analog, "unit": unit, "frequency": freq,
          "status": st, "value": val, "date": L[0] if L else None,

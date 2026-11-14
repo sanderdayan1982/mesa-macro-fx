@@ -10,7 +10,7 @@ from . import series as S
 from .series import Series
 from .thresholds import classify, signal_band
 from .scoring import Comps
-from .blocks import entry, _prev_levels, _alert, _base as _base0, _health
+from .blocks import entry, clamp_status, _prev_levels, _alert, _base as _base0, _health
 
 
 def _base(ccy, block, cfg, bcfg, E, D, signals, history):
@@ -37,7 +37,8 @@ def _entries(cfg: dict, block: str, data: Dict[str, Series], freq: str, unit: st
         e = entry(key, ser, sc["label"], fq, u, cfg, sc.get("id"), sc.get("usd_analog"), status=st,
                   spec=th.get(key), prev_level=pl.get(key), z_window=26 if freq == "weekly" else 12 if freq == "monthly" else 30, lag_days=lag)
         if sc.get("freq") == "event" and ser:
-            e["status"] = "fresh"  # event series (maintenance-period / per-operation): age is not staleness
+            # age still counts: a stale event print must not be promoted to fresh (INTEGRIDAD-01)
+            e["status"] = clamp_status(e["status"], "fresh")
             e["equivalence_note"] = sc.get("note") or sc.get("role", "")
         if sc.get("display_only"):
             e["display_only"] = True

@@ -65,6 +65,46 @@ def _latest_at_or_before(ser: Series, d: str) -> Optional[float]:
     return best
 
 
+def _value_on(ser: Series, d: str) -> Optional[float]:
+    for dd, v in ser:
+        if dd == d and v is not None:
+            return v
+    return None
+
+
+def _last_date(ser: Series) -> Optional[str]:
+    last = None
+    for d, v in ser:
+        if v is not None:
+            last = d
+    return last
+
+
+def net_liquidity_on_common_dates(wa: Series, tga: Series, rrp: Series) -> Tuple[Series, Dict[str, Optional[str]]]:
+    """Fed net liquidity = WALCL − TGA − ON RRP on one common date.
+
+    A missing leg is absent: the latest print on or before that date is not
+    carried forward (11-nov H.4.1 must not subtract 10-nov ON RRP).
+    component_dates are the dates that entered the last printed point; when no
+    common date exists they are each series' latest date and the series is empty.
+    orden INTEGRIDAD-01 de Sander 14-nov-2026.
+    """
+    nl: Series = []
+    for d, w in wa:
+        if w is None:
+            continue
+        t, r = _value_on(tga, d), _value_on(rrp, d)
+        if t is None or r is None:
+            continue
+        nl.append((d, round(float(w) - float(t) - float(r), 1)))
+    if nl:
+        d0 = nl[-1][0]
+        dates: Dict[str, Optional[str]] = {"total_assets": d0, "tga": d0, "on_rrp": d0}
+    else:
+        dates = {"total_assets": _last_date(wa), "tga": _last_date(tga), "on_rrp": _last_date(rrp)}
+    return nl, dates
+
+
 def _clamp(x: float, lo: float = -2.0, hi: float = 2.0) -> float:
     return round(max(lo, min(hi, x)), 2)
 
@@ -83,14 +123,11 @@ def build_central_bank(cfg: dict, data: Dict[str, Series], prev: Optional[dict] 
     raw = {k: _ser(data, sc) for k, sc in b["series"].items()}
     wa, tga, rrp, res, pc = raw["total_assets"], raw["tga"], raw["on_rrp"], raw["reserves"], raw["primary_credit"]
     D: Dict[str, dict] = {}
-    # Net Liquidity = WALCL − WTREGEN − RRPONTTLD on H.4.1 dates (skip weeks without TGA/RRP coverage — v2.0 fix A1)
-    nl: Series = []
-    for d, w in wa:
-        t, r = _latest_at_or_before(tga, d), _latest_at_or_before(rrp, d)
-        if w is not None and t is not None and r is not None:
-            nl.append((d, round(w - t - r, 1)))
+    # Net Liquidity = WALCL − WTREGEN − RRPONTTLD only where all three print that exact date.
+    nl, comp_dates = net_liquidity_on_common_dates(wa, tga, rrp)
     D["net_liquidity"] = entry("net_liquidity", nl, "Fed Net Liquidity = WALCL − TGA − ON RRP", "weekly", unit, cfg, usd_analog="WALCL − WTREGEN − RRPONTTLD",
                                status="fresh" if nl else "unavailable", equivalence_note=b["derived"]["net_liquidity"]["formula"])
+    D["net_liquidity"]["component_dates"] = comp_dates
     nlw = S.pct_change_series(nl)
     D["net_liquidity_wow_pct"] = entry("net_liquidity_wow_pct", nlw, "Net Liquidity Δ% w/w (≥ +2% NL UP · ≤ −2% NL DOWN; heurística heredada, sin dirección)", "weekly", "%", cfg, status="fresh" if nlw else "unavailable")
     sb = signal_band(D["net_liquidity_wow_pct"]["value"], nlw, th["net_liquidity_wow_pct"], "weekly")

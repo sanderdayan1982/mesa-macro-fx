@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from typing import Dict, Optional
 from . import series as S
 from .series import Series
-from .blocks import entry
+from .blocks import entry, clamp_status
 from .scoring import Comps
 
 
@@ -34,7 +34,7 @@ def enrich_central_bank(block: dict, cfg: dict, rf: Dict[str, Series], bf: Dict[
                           ("repo_net_daily", rf.get("repo_net_daily", []), "Repos net flow (daily; CT − / CP +)")):
         D[k] = entry(k, ser, label, "daily", unit, cfg, src, status="fresh" if ser else "unavailable", lag_days=lag)
         if ser:
-            D[k]["status"] = "fresh" if lag <= 45 else "stale"
+            D[k]["status"] = clamp_status(D[k]["status"], "fresh" if lag <= 45 else "stale")
             D[k]["equivalence_note"] = "dates from the operation; amounts published monthly (last data %s)" % ops_cut
     for k, ser, label in (("bills_stock_daily", bf.get("bills_stock_daily", []), "SNB Bills outstanding — daily stock from operations"),
                           ("repo_ct_stock_daily", rf.get("repo_ct_stock_daily", []), "Liquidity-absorbing repos outstanding — daily stock from operations"),
@@ -42,7 +42,7 @@ def enrich_central_bank(block: dict, cfg: dict, rf: Dict[str, Series], bf: Dict[
         D[k] = entry(k, ser, label, "daily", unit, cfg, src, status="fresh" if ser else "unavailable", lag_days=lag,
                      equivalence_note="S1: daily in dates, monthly in amounts; reconciled to the balance sheet at month-end")
         if ser:
-            D[k]["status"] = "fresh" if lag <= 45 else "stale"
+            D[k]["status"] = clamp_status(D[k]["status"], "fresh" if lag <= 45 else "stale")
     ops_net = S.merge_series(bf.get("bills_net_daily", []), rf.get("repo_net_daily", []), lambda a, b: round(a + b, 3)) if bf.get("bills_net_daily") and rf.get("repo_net_daily") else (bf.get("bills_net_daily") or rf.get("repo_net_daily") or [])
     n5 = S.rolling_sum(ops_net, 5)
     D["ops_net_daily"] = entry("ops_net_daily", ops_net, "SNB operations net flow (Bills + repos; daily)", "daily", unit, cfg, src, status="fresh" if ops_net else "unavailable")
@@ -67,7 +67,7 @@ def enrich_central_bank(block: dict, cfg: dict, rf: Dict[str, Series], bf: Dict[
                                            status="fresh" if pw else "unavailable", z_window=26, lag_days=lag,
                                            equivalence_note="S3: banknotes, swap volumes and third parties remain as recognised noise; weeks after the gmges cut are in proxy_partial")
     if pw:
-        D["fx_intervention_proxy_v04"]["status"] = "fresh" if lag <= 45 else "stale"
+        D["fx_intervention_proxy_v04"]["status"] = clamp_status(D["fx_intervention_proxy_v04"]["status"], "fresh" if lag <= 45 else "stale")
     pp = px.get("proxy_weekly_partial", [])
     D["fx_intervention_proxy_v04_partial"] = entry("fx_intervention_proxy_v04_partial", pp, "Proxy v0.4 for weeks not yet covered by the gmges amounts (ΔGI − Confederation only)", "weekly", unit, cfg, "derived",
                                                    status="fresh" if pp else "unavailable", equivalence_note="incomplete by construction until the monthly file arrives")
