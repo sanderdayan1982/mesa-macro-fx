@@ -23,7 +23,7 @@ from .providers import ProviderError, UA
 
 # FRED units → USD millions (verified against the FRED series pages, 2026-09-08)
 UNITS_TO_M: Dict[str, float] = {
-    "WALCL": 1, "WTREGEN": 1, "WRESBAL": 1, "TREAST": 1, "WSHOMCB": 1, "WLCFLPCL": 1,   # $ millions
+    "WALCL": 1, "WTREGEN": 1, "WRESBAL": 1, "TREAST": 1, "WSHOMCB": 1, "WLCFLPCL": 1, "WMTSECL1": 1,  # $ millions
     "RRPONTTLD": 1000,                                                                  # $ billions
     "TOTBKCR": 1000, "TOTLL": 1000, "TOTCI": 1000, "BUSLOANS": 1000, "DPSACBW027SBOG": 1000,  # H.8 $ billions
     "H8B3094NCBA": 1,                                                                   # H.8 borrowings $ millions (SA)

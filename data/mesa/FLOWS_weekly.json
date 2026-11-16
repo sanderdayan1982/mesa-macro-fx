@@ -1,0 +1,126 @@
+{
+ "schema": "mesa.flows_weekly.m2",
+ "shadow": true,
+ "vote": 0,
+ "blocked_entry": false,
+ "status": "ok",
+ "as_of": "2026-11-16",
+ "generated_at": "2026-11-16T00:00:00Z",
+ "unit": "JPY 100 million (MoF ITS week.csv); CHF in the source unit already stored",
+ "source": "Source: Ministry of Finance Japan, International Transactions in Securities",
+ "licence": "PDL 1.0",
+ "source_url": "https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv",
+ "method": {
+  "flows": "Fable [PROV] uncalibrated (R12), kept until the GATE act. States on flow_jpy only, from pct52 of sum4 over 52 publications, 2 consecutive publications to enter and to exit, first vintage value (no repaint). VOTE=0 shadow; not in blocked_entry.",
+  "release": "Signed rule: Thursday after the Saturday week-end, or Friday when that Thursday is a Japanese national holiday. No release-date table. The week that is due is the latest one whose signed release is on or before today. STALE on the next calendar day if that row is missing, unless a national holiday falls on Mon–Wed before that Thursday: then the tolerance is 2 business days (Mon–Fri, national holidays excluded) and the state is not classified until that tolerance has passed."
+ },
+ "thresholds": {
+  "entrada_entry": 80,
+  "entrada_exit": 70,
+  "salida_entry": 20,
+  "salida_exit": 30,
+  "window": 52,
+  "hysteresis_publications": 2,
+  "prov_min": 26
+ },
+ "coverage": {
+  "JPY": "MoF ITS week.csv (logs/jpy/raw/its_week.csv)",
+  "CHF": "SNB sight deposits already in history/chf (snbgwdchfsgw TG, GI, UEB); value, sum4, z52 only",
+  "USD": "H.4.1 custody already in the download; value, sum4, z52 only, no state",
+  "EUR": "NA",
+  "GBP": "NA",
+  "AUD": "NA",
+  "NZD": "NA",
+  "CAD": "NA"
+ },
+ "reason": null,
+ "currencies": {
+  "EUR": null,
+  "GBP": null,
+  "AUD": null,
+  "NZD": null,
+  "CAD": null,
+  "CHF": {
+   "sight_deposits_total_weekly": {
+    "value": 452892.0,
+    "sum4": 1825881.0,
+    "z52": -1.1301
+   },
+   "sight_deposits_domestic_weekly": {
+    "value": 429151.0,
+    "sum4": 1736142.0,
+    "z52": -1.3726
+   },
+   "other_sight_deposits_weekly": {
+    "value": 23742.0,
+    "sum4": 89741.0,
+    "z52": -0.2365
+   }
+  },
+  "USD": {
+   "WMTSECL1": {
+    "value": 2524189.0,
+    "sum4": 10209333.0,
+    "z52": -2.0229
+   }
+  },
+  "JPY": {
+   "flow_jpy": {
+    "value": 24474.0,
+    "sum4": 51023.0,
+    "z52": 0.8871,
+    "pct52_sum4": 76.92,
+    "week_end": "2026-11-07",
+    "release_date": "2026-11-12",
+    "state": "ENTRADA",
+    "flows_prov": false,
+    "flows_reason": null,
+    "n": 52
+   },
+   "its_resident_foreign_equity_weekly": {
+    "value": 6439.0,
+    "sum4": -8527.0,
+    "z52": 1.1287,
+    "pct52_sum4": 36.54,
+    "week_end": "2026-11-07",
+    "release_date": "2026-11-12",
+    "state": null,
+    "flows_prov": false,
+    "flows_reason": null
+   },
+   "its_resident_foreign_bonds_weekly": {
+    "value": 5376.0,
+    "sum4": -5371.0,
+    "z52": 0.4911,
+    "pct52_sum4": 32.69,
+    "week_end": "2026-11-07",
+    "release_date": "2026-11-12",
+    "state": null,
+    "flows_prov": false,
+    "flows_reason": null
+   },
+   "its_nonres_jp_equity_weekly": {
+    "value": -1052.0,
+    "sum4": 21388.0,
+    "z52": -0.2147,
+    "pct52_sum4": 63.46,
+    "week_end": "2026-11-07",
+    "release_date": "2026-11-12",
+    "state": null,
+    "flows_prov": false,
+    "flows_reason": null
+   },
+   "its_foreign_jgb_weekly": {
+    "value": 13711.0,
+    "sum4": 43533.0,
+    "z52": 1.0441,
+    "pct52_sum4": 98.08,
+    "week_end": "2026-11-07",
+    "release_date": "2026-11-12",
+    "state": null,
+    "flows_prov": false,
+    "flows_reason": null
+   }
+  }
+ }
+}
