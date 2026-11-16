@@ -420,6 +420,50 @@ def test_tf11(fails):
         shutil.rmtree(tmp)
 
 
+def test_tf14(fails):
+    """WMTSECL1 is the seventh H.4.1 series, same FRED scale, informative only."""
+    src = open(os.path.join(ROOT, "ingest", "run.py"), encoding="utf-8").read()
+    check('H41 = ["WALCL", "TREAST", "WSHOMCB", "WLCFLPCL", "WTREGEN", "WRESBAL", "WMTSECL1"]' in src,
+          "T-F14 WMTSECL1 is the seventh id on the existing H.4.1 fredgraph list", fails)
+    from ingest.providers_usd import FredProvider, UNITS_TO_M
+    six = ("WALCL", "TREAST", "WSHOMCB", "WLCFLPCL", "WTREGEN", "WRESBAL")
+    check(all(UNITS_TO_M[s] == 1 for s in six) and UNITS_TO_M["WMTSECL1"] == 1,
+          "T-F14 WMTSECL1 uses the same $ millions scale (factor 1) as the six", fails)
+    check(FredProvider._scale("WMTSECL1", [("2026-11-11", 2524189.0)]) == [("2026-11-11", 2524189.0)],
+          "T-F14 the FRED scale does not rescale WMTSECL1", fails)
+    tmp = tempfile.mkdtemp(prefix="flows-tf14-")
+    try:
+        os.makedirs(os.path.join(tmp, "history", "usd"))
+        lines = ["date,WMTSECL1"]
+        start = date(2026, 9, 16)
+        for i in range(8):
+            lines.append("%s,%d" % ((start + timedelta(days=7 * i)).isoformat(), 1000 + i))
+        open(os.path.join(tmp, "history", "usd", "WMTSECL1.csv"), "w", encoding="utf-8").write("\n".join(lines) + "\n")
+        # the six series sitting beside it must not be read as custody
+        open(os.path.join(tmp, "history", "usd", "WRESBAL.csv"), "w", encoding="utf-8").write(
+            "date,WRESBAL\n2026-11-04,9\n")
+        text = _csv([("2026．11．1～11．7", {3: 1, 6: 1, 14: 1, 17: 1})])
+        csv_path = os.path.join(tmp, "week.csv")
+        open(csv_path, "w", encoding="utf-8").write(text)
+        doc = F.publish(
+            tmp, today=date(2026, 11, 16), now="2026-11-16T00:00:00Z",
+            csv_path=csv_path,
+            vintage_path=os.path.join(tmp, "its_vintage.csv"),
+            out_path=os.path.join(tmp, "FLOWS_weekly.json"),
+            chf_dir=os.path.join(tmp, "no-chf"),
+            usd_dir=os.path.join(tmp, "history", "usd"),
+        )
+        usd = doc["currencies"]["USD"]["WMTSECL1"]
+        check(set(usd) == {"value", "sum4", "z52"} and "state" not in usd,
+              "T-F14 USD custody is value/sum4/z52 only, with no state", fails)
+        check(usd["value"] == 1007 and usd["sum4"] == 1004 + 1005 + 1006 + 1007,
+              "T-F14 sum4 is the last four weekly custody prints", fails)
+        check(doc["currencies"]["USD"].get("WRESBAL") is None and doc.get("reason") is None,
+              "T-F14 reserves are not substituted for custody, and the absent-series reason is cleared", fails)
+    finally:
+        shutil.rmtree(tmp)
+
+
 def test_tf12(fails):
     """The thresholds in the module are the signed table, not a searched parameter."""
     check((F.ENTRADA_ENTRY, F.ENTRADA_EXIT, F.SALIDA_ENTRY, F.SALIDA_EXIT) == (80, 70, 20, 30),
@@ -448,6 +492,7 @@ def main() -> int:
     test_tf9(fails)
     test_tf10(fails)
     test_tf11(fails)
+    test_tf14(fails)
     test_tf12(fails)
     print("%d failures" % len(fails))
     return 1 if fails else 0

@@ -1513,7 +1513,7 @@ def _nzd_v04(cfg: dict, a, blocks: Dict[str, dict], data: dict, d3_rows, hist_di
 def fetch_usd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[str]) -> Dict[str, dict]:
     """USD lanes (FRED keyless CSV + Fiscal Data API; one request per series >= 0.6 s apart):
       daily / daily_retry  DTS (cash, transactions, debt; T-1) + SOFR/IORB/RRP + H.15 (DFF, DTB3, DGS2, DGS10)
-      weekly_thu           H.4.1 (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL) — Thursday 16:30 ET
+      weekly_thu           H.4.1 (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL, WMTSECL1) — Thursday 16:30 ET
       weekly               H.8 (TOTBKCR, TOTLL, TOTCI, DPSACBW027SBOG, H8B3094NCBA) — Friday 16:15 ET
       monthly              BUSLOANS (monthly C&I, legacy id) + everything (revalidation)
     Every lane rebuilds all four blocks from history CSVs (weekly series merged from history on daily lanes)."""
@@ -1555,7 +1555,7 @@ def fetch_usd(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         except Exception as e:  # noqa
             _err(tag, e)
 
-    H41 = ["WALCL", "TREAST", "WSHOMCB", "WLCFLPCL", "WTREGEN", "WRESBAL"]
+    H41 = ["WALCL", "TREAST", "WSHOMCB", "WLCFLPCL", "WTREGEN", "WRESBAL", "WMTSECL1"]
     H8 = ["TOTBKCR", "TOTLL", "TOTCI", "DPSACBW027SBOG", "H8B3094NCBA"]
     if "daily" in lanes:
         _fred("fred_daily", ["RRPONTTLD"] + _ids("rates"), _since(4 * 365, 60))

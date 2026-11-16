@@ -26,19 +26,14 @@
  "coverage": {
   "JPY": "MoF ITS week.csv (logs/jpy/raw/its_week.csv)",
   "CHF": "SNB sight deposits already in history/chf (snbgwdchfsgw TG, GI, UEB); value, sum4, z52 only",
-  "USD": {
-   "value": null,
-   "reason": "Securities held in custody for foreign official and international accounts (H.4.1 line, FRED WMTSECL1) is not in the H.4.1 download Mesa already stores (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL). That download is one FRED csv per series, not the full H.4.1 release. No new source added."
-  },
+  "USD": "H.4.1 custody already in the download; value, sum4, z52 only, no state",
   "EUR": "NA",
   "GBP": "NA",
   "AUD": "NA",
   "NZD": "NA",
   "CAD": "NA"
  },
- "reason": {
-  "USD": "Securities held in custody for foreign official and international accounts (H.4.1 line, FRED WMTSECL1) is not in the H.4.1 download Mesa already stores (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL). That download is one FRED csv per series, not the full H.4.1 release. No new source added."
- },
+ "reason": null,
  "currencies": {
   "EUR": null,
   "GBP": null,
@@ -62,7 +57,13 @@
     "z52": -0.2365
    }
   },
-  "USD": null,
+  "USD": {
+   "WMTSECL1": {
+    "value": 2524189.0,
+    "sum4": 10209333.0,
+    "z52": -2.0229
+   }
+  },
   "JPY": {
    "flow_jpy": {
     "value": 24474.0,

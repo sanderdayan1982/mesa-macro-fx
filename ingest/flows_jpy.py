@@ -11,9 +11,9 @@ and it does not change MofItsProvider.parse (that path still feeds
 foreign_jgb_flow_weekly).
 
 CHF sight deposits are read only when history/chf already holds the weekly SNB
-series. USD custody (H.4.1 foreign official accounts, FRED WMTSECL1) is filled
-only when that series is already in the download; otherwise USD is null and
-`reason.USD` says so. EUR, GBP, AUD, NZD and CAD are always NA.
+series. USD custody is FRED WMTSECL1, the seventh H.4.1 series on the same
+fredgraph.csv download as WALCL and the other five: value, sum4, z52 only.
+EUR, GBP, AUD, NZD and CAD are always NA.
 """
 from __future__ import annotations
 
