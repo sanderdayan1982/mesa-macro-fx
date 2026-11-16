@@ -1,7 +1,7 @@
 # Mesa Macro FX — JPY refresh lanes (config/jpy.json v0.2.x, Desk Standard v0.3)
 # Lanes (UTC, JST = UTC+9 all year): daily Mon–Fri 02:30 (11:30 JST: jd final T-1 + TONA + fcall + MoF yields + JSDA TRR + Accounts if due)
 #   · daily_provisional Mon–Fri 09:30 (18:30 JST: jx provisional + jp projection) · ten_day 3rd/13th/23rd 03:00 (BoJ Accounts)
-#   · weekly Fri 04:00 (MoF auction results XLS + ITS snapshot) · monthly 15th 03:00 (MD13/MD02/MD01/MD06/MD08 + MoF receipts) · backfill on the 1st.
+#   · weekly Fri 04:00 (MoF auction results XLS + ITS snapshot) and Thu 04:00 (ITS lane: MoF normally publishes Thursday) · monthly 15th 03:00 (MD13/MD02/MD01/MD06/MD08 + MoF receipts) · backfill on the 1st.
 # Courtesy rule: one request per source per lane, identifiable User-Agent, >= 1 s apart, backoff on 429/403; daily XLSX parsed by label with
 # structure hash → DATA_DEGRADED, never a silent remap. Missing jd at 02:30 UTC (late release) → the 03:30 retry lane picks it up.
 name: refresh-jpy
@@ -11,7 +11,8 @@ on:
     - cron: "30 3 * * 1-5"    # daily retry (late jd / holiday)
     - cron: "30 9 * * 1-5"    # daily_provisional lane (jx + jp)
     - cron: "0 3 3,13,23 * *" # ten_day lane — BoJ Accounts
-    - cron: "0 4 * * 5"       # weekly lane — auction results + ITS
+    - cron: "0 4 * * 4"       # weekly lane — Thursday ITS (MoF normally publishes Thursday)
+    - cron: "0 4 * * 5"       # weekly lane — existing Friday auction results + ITS, kept
     - cron: "0 3 15 * *"      # monthly lane — API monthly + MoF receipts
     - cron: "0 5 1 * *"       # keepalive + full revalidation (backfill) on the 1st
   workflow_dispatch:
@@ -48,6 +49,7 @@ jobs:
               "30 3 * * 1-5")    echo "lane=daily"             >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
               "30 9 * * 1-5")    echo "lane=daily_provisional" >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
               "0 3 3,13,23 * *") echo "lane=ten_day"           >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
+              "0 4 * * 4")       echo "lane=weekly"            >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
               "0 4 * * 5")       echo "lane=weekly"            >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
               "0 3 15 * *")      echo "lane=monthly"           >> $GITHUB_OUTPUT; echo "backfill=false" >> $GITHUB_OUTPUT ;;
               *)                 echo "lane=all"               >> $GITHUB_OUTPUT; echo "backfill=true"  >> $GITHUB_OUTPUT ;;

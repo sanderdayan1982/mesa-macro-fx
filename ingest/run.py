@@ -967,6 +967,16 @@ def fetch_jpy(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
         except Exception as e:  # noqa
             errors.append("jpy_v04: %s" % e)
             E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "jpy_v04", "error": str(e)})
+    # FAMILIAS-01 M2 shadow. Reads the ITS snapshot already on disk (and CHF/USD
+    # weekly files already in history/). Writes data/mesa/FLOWS_weekly.json only.
+    # Does not touch the blocks, so fiscal.json / foreign_jgb_flow_weekly stay as built above.
+    if not fx:
+        try:
+            from . import flows_jpy as FJ
+            FJ.publish(ROOT, today=today)
+        except Exception as e:  # noqa
+            errors.append("flows_weekly: %s" % e)
+            E.log_event(oplog, "SOURCE_ERROR", "system", {"source": "flows_weekly", "error": str(e)})
     return blocks
 
 
