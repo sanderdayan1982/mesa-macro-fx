@@ -1,7 +1,7 @@
 {
  "currency": "CHF",
- "generated_at": "2026-11-13T17:30:23+00:00",
- "as_of": "2026-11-06",
+ "generated_at": "2026-11-16T10:35:51+00:00",
+ "as_of": "2026-11-13",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -27,8 +27,8 @@
    "score": 0.0,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-06",
-   "detail": "GI 429151.0 (wow -7742.0, 13w -0.8071%, NEUTRAL) · absorption 150169.5928 (26.3%) · ratio 8.74x · factor 13.5 · phase STEADY",
+   "as_of": "2026-11-13",
+   "detail": "GI 425271.0 (wow -3880.0, 13w -1.903%, NEUTRAL) · absorption 150169.5928 (26.3%) · ratio 8.66x · factor 13.5 · phase STEADY",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 1.0,
@@ -43,17 +43,17 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.5,
+    "effective_score": 0.0,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-06",
+    "as_of": "2026-11-13",
     "recent": [
      [
-      "2026-10-30",
-      1.0
+      "2026-11-06",
+      0.0
      ],
      [
-      "2026-11-06",
+      "2026-11-13",
       0.0
      ]
     ],
@@ -81,10 +81,10 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": 0.0046,
+   "score": -0.0056,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-11",
+   "as_of": "2026-11-13",
    "detail": "Confederation 17561.662637 (mom -2593.5815) · MMDRC 6.485x at -0.1107% (-7.1 bp vs SARON) · bonds 1.189x",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -106,15 +106,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": 0.001,
+    "effective_score": 0.003,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-13",
     "recent": [
-     [
-      "2026-11-04",
-      -0.0141
-     ],
      [
       "2026-11-06",
       0.0046
@@ -130,6 +126,10 @@
      [
       "2026-11-11",
       0.0046
+     ],
+     [
+      "2026-11-13",
+      -0.0056
      ]
     ],
     "pending_days": null,
@@ -162,10 +162,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 19.8,
-    "denominator": 429151.0,
-    "denominator_date": "2026-11-06",
-    "today": "2026-11-13",
+    "raw": -23.95,
+    "denominator": 425271.0,
+    "denominator_date": "2026-11-13",
+    "today": "2026-11-16",
     "note": null
    },
    "v03_shadow": {
@@ -235,7 +235,7 @@
    ],
    "agreement_only": true,
    "era_start": "2022-09-22",
-   "era_weeks": 215,
+   "era_weeks": 216,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -248,11 +248,12 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_STEADY",
+  "FOREIGN_SIGHT_DEPOSITS_JUMP",
   "TIER_ARBITRAGE_BID"
  ],
  "overlays": {
-  "STERILISATION_STRESS": null,
-  "STERILISATION_STRESS_conditions_met": 0
+  "STERILISATION_STRESS": "STERILISATION_STRESS_LOW",
+  "STERILISATION_STRESS_conditions_met": 1
  },
  "inputs": {
   "reserves_level": "SAFE",
@@ -275,7 +276,7 @@
    "name": "FX Intervention / Reserve Creation",
    "bias": "RESERVE CREATION",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 2,
    "required": [],
@@ -283,7 +284,7 @@
    "details": [
     {
      "condition": "central_bank.sight_deposits_wow level >= WATCH",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.fx_investments_change_pct >= p80",
