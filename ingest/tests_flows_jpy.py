@@ -287,6 +287,24 @@ def test_tf8(fails):
           "T-F8 the holiday release is Friday 2026-01-02; STALE starts 2026-01-03, not on the Friday", fails)
 
 
+def test_tf13(fails):
+    """Real release dates are not STALE. Signed Thursday/Friday dates are not replaced by a table."""
+    check(F.release_date(date(2026, 11, 21)) == date(2026, 11, 26),
+          "T-F13 week 15–21 Nov 2026 still has signed release Thursday 26 Nov (real release is 27 Nov)", fails)
+    check(F.release_date(date(2026, 12, 26)) == date(2026, 12, 31),
+          "T-F13 week 20–26 Dec 2026 still has signed release Thursday 31 Dec", fails)
+    check(F.release_date(date(2027, 1, 2)) == date(2027, 1, 7),
+          "T-F13 week 27 Dec–2 Jan still has signed release Thursday 7 Jan 2027", fails)
+    nov = F.replay(_const_weeks(40, "2026-11-14"))[-1]["flow_jpy"]
+    on_nov = F._apply_stale(dict(nov), date(2026, 11, 27))
+    check(on_nov["state"] != "STALE" and on_nov["week_end"] == "2026-11-14",
+          "T-F13 week 15–21 Nov 2026 is not STALE on its real release date 27 Nov 2026", fails)
+    dec = F.replay(_const_weeks(40, "2026-12-19"))[-1]["flow_jpy"]
+    on_jan = F._apply_stale(dict(dec), date(2027, 1, 7))
+    check(on_jan["state"] != "STALE" and on_jan["week_end"] == "2026-12-19",
+          "T-F13 the 7 Jan 2027 combined release (20–26 Dec and 27 Dec–2 Jan) is not STALE on 7 Jan", fails)
+
+
 def test_tf9(fails):
     """A MoF revision appends rev=1. Previous states, and the values they used, stay equal."""
     weeks = []
@@ -426,6 +444,7 @@ def main() -> int:
     test_tf6(fails)
     test_tf7(fails)
     test_tf8(fails)
+    test_tf13(fails)
     test_tf9(fails)
     test_tf10(fails)
     test_tf11(fails)

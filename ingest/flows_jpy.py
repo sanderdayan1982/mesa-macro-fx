@@ -11,9 +11,9 @@ and it does not change MofItsProvider.parse (that path still feeds
 foreign_jgb_flow_weekly).
 
 CHF sight deposits are read only when history/chf already holds the weekly SNB
-series. USD Fed custody is left NA: it is not among the H.4.1 series this repo
-already stores. EUR, GBP, AUD, NZD and CAD are always NA — monthly files are
-never copied in.
+series. USD custody (H.4.1 foreign official accounts, FRED WMTSECL1) is filled
+only when that series is already in the download; otherwise USD is null and
+`reason.USD` says so. EUR, GBP, AUD, NZD and CAD are always NA.
 """
 from __future__ import annotations
 
@@ -60,9 +60,18 @@ CHF_WEEKLY_FILES = {
     "sight_deposits_domestic_weekly": "snbgwdchfsgw:GI.csv",
     "other_sight_deposits_weekly": "snbgwdchfsgw:UEB.csv",
 }
-# Fed custody codes that would count as "already captured". None of these are
-# in the H.4.1 set this repo stores (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL).
-USD_CUSTODY_FILES = ("WSHOICL.csv", "WSEFINTL.csv", "WSEFDIN.csv")
+# Read only if one of these files is already on disk from the H.4.1 download.
+# Mesa stores six FRED series (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL),
+# not the full H.4.1 release, so WMTSECL1 is not among them and is not fetched.
+USD_CUSTODY_FILES = ("WMTSECL1.csv", "WSHOICL.csv", "WSEFINTL.csv", "WSEFDIN.csv")
+USD_ABSENT_REASON = (
+    "Securities held in custody for foreign official and international accounts "
+    "(H.4.1 line, FRED WMTSECL1) is not in the H.4.1 download Mesa already stores "
+    "(WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL). "
+    "That download is one FRED csv per series, not the full H.4.1 release. No new source added."
+)
+# Signed release, then this many Mon–Fri days that are not Japanese national holidays.
+STALE_TOLERANCE_BUSINESS_DAYS = 2
 
 NA_CURRENCIES = ("EUR", "GBP", "AUD", "NZD", "CAD")
 
@@ -73,12 +82,12 @@ METHOD_FLOWS = (
     "VOTE=0 shadow; not in blocked_entry."
 )
 METHOD_RELEASE = (
-    "Signed rule: the week is Sun–Sat and MoF publishes on the Thursday after week_end, "
-    "or on Friday when that Thursday is a Japanese national holiday (Cabinet Office, "
-    "substitutes and citizens' holidays included). STALE from that calendar date + 1 day "
-    "with no new row; the state is not classified. The published MoF release schedule also "
-    "moves some Fridays when an earlier weekday is a holiday, and it combines some weeks "
-    "(2026-10-01, 2027-01-07); those shifts are not applied."
+    "Signed rule: Thursday after the Saturday week-end, or Friday when that Thursday is a "
+    "Japanese national holiday. No release-date table. The week that is due is the latest "
+    "one whose signed release is on or before today. STALE on the next calendar day if "
+    "that row is missing, unless a national holiday falls on Mon–Wed before that Thursday: "
+    "then the tolerance is 2 business days (Mon–Fri, national holidays excluded) and the "
+    "state is not classified until that tolerance has passed."
 )
 SOURCE_LINE = "Source: Ministry of Finance Japan, International Transactions in Securities"
 SOURCE_URL = "https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv"
@@ -199,14 +208,65 @@ def release_date(week_end: date) -> date:
     return thu
 
 
-def stale_since(latest_week_end: date, today: date) -> Optional[date]:
-    """MoF calendar date of the next week, when today is at least that date + 1 day.
+def _is_business_day(d: date) -> bool:
+    return d.weekday() < 5 and not is_jp_holiday(d)
 
-    None when the next row is not yet overdue. The returned date is the expected
-    release of the missing week (the calendar date the STALE rule adds a day to).
+
+def add_business_days(start: date, n: int) -> date:
+    """The date `n` Japanese business days after `start` (start itself is not counted)."""
+    d = start
+    left = n
+    while left > 0:
+        d += timedelta(days=1)
+        if _is_business_day(d):
+            left -= 1
+    return d
+
+
+def latest_due_week_end(today: date) -> date:
+    """Last Sun–Sat week whose signed release date is on or before `today`.
+
+    A combined MoF release (two weeks on one day) is not stale on that day: the
+    latest completed week's signed date is today, so the 2-business-day tolerance
+    has not started. No per-date table.
     """
-    rel = release_date(latest_week_end + timedelta(days=7))
-    if today >= rel + timedelta(days=1):
+    sat = today - timedelta(days=(today.weekday() - 5) % 7)
+    if sat == today:
+        sat -= timedelta(days=7)
+    while release_date(sat) > today:
+        sat -= timedelta(days=7)
+    return sat
+
+
+def _holiday_before_thursday(week_end: date, rel: date) -> bool:
+    """National holiday on Mon–Wed after week_end and before the signed release.
+
+    A holiday Thursday is already moved to Friday by release_date and is not counted again.
+    """
+    d = week_end + timedelta(days=1)
+    while d < rel:
+        if d.weekday() <= 2 and is_jp_holiday(d):
+            return True
+        d += timedelta(days=1)
+    return False
+
+
+def stale_since(latest_week_end: date, today: date) -> Optional[date]:
+    """Signed release once it is overdue, with a 2-business-day tolerance after an earlier holiday.
+
+    The due week is the latest one whose signed Thursday/Friday is on or before today, so a
+    combined release is not stale on the later week's signed date. No per-date table.
+    Without an earlier Mon–Wed holiday, STALE is the next calendar day (the signed +1 day rule).
+    """
+    due = latest_due_week_end(today)
+    if latest_week_end >= due:
+        return None
+    rel = release_date(due)
+    if _holiday_before_thursday(due, rel):
+        overdue = today > add_business_days(rel, STALE_TOLERANCE_BUSINESS_DAYS)
+    else:
+        overdue = today >= rel + timedelta(days=1)
+    if overdue:
         return rel
     return None
 
@@ -668,7 +728,7 @@ def _chf_block(chf_dir: str) -> Optional[dict]:
 
 
 def _usd_block(usd_dir: str) -> Optional[dict]:
-    """Fed custody only, and only if one of the custody files is already in the repo."""
+    """Custody only when the series is already in the H.4.1 download. Never fetches."""
     if not usd_dir or not os.path.isdir(usd_dir):
         return None
     for fn in USD_CUSTODY_FILES:
@@ -728,10 +788,14 @@ def _document(currencies: dict, today: date, generated_at: str, status: str = "o
         "coverage": {
             "JPY": "MoF ITS week.csv (logs/jpy/raw/its_week.csv)",
             "CHF": "SNB sight deposits already in history/chf (snbgwdchfsgw TG, GI, UEB); value, sum4, z52 only",
-            "USD": "NA — Fed custody is not among the captured H.4.1 series "
-                   "(WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL); no new source added",
+            "USD": (
+                {"value": None, "reason": USD_ABSENT_REASON}
+                if currencies.get("USD") is None
+                else "H.4.1 custody already in the download; value, sum4, z52 only, no state"
+            ),
             "EUR": "NA", "GBP": "NA", "AUD": "NA", "NZD": "NA", "CAD": "NA",
         },
+        "reason": None if currencies.get("USD") is not None else {"USD": USD_ABSENT_REASON},
         "currencies": currencies,
     }
 
@@ -746,7 +810,7 @@ def _apply_stale(flow: dict, today: date) -> dict:
     # Do not classify. The last print's value, sum4, z and pct stay; the state does not.
     out["state"] = STATE_STALE
     out["flows_prov"] = False
-    out["flows_reason"] = "STALE MoF release %s + 1 day without a new row" % rel.isoformat()
+    out["flows_reason"] = "STALE signed release %s without a new row" % rel.isoformat()
     return out
 
 

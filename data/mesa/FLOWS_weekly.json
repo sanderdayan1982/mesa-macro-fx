@@ -12,7 +12,7 @@
  "source_url": "https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv",
  "method": {
   "flows": "Fable [PROV] uncalibrated (R12), kept until the GATE act. States on flow_jpy only, from pct52 of sum4 over 52 publications, 2 consecutive publications to enter and to exit, first vintage value (no repaint). VOTE=0 shadow; not in blocked_entry.",
-  "release": "Signed rule: the week is Sun–Sat and MoF publishes on the Thursday after week_end, or on Friday when that Thursday is a Japanese national holiday (Cabinet Office, substitutes and citizens' holidays included). STALE from that calendar date + 1 day with no new row; the state is not classified. The published MoF release schedule also moves some Fridays when an earlier weekday is a holiday, and it combines some weeks (2026-10-01, 2027-01-07); those shifts are not applied."
+  "release": "Signed rule: Thursday after the Saturday week-end, or Friday when that Thursday is a Japanese national holiday. No release-date table. The week that is due is the latest one whose signed release is on or before today. STALE on the next calendar day if that row is missing, unless a national holiday falls on Mon–Wed before that Thursday: then the tolerance is 2 business days (Mon–Fri, national holidays excluded) and the state is not classified until that tolerance has passed."
  },
  "thresholds": {
   "entrada_entry": 80,
@@ -26,12 +26,18 @@
  "coverage": {
   "JPY": "MoF ITS week.csv (logs/jpy/raw/its_week.csv)",
   "CHF": "SNB sight deposits already in history/chf (snbgwdchfsgw TG, GI, UEB); value, sum4, z52 only",
-  "USD": "NA — Fed custody is not among the captured H.4.1 series (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL); no new source added",
+  "USD": {
+   "value": null,
+   "reason": "Securities held in custody for foreign official and international accounts (H.4.1 line, FRED WMTSECL1) is not in the H.4.1 download Mesa already stores (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL). That download is one FRED csv per series, not the full H.4.1 release. No new source added."
+  },
   "EUR": "NA",
   "GBP": "NA",
   "AUD": "NA",
   "NZD": "NA",
   "CAD": "NA"
+ },
+ "reason": {
+  "USD": "Securities held in custody for foreign official and international accounts (H.4.1 line, FRED WMTSECL1) is not in the H.4.1 download Mesa already stores (WALCL, TREAST, WSHOMCB, WLCFLPCL, WTREGEN, WRESBAL). That download is one FRED csv per series, not the full H.4.1 release. No new source added."
  },
  "currencies": {
   "EUR": null,
