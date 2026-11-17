@@ -1,14 +1,14 @@
 {
  "currency": "CAD",
- "generated_at": "2026-11-17T04:07:15+00:00",
+ "generated_at": "2026-11-17T21:32:55+00:00",
  "as_of": "2026-11-11",
  "config_version": "0.4.1",
  "regime": "LIQUIDITY_DRAIN",
  "traffic_light": "RED",
- "weighted_score": 0.113,
+ "weighted_score": -0.137,
  "block_scores": {
   "central_bank": -1.0,
-  "rates": 0.25,
+  "rates": -0.75,
   "fiscal": 2.0,
   "banking": 1.0
  },
@@ -244,8 +244,8 @@
   "reserves_level": "SAFE",
   "reserves_in_range": true,
   "reserves_above_range": false,
-  "spread_level": "WATCH",
-  "spread_bps": 8.0,
+  "spread_level": "STRESS",
+  "spread_bps": 10.0,
   "friction_confirmed": true
  },
  "rules": {
@@ -344,17 +344,17 @@
    "name": "Funding Stress",
    "bias": "FUNDING STRESS",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 0,
    "required": [
     "rates.overnight_minus_policy_bps level >= STRESS"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "rates.overnight_minus_policy_bps level >= STRESS",
-     "met": false
+     "met": true
     },
     {
      "condition": "central_bank.reserves level >= STRESS",
