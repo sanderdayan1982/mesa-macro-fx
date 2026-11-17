@@ -3,8 +3,8 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-17T06:13:37+00:00",
- "as_of": "2026-11-13",
+ "generated_at": "2026-11-17T07:43:03+00:00",
+ "as_of": "2026-11-17",
  "equivalence_quality": "high",
  "equivalence_note": "Settlement cash (ESAS balances) DAILY from D12 = WRESBAL analog with a one-day lag; weekly OMO reverse repos (D3) are the supply valve under the 2026 framework (full allotment at OCR + 10 bp → quantity is the signal, price is fixed); ORRF use = standing-facility stress; R1/R3 monthly for the balance-sheet composition (LSAP run-off, reverse repos, FX, CSA)",
  "source_health": {
@@ -12,7 +12,9 @@
   "series_loaded": 24,
   "series_expected": 24,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "nzdm_bond_result[1017]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1017 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a5bd1a04cefb332e-IAD'} body=\u0013*\u0017\u0000d�����~�np��Ҁ �۽\u000f���$�����\"D�\"Ι�����Z��\u0012�\u0001�ލA��\u0001+t\u0000�(~�CR\u0004�j�N�H=c��PkN�C7Yb*�\u0004���'By6yմ_\u0013X�ms�m\u0017n�P�2�}jj�\u0001��^5\u001cǭ�ɠ�Ș By���\bT5D_#ȋ`��Ưq����\u000f��6\u0017 �_��\u0014+ʓ�"
+  ],
   "series_pending": 0
  },
  "series": {
@@ -646,18 +648,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "event",
    "status": "fresh",
-   "value": 195.0,
-   "date": "2026-11-13",
-   "prev_value": 100.0,
-   "prev_date": "2026-10-29",
-   "change_abs": 95.0,
-   "change_pct": 95.0,
-   "zscore": 0.7135,
+   "value": 50.0,
+   "date": "2026-11-17",
+   "prev_value": 195.0,
+   "prev_date": "2026-11-13",
+   "change_abs": -145.0,
+   "change_pct": -74.359,
+   "zscore": -0.6874,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    200.0,
     15.0,
     50.0,
     250.0,
@@ -708,7 +709,8 @@
     200.0,
     200.0,
     100.0,
-    195.0
+    195.0,
+    50.0
    ],
    "high_low": {
     "high": 400.0,
@@ -716,7 +718,7 @@
     "low": 15.0,
     "low_date": "2020-06-30"
    },
-   "age_days": 4,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -728,9 +730,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 20.0,
-   "date": "2026-11-12",
+   "date": "2026-11-16",
    "prev_value": 20.0,
-   "prev_date": "2026-11-11",
+   "prev_date": "2026-11-13",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 0.0,
@@ -793,11 +795,11 @@
    ],
    "high_low": {
     "high": 20.0,
-    "high_date": "2026-09-01",
+    "high_date": "2026-09-03",
     "low": 20.0,
-    "low_date": "2026-09-01"
+    "low_date": "2026-09-03"
    },
-   "age_days": 5,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -5724,13 +5726,13 @@
     "2026-09-28",
     "2026-10-12",
     "2026-10-19",
-    "2026-11-09"
+    "2026-11-09",
+    "2026-11-18"
    ],
    "settlement": [
     "2026-11-04",
     "2026-11-10",
     "2026-11-11",
-    "2026-11-17",
     "2026-11-18",
     "2026-11-24",
     "2026-11-25",
@@ -5820,11 +5822,6 @@
     "score": 0.0
    },
    {
-    "date": "2026-10-12",
-    "label": "NEUTRAL",
-    "score": 0.0
-   },
-   {
     "date": "2026-10-16",
     "label": "INJECTION",
     "score": 1.0
@@ -6298,6 +6295,11 @@
     "date": "2026-11-10",
     "label": "NEUTRAL",
     "score": -0.25
+   },
+   {
+    "date": "2026-11-12",
+    "label": "INJECTION",
+    "score": 0.75
    },
    {
     "date": "2026-11-12",
