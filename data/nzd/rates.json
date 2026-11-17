@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-17T12:48:37+00:00",
+ "generated_at": "2026-11-17T15:39:40+00:00",
  "as_of": "2026-11-16",
  "equivalence_quality": "high",
  "equivalence_note": "B2 daily close (T-1, 15:00 NZT). Floor system: the overnight interbank rate should sit at/just above the OCR; it is published only on days with trades (sparse) → the daily stress spread is the 30-day bank bill − OCR with a persistence rule, corrected for hike pricing by the 90-day bill and 1-year swap; the OMO price is fixed (OCR + 10) so price stress shows up in ORRF use and bills, not in the operation | v0.2: B2 bank bills are NZFMA/LSEG closing rates (the 10:20 NZT BKBM fixing itself is published by NZFBF; public delayed feed unverified — pending); NZ OIS has no public feed (not available, not proxied)",
@@ -13,7 +13,7 @@
   "series_expected": 16,
   "last_fetch_ok": true,
   "errors": [
-   "nzdm_bond_result[1017]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1017 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a5bed9a41f2f0a7d-IAD'} body=\u0013*\u0017\u0000d�����~�np��D���#(\u0012\r� /x (��`C\u0011��o�i|S-j�Q\t�\u0000�]�� �\u0015:\u0000v\u0014��!)\u0002Y5e'g���hc��?'⡛,1�Q\u0002���'�y6yմ�\u0013X�]{��.�8�`�3�SkjL\u0000��^5�$��ɠ�Ș �y�%�\u0004T5ğ#ȋ`��Ưq���.���6\u0017 ����\u0014+"
+   "nzdm_bond_result[1017]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1017 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a5bfd42e5fadc3eb-EWR'} body=\u0013*\u0017\u0000d�����~�np���D1l�>\u0004TT@\u0001E|�S@\u0011�P�9��~\u001a�T�Z}T\u0002�\u000e\u0010��n\f�g\u000eX�\u0003`G��\u001c�\u001a�5e'g���hc��?'⡛,1�Q\u0002�}�\u0013�,��j֯\t��7c�m\u0017n�P�R�}lj�\u0001��^=\u001cǭ�ɠ�Ș!DY���\u0010T5D_#ȋ`��ƯIe�K�\u0002��9���$>"
   ],
   "series_pending": 0,
   "sparse_by_design": [
@@ -3809,11 +3809,6 @@
     "score": 0.25
    },
    {
-    "date": "2026-10-07",
-    "label": "HIKE PRICING",
-    "score": 0.25
-   },
-   {
     "date": "2026-10-16",
     "label": "HIKE PRICING",
     "score": 0.25
@@ -4340,6 +4335,11 @@
    },
    {
     "date": "2026-11-12",
+    "label": "HIKE PRICING",
+    "score": 0.25
+   },
+   {
+    "date": "2026-11-16",
     "label": "HIKE PRICING",
     "score": 0.25
    },
