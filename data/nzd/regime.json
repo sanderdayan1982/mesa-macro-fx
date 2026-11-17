@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-11-17T07:43:16+00:00",
+ "generated_at": "2026-11-17T11:24:04+00:00",
  "as_of": "2026-11-17",
  "config_version": "0.4.0",
  "regime": "LIQUIDITY_INJECTION",
@@ -92,7 +92,7 @@
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-11-17",
-   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 1.72x at 2.9912% · bond 5.563x tail 0.4 bp · settlements next 5d 400.0 · non-resident 58.0%",
+   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 3.06x at 3.0314% · bond 5.563x tail 0.4 bp · settlements next 5d 0 · non-resident 58.0%",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.25,
@@ -189,7 +189,6 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_LSAP_UNWIND",
-  "TENDER_WEAK",
   "OMO_DEPENDENCE"
  ],
  "overlays": {
@@ -382,10 +381,8 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly_tue",
   "backfill": false,
-  "errors": [
-   "nzdm_bond_result[1017]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1017 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a5bd1a04cefb332e-IAD'} body=\u0013*\u0017\u0000d�����~�np��Ҁ �۽\u000f���$�����\"D�\"Ι�����Z��\u0012�\u0001�ލA��\u0001+t\u0000�(~�CR\u0004�j�N�H=c��PkN�C7Yb*�\u0004���'By6yմ_\u0013X�ms�m\u0017n�P�2�}jj�\u0001��^5\u001cǭ�ɠ�Ș By���\bT5D_#ȋ`��Ưq����\u000f��6\u0017 �_��\u0014+ʓ�"
-  ]
+  "errors": []
  }
 }
