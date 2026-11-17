@@ -3,16 +3,18 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-17T11:23:56+00:00",
+ "generated_at": "2026-11-17T12:48:37+00:00",
  "as_of": "2026-11-17",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
  "source_health": {
-  "status": "stale",
-  "series_loaded": 18,
+  "status": "fresh",
+  "series_loaded": 19,
   "series_expected": 19,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "nzdm_bond_result[1017]: failed after 3 tries: HTTP 403 (blocked/throttled) for https://debtmanagement.treasury.govt.nz/tender/nominal-bond-tender-1017 — HTTP 403 headers={'Server': 'cloudflare', 'CF-RAY': 'a5bed9a41f2f0a7d-IAD'} body=\u0013*\u0017\u0000d�����~�np��D���#(\u0012\r� /x (��`C\u0011��o�i|S-j�Q\t�\u0000�]�� �\u0015:\u0000v\u0014��!)\u0002Y5e'g���hc��?'⡛,1�Q\u0002���'�y6yմ�\u0013X�]{��.�8�`�3�SkjL\u0000��^5�$��ɠ�Ș �y�%�\u0004T5ğ#ȋ`��Ưq���.���6\u0017 ����\u0014+"
+  ],
   "series_pending": 3
  },
  "series": {
@@ -994,9 +996,9 @@
    "usd_analog": null,
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "event",
-   "status": "unavailable",
-   "value": null,
-   "date": null,
+   "status": "fresh",
+   "value": 500.0,
+   "date": "2026-11-01",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -1004,16 +1006,18 @@
    "zscore": null,
    "percentile": null,
    "window": null,
-   "level": "NO DATA",
-   "sparkline": [],
+   "level": "SAFE",
+   "sparkline": [
+    500.0
+   ],
    "high_low": {
-    "high": null,
-    "high_date": null,
-    "low": null,
-    "low_date": null
+    "high": 500.0,
+    "high_date": "2026-11-01",
+    "low": 500.0,
+    "low_date": "2026-11-01"
    },
-   "age_days": null,
-   "confidence": 0,
+   "age_days": 16,
+   "confidence": 100,
    "latest_outlier": false
   },
   "nzgb_non_resident_holdings": {
@@ -1185,19 +1189,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 11.0,
-   "date": "2026-11-12",
-   "prev_value": -51.0,
-   "prev_date": "2026-11-11",
-   "change_abs": 62.0,
-   "change_pct": 121.5686,
-   "zscore": -0.098,
+   "value": 3124.0,
+   "date": "2026-11-16",
+   "prev_value": -572.0,
+   "prev_date": "2026-11-13",
+   "change_abs": 3696.0,
+   "change_pct": 646.1538,
+   "zscore": 2.335,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    3503.0,
-    -34.0,
     82.0,
     332.0,
     81.0,
@@ -1247,7 +1249,9 @@
     147.0,
     -71.0,
     -51.0,
-    11.0
+    11.0,
+    -572.0,
+    3124.0
    ],
    "high_low": {
     "high": 7536.0,
@@ -1255,9 +1259,9 @@
     "low": -3603.0,
     "low_date": "2026-10-28"
    },
-   "age_days": 5,
-   "confidence": 100,
-   "latest_outlier": false
+   "age_days": 1,
+   "confidence": 85,
+   "latest_outlier": true
   },
   "tbill_allocation_ratio": {
    "source_id": "NZDM:tbill_allocated_over_offered",
@@ -2342,11 +2346,21 @@
   },
   "issuance_ahead_5d": {
    "label": "Tender settlements in the next 5 business days (known drain)",
-   "value": 0,
+   "value": 150.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-11-17",
-   "items": [],
+   "items": [
+    {
+     "number": "1018",
+     "lines": "2.00% 15 May 2032",
+     "volume": 150.0,
+     "announcement": "2026-11-16",
+     "tender": "2026-11-19",
+     "settlement": "2026-11-24",
+     "kind": "bond"
+    }
+   ],
    "level": "SAFE"
   },
   "non_resident_share": {
@@ -3035,7 +3049,7 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 495.0,
+   "value": 995.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-11-17",
@@ -3045,8 +3059,16 @@
      245.0
     ],
     [
+     "2026-11-24",
+     150.0
+    ],
+    [
      "2026-11-25",
      250.0
+    ],
+    [
+     "2026-12-01",
+     350.0
     ]
    ]
   },
@@ -3187,7 +3209,7 @@
    "score_v02": 0.5,
    "score_flows_only": 0.5
   },
-  "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 3.06x at 3.0314% · bond 5.563x tail 0.4 bp · settlements next 5d 0 · non-resident 58.0%",
+  "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 3.06x at 3.0314% · bond 5.563x tail 0.4 bp · settlements next 5d 150.0 · non-resident 58.0%",
   "alerts": [
    {
     "metric": "govt_cash_influence",
@@ -3277,8 +3299,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": 6.2169,
-    "residual_5d_pct": 1.0689
+    "net_issuance_5d_pct": 5.7411,
+    "residual_5d_pct": 7.4369
    },
    "level": {},
    "weights": {},
@@ -4374,6 +4396,24 @@
     "tender": "2026-11-24",
     "settlement": "2026-11-25",
     "kind": "tbill"
+   },
+   {
+    "number": "1018",
+    "lines": "2.00% 15 May 2032",
+    "volume": 150.0,
+    "announcement": "2026-11-16",
+    "tender": "2026-11-19",
+    "settlement": "2026-11-24",
+    "kind": "bond"
+   },
+   {
+    "number": "1019",
+    "lines": "",
+    "volume": 350.0,
+    "announcement": "2026-11-23",
+    "tender": "2026-11-26",
+    "settlement": "2026-12-01",
+    "kind": "bond"
    }
   ],
   "signal_log": [
@@ -4723,9 +4763,9 @@
     "score": 0.0
    },
    {
-    "date": "2026-08-31",
-    "label": "NEUTRAL",
-    "score": 0.0
+    "date": "2026-09-30",
+    "label": "INJECTION",
+    "score": 0.5
    },
    {
     "date": "2026-09-30",
