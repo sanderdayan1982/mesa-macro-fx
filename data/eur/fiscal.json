@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-18T09:37:38+00:00",
+ "generated_at": "2026-11-18T12:01:10+00:00",
  "as_of": "2026-11-17",
  "equivalence_quality": "medium-low",
  "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
@@ -12,9 +12,7 @@
   "series_loaded": 14,
   "series_expected": 13,
   "last_fetch_ok": true,
-  "errors": [
-   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
-  ],
+  "errors": [],
   "series_pending": 1
  },
  "series": {
@@ -2212,7 +2210,7 @@
    "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-11-19"
+   "equivalence_note": "last record 2026-11-20"
   },
   "settled_FR": {
    "source_id": "ops_eur:FR",
@@ -3102,7 +3100,7 @@
   },
   "settlements_ahead": {
    "label": "Auction settlements ahead (scheduled drain; results published, not yet settled)",
-   "value": 3798.832,
+   "value": 6073.96,
    "unit": "EUR millions",
    "status": "fresh",
    "date": "2026-11-18",
@@ -3110,6 +3108,10 @@
     [
      "2026-11-19",
      3798.832
+    ],
+    [
+     "2026-11-20",
+     2275.128
     ]
    ]
   },
@@ -3279,18 +3281,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.8,
-   "date": "2026-11-17",
-   "prev_value": 1.05,
-   "prev_date": "2026-11-16",
-   "change_abs": 0.75,
-   "change_pct": 71.4286,
-   "zscore": -0.2442,
+   "value": 1.5,
+   "date": "2026-11-18",
+   "prev_value": 1.8,
+   "prev_date": "2026-11-17",
+   "change_abs": -0.3,
+   "change_pct": -16.6667,
+   "zscore": -0.3172,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.1,
     3.066,
     3.377,
     1.5,
@@ -3341,7 +3342,8 @@
     1.52,
     1.59,
     1.05,
-    1.8
+    1.8,
+    1.5
    ],
    "high_low": {
     "high": 18.975,
@@ -3349,7 +3351,7 @@
     "low": 1.05,
     "low_date": "2026-11-16"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -3441,18 +3443,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 1.8,
-   "date": "2026-11-17",
-   "prev_value": 1.05,
-   "prev_date": "2026-11-16",
-   "change_abs": 0.75,
-   "change_pct": 71.4286,
-   "zscore": 1.0922,
+   "value": 1.5,
+   "date": "2026-11-18",
+   "prev_value": 1.8,
+   "prev_date": "2026-11-17",
+   "change_abs": -0.3,
+   "change_pct": -16.6667,
+   "zscore": -0.1162,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1.75,
     1.9,
     2.05,
     1.2,
@@ -3503,7 +3504,8 @@
     1.8,
     1.55,
     1.05,
-    1.8
+    1.8,
+    1.5
    ],
    "high_low": {
     "high": 2.8,
@@ -3511,7 +3513,7 @@
     "low": 1.0,
     "low_date": "2026-07-08"
    },
-   "age_days": 1,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false
   },
@@ -4110,8 +4112,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_weekly_pct": 0.1108,
-    "fiscal_impulse_v04_pct": -0.0952
+    "net_issuance_weekly_pct": 0.1111,
+    "fiscal_impulse_v04_pct": -0.0955
    },
    "level": {},
    "weights": {},
