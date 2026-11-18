@@ -1,7 +1,7 @@
 {
  "currency": "AUD",
- "generated_at": "2026-11-18T02:33:37+00:00",
- "as_of": "2026-11-16",
+ "generated_at": "2026-11-18T10:34:53+00:00",
+ "as_of": "2026-11-17",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.1264,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-11",
-   "detail": "ES SAFE (above demand range) · ΔES d/d -403.0 · BS liq BAND_HIGH · OMO/ES 0.2118 · SF+25 0.0",
-   "raw_regime": "DRAIN",
+   "as_of": "2026-11-17",
+   "detail": "ES SAFE (above demand range) · ΔES d/d -3847.0 · BS liq BAND_HIGH · OMO/ES 0.2162 · SF+25 0.0",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.466,
     "injection_exit": 0.2928,
@@ -47,23 +47,23 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -0.325,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -0.099,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-17",
     "recent": [
-     [
-      "2026-11-04",
-      -0.5508
-     ],
      [
       "2026-11-10",
       -0.5508
      ],
      [
       "2026-11-11",
+      0.1264
+     ],
+     [
+      "2026-11-17",
       0.1264
      ]
     ],
@@ -116,19 +116,15 @@
      "drain_enter": 0.085,
      "drain_exit": 0.335
     },
-    "as_of": "2026-11-16",
+    "as_of": "2026-11-17",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
-     "effective_score": 1.0,
+     "effective_score": 1.11,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-11-16",
+     "as_of": "2026-11-17",
      "recent": [
-      [
-       "2026-11-09",
-       0.67
-      ],
       [
        "2026-11-10",
        0.67
@@ -147,6 +143,10 @@
       ],
       [
        "2026-11-16",
+       1.33
+      ],
+      [
+       "2026-11-17",
        1.33
       ]
      ],
@@ -270,7 +270,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.95,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 83 weeks < 150); dual score +0.95 shown for context",
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights, era 83 weeks < 150); dual score +0.95 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
