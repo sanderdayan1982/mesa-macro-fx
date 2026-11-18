@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.1.1",
- "generated_at": "2026-11-18T20:21:38+00:00",
+ "generated_at": "2026-11-18T21:21:39+00:00",
  "as_of": "2026-11-18",
  "equivalence_quality": "high",
  "equivalence_note": "SOFR (NY Fed, 08:00 ET T+1) and IORB (Board) via FRED; H.15 daily closes via FRED (T+1). Spreads on common dates only (DFF is a 7-day series). STRESS SPREAD = SOFR − IORB: 0–5 SAFE · 5–15 WATCH · >15 STRESS · >30 CRISIS (H.4.1 badge: NORMAL / STRESS / CRITICAL).",
@@ -187,9 +187,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 3.88,
-   "date": "2026-11-16",
+   "date": "2026-11-17",
    "prev_value": 3.88,
-   "prev_date": "2026-11-15",
+   "prev_date": "2026-11-16",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 1.0,
@@ -252,11 +252,11 @@
    ],
    "high_low": {
     "high": 3.88,
-    "high_date": "2026-09-26",
+    "high_date": "2026-09-27",
     "low": 3.88,
-    "low_date": "2026-09-26"
+    "low_date": "2026-09-27"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "change_bps": 0.0
@@ -268,18 +268,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 4.16,
-   "date": "2026-11-16",
-   "prev_value": 4.13,
-   "prev_date": "2026-11-13",
-   "change_abs": 0.03,
-   "change_pct": 0.7264,
-   "zscore": 2.6612,
+   "value": 4.15,
+   "date": "2026-11-17",
+   "prev_value": 4.16,
+   "prev_date": "2026-11-16",
+   "change_abs": -0.01,
+   "change_pct": -0.2404,
+   "zscore": 2.1163,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    3.78,
     3.78,
     3.75,
     3.77,
@@ -330,7 +329,8 @@
     4.12,
     4.14,
     4.13,
-    4.16
+    4.16,
+    4.15
    ],
    "high_low": {
     "high": 4.16,
@@ -338,10 +338,10 @@
     "low": 3.75,
     "low_date": "2026-09-03"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
-   "change_bps": 3.0
+   "change_bps": -1.0
   },
   "ust_2y": {
    "source_id": "DGS2",
@@ -705,18 +705,17 @@
    "unit": "bps",
    "frequency": "daily",
    "status": "fresh",
-   "value": -28.0,
-   "date": "2026-11-16",
-   "prev_value": -25.0,
-   "prev_date": "2026-11-13",
-   "change_abs": -3.0,
-   "change_pct": -12.0,
-   "zscore": -2.6612,
+   "value": -27.0,
+   "date": "2026-11-17",
+   "prev_value": -28.0,
+   "prev_date": "2026-11-16",
+   "change_abs": 1.0,
+   "change_pct": 3.5714,
+   "zscore": -2.1163,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -15.0,
     -15.0,
     -12.0,
     -14.0,
@@ -767,7 +766,8 @@
     -24.0,
     -26.0,
     -25.0,
-    -28.0
+    -28.0,
+    -27.0
    ],
    "high_low": {
     "high": -9.0,
@@ -775,7 +775,7 @@
     "low": -36.0,
     "low_date": "2026-09-16"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -791,7 +791,7 @@
    "label": "Fed funds stance (H.15: > 5 RESTRICTIVE · > 3 ELEVATED · else ACCOMMODATIVE)",
    "value": 3.88,
    "status": "fresh",
-   "date": "2026-11-16",
+   "date": "2026-11-17",
    "unit": "percent",
    "badge": "ELEVATED"
   },
@@ -910,7 +910,7 @@
   "score": 1.5,
   "label": "CURVE IMPROVING",
   "flags": [],
-  "detail": "SOFR−IORB 2.0 bp (NORMAL) · 10Y−2Y 29.0 (FLAT) · FF−3M -28.0 (NORMAL) · FF 3.88% (ELEVATED) · H.15: GREEN — Curve Improving (normalizing, easing)",
+  "detail": "SOFR−IORB 2.0 bp (NORMAL) · 10Y−2Y 29.0 (FLAT) · FF−3M -27.0 (NORMAL) · FF 3.88% (ELEVATED) · H.15: GREEN — Curve Improving (normalizing, easing)",
   "alerts": [
    {
     "metric": "sofr_minus_iorb_bps",
@@ -938,7 +938,7 @@
    {
     "metric": "ff_minus_3m_bps",
     "level": "SAFE",
-    "value": -28.0,
+    "value": -27.0,
     "threshold": {
      "WATCH": 10,
      "STRESS": 30
@@ -950,7 +950,6 @@
  },
  "history": {
   "dates": [
-   "2026-08-20",
    "2026-08-21",
    "2026-08-24",
    "2026-08-25",
@@ -1009,11 +1008,11 @@
    "2026-11-10",
    "2026-11-12",
    "2026-11-13",
-   "2026-11-16"
+   "2026-11-16",
+   "2026-11-17"
   ],
   "rows": {
    "sofr": [
-    3.63,
     3.65,
     3.65,
     3.66,
@@ -1072,7 +1071,8 @@
     3.89,
     3.9,
     3.9,
-    3.93
+    3.93,
+    3.92
    ],
    "iorb": [
     3.65,
@@ -1093,7 +1093,7 @@
     3.65,
     3.65,
     3.65,
-    3.65,
+    3.9,
     3.9,
     3.9,
     3.9,
@@ -1137,7 +1137,6 @@
     3.9
    ],
    "sofr_minus_iorb_bps": [
-    -2.0,
     0.0,
     0.0,
     1.0,
@@ -1196,7 +1195,8 @@
     -1.0,
     0.0,
     0.0,
-    3.0
+    3.0,
+    2.0
    ],
    "fed_funds": [
     3.63,
@@ -1217,7 +1217,7 @@
     3.63,
     3.63,
     3.63,
-    3.63,
+    3.88,
     3.88,
     3.88,
     3.88,
@@ -1261,7 +1261,6 @@
     3.88
    ],
    "tbill_3m": [
-    3.71,
     3.72,
     3.72,
     3.71,
@@ -1320,10 +1319,10 @@
     4.12,
     4.14,
     4.13,
-    4.16
+    4.16,
+    4.15
    ],
    "ust_2y": [
-    4.19,
     4.24,
     4.24,
     4.17,
@@ -1382,10 +1381,10 @@
     4.73,
     4.86,
     4.88,
-    4.83
+    4.83,
+    null
    ],
    "ust_10y": [
-    4.69,
     4.74,
     4.7,
     4.64,
@@ -1444,10 +1443,10 @@
     4.98,
     5.1,
     5.15,
-    5.12
+    5.12,
+    null
    ],
    "curve_10y_2y_bps": [
-    50.0,
     50.0,
     46.0,
     47.0,
@@ -1506,10 +1505,10 @@
     25.0,
     24.0,
     27.0,
-    29.0
+    29.0,
+    null
    ],
    "ff_minus_3m_bps": [
-    -8.0,
     -9.0,
     -9.0,
     -8.0,
@@ -1568,7 +1567,8 @@
     -24.0,
     -26.0,
     -25.0,
-    -28.0
+    -28.0,
+    -27.0
    ]
   },
   "signal_log": []
