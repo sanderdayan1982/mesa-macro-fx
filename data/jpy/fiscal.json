@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-11-18T09:35:53+00:00",
- "as_of": "2026-11-17",
+ "generated_at": "2026-11-18T10:30:10+00:00",
+ "as_of": "2026-11-18",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
  "source_health": {
@@ -673,22 +673,22 @@
    "date": "2026-11-17",
    "next": {
     "date": "2026-11-18",
-    "issue": "20-year",
+    "issue": "20-year(198)",
     "tenor": "20y",
-    "result_href": null
+    "result_href": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/eresul/eresul20261118.htm"
    },
    "next_superlong": {
     "date": "2026-11-18",
-    "issue": "20-year",
+    "issue": "20-year(198)",
     "tenor": "20y",
-    "result_href": null
+    "result_href": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/eresul/eresul20261118.htm"
    },
    "days_to_superlong": 1,
    "upcoming": [
     {
      "date": "2026-11-18",
      "tenor": "20y",
-     "issue": "20-year"
+     "issue": "20-year(198)"
     },
     {
      "date": "2026-11-25",
@@ -1744,18 +1744,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 3.356,
-   "date": "2026-11-10",
-   "prev_value": 5.844,
-   "prev_date": "2026-10-20",
-   "change_abs": -2.488,
-   "change_pct": -42.5736,
-   "zscore": -0.6031,
-   "percentile": 50.0,
+   "value": 3.64,
+   "date": "2026-11-18",
+   "prev_value": 3.356,
+   "prev_date": "2026-11-10",
+   "change_abs": 0.284,
+   "change_pct": 8.4625,
+   "zscore": -0.3138,
+   "percentile": 61.11,
    "window": "36w",
    "level": "SAFE",
    "sparkline": [
-    3.056,
     3.5,
     3.459,
     2.92,
@@ -1806,7 +1805,8 @@
     3.096,
     3.877,
     5.844,
-    3.356
+    3.356,
+    3.64
    ],
    "high_low": {
     "high": 5.844,
@@ -1814,7 +1814,7 @@
     "low": 2.127,
     "low_date": "2025-07-23"
    },
-   "age_days": 8,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "thresholds": {
@@ -1836,12 +1836,12 @@
    "unit": "bps",
    "frequency": "event",
    "status": "fresh",
-   "value": 2.4,
-   "date": "2026-11-10",
-   "prev_value": 0.6,
-   "prev_date": "2026-10-20",
-   "change_abs": 1.8,
-   "change_pct": 300.0,
+   "value": 2.6,
+   "date": "2026-11-18",
+   "prev_value": 2.4,
+   "prev_date": "2026-11-10",
+   "change_abs": 0.2,
+   "change_pct": 8.3333,
    "zscore": null,
    "percentile": 100.0,
    "window": "36w",
@@ -1853,15 +1853,16 @@
     1.3,
     1.2,
     0.6,
-    2.4
+    2.4,
+    2.6
    ],
    "high_low": {
-    "high": 2.4,
-    "high_date": "2026-11-10",
+    "high": 2.6,
+    "high_date": "2026-11-18",
     "low": 0.6,
     "low_date": "2026-10-20"
    },
-   "age_days": 8,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "MoF result pages only (since the XLS lacks the average yield); the May-2025 20Y auction is the reference stress event",
@@ -1873,7 +1874,7 @@
      "CRISIS_abs": 12
     },
     "window": "36w",
-    "n": 6,
+    "n": 7,
     "era_anchor": null,
     "era_thin": false
    },
@@ -3543,7 +3544,7 @@
    "score_v02": -0.12,
    "score_flows_only": -0.12
   },
-  "detail": "flow -7700.0 (Z -0.154) · 5d -8800.0 · 20d -61600.0 (NEUTRAL) · FEFSA/py 0.95 · BTC super-long 3.356",
+  "detail": "flow -7700.0 (Z -0.154) · 5d -8800.0 · 20d -61600.0 (NEUTRAL) · FEFSA/py 0.95 · BTC super-long 3.64",
   "alerts": [
    {
     "metric": "fiscal_flow_zscore",
@@ -3564,7 +3565,7 @@
    {
     "metric": "bid_to_cover_superlong",
     "level": "SAFE",
-    "value": 3.356,
+    "value": 3.64,
     "threshold": {
      "WATCH": 2.852,
      "STRESS": 2.59925
@@ -3575,7 +3576,7 @@
    {
     "metric": "auction_tail_superlong_bp",
     "level": "SAFE",
-    "value": 2.4,
+    "value": 2.6,
     "threshold": {
      "WATCH_abs": 3,
      "STRESS_abs": 6,
@@ -4440,12 +4441,6 @@
   },
   "auctions": [
    {
-    "date": "2026-06-02",
-    "tenor": "10y",
-    "btc": 3.53,
-    "hy": 2.649
-   },
-   {
     "date": "2026-06-10",
     "tenor": "30y",
     "btc": 2.936,
@@ -4656,6 +4651,14 @@
     "hy": 2.19,
     "avg_yield": 2.186,
     "tail_bp": 0.4
+   },
+   {
+    "date": "2026-11-18",
+    "tenor": "20y",
+    "btc": 3.64,
+    "hy": 3.782,
+    "avg_yield": 3.756,
+    "tail_bp": 2.6
    }
   ],
   "signal_log": [
@@ -4675,11 +4678,6 @@
     "score": 0.24
    },
    {
-    "date": "2026-10-22",
-    "label": "INJECTION",
-    "score": 0.24
-   },
-   {
     "date": "2026-10-23",
     "label": "NEUTRAL",
     "score": 0.18
@@ -5243,6 +5241,11 @@
     "date": "2026-11-16",
     "label": "NEUTRAL",
     "score": 0.43
+   },
+   {
+    "date": "2026-11-17",
+    "label": "NEUTRAL",
+    "score": -0.12
    },
    {
     "date": "2026-11-17",
