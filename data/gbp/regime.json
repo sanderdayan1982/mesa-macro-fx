@@ -1,13 +1,13 @@
 {
  "currency": "GBP",
- "generated_at": "2026-11-19T12:14:41+00:00",
- "as_of": "2026-11-04",
+ "generated_at": "2026-11-19T15:31:59+00:00",
+ "as_of": "2026-11-11",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.198,
+ "weighted_score": 0.5,
  "block_scores": {
-  "central_bank": -0.17,
+  "central_bank": 0.5,
   "rates": 0.5,
   "fiscal": 0.0,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "DRAIN",
    "confirmed": "DRAIN",
    "canonical": "confirmed",
-   "score": -0.17,
-   "label": "NEUTRAL",
-   "traffic_light": "YELLOW",
-   "as_of": "2026-11-04",
-   "detail": "reserves SAFE (above PMRR) · PBS BAND_LOW · QT -1528.8/w · repo/reserves 0.3513",
+   "score": 0.5,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-11-11",
+   "detail": "reserves SAFE (above PMRR) · PBS NEUTRAL · QT -1528.8/w · repo/reserves 0.3543",
    "raw_regime": "DRAIN",
    "cuts": {
     "injection_enter": 0.665,
@@ -43,18 +43,18 @@
    "state": {
     "confirmed": "DRAIN",
     "raw": "DRAIN",
-    "effective_score": -0.17,
+    "effective_score": 0.165,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-11",
     "recent": [
-     [
-      "2026-10-28",
-      -0.17
-     ],
      [
       "2026-11-04",
       -0.17
+     ],
+     [
+      "2026-11-11",
+      0.5
      ]
     ],
     "pending_days": null
@@ -63,7 +63,7 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "balance_sheet_band": -1.0
+     "balance_sheet_band": 0.0
     },
     "level": {
      "reserves_vs_pmrr": 0.75,
@@ -74,8 +74,8 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.17,
-    "score_flows_only": -0.67
+    "score_v02": 0.5,
+    "score_flows_only": 0.0
    }
   },
   "fiscal": {
@@ -133,8 +133,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.102,
-   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.10 shown for context",
+   "score": 0.3,
+   "rule": "partial (DRAIN vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.30 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.6,
@@ -162,7 +162,7 @@
    "v04_blocks": [],
    "agreement_only": true,
    "era_start": "2022-11-01",
-   "era_weeks": 209,
+   "era_weeks": 210,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -251,7 +251,7 @@
    "name": "QT Drag Intensifying",
    "bias": "QT DRAIN",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 1,
    "required": [],
@@ -263,7 +263,7 @@
     },
     {
      "condition": "central_bank.net_liquidity_wow_pct <= band_low",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.currency_drain <= p20",
@@ -303,7 +303,7 @@
    "name": "Fiscal Injection",
    "bias": "FISCAL INJECTION",
    "active": false,
-   "conditions_met": 0,
+   "conditions_met": 1,
    "total": 4,
    "unknown": 0,
    "required": [
@@ -325,7 +325,7 @@
     },
     {
      "condition": "central_bank.reserves_wow_pct >= p80",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -356,7 +356,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
