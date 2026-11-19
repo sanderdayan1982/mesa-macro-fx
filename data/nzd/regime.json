@@ -1,13 +1,13 @@
 {
  "currency": "NZD",
- "generated_at": "2026-11-19T12:35:04+00:00",
- "as_of": "2026-11-18",
+ "generated_at": "2026-11-19T15:24:22+00:00",
+ "as_of": "2026-11-19",
  "config_version": "0.4.0",
  "regime": "LIQUIDITY_INJECTION",
  "traffic_light": "GREEN",
- "weighted_score": 0.7,
+ "weighted_score": 0.5,
  "block_scores": {
-  "central_bank": 1.0,
+  "central_bank": 0.5,
   "rates": 0.25,
   "fiscal": 0.5,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "INJECTION",
    "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 1.0,
-   "label": "INJECTION",
-   "traffic_light": "GREEN",
-   "as_of": "2026-11-18",
-   "detail": "settlement cash 32823.0 (5d 2741.0, 20d 3298.0, SAFE) · OMO stock 7006.0 (21.3%) · ORRF 1.0 · phase LSAP_UNWIND",
+   "score": 0.5,
+   "label": "NEUTRAL",
+   "traffic_light": "YELLOW",
+   "as_of": "2026-11-19",
+   "detail": "settlement cash 33887.0 (5d 3927.0, 20d 7658.0, SAFE) · OMO stock 7006.0 (20.7%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
@@ -43,10 +43,10 @@
    "state": {
     "confirmed": "INJECTION",
     "raw": "INJECTION",
-    "effective_score": 0.917,
+    "effective_score": 0.812,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-18",
+    "as_of": "2026-11-19",
     "recent": [
      [
       "2026-11-13",
@@ -59,6 +59,10 @@
      [
       "2026-11-18",
       1.0
+     ],
+     [
+      "2026-11-19",
+      0.5
      ]
     ],
     "pending_days": null
@@ -67,7 +71,7 @@
     "mode": "sum",
     "level_weight": 1.0,
     "flow": {
-     "settlement_cash_wow": 0.5,
+     "settlement_cash_wow": 0.0,
      "settlement_cash_20d": 0.5,
      "orrf_used": 0.0
     },
@@ -80,8 +84,8 @@
      -1.5,
      1.5
     ],
-    "score_v02": 1.0,
-    "score_flows_only": 1.0
+    "score_v02": 0.5,
+    "score_flows_only": 0.5
    }
   },
   "fiscal": {
@@ -92,7 +96,7 @@
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-11-19",
-   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 3.06x at 3.0314% · bond 5.011x tail 0.5 bp · settlements next 5d 400.0 · non-resident 58.0%",
+   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 3.06x at 3.0314% · bond 5.011x tail 0.5 bp · settlements next 5d 250.0 · non-resident 58.0%",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.25,
@@ -151,7 +155,7 @@
    "regime": "LIQUIDITY_INJECTION",
    "confirmed": "LIQUIDITY_INJECTION",
    "canonical": "confirmed",
-   "score": 0.8,
+   "score": 0.5,
    "rule": "agreement: both inject",
    "price_gate": null,
    "dual_weights": {
@@ -193,7 +197,7 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_LSAP_UNWIND",
-  "FISCAL_BIG_DAY"
+  "LSAP_SALE_DAY"
  ],
  "overlays": {
   "OMO_DEPENDENCE": "OMO_DEPENDENCE_LOW",
@@ -274,7 +278,7 @@
    "name": "Funding stress",
    "bias": "FUNDING STRESS",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 1,
    "required": [
@@ -288,7 +292,7 @@
     },
     {
      "condition": "central_bank.orrf_usage_daily > 0",
-     "met": true
+     "met": false
     },
     {
      "condition": "rates.friction_confirmed == true",
@@ -331,8 +335,8 @@
    "id": "L5",
    "name": "Fiscal injection",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 3,
    "total": 4,
    "unknown": 1,
    "required": [
@@ -350,11 +354,11 @@
     },
     {
      "condition": "central_bank.settlement_cash_wow level >= WATCH",
-     "met": false
+     "met": true
     },
     {
      "condition": "central_bank.residual_flow_5d_cum >= p80",
-     "met": false
+     "met": true
     }
    ]
   },
@@ -385,7 +389,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "monthly",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
