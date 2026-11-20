@@ -1,13 +1,13 @@
 {
  "currency": "CAD",
- "generated_at": "2026-11-20T02:30:55+00:00",
- "as_of": "2026-11-11",
+ "generated_at": "2026-11-20T19:03:02+00:00",
+ "as_of": "2026-11-18",
  "config_version": "0.4.1",
- "regime": "LIQUIDITY_DRAIN",
- "traffic_light": "RED",
- "weighted_score": -0.137,
+ "regime": "FLOOR_FRICTION",
+ "traffic_light": "YELLOW",
+ "weighted_score": 0.88,
  "block_scores": {
-  "central_bank": -1.0,
+  "central_bank": 1.26,
   "rates": -0.75,
   "fiscal": 2.0,
   "banking": 1.0
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -1.0,
-   "label": "DRAIN",
-   "traffic_light": "RED",
-   "as_of": "2026-11-11",
-   "detail": "NetLiq BAND_LOW · reserves SAFE (in range) · phase NORMALIZATION",
-   "raw_regime": "DRAIN",
+   "score": 1.26,
+   "label": "INJECTION",
+   "traffic_light": "GREEN",
+   "as_of": "2026-11-18",
+   "detail": "NetLiq BAND_HIGH · reserves SAFE (out of range) · phase NORMALIZATION",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
     "injection_exit": 0.05,
@@ -41,20 +41,20 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -1.155,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": 0.13,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-18",
     "recent": [
-     [
-      "2026-11-04",
-      -1.31
-     ],
      [
       "2026-11-11",
       -1.0
+     ],
+     [
+      "2026-11-18",
+      1.26
      ]
     ],
     "pending_days": null
@@ -63,31 +63,31 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "net_liquidity_band": -1.0,
-     "reserves_wow": -1.0
+     "net_liquidity_band": 1.0,
+     "reserves_wow": 0.8904400000000001
     },
     "level": {
-     "reserves_vs_range": 0.5
+     "reserves_vs_range": 0.0
     },
     "weights": {},
     "range": [
      -2.0,
      2.0
     ],
-    "score_v02": -1.0,
-    "score_flows_only": -1.33
+    "score_v02": 1.26,
+    "score_flows_only": 1.26
    }
   },
   "fiscal": {
-   "regime": "DRAIN",
-   "confirmed": "DRAIN",
+   "regime": "NEUTRAL",
+   "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -7.2992,
+   "score": 5.1904,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-11",
-   "detail": "7d cum 204.024 · Z 2.1459 · weekly Valet cross-check -4752.0",
-   "raw_regime": "DRAIN",
+   "as_of": "2026-11-18",
+   "detail": "7d cum 204.024 · Z 2.1459 · weekly Valet cross-check 3680.0",
+   "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 2.2412,
     "injection_exit": 0.9705,
@@ -105,20 +105,20 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "DRAIN",
-    "raw": "DRAIN",
-    "effective_score": -3.852,
+    "confirmed": "NEUTRAL",
+    "raw": "NEUTRAL",
+    "effective_score": -1.054,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-18",
     "recent": [
-     [
-      "2026-11-04",
-      -0.4046
-     ],
      [
       "2026-11-11",
       -7.2992
+     ],
+     [
+      "2026-11-18",
+      5.1904
      ]
     ],
     "pending_days": null,
@@ -151,9 +151,9 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -4752.0,
-    "denominator": 65103.0,
-    "denominator_date": "2026-11-11",
+    "raw": 3680.0,
+    "denominator": 70900.0,
+    "denominator_date": "2026-11-18",
     "today": "2026-11-20",
     "note": null
    },
@@ -167,21 +167,21 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-18",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
      "effective_score": 2.0,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-11-11",
+     "as_of": "2026-11-18",
      "recent": [
       [
-       "2026-11-04",
+       "2026-11-11",
        2.0
       ],
       [
-       "2026-11-11",
+       "2026-11-18",
        2.0
       ]
      ],
@@ -190,11 +190,11 @@
    }
   },
   "general": {
-   "regime": "LIQUIDITY_DRAIN",
-   "confirmed": "LIQUIDITY_DRAIN",
+   "regime": "FLOOR_FRICTION",
+   "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
-   "score": 0.2,
-   "rule": "agreement: both drain",
+   "score": 1.556,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +1.56 shown for context",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -224,7 +224,7 @@
    ],
    "agreement_only": true,
    "era_start": "2020-03-23",
-   "era_weeks": 346,
+   "era_weeks": 347,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -236,14 +236,13 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "FLOOR_FRICTION",
   "PHASE_NORMALIZATION"
  ],
  "overlays": {},
  "inputs": {
   "reserves_level": "SAFE",
-  "reserves_in_range": true,
-  "reserves_above_range": false,
+  "reserves_in_range": false,
+  "reserves_above_range": true,
   "spread_level": "STRESS",
   "spread_bps": 10.0,
   "friction_confirmed": true
@@ -260,8 +259,8 @@
    "id": "L1",
    "name": "CAD Liquidity Tightening",
    "bias": "LIQUIDITY TIGHTENING",
-   "active": true,
-   "conditions_met": 2,
+   "active": false,
+   "conditions_met": 1,
    "total": 3,
    "unknown": 0,
    "required": [
@@ -279,7 +278,7 @@
     },
     {
      "condition": "central_bank.reserves_wow_pct <= p20",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -318,8 +317,8 @@
    "id": "L3",
    "name": "QT Drag Intensifying",
    "bias": "QT DRAIN",
-   "active": true,
-   "conditions_met": 2,
+   "active": false,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [],
@@ -327,7 +326,7 @@
    "details": [
     {
      "condition": "central_bank.net_liquidity_wow_pct <= band_low",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.sovereign_bonds_wow_pct <= p20",
@@ -335,7 +334,7 @@
     },
     {
      "condition": "central_bank.notes_in_circulation_wow_pct >= p80",
-     "met": true
+     "met": false
     }
    ]
   },
@@ -418,7 +417,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }

@@ -1,6 +1,98 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-20T19:03:32+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 0,
+    "errors": [
+     "HTTPSConnectionPool(host='api.telegram.org', port=443): Read timed out. (read timeout=30)"
+    ],
+    "messages": 5
+   }
+  },
+  {
+   "timestamp": "2026-11-20T19:03:02+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "18aa1ae05863cee8",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 1,
+     "general": 1
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-20T19:03:02+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "weekly",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "FLOOR_FRICTION",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-20T19:03:01+00:00",
+   "type": "REGIME_CHANGE",
+   "category": "system",
+   "details": {
+    "old": "LIQUIDITY_DRAIN",
+    "new": "FLOOR_FRICTION"
+   }
+  },
+  {
+   "timestamp": "2026-11-20T19:03:01+00:00",
+   "type": "CAD_V04",
+   "category": "system",
+   "details": {
+    "groups": {
+     "term_repo": 448,
+     "or": 332,
+     "orr": 412,
+     "rgam": 2279,
+     "tbill": 2446,
+     "bond": 1179,
+     "bond_repurchase": 1134
+    },
+    "indicator_days": 52,
+    "net_issuance_last": [
+     "2026-11-20",
+     -5000.0
+    ]
+   }
+  },
+  {
+   "timestamp": "2026-11-20T19:03:01+00:00",
+   "type": "CAD_HOLDINGS",
+   "category": "system",
+   "details": {
+    "blobs_pending": 57,
+    "holdings_asof": "2026-11-20",
+    "holdings_rows": 51,
+    "history_asofs": 85,
+    "outstanding_asof": "2026-11-18",
+    "outstanding_isins": 84,
+    "unmatched": []
+   }
+  },
+  {
    "timestamp": "2026-11-20T02:30:56+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7888,107 +7980,6 @@
      "fiscal": 4,
      "general": 4
     }
-   }
-  },
-  {
-   "timestamp": "2026-09-29T01:12:00+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-29T01:11:59+00:00",
-   "type": "CAD_V04",
-   "category": "system",
-   "details": {
-    "groups": {
-     "term_repo": 432,
-     "or": 330,
-     "orr": 412,
-     "rgam": 2191,
-     "tbill": 2430,
-     "bond": 1157,
-     "bond_repurchase": 1134
-    },
-    "indicator_days": 17,
-    "net_issuance_last": [
-     "2026-09-29",
-     0.0
-    ]
-   }
-  },
-  {
-   "timestamp": "2026-09-29T01:11:59+00:00",
-   "type": "CAD_HOLDINGS",
-   "category": "system",
-   "details": {
-    "blobs_pending": 57,
-    "holdings_asof": "2026-09-28",
-    "holdings_rows": 51,
-    "history_asofs": 49,
-    "outstanding_asof": "2026-09-24",
-    "outstanding_isins": 82,
-    "unmatched": []
-   }
-  },
-  {
-   "timestamp": "2026-09-28T12:17:14+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "none",
-    "chunks": 0,
-    "ok": 0,
-    "errors": [],
-    "messages": 0
-   }
-  },
-  {
-   "timestamp": "2026-09-28T12:17:14+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "b1ad4c8b97b679a7",
-    "degraded": [
-     "F6: friction flag missing"
-    ],
-    "streaks": {
-     "central_bank": 1,
-     "fiscal": 4,
-     "general": 4
-    }
-   }
-  },
-  {
-   "timestamp": "2026-09-28T12:17:13+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "monthly",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
    }
   }
  ]
