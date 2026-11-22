@@ -200,7 +200,8 @@
           "freq": "monthly",
           "source": "ecb_app",
           "status": "parser live (Fase 2): APP_breakdown_history.csv, end-of-month holdings at amortised cost = ABSPP + CBPP3 + CSPP + PSPP",
-          "verified": "2026-08 = 2,077,889 (Jul 2,093,295; Jun 2,120,466) — 2026-09-09"
+          "verified": "2026-08 = 2,077,889 (Jul 2,093,295; Jun 2,120,466) — 2026-09-09",
+          "note": "t331u B5: se conserva el mensual para reconciliar; la pata semanal es app_holdings_weekly (WFS 7.1)"
         },
         "pepp_holdings": {
           "id": "PEPP:holdings",
@@ -208,7 +209,31 @@
           "freq": "monthly",
           "source": "ecb_pepp",
           "status": "parser live (Fase 2): PEPP_breakdown_history.csv, end-of-month holdings at amortised cost (file Total)",
-          "verified": "2026-08 = 1,284,844 (Jul 1,294,658) — 2026-09-09; weekly page figure 28-Aug 1,284,914"
+          "verified": "2026-08 = 1,284,844 (Jul 1,294,658) — 2026-09-09; weekly page figure 28-Aug 1,284,914",
+          "note": "t331u B5: se conserva el mensual para reconciliar; la pata semanal es pepp_holdings_weekly (WFS 7.1)"
+        },
+        "app_holdings_weekly": {
+          "id": "WFS71:APP",
+          "label": "APP holdings at amortised cost (weekly, WFS item 7.1: CBPP3+ABSPP+PSPP+CSPP)",
+          "freq": "weekly",
+          "source": "ecb_wfs_71",
+          "status": "t331u B5: parser ingest/wfs_71.py sobre la tabla 1 del comentario del estado financiero semanal",
+          "unit": "EUR_mn"
+        },
+        "pepp_holdings_weekly": {
+          "id": "WFS71:PEPP",
+          "label": "PEPP holdings at amortised cost (weekly, WFS item 7.1)",
+          "freq": "weekly",
+          "source": "ecb_wfs_71",
+          "status": "t331u B5: parser ingest/wfs_71.py",
+          "unit": "EUR_mn"
+        },
+        "app_pepp_wfs71_reconciliation": {
+          "id": "WFS71:RECON_ILM",
+          "label": "WFS 7.1 (APP+PEPP+SMP) − ILM A070100, EUR millions (same week)",
+          "freq": "weekly",
+          "source": "derived",
+          "note": "si falta una pata, en blanco; tolerancia 200 mn por el redondeo a 0.1 bn de la tabla"
         },
         "app_pepp_redemptions": {
           "id": "APP:redemptions",
