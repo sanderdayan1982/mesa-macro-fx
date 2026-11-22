@@ -34,10 +34,11 @@ def now_iso() -> str:
 def entry(name: str, ser: Series, label: str, freq: str, unit: str, cfg: dict, source_id: Optional[str] = None,
           usd_analog: Optional[str] = None, status: Optional[str] = None, spec: Optional[dict] = None,
           prev_level: Optional[str] = None, equivalence_note: Optional[str] = None, hist: int = 52,
-          quality: Optional[dict] = None, z_window: Optional[int] = None, lag_days: int = 0) -> dict:
+          quality: Optional[dict] = None, z_window: Optional[int] = None, lag_days: int = 0,
+          freshness_calendar: Optional[str] = None) -> dict:
     ser = S.clean(ser)
     L, P = S.last(ser), S.last(ser, 1)
-    q = quality or evaluate_series(name, ser, freq, cfg, lag_days=lag_days)
+    q = quality or evaluate_series(name, ser, freq, cfg, lag_days=lag_days, calendar=freshness_calendar)
     # status="fresh" if ser must not paint a stale print fresh (blocks.py and every blocks_*).
     computed = "unavailable" if not ser else q["freshness"]
     st = clamp_status(computed, status)
@@ -213,7 +214,7 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     z = S.rolling_zscore(ff, 30)
     D["fiscal_flow_zscore"] = entry("fiscal_flow_zscore", [(d, v) for d, v in z if v is not None], "Fiscal flow Z-score (30 business days)", "daily", "σ", cfg, usd_analog="DTS 30d Z", status="proxy" if ff else "unavailable", spec=b["thresholds"]["fiscal_flow_zscore"])
     c7 = S.rolling_sum(ff, 7)
-    D["fiscal_flow_7d_cum"] = entry("fiscal_flow_7d_cum", c7, "Fiscal flow 7-day cumulative", "daily", unit, cfg, usd_analog="7-day cumulative", status="proxy" if c7 else "unavailable")
+    D["fiscal_flow_7d_cum"] = entry("fiscal_flow_7d_cum", c7, "Fiscal flow 7-day cumulative", "daily", unit, cfg, usd_analog="7-day cumulative", status="proxy" if c7 else "unavailable", freshness_calendar="weekly_friday")
     st = S.rolling_stats(ff, 30)
     D["fiscal_flow_30d_mean"] = {"label": "30-day mean", "value": st["mean"], "unit": unit, "status": "proxy", "date": E["rg_closing_balance"]["date"]}
     D["fiscal_flow_30d_sd"] = {"label": "30-day std dev", "value": st["sd"], "unit": unit, "status": "proxy", "date": E["rg_closing_balance"]["date"]}
