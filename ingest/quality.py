@@ -49,6 +49,69 @@ def weekly_friday_freshness(last: date, today: date) -> str:
     return "fresh" if today <= following_week_end else "stale"
 
 
+# Official publication calendars (t331u). A print is "source_current"
+# ("AL DÍA CON LA FUENTE") until the next expected official release is overdue.
+OFFICIAL_CALENDARS = {
+    "pspc_sqt_dcb": {
+        "url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+        "portal": "https://open.canada.ca/data/en/dataset/477bf61b-e764-4f24-8a8a-687a5755002e",
+        "kind": "monthly_day",
+        "day": 4,
+        "label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4",
+    },
+    "statcan_10100116": {
+        "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1010011601",
+        "portal": "https://www150.statcan.gc.ca/n1/dai-quo/cal2-eng.htm",
+        "kind": "weeks_after_month_end",
+        "weeks": 8,
+        "label": "StatCan 10-10-0116-01 / BoC C2, ~7–8 weeks after month-end",
+    },
+}
+
+
+def _month_end(d: date) -> date:
+    if d.month == 12:
+        return date(d.year, 12, 31)
+    return date(d.year, d.month + 1, 1) - timedelta(days=1)
+
+
+def _shift_month(d: date, months: int) -> date:
+    y = d.year + (d.month - 1 + months) // 12
+    m = (d.month - 1 + months) % 12 + 1
+    day = min(d.day, _month_end(date(y, m, 1)).day)
+    return date(y, m, day)
+
+
+def next_official_publication(calendar: str, last: date) -> date:
+    """Expected next official release after an observation dated `last`."""
+    spec = OFFICIAL_CALENDARS[calendar]
+    if spec["kind"] == "monthly_day":
+        # Last obs in month M is typically posted on day 4 of month M;
+        # the next batch is day 4 of M+1.
+        nxt = _shift_month(date(last.year, last.month, 1), 1)
+        return date(nxt.year, nxt.month, int(spec["day"]))
+    if spec["kind"] == "weeks_after_month_end":
+        # last is usually the 1st of the reference month (Valet/C2).
+        # Next observation = following month; deadline = that month-end + N weeks.
+        ref_end = _month_end(last) if last.day == 1 else last
+        nxt_ref_end = _month_end(ref_end + timedelta(days=1))
+        return nxt_ref_end + timedelta(weeks=int(spec["weeks"]))
+    raise ValueError("unknown official calendar kind: %s" % spec.get("kind"))
+
+
+def official_calendar_freshness(last: date, today: date, calendar: str) -> dict:
+    spec = OFFICIAL_CALENDARS[calendar]
+    nxt = next_official_publication(calendar, last)
+    st = "source_current" if today <= nxt else "stale"
+    return {
+        "status": st,
+        "next_publication": nxt.isoformat(),
+        "calendar": calendar,
+        "calendar_url": spec["url"],
+        "calendar_label": spec["label"],
+    }
+
+
 def freshness(last_date: Optional[str], frequency: str, cfg: dict, now: Optional[datetime] = None, lag_days: int = 0,
               calendar: Optional[str] = None) -> Dict[str, object]:
     """fresh: age <= 1.5 x nominal period; stale: <= 3 x; else unavailable-by-age (reported as 'stale' with age flag).
@@ -61,6 +124,10 @@ def freshness(last_date: Optional[str], frequency: str, cfg: dict, now: Optional
     age = (now.date() - last).days
     if calendar == "weekly_friday":
         return {"status": weekly_friday_freshness(last, now.date()), "age_days": age}
+    if calendar in OFFICIAL_CALENDARS:
+        out = official_calendar_freshness(last, now.date(), calendar)
+        out["age_days"] = age
+        return out
     rules = cfg.get("status_rules", {})
     period = rules.get("nominal_period_days", {}).get(frequency, 7)
     if frequency == "monthly":
@@ -107,11 +174,15 @@ def evaluate_series(name: str, series: Series, frequency: str, cfg: dict, z_thre
         pen.append({"type": "outlier", "penalty": p})
     score = max(0, min(100, score))
     tier = "HIGH" if score >= 90 else "MEDIUM" if score >= 70 else "LOW" if score >= 50 else "CRITICAL"
-    return {"name": name, "total_points": len(checked), "valid_points": len(valid),
+    out = {"name": name, "total_points": len(checked), "valid_points": len(valid),
             "outliers": sum(1 for p in checked if p["outlier"]), "last_valid_date": last_valid,
             "latest_outlier": bool(valid and valid[-1]["outlier"]), "latest_mz": valid[-1]["mz"] if valid else None,
             "freshness": fr["status"], "age_days": fr["age_days"],
             "confidence": {"score": score, "tier": tier, "penalties": pen}}
+    for k in ("next_publication", "calendar", "calendar_url", "calendar_label"):
+        if fr.get(k):
+            out[k] = fr[k]
+    return out
 
 
 def system_summary(per_series: Dict[str, dict]) -> dict:

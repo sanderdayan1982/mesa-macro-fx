@@ -11,8 +11,8 @@ from .quality import evaluate_series, system_summary
 
 SCHEMA_VERSION = "0.3.0"
 
-# Lower is fresher. proxy is healthier than stale: source_health treats ("fresh", "proxy") as ok.
-_FRESH_RANK = {"fresh": 0, "proxy": 1, "stale": 2, "degraded": 3, "unavailable": 4}
+# Lower is fresher. proxy is healthier than stale: source_health treats ("fresh", "source_current", "proxy") as ok.
+_FRESH_RANK = {"fresh": 0, "source_current": 0, "proxy": 1, "stale": 2, "degraded": 3, "unavailable": 4}
 
 
 def clamp_status(computed: str, requested: Optional[str]) -> str:
@@ -53,6 +53,10 @@ def entry(name: str, ser: Series, label: str, freq: str, unit: str, cfg: dict, s
          "confidence": q["confidence"]["score"], "latest_outlier": q.get("latest_outlier", False)}
     if equivalence_note:
         e["equivalence_note"] = equivalence_note
+    e["calendar_status"] = q.get("freshness")
+    for k in ("next_publication", "calendar", "calendar_url", "calendar_label"):
+        if q.get(k):
+            e[k] = q[k]
     zw = z_window or (26 if freq == "weekly" else 30 if freq == "daily" else 12)
     zs = S.rolling_zscore(ser, zw)
     e["zscore"] = zs[-1][1] if zs else None
@@ -86,7 +90,7 @@ def _alert(metric: str, e: dict, hint: str = "") -> dict:
 
 def _health(entries: Dict[str, dict], expected: int) -> dict:
     loaded = sum(1 for e in entries.values() if e.get("status") != "unavailable")
-    ok = ("fresh", "proxy")
+    ok = ("fresh", "source_current", "proxy")
     st = "fresh" if loaded == expected and all(e["status"] in ok for e in entries.values()) else \
         "unavailable" if loaded == 0 else "degraded" if loaded < max(3, expected // 2) else "stale"
     return {"status": st, "series_loaded": loaded, "series_expected": expected, "last_fetch_ok": loaded > 0, "errors": []}
@@ -185,36 +189,38 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     unit = cfg["units"]["balance_sheet"]
     pl = _prev_levels(prev)
     E: Dict[str, dict] = {}
-    E["rg_closing_balance"] = entry("rg_closing_balance", rg.get("rg_closing_balance", []), "Receiver General closing cash balance at BoC", "daily", unit, cfg, "RG:Closing-Cash-Balance", "DTS TGA closing balance", lag_days=12)
+    E["rg_closing_balance"] = entry("rg_closing_balance", rg.get("rg_closing_balance", []), "Receiver General closing cash balance at BoC", "daily", unit, cfg, "RG:Closing-Cash-Balance", "DTS TGA closing balance", lag_days=12, freshness_calendar="pspc_sqt_dcb")
     E["rg_term_deposits"] = entry("rg_term_deposits", rg.get("rg_term_deposits", []), "RG term deposits at financial institutions", "daily", unit, cfg, "RG:Term-Deposit-Outstanding", None,
-                                  equivalence_note="cash moved BoC→banks: adds reserves, not fiscal flow", lag_days=12)
-    E["rg_prudential_fund"] = entry("rg_prudential_fund", rg.get("rg_prudential_fund", []), "Prudential Liquidity Fund", "daily", unit, cfg, "RG:Prudential-Liquidity-Fund", lag_days=12)
+                                  equivalence_note="cash moved BoC→banks: adds reserves, not fiscal flow", lag_days=12, freshness_calendar="pspc_sqt_dcb")
+    E["rg_prudential_fund"] = entry("rg_prudential_fund", rg.get("rg_prudential_fund", []), "Prudential Liquidity Fund", "daily", unit, cfg, "RG:Prudential-Liquidity-Fund", lag_days=12, freshness_calendar="pspc_sqt_dcb")
     gcb = S.clean(valet.get("V36628", []))
     E["government_account_cb"] = entry("government_account_cb", gcb, "GoC deposits at BoC (weekly, Valet)", "weekly", unit, cfg, "V36628", "WTREGEN")
     gdb = S.clean(valet.get("V36811", []))
-    E["government_deposits_banks"] = entry("government_deposits_banks", gdb, "GoC deposits at chartered banks (monthly)", "monthly", unit, cfg, "V36811", lag_days=20)
-    # Frescura mensual (calidad de datos, no umbral G8): la fecha Valet es el 1.º del mes de referencia. «fresh» solo si
-    # age ≤ 75 días (mes + ~45 días de publicación C2). Si no, «stale» con nota de latencia oficial; el valor no se toca.
+    E["government_deposits_banks"] = entry("government_deposits_banks", gdb, "GoC deposits at chartered banks (monthly)", "monthly", unit, cfg, "V36811", lag_days=20, freshness_calendar="statcan_10100116")
+    # t331u: official StatCan/C2 calendar (not the old 75-day cap). Value is never rewritten.
     _g = E["government_deposits_banks"]
-    if _g.get("status") == "fresh" and (_g.get("age_days") or 0) > 75:
-        _g["status"] = "stale"
-        _g["equivalence_note"] = "LATENCIA_CALENDARIO_OFICIAL: último dato publicado en BoC Valet V36811 = %s (mensual C2)" % _g.get("date")
+    nxt = _g.get("next_publication") or "—"
+    url = _g.get("calendar_url") or "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1010011601"
+    _g["equivalence_note"] = (
+        "AL DÍA CON LA FUENTE" if _g.get("status") == "source_current" or _g.get("calendar_status") == "source_current"
+        else "FUENTE PASADA DE CALENDARIO"
+    ) + ": último V36811 = %s · próxima publicación esperada %s · %s" % (_g.get("date"), nxt, url)
     # derived (daily)
     cb, td = S.clean(rg.get("rg_closing_balance", [])), S.clean(rg.get("rg_term_deposits", []))
     D: Dict[str, dict] = {}
     ri = [(d, -v) for d, v in S.diff_series(cb)]
-    D["reserve_impact_daily"] = entry("reserve_impact_daily", ri, "Reserve impact = −Δ RG balance at BoC", "daily", unit, cfg, usd_analog="−ΔTGA", status="proxy" if ri else "unavailable")
+    D["reserve_impact_daily"] = entry("reserve_impact_daily", ri, "Reserve impact = −Δ RG balance at BoC", "daily", unit, cfg, usd_analog="−ΔTGA", status="proxy" if ri else "unavailable", freshness_calendar="pspc_sqt_dcb")
     # term deposits: an empty cell in the RG file = no term deposits outstanding (Sep-2020 → Feb-2024 has none) → 0, never a hole
     # (calibration replay 2026-09-09 found the common-date sum froze the fiscal flow for 3.5 years)
     tdm = {d: v for d, v in td}
     tot = [(d, v + tdm.get(d, 0.0)) for d, v in cb]
     ff = [(d, -v) for d, v in S.diff_series(tot)]
     D["fiscal_flow_proxy_daily"] = entry("fiscal_flow_proxy_daily", ff, "Fiscal flow proxy = −Δ(BoC balance + term deposits)", "daily", unit, cfg, usd_analog="Net Treasury Flow (Mosler)", status="proxy" if ff else "unavailable",
-                                         equivalence_note="positive = net injection of NFA proxy; excludes BoC↔bank cash transfers")
+                                         equivalence_note="positive = net injection of NFA proxy; excludes BoC↔bank cash transfers", freshness_calendar="pspc_sqt_dcb")
     z = S.rolling_zscore(ff, 30)
-    D["fiscal_flow_zscore"] = entry("fiscal_flow_zscore", [(d, v) for d, v in z if v is not None], "Fiscal flow Z-score (30 business days)", "daily", "σ", cfg, usd_analog="DTS 30d Z", status="proxy" if ff else "unavailable", spec=b["thresholds"]["fiscal_flow_zscore"])
+    D["fiscal_flow_zscore"] = entry("fiscal_flow_zscore", [(d, v) for d, v in z if v is not None], "Fiscal flow Z-score (30 business days)", "daily", "σ", cfg, usd_analog="DTS 30d Z", status="proxy" if ff else "unavailable", spec=b["thresholds"]["fiscal_flow_zscore"], freshness_calendar="pspc_sqt_dcb")
     c7 = S.rolling_sum(ff, 7)
-    D["fiscal_flow_7d_cum"] = entry("fiscal_flow_7d_cum", c7, "Fiscal flow 7-day cumulative", "daily", unit, cfg, usd_analog="7-day cumulative", status="proxy" if c7 else "unavailable", freshness_calendar="weekly_friday")
+    D["fiscal_flow_7d_cum"] = entry("fiscal_flow_7d_cum", c7, "Fiscal flow 7-day cumulative", "daily", unit, cfg, usd_analog="7-day cumulative", status="proxy" if c7 else "unavailable", freshness_calendar="pspc_sqt_dcb")
     st = S.rolling_stats(ff, 30)
     D["fiscal_flow_30d_mean"] = {"label": "30-day mean", "value": st["mean"], "unit": unit, "status": "proxy", "date": E["rg_closing_balance"]["date"]}
     D["fiscal_flow_30d_sd"] = {"label": "30-day std dev", "value": st["sd"], "unit": unit, "status": "proxy", "date": E["rg_closing_balance"]["date"]}
@@ -239,10 +245,15 @@ def build_fiscal(cfg: dict, valet: Dict[str, Series], rg: Dict[str, Series], pre
     alerts = [_alert("fiscal_flow_zscore", D["fiscal_flow_zscore"], "|Z|>2 = extraordinary daily flow"),
               {"metric": "fiscal_flow_7d_cum", "level": "WATCH" if reg == "DRAIN" else "SAFE" if reg != "NO DATA" else "NO DATA", "value": cum, "threshold": None, "status": D["fiscal_flow_7d_cum"]["status"], "action_hint": "7d cumulative below p20 = fiscal drain"}]
     tl = "NONE" if reg == "NO DATA" else "GREEN" if reg == "INJECTION" else "RED" if reg == "DRAIN" else "YELLOW"
-    # daily data freshness: RG publishes in batches; if > 15 days old, mark degraded
-    if E["rg_closing_balance"]["status"] != "fresh":
+    # daily data freshness: RG publishes in monthly batches. Official calendar
+    # (source_current) is not treated as stale. Only a true stale/unavailable RG
+    # print cascades to the derived flows.
+    rg_st = E["rg_closing_balance"]["status"]
+    if rg_st not in ("fresh", "source_current", "proxy"):
         for k in ("reserve_impact_daily", "fiscal_flow_proxy_daily", "fiscal_flow_zscore", "fiscal_flow_7d_cum"):
-            D[k]["status"] = "stale" if E["rg_closing_balance"]["status"] == "stale" else "unavailable"
+            if D[k].get("calendar_status") == "source_current":
+                continue
+            D[k]["status"] = "stale" if rg_st == "stale" else "unavailable"
     signals = {"traffic_light": tl, "score": score, "label": reg, "components": CF.to_dict(), "detail": "7d cum %s · Z %s · weekly Valet cross-check %s" % (cum, zv, D["fiscal_flow_weekly_valet"]["value"]), "alerts": alerts}
     hd = [d for d, _ in S.tail(ff, 60)]
     history = {"dates": hd, "rows": {"fiscal_flow_proxy_daily": [dict(ff).get(d) for d in hd], "reserve_impact_daily": [dict(ri).get(d) for d in hd],

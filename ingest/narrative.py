@@ -25,7 +25,7 @@ REG_ES = {"INJECTION": "INYECCIÓN", "DRAIN": "DRENAJE", "NEUTRAL": "NEUTRAL", "
 GEN_ES = {"LIQUIDITY_INJECTION": "INYECCIÓN DE LIQUIDEZ", "LIQUIDITY_DRAIN": "DRENAJE DE LIQUIDEZ", "NEUTRAL": "NEUTRAL", "FLOOR_FRICTION": "FRICCIÓN DE SUELO", "LIQUIDITY_SCARCITY": "ESCASEZ DE LIQUIDEZ", "NO SIGNAL": "SIN SEÑAL"}
 GEN_ENUM = set(GEN_ES)
 BLOCK_ENUM = set(REG_ES)
-FRESH_ES = {"fresh": "fresco", "stale": "stale", "proxy": "proxy", "unavailable": "no disponible", "degraded": "degradado"}
+FRESH_ES = {"fresh": "fresco", "source_current": "AL DÍA CON LA FUENTE", "stale": "stale", "proxy": "proxy", "unavailable": "no disponible", "degraded": "degradado"}
 
 # ───────────────────────────── per-currency vocabulary (what each slot reads) ─────────────────────────────
 # unit: divisor and display label for money amounts; bps/percent/ratio have their own formats.
