@@ -3,12 +3,12 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-21T02:43:12+00:00",
+ "generated_at": "2026-11-22T16:21:22+00:00",
  "as_of": "2026-11-18",
  "equivalence_quality": "medium-high",
  "equivalence_note": "Canada has no DTS with receipts/withdrawals, but the Receiver General publishes a DAILY closing cash balance at the BoC plus term deposits placed with banks (found in triangulation, verified 2026-09-08). Daily -dBalance is the analog of -dTGA; term deposits capture cash moved from the BoC to banks (reserve-adding without fiscal meaning). Issuance/redemption from auctions; net spending from monthly Fiscal Monitor (deferred).",
  "source_health": {
-  "status": "stale",
+  "status": "fresh",
   "series_loaded": 5,
   "series_expected": 5,
   "last_fetch_ok": true,
@@ -21,7 +21,7 @@
    "usd_analog": "DTS TGA closing balance",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "source_current",
    "value": 25726.192,
    "date": "2026-11-02",
    "prev_value": 24258.579,
@@ -92,9 +92,14 @@
     "low": 22450.115,
     "low_date": "2026-09-09"
    },
-   "age_days": 19,
+   "age_days": 20,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-04",
+   "calendar": "pspc_sqt_dcb",
+   "calendar_url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+   "calendar_label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4"
   },
   "rg_term_deposits": {
    "source_id": "RG:Term-Deposit-Outstanding",
@@ -102,7 +107,7 @@
    "usd_analog": null,
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "source_current",
    "value": 5000.0,
    "date": "2026-11-02",
    "prev_value": 15500.0,
@@ -173,10 +178,15 @@
     "low": 4000.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 19,
+   "age_days": 20,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "cash moved BoC→banks: adds reserves, not fiscal flow"
+   "equivalence_note": "cash moved BoC→banks: adds reserves, not fiscal flow",
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-04",
+   "calendar": "pspc_sqt_dcb",
+   "calendar_url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+   "calendar_label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4"
   },
   "rg_prudential_fund": {
    "source_id": "RG:Prudential-Liquidity-Fund",
@@ -184,7 +194,7 @@
    "usd_analog": null,
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "source_current",
    "value": 20000.0,
    "date": "2026-11-02",
    "prev_value": 20000.0,
@@ -255,9 +265,14 @@
     "low": 20000.0,
     "low_date": "2026-08-18"
    },
-   "age_days": 19,
+   "age_days": 20,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-04",
+   "calendar": "pspc_sqt_dcb",
+   "calendar_url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+   "calendar_label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4"
   },
   "government_account_cb": {
    "source_id": "V36628",
@@ -336,9 +351,10 @@
     "low": 22450.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "government_deposits_banks": {
    "source_id": "V36811",
@@ -346,7 +362,7 @@
    "usd_analog": null,
    "unit": "CAD millions",
    "frequency": "monthly",
-   "status": "stale",
+   "status": "source_current",
    "value": 3407.0,
    "date": "2026-09-01",
    "prev_value": 2965.0,
@@ -417,10 +433,15 @@
     "low": 2645.0,
     "low_date": "2023-03-01"
    },
-   "age_days": 81,
+   "age_days": 82,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "LATENCIA_CALENDARIO_OFICIAL: último dato publicado en BoC Valet V36811 = 2026-09-01 (mensual C2)"
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-26",
+   "calendar": "statcan_10100116",
+   "calendar_url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1010011601",
+   "calendar_label": "StatCan 10-10-0116-01 / BoC C2, ~7–8 weeks after month-end",
+   "equivalence_note": "AL DÍA CON LA FUENTE: último V36811 = 2026-09-01 · próxima publicación esperada 2026-12-26 · https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1010011601"
   }
  },
  "derived": {
@@ -430,7 +451,7 @@
    "usd_analog": "−ΔTGA",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "stale",
+   "status": "proxy",
    "value": -1467.613,
    "date": "2026-11-02",
    "prev_value": -382.362,
@@ -501,9 +522,14 @@
     "low": -1925.996,
     "low_date": "2026-08-18"
    },
-   "age_days": 19,
-   "confidence": 70,
-   "latest_outlier": false
+   "age_days": 20,
+   "confidence": 100,
+   "latest_outlier": false,
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-04",
+   "calendar": "pspc_sqt_dcb",
+   "calendar_url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+   "calendar_label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4"
   },
   "fiscal_flow_proxy_daily": {
    "source_id": null,
@@ -511,7 +537,7 @@
    "usd_analog": "Net Treasury Flow (Mosler)",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "stale",
+   "status": "proxy",
    "value": 9032.387,
    "date": "2026-11-02",
    "prev_value": -6882.362,
@@ -582,10 +608,15 @@
     "low": -7761.863,
     "low_date": "2026-10-23"
    },
-   "age_days": 19,
-   "confidence": 70,
+   "age_days": 20,
+   "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "positive = net injection of NFA proxy; excludes BoC↔bank cash transfers"
+   "equivalence_note": "positive = net injection of NFA proxy; excludes BoC↔bank cash transfers",
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-04",
+   "calendar": "pspc_sqt_dcb",
+   "calendar_url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+   "calendar_label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4"
   },
   "fiscal_flow_zscore": {
    "source_id": null,
@@ -593,7 +624,7 @@
    "usd_analog": "DTS 30d Z",
    "unit": "σ",
    "frequency": "daily",
-   "status": "stale",
+   "status": "proxy",
    "value": 2.1459,
    "date": "2026-11-02",
    "prev_value": -1.7346,
@@ -664,9 +695,14 @@
     "low": -1.8692,
     "low_date": "2026-10-23"
    },
-   "age_days": 19,
-   "confidence": 70,
+   "age_days": 20,
+   "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-04",
+   "calendar": "pspc_sqt_dcb",
+   "calendar_url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+   "calendar_label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4",
    "thresholds": {
     "method": "absolute",
     "levels": {}
@@ -678,7 +714,7 @@
    "usd_analog": "7-day cumulative",
    "unit": "CAD millions",
    "frequency": "daily",
-   "status": "stale",
+   "status": "proxy",
    "value": 204.024,
    "date": "2026-11-02",
    "prev_value": -9140.357,
@@ -749,9 +785,14 @@
     "low": -12203.308,
     "low_date": "2026-10-19"
    },
-   "age_days": 19,
-   "confidence": 70,
-   "latest_outlier": false
+   "age_days": 20,
+   "confidence": 100,
+   "latest_outlier": false,
+   "calendar_status": "source_current",
+   "next_publication": "2026-12-04",
+   "calendar": "pspc_sqt_dcb",
+   "calendar_url": "https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/sqt-dcb/sqt-dcb.csv",
+   "calendar_label": "PSPC Receiver General Daily Cash Balance (sqt-dcb), monthly ~day 4"
   },
   "fiscal_flow_30d_mean": {
    "label": "30-day mean",
@@ -844,9 +885,10 @@
     "low": -7461.0,
     "low_date": "2025-12-31"
    },
-   "age_days": 3,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_issuance": {
    "source_id": "derived",
@@ -925,10 +967,11 @@
     "low": -11688.0,
     "low_date": "2026-09-25"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "v0.4 first pass: bills + bonds − BoC purchase − private maturities + repurchases; coupons pending"
+   "equivalence_note": "v0.4 first pass: bills + bonds − BoC purchase − private maturities + repurchases; coupons pending",
+   "calendar_status": "fresh"
   },
   "fiscal_regime": {
    "label": "Fiscal regime",
@@ -1037,9 +1080,10 @@
     "low": 0.0,
     "low_date": "2026-09-11"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "matured_private": {
    "source_id": "Valet:group:AUC_TBILL_RESULTS+AUC_BOND_RESULTS",
@@ -1118,9 +1162,10 @@
     "low": 0.0,
     "low_date": "2026-09-10"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "repurchased_private": {
    "source_id": "Valet:group:AUC_BOND_S_RESULTS_REPURCHASE",
@@ -1199,9 +1244,10 @@
     "low": 64.665,
     "low_date": "2008-03-10"
    },
-   "age_days": 2425,
+   "age_days": 2426,
    "confidence": 70,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "boc_primary_purchase": {
    "source_id": "Valet:group:AUC_*_RESULTS",
@@ -1280,9 +1326,10 @@
     "low": 0.0,
     "low_date": "2026-04-17"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_issuance_private_daily": {
    "source_id": "derived",
@@ -1361,9 +1408,10 @@
     "low": -5500.0,
     "low_date": "2026-09-25"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "rg_am_placed": {
    "source_id": "Valet:group:AUC_RGAM_RESULTS",
@@ -1442,9 +1490,10 @@
     "low": 3000.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "rg_am_matured": {
    "source_id": "Valet:group:AUC_RGAM_RESULTS",
@@ -1523,9 +1572,10 @@
     "low": -20500.0,
     "low_date": "2026-11-18"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "rg_am_net_daily": {
    "source_id": "derived",
@@ -1604,9 +1654,10 @@
     "low": -12000.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "rg_am_outstanding": {
    "source_id": "derived",
@@ -1685,9 +1736,10 @@
     "low": 4000.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "rg_am_coverage": {
    "source_id": "Valet:group:AUC_RGAM_RESULTS",
@@ -1766,16 +1818,17 @@
     "low": 0.76,
     "low_date": "2026-10-26"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "maturities_next_4w": {
    "label": "Private-held maturities in the next 4 weeks",
    "value": 48162.0,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-11-21",
+   "date": "2026-11-22",
    "calendar": [
     [
      "2026-12-02",
@@ -1850,9 +1903,10 @@
     "low": 0.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "bond_coupons_net_daily": {
    "source_id": "bankofcanada.ca:bank-of-canada-holdings + Valet:GOC_OUTSTANDING",
@@ -1917,9 +1971,10 @@
     "low": 0.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "tbill_maturities_net_daily": {
    "source_id": "bankofcanada.ca:bank-of-canada-holdings + Valet:GOC_OUTSTANDING",
@@ -1984,9 +2039,10 @@
     "low": 0.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "boc_share_bonds": {
    "source_id": "bankofcanada.ca:bank-of-canada-holdings + Valet:GOC_OUTSTANDING",
@@ -2014,9 +2070,10 @@
     "low": 0.1102,
     "low_date": "2026-11-20"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "boc_share_tbills": {
    "source_id": "bankofcanada.ca:bank-of-canada-holdings + Valet:GOC_OUTSTANDING",
@@ -2044,9 +2101,10 @@
     "low": 0.016,
     "low_date": "2026-11-20"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "boc_holdings_bonds_total": {
    "source_id": "bankofcanada.ca:bank-of-canada-holdings + Valet:GOC_OUTSTANDING",
@@ -2074,16 +2132,17 @@
     "low": 144911.809,
     "low_date": "2026-11-20"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "bond_redemptions_net_next_12m": {
    "label": "GoC bond redemptions next 12 months — NET of BoC holdings",
    "value": 139060.054,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-11-21",
+   "date": "2026-11-22",
    "calendar": [
     [
      "2026-12-01",
@@ -2117,7 +2176,7 @@
    "value": 9043.533,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-11-21",
+   "date": "2026-11-22",
    "calendar": [
     [
      "2026-12-01",
@@ -2130,7 +2189,7 @@
    "value": 48162.0,
    "unit": "CAD millions",
    "status": "fresh",
-   "date": "2026-11-21",
+   "date": "2026-11-22",
    "calendar": [
     [
      "2026-12-02",
@@ -2147,7 +2206,7 @@
    "value": null,
    "cut_date": "2026-11-20",
    "status": "fresh",
-   "date": "2026-11-21",
+   "date": "2026-11-22",
    "unmatched": []
   },
   "net_issuance_private_v2_daily": {
@@ -2213,10 +2272,11 @@
     "low": -24500.0,
     "low_date": "2026-11-18"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "round 2: BoC holdings by ISIN since 2018-12; before that the v0.4 first pass applies"
+   "equivalence_note": "round 2: BoC holdings by ISIN since 2018-12; before that the v0.4 first pass applies",
+   "calendar_status": "fresh"
   },
   "net_issuance_v2_5d": {
    "source_id": "derived",
@@ -2277,9 +2337,10 @@
     "low": -30000.0,
     "low_date": "2026-11-18"
    },
-   "age_days": 1,
+   "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   }
  },
  "signals": {
@@ -2308,7 +2369,7 @@
     "level": "SAFE",
     "value": 2.1459,
     "threshold": {},
-    "status": "stale",
+    "status": "proxy",
     "action_hint": "|Z|>2 = extraordinary daily flow"
    },
    {
@@ -2316,7 +2377,7 @@
     "level": "SAFE",
     "value": 204.024,
     "threshold": null,
-    "status": "stale",
+    "status": "proxy",
     "action_hint": "7d cumulative below p20 = fiscal drain"
    }
   ],
@@ -2832,9 +2893,9 @@
     "score": 0.41
    },
    {
-    "date": "2026-10-01",
+    "date": "2026-11-02",
     "label": "NEUTRAL",
-    "score": 0.41
+    "score": 2.0
    },
    {
     "date": "2026-11-02",
