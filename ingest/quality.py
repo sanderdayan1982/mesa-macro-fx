@@ -3,7 +3,7 @@ Dedup, MAD modified z-score outliers (rolling 20), holiday-aware null streaks, c
 Desk Standard correction: a null is never 'amber' — a series without data is `unavailable`."""
 from __future__ import annotations
 import math
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 from typing import Dict, List, Optional
 from .series import Series
 
@@ -38,13 +38,29 @@ def modified_z(series: Series, z_thresh: float = 3.5, window: int = 20, min_poin
     return out
 
 
-def freshness(last_date: Optional[str], frequency: str, cfg: dict, now: Optional[datetime] = None, lag_days: int = 0) -> Dict[str, object]:
+def weekly_friday_freshness(last: date, today: date) -> str:
+    """Presentation calendar for a Friday weekly print (t330u).
+
+    Fresh during the ISO week of the last print and the following ISO week.
+    Stale once that following week has ended without a new print.
+    """
+    week_start = last - timedelta(days=last.weekday())  # Monday
+    following_week_end = week_start + timedelta(days=13)  # Sunday of the next week
+    return "fresh" if today <= following_week_end else "stale"
+
+
+def freshness(last_date: Optional[str], frequency: str, cfg: dict, now: Optional[datetime] = None, lag_days: int = 0,
+              calendar: Optional[str] = None) -> Dict[str, object]:
     """fresh: age <= 1.5 x nominal period; stale: <= 3 x; else unavailable-by-age (reported as 'stale' with age flag).
-    Monthly series get the configured publication-lag allowance."""
+    Monthly series get the configured publication-lag allowance.
+    calendar='weekly_friday' uses the Friday weekly presentation rule instead of 1.5×/3×."""
     now = now or datetime.now(timezone.utc)
     if not last_date:
         return {"status": "unavailable", "age_days": None}
-    age = (now.date() - datetime.strptime(last_date, "%Y-%m-%d").date()).days
+    last = datetime.strptime(last_date, "%Y-%m-%d").date()
+    age = (now.date() - last).days
+    if calendar == "weekly_friday":
+        return {"status": weekly_friday_freshness(last, now.date()), "age_days": age}
     rules = cfg.get("status_rules", {})
     period = rules.get("nominal_period_days", {}).get(frequency, 7)
     if frequency == "monthly":
@@ -62,7 +78,8 @@ def freshness(last_date: Optional[str], frequency: str, cfg: dict, now: Optional
 
 
 def evaluate_series(name: str, series: Series, frequency: str, cfg: dict, z_thresh: float = 3.5,
-                    holidays: Optional[List[str]] = None, now: Optional[datetime] = None, lag_days: int = 0) -> dict:
+                    holidays: Optional[List[str]] = None, now: Optional[datetime] = None, lag_days: int = 0,
+                    calendar: Optional[str] = None) -> dict:
     holidays = holidays or []
     if not series:
         return {"name": name, "total_points": 0, "valid_points": 0, "outliers": 0, "last_valid_date": None,
@@ -71,7 +88,7 @@ def evaluate_series(name: str, series: Series, frequency: str, cfg: dict, z_thre
     checked = modified_z(series, z_thresh)
     valid = [p for p in checked if p["value"] is not None]
     last_valid = valid[-1]["date"] if valid else None
-    fr = freshness(last_valid, frequency, cfg, now, lag_days)
+    fr = freshness(last_valid, frequency, cfg, now, lag_days, calendar=calendar)
     score, pen = 100, []
     if fr["status"] == "stale":
         p = 30 if fr["age_days"] and fr["age_days"] > 3 * cfg.get("status_rules", {}).get("nominal_period_days", {}).get(frequency, 7) else 15
