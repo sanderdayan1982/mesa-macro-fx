@@ -1776,6 +1776,20 @@ def fetch_eur(cfg: dict, a, prev: dict, hist_dir: str, oplog: str, errors: List[
             blocks["_de_rows"] = fa.rows  # auction lines for the fiscal history table (not written as a block)
         except Exception as e:  # noqa
             _err("finanzagentur", e)
+        try:
+            from . import wfs_71 as W71
+            import urllib.request
+
+            def _wfs_get(url):
+                req = urllib.request.Request(url, headers={"User-Agent": "G8MesaResearch/1.0"})
+                with urllib.request.urlopen(req, timeout=30) as r:
+                    return r.read().decode("utf-8", "replace")
+
+            got = W71.fetch_wfs71(fixtures_dir=fx, getter=None if fx else _wfs_get)
+            if got:
+                data.update(_merge_hist_named(hist_dir, got, list(got)) if not fx else got)
+        except Exception as e:  # noqa
+            _err("ecb_wfs_71", e)
     if "weekly" in lanes:
         ap = PE.AppPeppProvider(fixtures_dir=fx, raw_dir=raw_dir)
         try:
