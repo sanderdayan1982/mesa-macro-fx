@@ -3,8 +3,8 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-23T04:02:40+00:00",
- "as_of": "2026-11-19",
+ "generated_at": "2026-11-23T06:01:55+00:00",
+ "as_of": "2026-11-20",
  "equivalence_quality": "high",
  "equivalence_note": "B2 daily close (T-1, 15:00 NZT). Floor system: the overnight interbank rate should sit at/just above the OCR; it is published only on days with trades (sparse) → the daily stress spread is the 30-day bank bill − OCR with a persistence rule, corrected for hike pricing by the 90-day bill and 1-year swap; the OMO price is fixed (OCR + 10) so price stress shows up in ORRF use and bills, not in the operation | v0.2: B2 bank bills are NZFMA/LSEG closing rates (the 10:20 NZT BKBM fixing itself is published by NZFBF; public delayed feed unverified — pending); NZ OIS has no public feed (not available, not proxied)",
  "source_health": {
@@ -96,7 +96,7 @@
     "low": 2.75,
     "low_date": "2026-09-09"
    },
-   "age_days": 4,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -178,7 +178,7 @@
     "low": 2.75,
     "low_date": "2026-09-09"
    },
-   "age_days": 4,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -260,7 +260,7 @@
     "low": 3.25,
     "low_date": "2026-09-09"
    },
-   "age_days": 4,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -1257,18 +1257,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 84880.0,
-   "date": "2026-11-13",
-   "prev_value": 81367.0,
-   "prev_date": "2026-11-06",
-   "change_abs": 3513.0,
-   "change_pct": 4.3175,
-   "zscore": 0.9632,
+   "value": 70136.0,
+   "date": "2026-11-20",
+   "prev_value": 84880.0,
+   "prev_date": "2026-11-13",
+   "change_abs": -14744.0,
+   "change_pct": -17.3704,
+   "zscore": -1.3903,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    74939.0,
     121339.0,
     94834.0,
     96649.0,
@@ -1319,7 +1318,8 @@
     84906.0,
     81567.0,
     81367.0,
-    84880.0
+    84880.0,
+    70136.0
    ],
    "high_low": {
     "high": 121339.0,
@@ -1327,7 +1327,7 @@
     "low": 21115.0,
     "low_date": "2026-01-02"
    },
-   "age_days": 10,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -2256,18 +2256,17 @@
    "unit": "%",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 4.3175,
-   "date": "2026-11-13",
-   "prev_value": -0.2452,
-   "prev_date": "2026-11-06",
-   "change_abs": 4.5627,
-   "change_pct": 1860.8075,
-   "zscore": 0.4668,
+   "value": -17.3704,
+   "date": "2026-11-20",
+   "prev_value": 4.3175,
+   "prev_date": "2026-11-13",
+   "change_abs": -21.6879,
+   "change_pct": -502.3254,
+   "zscore": -1.9878,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    4.8435,
     61.917,
     -21.8438,
     1.9139,
@@ -2318,7 +2317,8 @@
     11.6876,
     -3.9326,
     -0.2452,
-    4.3175
+    4.3175,
+    -17.3704
    ],
    "high_low": {
     "high": 208.0938,
@@ -2326,7 +2326,7 @@
     "low": -54.0787,
     "low_date": "2025-12-26"
    },
-   "age_days": 10,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
@@ -2338,7 +2338,7 @@
   "score": 0.25,
   "label": "HIKE PRICING",
   "flags": [],
-  "detail": "bill 30d − OCR 24.0 bp (WATCH) · overnight − OCR 5.0 (2026-11-12) · hike pricing 81.0 bp · 2y − OCR 114.0 · 10y − 2y 90.0 · bond-swap 10y 39.0 · turnover 84880.0",
+  "detail": "bill 30d − OCR 24.0 bp (WATCH) · overnight − OCR 5.0 (2026-11-12) · hike pricing 81.0 bp · 2y − OCR 114.0 · 10y − 2y 90.0 · bond-swap 10y 39.0 · turnover 70136.0",
   "alerts": [
    {
     "metric": "bank_bill_30d_minus_ocr_bps",
@@ -3809,11 +3809,6 @@
     "score": 0.25
    },
    {
-    "date": "2026-10-16",
-    "label": "HIKE PRICING",
-    "score": 0.25
-   },
-   {
     "date": "2026-10-21",
     "label": "HIKE PRICING",
     "score": 0.25
@@ -4345,6 +4340,11 @@
    },
    {
     "date": "2026-11-18",
+    "label": "HIKE PRICING",
+    "score": 0.25
+   },
+   {
+    "date": "2026-11-19",
     "label": "HIKE PRICING",
     "score": 0.25
    },

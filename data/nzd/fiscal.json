@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-23T04:02:40+00:00",
+ "generated_at": "2026-11-23T06:01:55+00:00",
  "as_of": "2026-11-20",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -1272,9 +1272,9 @@
     "low": -3603.0,
     "low_date": "2026-10-28"
    },
-   "age_days": 4,
-   "confidence": 100,
-   "latest_outlier": false,
+   "age_days": 3,
+   "confidence": 85,
+   "latest_outlier": true,
    "calendar_status": "fresh"
   },
   "tbill_allocation_ratio": {
@@ -2479,18 +2479,17 @@
    "unit": "ratio",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 0.3544,
-   "date": "2026-11-13",
-   "prev_value": 0.329,
-   "prev_date": "2026-11-06",
-   "change_abs": 0.0254,
-   "change_pct": 7.7204,
-   "zscore": 0.6329,
+   "value": 0.3355,
+   "date": "2026-11-20",
+   "prev_value": 0.3544,
+   "prev_date": "2026-11-13",
+   "change_abs": -0.0189,
+   "change_pct": -5.333,
+   "zscore": 0.2851,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.2414,
     0.4001,
     0.2473,
     0.209,
@@ -2541,7 +2540,8 @@
     0.3151,
     0.3304,
     0.329,
-    0.3544
+    0.3544,
+    0.3355
    ],
    "high_low": {
     "high": 0.5065,
@@ -2549,7 +2549,7 @@
     "low": 0.194,
     "low_date": "2026-01-09"
    },
-   "age_days": 10,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3327,8 +3327,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": 2.2631,
-    "residual_5d_pct": 11.4683
+    "net_issuance_5d_pct": 2.5056,
+    "residual_5d_pct": 3.9571
    },
    "level": {},
    "weights": {},
@@ -4688,9 +4688,9 @@
     "score": 0.0
    },
    {
-    "date": "2026-08-31",
-    "label": "NEUTRAL",
-    "score": 0.0
+    "date": "2026-09-30",
+    "label": "INJECTION",
+    "score": 0.5
    },
    {
     "date": "2026-09-30",
