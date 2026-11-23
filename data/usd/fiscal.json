@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.1.1",
- "generated_at": "2026-11-21T03:35:32+00:00",
+ "generated_at": "2026-11-23T20:20:33+00:00",
  "as_of": "2026-11-19",
  "equivalence_quality": "high",
  "equivalence_note": "DTS via Fiscal Data API, ~16:00 ET (22:00 WAT), record_date = previous business day. Views Daily / MTD / FYTD kept as fields on every line item. Net Treasury Flow (MMT sign) = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues): + = net fiscal injection (NFA creation), − = drain. Reserve impact ≠ NFA: −ΔTGA.",
@@ -18,7 +18,7 @@
  "series": {
   "tga_closing": {
    "source_id": "DTS:tga_close",
-   "label": "TGA Closing Balance (DTS Table I)",
+   "label": "TGA Closing Balance (DTS Table I) — pata diaria",
    "usd_analog": "TGA",
    "unit": "USD millions",
    "frequency": "daily",
@@ -93,16 +93,18 @@
     "low": 818110.0,
     "low_date": "2026-09-10"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
      "WATCH": 750000,
      "STRESS": 900000
     }
-   }
+   },
+   "equivalence_note": "t331u B5: pata diaria DTS; el saldo semanal completo sigue en tga (WTREGEN). Cálculo no cambia."
   },
   "tga_opening": {
    "source_id": "DTS:tga_open",
@@ -181,9 +183,10 @@
     "low": 818110.0,
     "low_date": "2026-09-11"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "total_deposits": {
@@ -263,9 +266,10 @@
     "low": 15129.0,
     "low_date": "2026-11-06"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "mtd": 2521625.0,
    "fytd": 5968950.0
   },
@@ -346,9 +350,10 @@
     "low": 16223.0,
     "low_date": "2026-10-19"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "mtd": 2581996.0,
    "fytd": 6061772.0
   },
@@ -429,9 +434,10 @@
     "low": 1017.0,
     "low_date": "2026-09-14"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "mtd": 2250810.0,
    "fytd": 5249883.0
   },
@@ -512,9 +518,10 @@
     "low": 1086.0,
     "low_date": "2026-09-23"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "mtd": 2110958.0,
    "fytd": 4831047.0
   },
@@ -595,9 +602,10 @@
     "low": 32357574.0,
     "low_date": "2026-09-11"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "debt_intragov": {
    "source_id": "DTS:debt_intragov",
@@ -676,9 +684,10 @@
     "low": 7683805.0,
     "low_date": "2026-09-04"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "debt_total": {
@@ -758,9 +767,10 @@
     "low": 40046179.0,
     "low_date": "2026-09-11"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "debt_limit": {
    "source_id": "DTS:debt_limit",
@@ -839,9 +849,10 @@
     "low": 41103996.0,
     "low_date": "2026-09-04"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "dep_taxes_withheld_individual_fica": {
@@ -921,9 +932,10 @@
     "low": 3070.0,
     "low_date": "2026-10-27"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "deposits",
    "mtd": 201299.0,
    "fytd": 474635.0
@@ -1005,9 +1017,10 @@
     "low": 402.0,
     "low_date": "2026-11-19"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "deposits",
    "mtd": 7944.0,
    "fytd": 45440.0
@@ -1089,9 +1102,10 @@
     "low": 130.0,
     "low_date": "2026-11-09"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "deposits",
    "mtd": 3166.0,
    "fytd": 18115.0
@@ -1173,9 +1187,10 @@
     "low": 54.0,
     "low_date": "2026-11-04"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "deposits",
    "mtd": 3830.0,
    "fytd": 25633.0
@@ -1257,9 +1272,10 @@
     "low": 257.0,
     "low_date": "2026-09-10"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 92,
    "latest_outlier": true,
+   "calendar_status": "fresh",
    "group": "deposits",
    "mtd": 5093.0,
    "fytd": 32187.0
@@ -1341,9 +1357,10 @@
     "low": 12.0,
     "low_date": "2026-11-04"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "deposits",
    "mtd": 2526.0,
    "fytd": 10290.0
@@ -1425,9 +1442,10 @@
     "low": 680.0,
     "low_date": "2026-09-14"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 12520.0,
    "fytd": 69427.0
@@ -1509,9 +1527,10 @@
     "low": 806.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 15602.0,
    "fytd": 97270.0
@@ -1593,9 +1612,10 @@
     "low": 570.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 43067.0,
    "fytd": 105732.0
@@ -1677,9 +1697,10 @@
     "low": 0.0,
     "low_date": "2026-09-08"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 12.0,
    "fytd": 48097.0
@@ -1761,9 +1782,10 @@
     "low": 146.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 32784.0,
    "fytd": 74935.0
@@ -1845,9 +1867,10 @@
     "low": 8.0,
     "low_date": "2026-09-08"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 379.0,
    "fytd": 977.0
@@ -1929,9 +1952,10 @@
     "low": 136.0,
     "low_date": "2026-09-29"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 5363.0,
    "fytd": 12790.0
@@ -2013,9 +2037,10 @@
     "low": 47.0,
     "low_date": "2026-10-23"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 1822.0,
    "fytd": 4449.0
@@ -2097,9 +2122,10 @@
     "low": -15.0,
     "low_date": "2026-11-05"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 8636.0,
    "fytd": 22335.0
@@ -2181,9 +2207,10 @@
     "low": -146.0,
     "low_date": "2026-09-25"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 120957.0,
    "fytd": 132511.0
@@ -2265,9 +2292,10 @@
     "low": -13.0,
     "low_date": "2026-10-29"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 93501.0,
    "fytd": 221792.0
@@ -2349,9 +2377,10 @@
     "low": -1.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "group": "withdrawals",
    "mtd": 312.0,
    "fytd": 11035.0
@@ -2435,9 +2464,10 @@
     "low": 12882.0,
     "low_date": "2026-10-05"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_deposits": {
    "source_id": null,
@@ -2516,9 +2546,10 @@
     "low": 7258.0,
     "low_date": "2026-11-19"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_treasury_flow": {
    "source_id": null,
@@ -2597,9 +2628,10 @@
     "low": -77073.0,
     "low_date": "2026-09-15"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "zscore",
     "levels": {
@@ -2687,9 +2719,10 @@
     "low": 439.7,
     "low_date": "2026-10-19"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ntf_sd_30d": {
    "source_id": null,
@@ -2768,9 +2801,10 @@
     "low": 21476.7,
     "low_date": "2026-10-29"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_treasury_flow_7d": {
    "source_id": null,
@@ -2849,9 +2883,10 @@
     "low": -153269.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "tga_dod": {
    "source_id": null,
@@ -2930,9 +2965,10 @@
     "low": -90347.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -3022,9 +3058,10 @@
     "low": -120333.0,
     "low_date": "2026-09-15"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "badge": "reserves add"
   },
   "debt_total_dod": {
@@ -3104,9 +3141,10 @@
     "low": -69127.0,
     "low_date": "2026-10-30"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_treasury_flow_mtd": {
    "source_id": null,
@@ -3185,9 +3223,10 @@
     "low": -12303.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_spending_mtd": {
    "source_id": null,
@@ -3266,9 +3305,10 @@
     "low": 58061.0,
     "low_date": "2026-11-02"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_deposits_mtd": {
    "source_id": null,
@@ -3347,9 +3387,10 @@
     "low": 30250.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_treasury_flow_fytd": {
    "source_id": null,
@@ -3428,9 +3469,10 @@
     "low": 92316.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_spending_fytd": {
    "source_id": null,
@@ -3509,9 +3551,10 @@
     "low": 122566.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_deposits_fytd": {
    "source_id": null,
@@ -3590,9 +3633,10 @@
     "low": 30250.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "seasonal_flag": {
    "label": "Seasonal flag (DTS Tracker)",
@@ -3678,9 +3722,10 @@
     "low": -57578.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ntf_60d": {
    "source_id": null,
@@ -3759,9 +3804,10 @@
     "low": 381181.0,
     "low_date": "2026-10-27"
    },
-   "age_days": 2,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ntf_fytd_vs_prior_fy": {
    "label": "NTF fiscal-year-to-date vs same point of the prior fiscal year",
