@@ -3,7 +3,7 @@
  "block": "central_bank",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-11-20T17:56:11+00:00",
+ "generated_at": "2026-11-23T02:30:50+00:00",
  "as_of": "2026-11-19",
  "equivalence_quality": "high",
  "equivalence_note": "DAILY current account balances, excess reserves, required reserves and market operations (T+1 final, same-day provisional) plus a full balance sheet every ten days. Closest G8 analogue to the Fed's daily data.",
@@ -18,7 +18,7 @@
  "series": {
   "cab_daily": {
    "source_id": "label:Current account balances (amount outstanding)",
-   "label": "BoJ current account balances — daily",
+   "label": "BoJ current account balances — daily (pata diaria)",
    "usd_analog": "WRESBAL (daily)",
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
@@ -93,9 +93,11 @@
     "low": 4082100.0,
     "low_date": "2026-10-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh",
+   "equivalence_note": "t331u B5: mostrar como pata diaria. No hay un saldo CAB de menor frecuencia; esta es la serie oficial. Cálculo no cambia."
   },
   "reserve_balances_daily": {
    "source_id": "label:Reserve balances held by institutions subject to reserve requirements",
@@ -174,9 +176,10 @@
     "low": 3747800.0,
     "low_date": "2026-11-19"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "excess_reserves_daily": {
    "source_id": "label:Excess reserves",
@@ -255,9 +258,10 @@
     "low": 926100.0,
     "low_date": "2026-09-16"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "equivalence_note": "equals reserve balances once the period requirement is met — use required_reserves_daily_avg as the true denominator"
   },
   "cab_non_reserve_daily": {
@@ -337,9 +341,10 @@
     "low": 294000.0,
     "low_date": "2026-09-18"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "required_reserves_daily_avg": {
@@ -419,9 +424,10 @@
     "low": 134100.0,
     "low_date": "2026-11-06"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "cab_net_change_daily": {
    "source_id": "label:Net change in current account balances",
@@ -500,9 +506,10 @@
     "low": -44900.0,
     "low_date": "2026-10-02"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "banknotes_factor_daily": {
    "source_id": "label:Banknotes (Minus: net issuance)",
@@ -581,9 +588,10 @@
     "low": -1300.0,
     "low_date": "2026-09-17"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ops_subtotal_daily": {
    "source_id": "label:BOJ Loans and Market Operations (excluding the Loan Support Program)",
@@ -662,9 +670,10 @@
     "low": -1600.0,
     "low_date": "2026-11-16"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "jgb_purchases_daily": {
    "source_id": "label:Outright purchases of JGBs",
@@ -746,6 +755,7 @@
    "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "equivalence_note": "no usage on 2026-11-19 (last use 2026-11-12 = 6500.0)"
   },
   "pooled_collateral_ops_daily": {
@@ -808,6 +818,7 @@
    "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "equivalence_note": "repo-like funds supply; nimble response tool for rapid yield rises"
   },
   "clf_loans_daily": {
@@ -837,6 +848,7 @@
    "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "unavailable",
    "equivalence_note": "emergency gauge: > 0 = flag, sustained = stress"
   },
   "slf_daily": {
@@ -916,9 +928,10 @@
     "low": -1600.0,
     "low_date": "2026-11-16"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -1009,9 +1022,10 @@
     "low": 5268300.0,
     "low_date": "2026-10-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true,
    "equivalence_note": "final file only"
   },
@@ -1092,9 +1106,10 @@
     "low": 6246327.1,
     "low_date": "2026-10-10"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "jgb_holdings": {
    "source_id": "Japanese government securities",
@@ -1173,9 +1188,10 @@
     "low": 5036350.0,
     "low_date": "2026-10-10"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "boj_loans": {
    "source_id": "Loans (excluding those to the Deposit Insurance Corporation)",
@@ -1254,9 +1270,10 @@
     "low": 680370.0,
     "low_date": "2026-07-10"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "loan_support_program": {
    "source_id": "Annex 2: Fund-Provisioning Measure to Stimulate Bank Lending",
@@ -1335,9 +1352,10 @@
     "low": 356645.0,
     "low_date": "2026-09-20"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "pooled_collateral_loans": {
    "source_id": "Annex 3: Loans by Funds-Supplying Operations against Pooled Collateral (+disaster +climate)",
@@ -1416,9 +1434,10 @@
     "low": 220441.0,
     "low_date": "2025-06-10"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "foreign_currency_assets": {
    "source_id": "Foreign currency assets",
@@ -1497,9 +1516,10 @@
     "low": 107601.0,
     "low_date": "2025-06-10"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "banknotes": {
@@ -1579,9 +1599,10 @@
     "low": 1139329.0,
     "low_date": "2026-10-20"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "current_deposits": {
    "source_id": "Current deposits",
@@ -1660,9 +1681,10 @@
     "low": 4081617.2,
     "low_date": "2026-10-10"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "equivalence_note": "cross-check of cab_daily on the same date"
   },
   "government_account": {
@@ -1742,9 +1764,10 @@
     "low": 18797.2,
     "low_date": "2025-06-20"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "repos_payable": {
    "source_id": "Payables under repurchase agreements",
@@ -1823,9 +1846,10 @@
     "low": 88559.4,
     "low_date": "2025-06-30"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "policy_rate": {
@@ -1866,9 +1890,10 @@
     "low": -0.15,
     "low_date": "2001-09-19"
    },
-   "age_days": 57,
+   "age_days": 60,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ioer": {
    "source_id": "= policy_rate",
@@ -1908,9 +1933,10 @@
     "low": -0.15,
     "low_date": "2001-09-19"
    },
-   "age_days": 57,
+   "age_days": 60,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "basic_loan_rate": {
    "source_id": "cdab0101.csv last row",
@@ -1950,9 +1976,10 @@
     "low": 0.1,
     "low_date": "2001-09-19"
    },
-   "age_days": 57,
+   "age_days": 60,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "monthly_fiscal_breakdown": {
    "source_id": "MASDM@01,MASDM253,MASDM254,MASDM255,MASDM273,MASDM26,MASDM58,MASDM5F,MASDM51,MASDM@03,MASDM@07,MABCLE16",
@@ -2031,9 +2058,10 @@
     "low": -266325.0,
     "low_date": "2022-09-30"
    },
-   "age_days": 20,
+   "age_days": 23,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "equivalence_note": "attribution of monthly CAB changes; MASDM26 = FX (FEFSA settlement of MoF intervention shows here)"
   },
   "cab_by_sector": {
@@ -2113,9 +2141,10 @@
     "low": 330570.0,
     "low_date": "2022-11-30"
    },
-   "age_days": 51,
+   "age_days": 54,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "equivalence_note": "distribution of excess reserves; foreign banks' share is the funding canary (Gemini/Perplexity/CodeWord)"
   }
  },
@@ -2197,10 +2226,11 @@
     "low": 3613400.0,
     "low_date": "2026-11-19"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "desk definition; the BoJ row 'Excess reserves' is period-based",
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -2286,10 +2316,11 @@
     "low": 26.89,
     "low_date": "2026-11-19"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "ampleness multiple; 28.5x on 2026-09-07 — dead-man switch only, never a scoring driver",
+   "calendar_status": "fresh",
    "in_range": false,
    "above_range": true,
    "thresholds": {
@@ -2379,9 +2410,10 @@
     "low": -44900.0,
     "low_date": "2026-10-02"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {},
@@ -2468,9 +2500,10 @@
     "low": -154900.0,
     "low_date": "2026-09-15"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {},
@@ -2565,10 +2598,11 @@
     "low": 6119014.8,
     "low_date": "2026-10-10"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "kept as the cross-currency analogue; the primary JPY reserves gauge is cab_daily / excess_reserves_daily",
+   "calendar_status": "fresh",
    "display_only": true
   },
   "net_liquidity_change_pct": {
@@ -2648,9 +2682,10 @@
     "low": -2.8365,
     "low_date": "2025-12-31"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "signal": "NEUTRAL"
   },
   "jgb_purchases_month_to_date": {
@@ -2760,9 +2795,10 @@
     "low": -231091.8,
     "low_date": "2025-06-20"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "boj_credit_dependence": {
    "source_id": null,
@@ -2841,10 +2877,11 @@
     "low": 0.1545,
     "low_date": "2026-06-30"
    },
-   "age_days": 10,
+   "age_days": 13,
    "confidence": 100,
    "latest_outlier": false,
    "equivalence_note": "share of reserves supplied by BoJ lending vs outright holdings — analogue of repo_dependence_ratio; 17% on 2026-08-31",
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -2934,9 +2971,10 @@
     "low": -1300.0,
     "low_date": "2026-09-17"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "balance_sheet_phase": {
    "label": "Balance-sheet phase",
@@ -3023,9 +3061,10 @@
     "low": -1600.0,
     "low_date": "2026-11-16"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 85,
-   "latest_outlier": true
+   "latest_outlier": true,
+   "calendar_status": "fresh"
   },
   "jgb_purch_v04": {
    "source_id": "boj:juq jx/jd",
@@ -3104,9 +3143,10 @@
     "low": 3700.0,
     "low_date": "2026-10-19"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "banknotes_v04": {
    "source_id": "boj:juq jx/jd",
@@ -3185,9 +3225,10 @@
     "low": -1300.0,
     "low_date": "2026-09-17"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_change_v04": {
    "source_id": "boj:juq jx/jd",
@@ -3266,9 +3307,10 @@
     "low": -44900.0,
     "low_date": "2026-10-02"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "cab_v04": {
    "source_id": "boj:juq jx/jd",
@@ -3347,9 +3389,10 @@
     "low": 4082100.0,
     "low_date": "2026-10-09"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "jgb_purch_settled": {
    "source_id": "boj:ope XLSX by operation",
@@ -3428,9 +3471,10 @@
     "low": 4256.0,
     "low_date": "2026-07-30"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ops_net_daily": {
    "source_id": "boj:ope XLSX by operation",
@@ -3439,18 +3483,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 6717.0,
-   "date": "2026-11-20",
-   "prev_value": 84.0,
-   "prev_date": "2026-11-19",
-   "change_abs": 6633.0,
-   "change_pct": 7896.4286,
-   "zscore": 2.4723,
+   "value": 0.0,
+   "date": "2026-11-23",
+   "prev_value": 6717.0,
+   "prev_date": "2026-11-20",
+   "change_abs": -6717.0,
+   "change_pct": -100.0,
+   "zscore": -0.2638,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    7405.0,
     351.0,
     159.0,
     -289.0,
@@ -3501,17 +3544,19 @@
     1279.0,
     738.0,
     84.0,
-    6717.0
+    6717.0,
+    0.0
    ],
    "high_low": {
-    "high": 7405.0,
-    "high_date": "2026-09-10",
+    "high": 7160.0,
+    "high_date": "2026-09-17",
     "low": -8060.0,
     "low_date": "2026-10-14"
    },
    "age_days": 0,
-   "confidence": 85,
-   "latest_outlier": true
+   "confidence": 100,
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "slf_out": {
    "source_id": "boj:ope XLSX by operation",
@@ -3590,9 +3635,10 @@
     "low": -2101.0,
     "low_date": "2026-11-16"
    },
-   "age_days": 2,
+   "age_days": 5,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "pooled_supplied": {
    "source_id": "boj:ope XLSX by operation",
@@ -3645,9 +3691,10 @@
     "low": 8000.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 51,
+   "age_days": 54,
    "confidence": 70,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "jgb_purch_upto1y": {
    "source_id": "boj:ope XLSX by operation",
@@ -3688,9 +3735,10 @@
     "low": 1000.0,
     "low_date": "2026-04-06"
    },
-   "age_days": 15,
+   "age_days": 18,
    "confidence": 70,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "jgb_purch_1to3y": {
    "source_id": "boj:ope XLSX by operation",
@@ -3753,9 +3801,10 @@
     "low": 2551.0,
     "low_date": "2026-04-09"
    },
-   "age_days": 15,
+   "age_days": 18,
    "confidence": 70,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "jgb_purch_3to5y": {
    "source_id": "boj:ope XLSX by operation",
@@ -3818,9 +3867,10 @@
     "low": 2301.0,
     "low_date": "2026-05-29"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "jgb_purch_5to10y": {
    "source_id": "boj:ope XLSX by operation",
@@ -3883,9 +3933,10 @@
     "low": 2402.0,
     "low_date": "2026-05-18"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "jgb_purch_10to25y": {
    "source_id": "boj:ope XLSX by operation",
@@ -3947,9 +3998,10 @@
     "low": 801.0,
     "low_date": "2026-04-06"
    },
-   "age_days": 32,
+   "age_days": 35,
    "confidence": 70,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "jgb_purch_over25y": {
    "source_id": "boj:ope XLSX by operation",
@@ -4004,9 +4056,10 @@
     "low": 750.0,
     "low_date": "2025-10-17"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "jgb_purch_iib": {
    "source_id": "boj:ope XLSX by operation",
@@ -4046,9 +4099,10 @@
     "low": 300.0,
     "low_date": "2026-07-30"
    },
-   "age_days": 22,
+   "age_days": 25,
    "confidence": 70,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "jgb_purch_face_minus_cash": {
    "source_id": "derived",
@@ -4127,10 +4181,11 @@
     "low": 152.0,
     "low_date": "2026-11-05"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "the reserve flow is the cash line; face is what the market delivered (7,659 vs 7,200 on 2026-09-10)"
+   "equivalence_note": "the reserve flow is the cash line; face is what the market delivered (7,659 vs 7,200 on 2026-09-10)",
+   "calendar_status": "fresh"
   },
   "ops_net_5d": {
    "source_id": "derived",
@@ -4139,18 +4194,17 @@
    "unit": "JPY 100m (display: tn = 10^12)",
    "frequency": "daily",
    "status": "fresh",
-   "value": 7120.0,
-   "date": "2026-11-20",
-   "prev_value": 838.0,
-   "prev_date": "2026-11-19",
-   "change_abs": 6282.0,
-   "change_pct": 749.642,
-   "zscore": 0.8169,
+   "value": 8818.0,
+   "date": "2026-11-23",
+   "prev_value": 7120.0,
+   "prev_date": "2026-11-20",
+   "change_abs": 1698.0,
+   "change_pct": 23.8483,
+   "zscore": 1.1381,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    7803.0,
     7652.0,
     8684.0,
     7642.0,
@@ -4201,7 +4255,8 @@
     -693.0,
     -84.0,
     838.0,
-    7120.0
+    7120.0,
+    8818.0
    ],
    "high_low": {
     "high": 11758.0,
@@ -4211,23 +4266,24 @@
    },
    "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ops_calendar_next_4w": {
    "label": "Operation end dates next 4 weeks (− repayments of funds-supplying ops, + SLF repurchases)",
    "value": null,
    "unit": "JPY 100m (display: tn = 10^12)",
    "status": "unavailable",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": []
   },
   "ops_data_cut": {
    "label": "Last operations file parsed",
-   "value": 0,
+   "value": 3,
    "cut_date": "2026-11-20",
    "status": "fresh",
-   "date": "2026-11-20",
-   "note": "ope files: 277; daily files: 277"
+   "date": "2026-11-23",
+   "note": "ope files: 277; daily files: 278"
   }
  },
  "signals": {
@@ -4314,7 +4370,7 @@
    "mode": "mean2",
    "level_weight": 1.0,
    "flow": {
-    "ops_net_5d_pct": 0.1736,
+    "ops_net_5d_pct": 0.215,
     "ops_cash_5d_pct": 0.1585,
     "cab_20d_level": 0.25,
     "cab_dod_level": 0.0,
@@ -4326,8 +4382,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.23,
-   "score_flows_only": 0.23,
+   "score_v02": 0.25,
+   "score_flows_only": 0.25,
    "note": "shadow (J4): operations by operation (face) + 金融調節 cash line, 5 sessions in % of 当座預金残高; cuts by the v0.4 replay"
   }
  },
