@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-20T21:53:24+00:00",
+ "generated_at": "2026-11-23T08:47:37+00:00",
  "as_of": "2026-11-17",
  "equivalence_quality": "medium-low",
  "equivalence_note": "No single treasury and no daily cash statement. Aggregate central government deposits at the Eurosystem (weekly WFS) are the TGA analog (small: 89bn, most governments hold cash outside the Eurosystem); Δ = drain/injection into excess liquidity. Issuance from the four big DMOs is the supply-side view; TARGET balances (monthly) measure fragmentation. Weighted low by construction.",
@@ -12,7 +12,9 @@
   "series_loaded": 14,
   "series_expected": 13,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
+  ],
   "series_pending": 1
  },
  "series": {
@@ -88,9 +90,10 @@
     "low": 86116.0,
     "low_date": "2026-11-13"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "govt_debt_held": {
    "source_id": "ILM.W.U2.C.A080000.U2.EUR",
@@ -169,9 +172,10 @@
     "low": 19697.0,
     "low_date": "2026-10-02"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "target_de": {
@@ -251,9 +255,10 @@
     "low": 1004295.6,
     "low_date": "2026-09-01"
    },
-   "age_days": 80,
+   "age_days": 83,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "target_it": {
    "source_id": "TGB.M.IT.N.A094T.U2.EUR.E",
@@ -332,9 +337,10 @@
     "low": -714932.27,
     "low_date": "2022-09-01"
    },
-   "age_days": 80,
+   "age_days": 83,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "target_es": {
    "source_id": "TGB.M.ES.N.A094T.U2.EUR.E",
@@ -413,9 +419,10 @@
     "low": -516052.52,
     "low_date": "2022-06-01"
    },
-   "age_days": 80,
+   "age_days": 83,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "target_fr": {
    "source_id": "TGB.M.FR.N.A094T.U2.EUR.E",
@@ -494,9 +501,10 @@
     "low": -240108.41,
     "low_date": "2025-10-01"
    },
-   "age_days": 80,
+   "age_days": 83,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "de_auction_bid_to_cover": {
    "source_id": "DE:bid_to_cover",
@@ -575,9 +583,10 @@
     "low": 1.0,
     "low_date": "2026-07-08"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "badge": "NORMAL",
    "avg_26": 1.56
   },
@@ -658,9 +667,10 @@
     "low": 2.352,
     "low_date": "2026-07-06"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "de_auction_retention": {
    "source_id": "DE:retention",
@@ -739,9 +749,10 @@
     "low": 8.0,
     "low_date": "2026-10-20"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "fr_it_es_eu_issuance": {
    "source_id": "ops_eur:DE+FR+ES+IT+EU",
@@ -820,9 +831,10 @@
     "low": -23181.16,
     "low_date": "2026-09-22"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ea_deficit_gdp": {
    "source_id": "GFS.Q.N.I9.W0.S13.S1._Z.B.B9._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T",
@@ -896,9 +908,10 @@
     "low": -8.014,
     "low_date": "2021-01-01"
    },
-   "age_days": 233,
+   "age_days": 236,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "ea_primary_deficit_gdp": {
    "source_id": "GFS.Q.N.I9.W0.S13.S1._Z.B.B9P._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T",
@@ -972,9 +985,10 @@
     "low": -6.5054,
     "low_date": "2021-01-01"
    },
-   "age_days": 233,
+   "age_days": 236,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "de_auction_volume": {
    "source_id": "DE:volume",
@@ -1053,9 +1067,10 @@
     "low": 1000.0,
     "low_date": "2026-10-20"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "other_ea_liabilities": {
@@ -1135,9 +1150,10 @@
     "low": 178625.0,
     "low_date": "2026-08-21"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true,
    "equivalence_note": "the government-deposit breakdown L050100 exists on the portal only since 2025-W45 (verified 2026-09-09); L050000 since 2015 gives the long-run scale (181,821 on 2026-W36 = 89,275 + 92,546)"
   }
@@ -1214,9 +1230,10 @@
     "low": -43775.0,
     "low_date": "2026-11-06"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -1298,9 +1315,10 @@
     "low": -33429.0,
     "low_date": "2026-10-30"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {},
@@ -1371,9 +1389,10 @@
     "low": -31678.0,
     "low_date": "2026-10-30"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "target_fragmentation": {
    "source_id": null,
@@ -1452,9 +1471,10 @@
     "low": -122321.9,
     "low_date": "2023-12-01"
    },
-   "age_days": 80,
+   "age_days": 83,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -1544,9 +1564,10 @@
     "low": 931512.4,
     "low_date": "2025-12-01"
    },
-   "age_days": 80,
+   "age_days": 83,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "de_supply_4w": {
    "source_id": null,
@@ -1625,9 +1646,10 @@
     "low": 34000.0,
     "low_date": "2026-07-01"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "de_bills_bid_to_cover": {
    "source_id": null,
@@ -1687,9 +1709,10 @@
     "low": 1.064,
     "low_date": "2026-11-16"
    },
-   "age_days": 4,
+   "age_days": 7,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "de_bonds_bid_to_cover": {
    "source_id": null,
@@ -1768,9 +1791,10 @@
     "low": 1.0,
     "low_date": "2026-07-08"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "fiscal_stance_structural": {
    "label": "Euro-area general government balance (% GDP, GFS quarterly) — structural stance",
@@ -1882,10 +1906,11 @@
     "low": -23181.16,
     "low_date": "2026-09-22"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "round 3: EU auctions + syndications from the Commission Qlik app (Date of settlement per operation); ESM bills via Bundesbank PDFs (value date); ESM/EFSF bond syndications NOT in the flow (settlement not published in the CSV) — calendar only"
+   "equivalence_note": "round 3: EU auctions + syndications from the Commission Qlik app (Date of settlement per operation); ESM bills via Bundesbank PDFs (value date); ESM/EFSF bond syndications NOT in the flow (settlement not published in the CSV) — calendar only",
+   "calendar_status": "fresh"
   },
   "bills_matured_all": {
    "source_id": "derived (ops_eur)",
@@ -1964,9 +1989,10 @@
     "low": 1043.0,
     "low_date": "2026-07-23"
    },
-   "age_days": 2,
+   "age_days": 5,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "bond_redeemed_all": {
    "source_id": "derived (ops_eur)",
@@ -2045,9 +2071,10 @@
     "low": 2200.0,
     "low_date": "2026-10-22"
    },
-   "age_days": 18,
+   "age_days": 21,
    "confidence": 70,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "coupons_paid_all": {
    "source_id": "derived (ops_eur)",
@@ -2056,18 +2083,17 @@
    "unit": "EUR millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 9.995,
-   "date": "2026-11-17",
-   "prev_value": 3613.435,
-   "prev_date": "2026-11-16",
-   "change_abs": -3603.44,
-   "change_pct": -99.7234,
-   "zscore": -0.7335,
+   "value": 95.956,
+   "date": "2026-11-23",
+   "prev_value": 9.995,
+   "prev_date": "2026-11-17",
+   "change_abs": 85.961,
+   "change_pct": 860.04,
+   "zscore": -0.6897,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    22.251,
     17.735,
     95.956,
     17065.771,
@@ -2118,7 +2144,8 @@
     979.041,
     546.722,
     3613.435,
-    9.995
+    9.995,
+    95.956
    ],
    "high_low": {
     "high": 17065.771,
@@ -2126,9 +2153,10 @@
     "low": 5.5,
     "low_date": "2026-10-22"
    },
-   "age_days": 3,
+   "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "settled_DE": {
    "source_id": "ops_eur:DE",
@@ -2207,10 +2235,11 @@
     "low": -5340.099,
     "low_date": "2026-09-16"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-11-20"
+   "equivalence_note": "last record 2026-11-20",
+   "calendar_status": "fresh"
   },
   "settled_FR": {
    "source_id": "ops_eur:FR",
@@ -2289,10 +2318,11 @@
     "low": -22186.689,
     "low_date": "2026-10-05"
    },
-   "age_days": 30,
+   "age_days": 33,
    "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-10-21"
+   "equivalence_note": "last record 2026-10-21",
+   "calendar_status": "stale"
   },
   "settled_ES": {
    "source_id": "ops_eur:ES",
@@ -2371,10 +2401,11 @@
     "low": -8633.44,
     "low_date": "2026-01-13"
    },
-   "age_days": 42,
+   "age_days": 45,
    "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-10-09"
+   "equivalence_note": "last record 2026-10-09",
+   "calendar_status": "stale"
   },
   "settled_IT": {
    "source_id": "ops_eur:IT",
@@ -2382,7 +2413,7 @@
    "usd_analog": null,
    "unit": "EUR millions",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -7009.359,
    "date": "2026-11-16",
    "prev_value": -8280.406,
@@ -2453,10 +2484,11 @@
     "low": -12283.149,
     "low_date": "2026-06-01"
    },
-   "age_days": 4,
-   "confidence": 100,
+   "age_days": 7,
+   "confidence": 85,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-11-16"
+   "equivalence_note": "last record 2026-11-16",
+   "calendar_status": "stale"
   },
   "settled_EU": {
    "source_id": "ops_eur:EU",
@@ -2535,10 +2567,11 @@
     "low": -13929.134,
     "low_date": "2026-01-28"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "last record 2026-11-20"
+   "equivalence_note": "last record 2026-11-20",
+   "calendar_status": "fresh"
   },
   "settled_ESM": {
    "source_id": "ops_eur:ESM",
@@ -2617,10 +2650,11 @@
     "low": -2037.53,
     "low_date": "2026-10-08"
    },
-   "age_days": 15,
+   "age_days": 18,
    "confidence": 55,
    "latest_outlier": true,
-   "equivalence_note": "last record 2026-11-05"
+   "equivalence_note": "last record 2026-11-05",
+   "calendar_status": "stale"
   },
   "issued_gross": {
    "source_id": "derived",
@@ -2629,18 +2663,17 @@
    "unit": "EUR millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 7565.128,
-   "date": "2026-11-20",
-   "prev_value": 3798.832,
-   "prev_date": "2026-11-19",
-   "change_abs": 3766.296,
-   "change_pct": 99.1435,
-   "zscore": 0.4529,
+   "value": 0.0,
+   "date": "2026-11-23",
+   "prev_value": 7565.128,
+   "prev_date": "2026-11-20",
+   "change_abs": -7565.128,
+   "change_pct": -100.0,
+   "zscore": -1.1067,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1263.15,
     5509.798,
     8767.905,
     7239.618,
@@ -2691,7 +2724,8 @@
     8000.0,
     4600.487,
     3798.832,
-    7565.128
+    7565.128,
+    0.0
    ],
    "high_low": {
     "high": 23181.16,
@@ -2701,7 +2735,8 @@
    },
    "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "redeemed_gross": {
    "source_id": "derived",
@@ -2710,18 +2745,17 @@
    "unit": "EUR millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 0.0,
-   "date": "2026-11-20",
+   "value": 95.956,
+   "date": "2026-11-23",
    "prev_value": 0.0,
-   "prev_date": "2026-11-19",
-   "change_abs": 0.0,
+   "prev_date": "2026-11-20",
+   "change_abs": 95.956,
    "change_pct": null,
-   "zscore": -0.6036,
+   "zscore": -0.567,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    105.447,
     0.0,
     9321.166,
     29741.239,
@@ -2772,7 +2806,8 @@
     9.995,
     19100.25,
     0.0,
-    0.0
+    0.0,
+    95.956
    ],
    "high_low": {
     "high": 41811.312,
@@ -2782,7 +2817,8 @@
    },
    "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_issuance_private_daily": {
    "source_id": "derived",
@@ -2791,18 +2827,17 @@
    "unit": "EUR millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": -7565.128,
-   "date": "2026-11-20",
-   "prev_value": -3798.832,
-   "prev_date": "2026-11-19",
-   "change_abs": -3766.296,
-   "change_pct": -99.1435,
-   "zscore": -0.8896,
+   "value": 95.956,
+   "date": "2026-11-23",
+   "prev_value": -7565.128,
+   "prev_date": "2026-11-20",
+   "change_abs": 7661.084,
+   "change_pct": 101.2684,
+   "zscore": 0.0065,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -1157.703,
     -5509.798,
     553.261,
     22501.621,
@@ -2853,7 +2888,8 @@
     -7990.005,
     14499.763,
     -3798.832,
-    -7565.128
+    -7565.128,
+    95.956
    ],
    "high_low": {
     "high": 34215.994,
@@ -2863,7 +2899,8 @@
    },
    "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "net_issuance_private_5d": {
    "source_id": "derived",
@@ -2872,18 +2909,17 @@
    "unit": "EUR millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": -8250.126,
-   "date": "2026-11-20",
-   "prev_value": -2219.667,
-   "prev_date": "2026-11-19",
-   "change_abs": -6030.459,
-   "change_pct": -271.683,
-   "zscore": -0.6657,
+   "value": -4758.246,
+   "date": "2026-11-23",
+   "prev_value": -8250.126,
+   "prev_date": "2026-11-20",
+   "change_abs": 3491.88,
+   "change_pct": 42.3252,
+   "zscore": -0.4485,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -21576.109,
     -30287.957,
     -14630.898,
     14571.363,
@@ -2934,7 +2970,8 @@
     -9077.973,
     1579.165,
     -2219.667,
-    -8250.126
+    -8250.126,
+    -4758.246
    ],
    "high_low": {
     "high": 43146.159,
@@ -2945,7 +2982,8 @@
    "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "E2: − auctions settled + bill maturities + bond redemptions + coupons (DE + EU gross; FR/ES/IT/ESM bonds one-sided — no per-line outstanding source)"
+   "equivalence_note": "E2: − auctions settled + bill maturities + bond redemptions + coupons (DE + EU gross; FR/ES/IT/ESM bonds one-sided — no per-line outstanding source)",
+   "calendar_status": "fresh"
   },
   "net_issuance_private_weekly": {
    "source_id": "derived",
@@ -3018,9 +3056,10 @@
     "low": -47482.041,
     "low_date": "2026-06-26"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "fiscal_impulse_v04_weekly": {
    "source_id": "derived",
@@ -3093,17 +3132,18 @@
     "low": -62511.049,
     "low_date": "2026-05-01"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "E3: income channel; L050100 exists only since 2025-W45 → short history until the replay"
+   "equivalence_note": "E3: income channel; L050100 exists only since 2025-W45 → short history until the replay",
+   "calendar_status": "fresh"
   },
   "settlements_ahead": {
    "label": "Auction settlements ahead (scheduled drain; results published, not yet settled)",
    "value": null,
    "unit": "EUR millions",
    "status": "unavailable",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": []
   },
   "bill_maturities_next_4w": {
@@ -3111,7 +3151,7 @@
    "value": 77961.902,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
     [
      "2026-11-25",
@@ -3149,15 +3189,11 @@
   },
   "de_supply_next_4w": {
    "label": "German supply next 4 weeks (issuance outlook; value date = auction + 2)",
-   "value": 26500.0,
+   "value": 20500.0,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
-    [
-     "2026-11-25",
-     6000.0
-    ],
     [
      "2026-11-27",
      5000.0
@@ -3186,7 +3222,7 @@
    "value": 339750.0,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
     [
      "2026-12-09",
@@ -3219,7 +3255,7 @@
    "value": 1130.0,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
     [
      "2026-12-10",
@@ -3261,9 +3297,10 @@
     "low": 2115300.0,
     "low_date": "2026-10-31"
    },
-   "age_days": 20,
+   "age_days": 23,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "tender_coverage_all": {
    "source_id": "derived",
@@ -3342,9 +3379,10 @@
     "low": 1.05,
     "low_date": "2026-11-16"
    },
-   "age_days": 2,
+   "age_days": 5,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "coverage_FR": {
    "source_id": "ops_eur:FR",
@@ -3423,9 +3461,10 @@
     "low": 1.985,
     "low_date": "2026-05-07"
    },
-   "age_days": 32,
+   "age_days": 35,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "coverage_DE": {
    "source_id": "ops_eur:DE",
@@ -3504,9 +3543,10 @@
     "low": 1.0,
     "low_date": "2026-07-08"
    },
-   "age_days": 2,
+   "age_days": 5,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "coverage_ESM": {
    "source_id": "ops_eur:ESM",
@@ -3585,9 +3625,10 @@
     "low": 1.7,
     "low_date": "2026-10-06"
    },
-   "age_days": 17,
+   "age_days": 20,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "coverage_EU": {
    "source_id": "ops_eur:EU",
@@ -3666,9 +3707,10 @@
     "low": 1.16,
     "low_date": "2026-05-18"
    },
-   "age_days": 2,
+   "age_days": 5,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "coverage_ES": {
    "source_id": "ops_eur:ES",
@@ -3747,9 +3789,10 @@
     "low": 1.415,
     "low_date": "2026-04-07"
    },
-   "age_days": 45,
+   "age_days": 48,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "coverage_IT": {
    "source_id": "ops_eur:IT",
@@ -3828,15 +3871,16 @@
     "low": 1.43,
     "low_date": "2026-02-11"
    },
-   "age_days": 8,
+   "age_days": 11,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "gfs_context": {
    "label": "GFS.Q structural deficit (quarterly) → context in v0.4",
    "value": null,
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "note": "E1: the quarterly deficit leaves the Treasury regime in the replay; weekly net issuance + −ΔL050100 take its place"
   },
   "eu_redemptions_gross_next_12m": {
@@ -3844,7 +3888,7 @@
    "value": 75334.0,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
     [
      "2026-12-04",
@@ -3878,7 +3922,7 @@
    "value": 6170.656,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
     [
      "2026-12-04",
@@ -3928,16 +3972,17 @@
     "low": 874317.0,
     "low_date": "2026-11-18"
    },
-   "age_days": 2,
+   "age_days": 5,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "esm_redemptions_next_12m": {
    "label": "ESM/EFSF redemptions next 12 months — EUR issues (outstanding list)",
    "value": 35651.75,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
     [
      "2026-12-03",
@@ -3971,7 +4016,7 @@
    "value": 287.125,
    "unit": "EUR millions",
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "calendar": [
     [
      "2026-12-01",
@@ -3999,7 +4044,7 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 253451.75,
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "prev_value": null,
    "prev_date": null,
    "change_abs": null,
@@ -4013,19 +4058,20 @@
    ],
    "high_low": {
     "high": 253451.75,
-    "high_date": "2026-11-20",
+    "high_date": "2026-11-23",
     "low": 253451.75,
-    "low_date": "2026-11-20"
+    "low_date": "2026-11-23"
    },
    "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "esm_bills_note": {
    "label": "ESM bill auctions (Bundesbank EBS)",
    "value": null,
    "status": "fresh",
-   "date": "2026-11-20",
+   "date": "2026-11-23",
    "note": "336 bill records (0 new); outstanding list 116 issues"
   }
  },

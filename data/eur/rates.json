@@ -3,8 +3,8 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-20T21:53:24+00:00",
- "as_of": "2026-11-20",
+ "generated_at": "2026-11-23T08:47:37+00:00",
+ "as_of": "2026-11-23",
  "equivalence_quality": "high",
  "equivalence_note": "€STR (08:00 CET T+1) is the floor test: trades 5–10 bp below the DFR with abundant excess liquidity and should drift toward the DFR as liquidity falls (ECB Mar-2024 framework). STRESS SPREAD = €STR − DFR. Daily periphery premium = all-euro-area 10Y − AAA 10Y (verified 42 bp); country spreads monthly (IRS) until daily national yields are wired (Phase 3).",
  "source_health": {
@@ -12,7 +12,9 @@
   "series_loaded": 18,
   "series_expected": 18,
   "last_fetch_ok": true,
-  "errors": [],
+  "errors": [
+   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
+  ],
   "series_pending": 0
  },
  "series": {
@@ -23,18 +25,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 2.441,
-   "date": "2026-11-19",
-   "prev_value": 2.442,
-   "prev_date": "2026-11-18",
-   "change_abs": -0.001,
-   "change_pct": -0.041,
-   "zscore": 0.232,
+   "value": 2.444,
+   "date": "2026-11-20",
+   "prev_value": 2.441,
+   "prev_date": "2026-11-19",
+   "change_abs": 0.003,
+   "change_pct": 0.1229,
+   "zscore": 1.9612,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.189,
     2.19,
     2.189,
     2.19,
@@ -85,18 +86,20 @@
     2.44,
     2.441,
     2.442,
-    2.441
+    2.441,
+    2.444
    ],
    "high_low": {
     "high": 2.445,
     "high_date": "2026-11-03",
     "low": 2.189,
-    "low_date": "2026-09-09"
+    "low_date": "2026-09-11"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
-   "change_bps": -0.1
+   "calendar_status": "fresh",
+   "change_bps": 0.3
   },
   "estr_volume": {
    "source_id": "EST.B.EU000A2X2A25.TT",
@@ -105,18 +108,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 57735.0,
-   "date": "2026-11-19",
-   "prev_value": 60997.0,
-   "prev_date": "2026-11-18",
-   "change_abs": -3262.0,
-   "change_pct": -5.3478,
-   "zscore": -1.4312,
+   "value": 57757.0,
+   "date": "2026-11-20",
+   "prev_value": 57735.0,
+   "prev_date": "2026-11-19",
+   "change_abs": 22.0,
+   "change_pct": 0.0381,
+   "zscore": -1.3274,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    67035.0,
     65969.0,
     66523.0,
     68917.0,
@@ -167,7 +169,8 @@
     60542.0,
     63332.0,
     60997.0,
-    57735.0
+    57735.0,
+    57757.0
    ],
    "high_low": {
     "high": 73354.0,
@@ -175,9 +178,10 @@
     "low": 50848.0,
     "low_date": "2026-10-30"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "estr_r25": {
    "source_id": "EST.B.EU000A2X2A25.R25",
@@ -187,9 +191,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 2.41,
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "prev_value": 2.41,
-   "prev_date": "2026-11-18",
+   "prev_date": "2026-11-19",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": -0.2673,
@@ -201,7 +205,6 @@
     2.16,
     2.16,
     2.16,
-    2.16,
     2.41,
     2.41,
     2.41,
@@ -245,6 +248,7 @@
     2.4,
     2.41,
     2.4,
+    2.41,
     2.41,
     2.41,
     2.41,
@@ -254,11 +258,12 @@
     "high": 2.42,
     "high_date": "2026-10-01",
     "low": 2.16,
-    "low_date": "2026-09-09"
+    "low_date": "2026-09-10"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "estr_r75": {
@@ -269,17 +274,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 2.46,
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "prev_value": 2.46,
-   "prev_date": "2026-11-18",
+   "prev_date": "2026-11-19",
    "change_abs": 0.0,
    "change_pct": 0.0,
-   "zscore": 1.2247,
+   "zscore": 1.1435,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.2,
     2.2,
     2.2,
     2.2,
@@ -318,6 +322,7 @@
     2.45,
     2.45,
     2.45,
+    2.46,
     2.46,
     2.46,
     2.46,
@@ -336,11 +341,12 @@
     "high": 2.46,
     "high_date": "2026-10-01",
     "low": 2.2,
-    "low_date": "2026-09-09"
+    "low_date": "2026-09-10"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "estr_banks": {
@@ -350,18 +356,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 47.0,
-   "date": "2026-11-19",
+   "value": 48.0,
+   "date": "2026-11-20",
    "prev_value": 47.0,
-   "prev_date": "2026-11-18",
-   "change_abs": 0.0,
-   "change_pct": 0.0,
-   "zscore": -0.4109,
+   "prev_date": "2026-11-19",
+   "change_abs": 1.0,
+   "change_pct": 2.1277,
+   "zscore": 0.5373,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    47.0,
     45.0,
     47.0,
     47.0,
@@ -412,7 +417,8 @@
     48.0,
     48.0,
     47.0,
-    47.0
+    47.0,
+    48.0
    ],
    "high_low": {
     "high": 49.0,
@@ -420,9 +426,10 @@
     "low": 45.0,
     "low_date": "2026-09-10"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   },
   "estr_3m_compounded": {
@@ -432,18 +439,17 @@
    "unit": "percent",
    "frequency": "daily",
    "status": "fresh",
-   "value": 2.3735,
-   "date": "2026-11-20",
-   "prev_value": 2.37074,
-   "prev_date": "2026-11-19",
-   "change_abs": 0.0028,
-   "change_pct": 0.1164,
-   "zscore": 1.7304,
+   "value": 2.37802,
+   "date": "2026-11-23",
+   "prev_value": 2.3735,
+   "prev_date": "2026-11-20",
+   "change_abs": 0.0045,
+   "change_pct": 0.1904,
+   "zscore": 1.7603,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.17168,
     2.17452,
     2.17784,
     2.18581,
@@ -494,17 +500,19 @@
     2.36518,
     2.36796,
     2.37074,
-    2.3735
+    2.3735,
+    2.37802
    ],
    "high_low": {
-    "high": 2.3735,
-    "high_date": "2026-11-20",
-    "low": 2.17168,
-    "low_date": "2026-09-10"
+    "high": 2.37802,
+    "high_date": "2026-11-23",
+    "low": 2.17452,
+    "low_date": "2026-09-11"
    },
    "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "dfr": {
    "source_id": "FM.B.U2.EUR.4F.KR.DFR.LEV",
@@ -552,9 +560,10 @@
     "low": -0.5,
     "low_date": "2019-09-18"
    },
-   "age_days": 65,
+   "age_days": 68,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "effective_since": "2026-09-16",
    "equivalence_note": "step series: published on change dates only (FM); level in force since effective_since"
   },
@@ -604,9 +613,10 @@
     "low": 0.0,
     "low_date": "2019-09-18"
    },
-   "age_days": 65,
+   "age_days": 68,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "effective_since": "2026-09-16",
    "equivalence_note": "step series: published on change dates only (FM); level in force since effective_since"
   },
@@ -656,9 +666,10 @@
     "low": 0.25,
     "low_date": "2019-09-18"
    },
-   "age_days": 65,
+   "age_days": 68,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "effective_since": "2026-09-16",
    "equivalence_note": "step series: published on change dates only (FM); level in force since effective_since"
   },
@@ -739,9 +750,10 @@
     "low": 2.930495511,
     "low_date": "2026-11-06"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "change_bps": 3.9
   },
   "aaa_10y": {
@@ -821,9 +833,10 @@
     "low": 3.2719578055,
     "low_date": "2026-11-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "change_bps": 3.1
   },
   "all_10y": {
@@ -903,9 +916,10 @@
     "low": 3.857746608,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "change_bps": 3.5
   },
   "de_10y_m": {
@@ -985,9 +999,10 @@
     "low": 1.033,
     "low_date": "2022-08-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "fr_10y_m": {
    "source_id": "IRS.M.FR.L.L40.CI.0000.EUR.N.Z",
@@ -1066,9 +1081,10 @@
     "low": 1.69,
     "low_date": "2022-08-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 85,
-   "latest_outlier": true
+   "latest_outlier": true,
+   "calendar_status": "fresh"
   },
   "it_10y_m": {
    "source_id": "IRS.M.IT.L.L40.CI.0000.EUR.N.Z",
@@ -1147,9 +1163,10 @@
     "low": 3.297,
     "low_date": "2022-08-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 85,
-   "latest_outlier": true
+   "latest_outlier": true,
+   "calendar_status": "fresh"
   },
   "es_10y_m": {
    "source_id": "IRS.M.ES.L.L40.CI.0000.EUR.N.Z",
@@ -1228,9 +1245,10 @@
     "low": 2.146,
     "low_date": "2022-08-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 92,
-   "latest_outlier": true
+   "latest_outlier": true,
+   "calendar_status": "fresh"
   },
   "euribor_3m_m": {
    "source_id": "FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA",
@@ -1309,9 +1327,10 @@
     "low": 0.036619,
     "low_date": "2022-07-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "equivalence_note": "no public daily feed on the ECB portal (EMMI delayed) — Phase 3"
   },
   "eurusd": {
@@ -1391,9 +1410,10 @@
     "low": 1.0968,
     "low_date": "2026-11-18"
    },
-   "age_days": 0,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   }
  },
@@ -1405,18 +1425,17 @@
    "unit": "bps",
    "frequency": "daily",
    "status": "fresh",
-   "value": -5.9,
-   "date": "2026-11-19",
-   "prev_value": -5.8,
-   "prev_date": "2026-11-18",
-   "change_abs": -0.1,
-   "change_pct": -1.7241,
-   "zscore": 0.232,
+   "value": -5.6,
+   "date": "2026-11-20",
+   "prev_value": -5.9,
+   "prev_date": "2026-11-19",
+   "change_abs": 0.3,
+   "change_pct": 5.0847,
+   "zscore": 1.9612,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -6.1,
     -6.0,
     -6.1,
     -6.0,
@@ -1467,7 +1486,8 @@
     -6.0,
     -5.9,
     -5.8,
-    -5.9
+    -5.9,
+    -5.6
    ],
    "high_low": {
     "high": -5.5,
@@ -1475,9 +1495,10 @@
     "low": -6.3,
     "low_date": "2026-09-30"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -1500,7 +1521,7 @@
    "label": "€STR − DFR ≥ WATCH on the latest print and ≥ 1 of the 2 prior sessions",
    "value": false,
    "status": "fresh",
-   "date": "2026-11-19"
+   "date": "2026-11-20"
   },
   "estr_dispersion_bps": {
    "source_id": null,
@@ -1510,13 +1531,13 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 5.0,
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "prev_value": 5.0,
-   "prev_date": "2026-11-18",
+   "prev_date": "2026-11-19",
    "change_abs": 0.0,
    "change_pct": 0.0,
-   "zscore": 1.0084,
-   "percentile": 84.1,
+   "zscore": 0.9497,
+   "percentile": 84.23,
    "window": "156w",
    "level": "SAFE",
    "sparkline": [
@@ -1534,7 +1555,6 @@
     4.0,
     4.0,
     4.0,
-    4.0,
     5.0,
     4.0,
     4.0,
@@ -1568,6 +1588,7 @@
     6.0,
     5.0,
     6.0,
+    5.0,
     5.0,
     5.0,
     5.0,
@@ -1579,9 +1600,10 @@
     "low": 3.0,
     "low_date": "2026-10-23"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -1601,18 +1623,17 @@
    "unit": "bps",
    "frequency": "daily",
    "status": "fresh",
-   "value": -12.7,
-   "date": "2026-11-20",
-   "prev_value": -12.9,
-   "prev_date": "2026-11-19",
-   "change_abs": 0.2,
-   "change_pct": 1.5504,
-   "zscore": 1.7132,
+   "value": -12.2,
+   "date": "2026-11-23",
+   "prev_value": -12.7,
+   "prev_date": "2026-11-20",
+   "change_abs": 0.5,
+   "change_pct": 3.937,
+   "zscore": 1.7597,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -7.8,
     -7.5,
     -7.2,
     -6.4,
@@ -1663,7 +1684,8 @@
     -13.5,
     -13.2,
     -12.9,
-    -12.7
+    -12.7,
+    -12.2
    ],
    "high_low": {
     "high": -6.4,
@@ -1673,7 +1695,8 @@
    },
    "age_days": 0,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "corridor_position": {
    "source_id": null,
@@ -1682,18 +1705,17 @@
    "unit": "x",
    "frequency": "daily",
    "status": "fresh",
-   "value": -0.148,
-   "date": "2026-11-19",
-   "prev_value": -0.145,
-   "prev_date": "2026-11-18",
-   "change_abs": -0.003,
-   "change_pct": -2.069,
-   "zscore": 0.1166,
+   "value": -0.14,
+   "date": "2026-11-20",
+   "prev_value": -0.148,
+   "prev_date": "2026-11-19",
+   "change_abs": 0.008,
+   "change_pct": 5.4054,
+   "zscore": 1.9739,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    -0.152,
     -0.15,
     -0.152,
     -0.15,
@@ -1744,7 +1766,8 @@
     -0.15,
     -0.148,
     -0.145,
-    -0.148
+    -0.148,
+    -0.14
    ],
    "high_low": {
     "high": -0.138,
@@ -1752,9 +1775,10 @@
     "low": -0.158,
     "low_date": "2026-09-30"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "curve_10y_2y_bps": {
    "source_id": null,
@@ -1833,9 +1857,10 @@
     "low": 29.2,
     "low_date": "2026-11-12"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -1922,9 +1947,10 @@
     "low": 43.1,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -2015,9 +2041,10 @@
     "low": 64.4,
     "low_date": "2026-02-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 92,
    "latest_outlier": true,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -2104,9 +2131,10 @@
     "low": 47.1,
     "low_date": "2024-03-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 85,
    "latest_outlier": true,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -2192,9 +2220,10 @@
     "low": 43.0,
     "low_date": "2026-02-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -2280,9 +2309,10 @@
     "low": -47.5,
     "low_date": "2025-02-01"
    },
-   "age_days": 50,
+   "age_days": 53,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "aaa_10y_5d_change_bps": {
    "source_id": null,
@@ -2361,9 +2391,10 @@
     "low": -15.0732,
     "low_date": "2026-10-02"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   }
  },
  "signals": {
@@ -2373,12 +2404,12 @@
   "flags": [
    "COUNTRY_SPREAD_WATCH"
   ],
-  "detail": "€STR 2.441 (−DFR -5.9 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 5.0 bp · corridor -0.148 · 10−2 31.6 (FLAT) · periphery 59.8 bp (SAFE) · BTP−Bund 126.4 (SAFE) · OAT 147.4 · Bonos 65.0 · EURIBOR−DFR 13.5 · EUR/USD 1.099",
+  "detail": "€STR 2.444 (−DFR -5.6 bp, NORMAL, abundant-liquidity anchors (excess ≥ 1.5tn)) · dispersion 5.0 bp · corridor -0.14 · 10−2 31.6 (FLAT) · periphery 59.8 bp (SAFE) · BTP−Bund 126.4 (SAFE) · OAT 147.4 · Bonos 65.0 · EURIBOR−DFR 13.5 · EUR/USD 1.099",
   "alerts": [
    {
     "metric": "estr_minus_dfr_bps",
     "level": "SAFE",
-    "value": -5.9,
+    "value": -5.6,
     "threshold": {
      "WATCH": 0,
      "STRESS": 5,
@@ -2425,7 +2456,6 @@
  },
  "history": {
   "dates": [
-   "2026-08-28",
    "2026-08-31",
    "2026-09-01",
    "2026-09-02",
@@ -2484,11 +2514,11 @@
    "2026-11-16",
    "2026-11-17",
    "2026-11-18",
-   "2026-11-19"
+   "2026-11-19",
+   "2026-11-20"
   ],
   "rows": {
    "estr": [
-    2.19,
     2.185,
     2.188,
     2.188,
@@ -2547,7 +2577,8 @@
     2.44,
     2.441,
     2.442,
-    2.441
+    2.441,
+    2.444
    ],
    "dfr": [
     2.25,
@@ -2562,7 +2593,7 @@
     2.25,
     2.25,
     2.25,
-    2.25,
+    2.5,
     2.5,
     2.5,
     2.5,
@@ -2624,7 +2655,7 @@
     2.4,
     2.4,
     2.4,
-    2.4,
+    2.65,
     2.65,
     2.65,
     2.65,
@@ -2686,7 +2717,7 @@
     2.65,
     2.65,
     2.65,
-    2.65,
+    2.9,
     2.9,
     2.9,
     2.9,
@@ -2736,7 +2767,6 @@
     2.9
    ],
    "estr_minus_dfr_bps": [
-    -6.0,
     -6.5,
     -6.2,
     -6.2,
@@ -2795,10 +2825,10 @@
     -6.0,
     -5.9,
     -5.8,
-    -5.9
+    -5.9,
+    -5.6
    ],
    "estr_volume": [
-    52326.0,
     53034.0,
     61036.0,
     63482.0,
@@ -2857,7 +2887,8 @@
     60542.0,
     63332.0,
     60997.0,
-    57735.0
+    57735.0,
+    57757.0
    ],
    "estr_dispersion_bps": [
     4.0,
@@ -2882,7 +2913,6 @@
     4.0,
     4.0,
     4.0,
-    4.0,
     5.0,
     4.0,
     4.0,
@@ -2916,13 +2946,13 @@
     6.0,
     5.0,
     6.0,
+    5.0,
     5.0,
     5.0,
     5.0,
     5.0
    ],
    "estr_banks": [
-    47.0,
     46.0,
     47.0,
     47.0,
@@ -2981,10 +3011,10 @@
     48.0,
     48.0,
     47.0,
-    47.0
+    47.0,
+    48.0
    ],
    "corridor_position": [
-    -0.15,
     -0.162,
     -0.155,
     -0.155,
@@ -3043,10 +3073,10 @@
     -0.15,
     -0.148,
     -0.145,
-    -0.148
+    -0.148,
+    -0.14
    ],
    "aaa_2y": [
-    2.8053784303,
     2.8560179314,
     2.876001251,
     2.9132061618,
@@ -3105,10 +3135,10 @@
     3.1090750626,
     3.0925576216,
     3.085907912,
-    3.1250637519
+    3.1250637519,
+    null
    ],
    "aaa_10y": [
-    3.2789202996,
     3.3395935506,
     3.355151665,
     3.3918508877,
@@ -3167,10 +3197,10 @@
     3.4224059614,
     3.4245648137,
     3.4103236155,
-    3.4415130227
+    3.4415130227,
+    null
    ],
    "all_10y": [
-    3.7020901176,
     3.7698538257,
     3.7869779662,
     3.8249337289,
@@ -3229,10 +3259,10 @@
     4.0260359826,
     4.0203231681,
     4.0047354011,
-    4.0395926696
+    4.0395926696,
+    null
    ],
    "curve_10y_2y_bps": [
-    47.4,
     48.4,
     47.9,
     47.9,
@@ -3291,10 +3321,10 @@
     31.3,
     33.2,
     32.4,
-    31.6
+    31.6,
+    null
    ],
    "periphery_premium_bps": [
-    42.3,
     43.0,
     43.2,
     43.3,
@@ -3353,10 +3383,10 @@
     60.4,
     59.6,
     59.4,
-    59.8
+    59.8,
+    null
    ],
    "eurusd": [
-    1.1643,
     1.1596,
     1.159,
     1.1578,
@@ -3415,7 +3445,8 @@
     1.1014,
     1.0989,
     1.0968,
-    1.0992
+    1.0992,
+    1.099
    ]
   },
   "monthly_dates": [
