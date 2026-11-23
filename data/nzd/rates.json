@@ -3,8 +3,8 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-20T15:00:51+00:00",
- "as_of": "2026-11-19",
+ "generated_at": "2026-11-23T04:01:53+00:00",
+ "as_of": "2026-11-20",
  "equivalence_quality": "high",
  "equivalence_note": "B2 daily close (T-1, 15:00 NZT). Floor system: the overnight interbank rate should sit at/just above the OCR; it is published only on days with trades (sparse) → the daily stress spread is the 30-day bank bill − OCR with a persistence rule, corrected for hike pricing by the 90-day bill and 1-year swap; the OMO price is fixed (OCR + 10) so price stress shows up in ORRF use and bills, not in the operation | v0.2: B2 bank bills are NZFMA/LSEG closing rates (the 10:20 NZT BKBM fixing itself is published by NZFBF; public delayed feed unverified — pending); NZ OIS has no public feed (not available, not proxied)",
  "source_health": {
@@ -27,9 +27,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 2.75,
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "prev_value": 2.75,
-   "prev_date": "2026-11-18",
+   "prev_date": "2026-11-19",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 0.0,
@@ -92,13 +92,14 @@
    ],
    "high_low": {
     "high": 2.75,
-    "high_date": "2026-09-08",
+    "high_date": "2026-09-09",
     "low": 2.75,
-    "low_date": "2026-09-08"
+    "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "odr": {
    "source_id": "INM.DD1.N",
@@ -108,9 +109,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 2.75,
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "prev_value": 2.75,
-   "prev_date": "2026-11-18",
+   "prev_date": "2026-11-19",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 0.0,
@@ -173,13 +174,14 @@
    ],
    "high_low": {
     "high": 2.75,
-    "high_date": "2026-09-08",
+    "high_date": "2026-09-09",
     "low": 2.75,
-    "low_date": "2026-09-08"
+    "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "orrf_rate": {
    "source_id": "INM.DD2.N",
@@ -189,9 +191,9 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 3.25,
-   "date": "2026-11-19",
+   "date": "2026-11-20",
    "prev_value": 3.25,
-   "prev_date": "2026-11-18",
+   "prev_date": "2026-11-19",
    "change_abs": 0.0,
    "change_pct": 0.0,
    "zscore": 0.0,
@@ -254,13 +256,14 @@
    ],
    "high_low": {
     "high": 3.25,
-    "high_date": "2026-09-08",
+    "high_date": "2026-09-09",
     "low": 3.25,
-    "low_date": "2026-09-08"
+    "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 3,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "overnight_interbank": {
    "source_id": "INM.DN.NZK",
@@ -339,9 +342,10 @@
     "low": 2.28,
     "low_date": "2026-06-17"
    },
-   "age_days": 8,
+   "age_days": 11,
    "confidence": 85,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "equivalence_note": "published only on days with trades (sparse) — last 2026-11-12"
   },
   "bank_bill_30d": {
@@ -421,9 +425,10 @@
     "low": 2.91,
     "low_date": "2026-11-03"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "bank_bill_60d": {
    "source_id": "INM.DB02.NZZV",
@@ -502,9 +507,10 @@
     "low": 3.0,
     "low_date": "2026-09-08"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "bank_bill_90d": {
    "source_id": "INM.DB03.NZZV",
@@ -583,9 +589,10 @@
     "low": 3.05,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "nzgb_1y": {
    "source_id": "INM.DG101.NZZCF",
@@ -664,9 +671,10 @@
     "low": 3.09,
     "low_date": "2026-09-08"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "nzgb_2y": {
    "source_id": "INM.DG102.NZZCF",
@@ -745,9 +753,10 @@
     "low": 3.59,
     "low_date": "2026-09-08"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "nzgb_5y": {
    "source_id": "INM.DG105.NZZCF",
@@ -826,9 +835,10 @@
     "low": 4.08,
     "low_date": "2026-11-10"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "nzgb_10y": {
    "source_id": "INM.DG110.NZZCF",
@@ -907,9 +917,10 @@
     "low": 4.71,
     "low_date": "2026-11-10"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "swap_1y": {
    "source_id": "INM.DS01.NZZC",
@@ -988,9 +999,10 @@
     "low": 3.43,
     "low_date": "2026-09-08"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "swap_2y": {
    "source_id": "INM.DS02.NZZC",
@@ -1069,9 +1081,10 @@
     "low": 3.69,
     "low_date": "2026-11-06"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "swap_10y": {
    "source_id": "INM.DS10.NZZC",
@@ -1150,9 +1163,10 @@
     "low": 4.32,
     "low_date": "2026-11-10"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "swap_2_10_spread_bps": {
    "source_id": "INM.DS61.NZZC",
@@ -1231,9 +1245,10 @@
     "low": 54.0,
     "low_date": "2026-10-27"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "nzgb_turnover_weekly": {
    "source_id": "D9:total",
@@ -1312,9 +1327,10 @@
     "low": 21115.0,
     "low_date": "2026-01-02"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   }
  },
  "derived": {
@@ -1395,9 +1411,10 @@
     "low": 16.0,
     "low_date": "2026-11-03"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -1494,9 +1511,10 @@
     "low": 2.0,
     "low_date": "2026-10-13"
    },
-   "age_days": 8,
+   "age_days": 11,
    "confidence": 85,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -1595,9 +1613,10 @@
     "low": 0.04,
     "low_date": "2026-10-13"
    },
-   "age_days": 8,
+   "age_days": 11,
    "confidence": 85,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "bank_bill_90d_minus_ocr_bps": {
    "source_id": null,
@@ -1676,9 +1695,10 @@
     "low": 30.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
@@ -1770,9 +1790,10 @@
     "low": 68.0,
     "low_date": "2026-09-08"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
@@ -1865,9 +1886,10 @@
     "low": 10.0,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "nzgb_2y_minus_ocr_bps": {
    "source_id": null,
@@ -1946,9 +1968,10 @@
     "low": 84.0,
     "low_date": "2026-09-08"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "curve_10y_2y_bps": {
    "source_id": null,
@@ -2027,9 +2050,10 @@
     "low": 90.0,
     "low_date": "2026-11-19"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
@@ -2120,9 +2144,10 @@
     "low": 28.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -2212,9 +2237,10 @@
     "low": -17.0,
     "low_date": "2026-10-15"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -2300,9 +2326,10 @@
     "low": -54.0787,
     "low_date": "2025-12-26"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "display_only": true
   }
  },
@@ -3787,11 +3814,6 @@
     "score": 0.25
    },
    {
-    "date": "2026-10-16",
-    "label": "HIKE PRICING",
-    "score": 0.25
-   },
-   {
     "date": "2026-10-21",
     "label": "HIKE PRICING",
     "score": 0.25
@@ -4323,6 +4345,11 @@
    },
    {
     "date": "2026-11-18",
+    "label": "HIKE PRICING",
+    "score": 0.25
+   },
+   {
+    "date": "2026-11-19",
     "label": "HIKE PRICING",
     "score": 0.25
    },
