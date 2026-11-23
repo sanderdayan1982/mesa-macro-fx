@@ -1,25 +1,25 @@
 {
  "entries": [
   {
-   "timestamp": "2026-11-23T04:02:07+00:00",
+   "timestamp": "2026-11-23T04:02:54+00:00",
    "type": "NOTIFY",
    "category": "system",
    "details": {
-    "mode": "telegram",
-    "chunks": 1,
-    "ok": 1,
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
     "errors": [],
-    "messages": 2
+    "messages": 0
    }
   },
   {
-   "timestamp": "2026-11-23T04:02:07+00:00",
+   "timestamp": "2026-11-23T04:02:54+00:00",
    "type": "AGENT_DAILY_LOG",
    "category": "system",
    "details": {
     "gate": true,
     "failures": [],
-    "hash": "70097a522fea149f",
+    "hash": "cde112e8edec036f",
     "degraded": [
      "F2: monthly stock only (lsap_holdings)",
      "F2: monthly flow only (lsap_sales_month)"
@@ -32,11 +32,11 @@
    }
   },
   {
-   "timestamp": "2026-11-23T04:02:06+00:00",
+   "timestamp": "2026-11-23T04:02:54+00:00",
    "type": "REFRESH_AUTO",
    "category": "system",
    "details": {
-    "lane": "daily",
+    "lane": "weekly_mon",
     "backfill": false,
     "blocks": [
      "central_bank",
@@ -50,7 +50,7 @@
    }
   },
   {
-   "timestamp": "2026-11-23T04:02:06+00:00",
+   "timestamp": "2026-11-23T04:02:54+00:00",
    "type": "NZD_V04",
    "category": "system",
    "details": {
@@ -89,15 +89,6 @@
     ],
     "d10_recon_months": 33,
     "oia_recon_months": 22
-   }
-  },
-  {
-   "timestamp": "2026-11-23T04:01:52+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "nzdm_last_good_copy",
-    "error": "NZDM blocked (HTTP 403): served from the committed raw snapshots — nzdm_tbill_listing.html (snapshot 2026-11-23); nzdm_tbill_1897.html (snapshot 2026-11-23); nzdm_bond_listing.html (snapshot 2026-11-23)"
    }
   },
   {
@@ -10051,6 +10042,24 @@
      "fiscal": 9,
      "general": 8
     }
+   }
+  },
+  {
+   "timestamp": "2026-10-26T09:46:54+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
    }
   }
  ]
