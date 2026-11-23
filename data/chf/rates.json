@@ -3,7 +3,7 @@
  "block": "rates",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-20T18:19:58+00:00",
+ "generated_at": "2026-11-23T09:45:44+00:00",
  "as_of": "2026-11-19",
  "equivalence_quality": "high",
  "equivalence_note": "SARON daily (T-1). Market anchor = policy − 5 bp (absorbing repos). SARON compound / term repo rates lag 3 weeks (SNB) until SIX is wired. Confederation curve daily from the SNB warehouse (NSS, 11:00).",
@@ -14,7 +14,11 @@
   "last_fetch_ok": true,
   "errors": [],
   "series_pending": 0,
-  "lagged_by_design": []
+  "lagged_by_design": [
+   "sar1w",
+   "sar1m",
+   "sar3m"
+  ]
  },
  "series": {
   "saron": {
@@ -94,9 +98,10 @@
     "low": -0.07,
     "low_date": "2026-09-30"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "policy_rate": {
    "source_id": "snbgwdzid:LZ",
@@ -175,9 +180,10 @@
     "low": 0.0,
     "low_date": "2026-09-03"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "rate_above_threshold": {
    "source_id": "snbgwdzid:ZIG",
@@ -256,9 +262,10 @@
     "low": -0.25,
     "low_date": "2026-09-03"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "special_rate": {
    "source_id": "snbgwdzid:ENG",
@@ -337,9 +344,10 @@
     "low": 0.25,
     "low_date": "2026-09-03"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 85,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "stale"
   },
   "sar1w": {
    "source_id": "zirepo:H2",
@@ -347,7 +355,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.01425,
    "date": "2026-10-15",
    "prev_value": -0.00104,
@@ -418,10 +426,11 @@
     "low": -0.07081,
     "low_date": "2026-08-20"
    },
-   "age_days": 36,
-   "confidence": 100,
+   "age_days": 39,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "calendar_status": "stale",
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "sar1m": {
    "source_id": "zirepo:H4",
@@ -429,7 +438,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.02167,
    "date": "2026-10-15",
    "prev_value": -0.03394,
@@ -500,10 +509,11 @@
     "low": -0.05205,
     "low_date": "2026-09-07"
    },
-   "age_days": 36,
-   "confidence": 100,
+   "age_days": 39,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "calendar_status": "stale",
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "sar3m": {
    "source_id": "zirepo:H5",
@@ -511,7 +521,7 @@
    "usd_analog": null,
    "unit": "%",
    "frequency": "daily",
-   "status": "fresh",
+   "status": "stale",
    "value": -0.045,
    "date": "2026-10-15",
    "prev_value": -0.045,
@@ -582,10 +592,11 @@
     "low": -0.045,
     "low_date": "2026-08-05"
    },
-   "age_days": 36,
-   "confidence": 100,
+   "age_days": 39,
+   "confidence": 70,
    "latest_outlier": false,
-   "equivalence_note": "3-week publication lag"
+   "calendar_status": "stale",
+   "equivalence_note": "SNB publishes term repo / compound rates ~3 weeks late (stale-by-design until SIX is wired)"
   },
   "saron_1m_compound": {
    "source_id": "zirepo:H6",
@@ -664,10 +675,11 @@
     "low": -0.0564,
     "low_date": "2026-09-03"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "SNB zirepo extended past the 3-week embargo via ACT/360 daily SARON compounding"
+   "equivalence_note": "SNB zirepo extended past the 3-week embargo via ACT/360 daily SARON compounding",
+   "calendar_status": "fresh"
   },
   "saron_3m_compound": {
    "source_id": "zirepo:H7",
@@ -746,10 +758,11 @@
     "low": -0.049,
     "low_date": "2026-11-02"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "SNB zirepo extended past the 3-week embargo via ACT/360 daily SARON compounding"
+   "equivalence_note": "SNB zirepo extended past the 3-week embargo via ACT/360 daily SARON compounding",
+   "calendar_status": "fresh"
   },
   "confed_1y": {
    "source_id": "SNB1A.SNB.NSS.KZS.EID:J01M0",
@@ -828,9 +841,10 @@
     "low": 0.068,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "confed_2y": {
    "source_id": "SNB1A.SNB.NSS.KZS.EID:J02M0",
@@ -909,9 +923,10 @@
     "low": 0.147,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "confed_5y": {
    "source_id": "SNB1A.SNB.NSS.KZS.EID:J05M0",
@@ -990,9 +1005,10 @@
     "low": 0.316,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "confed_10y": {
    "source_id": "SNB1A.SNB.NSS.KZS.EID:J10M0",
@@ -1071,9 +1087,10 @@
     "low": 0.45,
     "low_date": "2026-11-06"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "confed_20y": {
    "source_id": "SNB1A.SNB.NSS.KZS.EID:J20M0",
@@ -1152,9 +1169,10 @@
     "low": 0.531,
     "low_date": "2026-10-23"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "confed_30y": {
    "source_id": "SNB1A.SNB.NSS.KZS.EID:J30M0",
@@ -1233,9 +1251,10 @@
     "low": 0.468,
     "low_date": "2026-10-23"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 92,
-   "latest_outlier": true
+   "latest_outlier": true,
+   "calendar_status": "fresh"
   },
   "mmdrc_3m_yield": {
    "source_id": "resultate-gmbf.xlsx yield",
@@ -1314,9 +1333,10 @@
     "low": -0.75,
     "low_date": "2026-06-16"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   }
  },
  "derived": {
@@ -1397,9 +1417,10 @@
     "low": -2.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "absolute",
     "levels": {
@@ -1500,9 +1521,10 @@
     "low": -7.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "note": "cross-currency alias (desk head reads spread vs policy for all currencies); classification lives on saron_minus_absorption_rate_bps"
   },
   "band_position": {
@@ -1582,9 +1604,10 @@
     "low": 0.36,
     "low_date": "2026-09-30"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
@@ -1675,9 +1698,10 @@
     "low": -0.5,
     "low_date": "2026-09-07"
    },
-   "age_days": 36,
+   "age_days": 39,
    "confidence": 70,
    "latest_outlier": false,
+   "calendar_status": "stale",
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
@@ -1769,9 +1793,10 @@
     "low": -4.9,
     "low_date": "2026-11-02"
    },
-   "age_days": 7,
+   "age_days": 10,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "confed_2y_minus_policy_bps": {
    "source_id": null,
@@ -1850,9 +1875,10 @@
     "low": 14.7,
     "low_date": "2026-09-09"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "curve_10y_2y_bps": {
    "source_id": null,
@@ -1931,9 +1957,10 @@
     "low": 21.6,
     "low_date": "2026-11-12"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
@@ -2024,9 +2051,10 @@
     "low": -10.8,
     "low_date": "2026-09-28"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "levels": {
@@ -2116,9 +2144,10 @@
     "low": -14.5,
     "low_date": "2026-10-05"
    },
-   "age_days": 1,
+   "age_days": 4,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "thresholds": {
     "method": "percentile",
     "two_sided": true,
@@ -2209,9 +2238,10 @@
     "low": -71.0,
     "low_date": "2026-06-16"
    },
-   "age_days": 3,
+   "age_days": 6,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "friction_confirmed": {
    "label": "friction_confirmed (SARON ≥ policy 3 sessions)",
@@ -3443,11 +3473,6 @@
     "score": 0.75
    },
    {
-    "date": "2026-09-04",
-    "label": "CORRIDOR CALM",
-    "score": 0.75
-   },
-   {
     "date": "2026-09-11",
     "label": "CORRIDOR CALM",
     "score": 0.75
@@ -3949,6 +3974,11 @@
    },
    {
     "date": "2026-11-06",
+    "label": "CORRIDOR CALM",
+    "score": 0.75
+   },
+   {
+    "date": "2026-11-13",
     "label": "CORRIDOR CALM",
     "score": 0.75
    },
