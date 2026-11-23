@@ -1,6 +1,52 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-23T16:46:38+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "none",
+    "chunks": 0,
+    "ok": 0,
+    "errors": [],
+    "messages": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-23T16:46:38+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "1d0d4a7e1e25cdb8",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 1,
+     "fiscal": 1,
+     "general": 1
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-23T16:46:38+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "monthly",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [],
+    "regime": "FLOOR_FRICTION",
+    "new_revisions": 0
+   }
+  },
+  {
    "timestamp": "2026-11-22T16:21:30+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7917,63 +7963,6 @@
     "ok": 0,
     "errors": [],
     "messages": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-02T22:50:32+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "63db3c664c019bb6",
-    "degraded": [
-     "F6: friction flag missing"
-    ],
-    "streaks": {
-     "central_bank": 2,
-     "fiscal": 5,
-     "general": 5
-    }
-   }
-  },
-  {
-   "timestamp": "2026-10-02T22:50:32+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "weekly",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "FLOOR_FRICTION",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-02T22:50:32+00:00",
-   "type": "CAD_V04",
-   "category": "system",
-   "details": {
-    "groups": {
-     "term_repo": 433,
-     "or": 331,
-     "orr": 412,
-     "rgam": 2198,
-     "tbill": 2430,
-     "bond": 1159,
-     "bond_repurchase": 1134
-    },
-    "indicator_days": 20,
-    "net_issuance_last": [
-     "2026-10-02",
-     0.0
-    ]
    }
   }
  ]
