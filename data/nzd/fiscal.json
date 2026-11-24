@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.0",
- "generated_at": "2026-11-24T13:09:49+00:00",
+ "generated_at": "2026-11-24T14:34:10+00:00",
  "as_of": "2026-11-24",
  "equivalence_quality": "medium",
  "equivalence_note": "No daily cash statement (DTS analog) in New Zealand. Daily footprint = desk derivation autonomous_flow_daily (Layer 1); weekly = NZDM tender results (issuance drain on T+3 settlement) and the monthly tender schedule (known drain dates); monthly = R3 Crown settlement accounts (14th) and D10 government cash influence (end of following month); Treasury monthly financial statements ~6 weeks lag = confirmation. Weight 0.15 | v0.2: NZDM HTML result pages at 14:35 NZT (T-bills T+1, bonds T+3) are the primary weekly source; residual daily flow is coincident/noisy with a reconciliation band",
@@ -1202,18 +1202,17 @@
    "unit": "NZD millions (display: bn = 10^9)",
    "frequency": "daily",
    "status": "fresh",
-   "value": -3101.0,
-   "date": "2026-11-20",
-   "prev_value": 57.0,
-   "prev_date": "2026-11-19",
-   "change_abs": -3158.0,
-   "change_pct": -5540.3509,
-   "zscore": -2.1485,
+   "value": 16.0,
+   "date": "2026-11-23",
+   "prev_value": -3101.0,
+   "prev_date": "2026-11-20",
+   "change_abs": 3117.0,
+   "change_pct": 100.516,
+   "zscore": 0.0181,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    178.0,
     921.0,
     236.0,
     394.0,
@@ -1264,7 +1263,8 @@
     299.0,
     766.0,
     57.0,
-    -3101.0
+    -3101.0,
+    16.0
    ],
    "high_low": {
     "high": 7536.0,
@@ -1272,9 +1272,9 @@
     "low": -3603.0,
     "low_date": "2026-10-28"
    },
-   "age_days": 4,
-   "confidence": 85,
-   "latest_outlier": true,
+   "age_days": 1,
+   "confidence": 100,
+   "latest_outlier": false,
    "calendar_status": "fresh"
   },
   "tbill_allocation_ratio": {
@@ -2373,21 +2373,11 @@
   },
   "issuance_ahead_5d": {
    "label": "Tender settlements in the next 5 business days (known drain)",
-   "value": 250.0,
+   "value": 0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
-   "date": "2026-11-20",
-   "items": [
-    {
-     "number": "1898",
-     "lines": "",
-     "volume": 250.0,
-     "announcement": "2026-11-23",
-     "tender": "2026-11-24",
-     "settlement": "2026-11-25",
-     "kind": "tbill"
-    }
-   ],
+   "date": "2026-11-23",
+   "items": [],
    "level": "SAFE"
   },
   "non_resident_share": {
@@ -3085,14 +3075,14 @@
   },
   "tender_settlements_next_4w": {
    "label": "Tender settlements ahead (scheduled drain)",
-   "value": 650.0,
+   "value": 400.0,
    "unit": "NZD millions (display: bn = 10^9)",
    "status": "fresh",
    "date": "2026-11-24",
    "calendar": [
     [
      "2026-11-25",
-     450.0
+     200.0
     ],
     [
      "2026-12-01",
@@ -3233,7 +3223,7 @@
    "score_v02": 0.5,
    "score_flows_only": 0.5
   },
-  "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 2.18x at 3.0508% · bond 5.011x tail 0.5 bp · settlements next 5d 250.0 · non-resident 58.0%",
+  "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 2.18x at 3.0508% · bond 5.011x tail 0.5 bp · settlements next 5d 0 · non-resident 58.0%",
   "alerts": [
    {
     "metric": "govt_cash_influence",
@@ -3323,8 +3313,8 @@
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "net_issuance_5d_pct": 2.3328,
-    "residual_5d_pct": 3.9571
+    "net_issuance_5d_pct": 2.3315,
+    "residual_5d_pct": -6.7804
    },
    "level": {},
    "weights": {},
@@ -3332,8 +3322,8 @@
     -2.0,
     2.0
    ],
-   "score_v02": 2.0,
-   "score_flows_only": 2.0,
+   "score_v02": -2.0,
+   "score_flows_only": -2.0,
    "note": "shadow: daily residual proxy + weekly net issuance; D10 band stays live until the replay"
   }
  },
@@ -4412,15 +4402,6 @@
   ],
   "upcoming": [
    {
-    "number": "1898",
-    "lines": "",
-    "volume": 250.0,
-    "announcement": "2026-11-23",
-    "tender": "2026-11-24",
-    "settlement": "2026-11-25",
-    "kind": "tbill"
-   },
-   {
     "number": "1019",
     "lines": "4.50% 15 May 2030",
     "volume": 200.0,
@@ -4647,9 +4628,9 @@
     "score": 0.0
    },
    {
-    "date": "2026-08-31",
-    "label": "NEUTRAL",
-    "score": 0.0
+    "date": "2026-09-30",
+    "label": "INJECTION",
+    "score": 0.5
    },
    {
     "date": "2026-09-30",
