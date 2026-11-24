@@ -1,6 +1,6 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-23T23:44:48+00:00",
+ "generated_at": "2026-11-24T08:48:05+00:00",
  "as_of": "2026-11-22",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -28,7 +28,7 @@
    "label": "DRAIN",
    "traffic_light": "YELLOW",
    "as_of": "2026-11-22",
-   "detail": "excess liquidity 2075156.0 M (SAFE) · Δ5s -13048.0 (p36.22) · TOMO 42184.0 M (STRUCTURAL (no price confirmation)) · MLF 48.62687848 M · €STR−DFR -5.6 bp (SAFE) · MonPol 13w -107996.0 · phase QT · APP+PEPP rec RECONCILED",
+   "detail": "excess liquidity 2075156.0 M (SAFE) · Δ5s -13048.0 (p36.22) · TOMO 42184.0 M (STRUCTURAL (no price confirmation)) · MLF 48.62687848 M · €STR−DFR -5.7 bp (SAFE) · MonPol 13w -107996.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -102,10 +102,10 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.3976,
+   "score": -0.2293,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-20",
+   "as_of": "2026-11-23",
    "detail": "govt deposits 86116.0 M (Δw -324.0, p55.56) · impulse 4w 7030.0 (p71.43) · 13w 6613.0 · deficit -3.2404% GDP (LARGE DEFICIT (injection)) · DE b/c 1.8 (NORMAL, avg26 1.56) · TARGET Δ3m -16708.1 · rule NEUTRAL",
    "raw_regime": "NEUTRAL",
    "cuts": {
@@ -127,15 +127,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.135,
+    "effective_score": -0.191,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-20",
+    "as_of": "2026-11-23",
     "recent": [
-     [
-      "2026-11-13",
-      0.1105
-     ],
      [
       "2026-11-16",
       -0.0522
@@ -155,6 +151,10 @@
      [
       "2026-11-20",
       -0.3976
+     ],
+     [
+      "2026-11-23",
+      -0.2293
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": -8250.126,
+    "raw": -4758.246,
     "denominator": 2075156.0,
     "denominator_date": "2026-11-22",
-    "today": "2026-11-23",
+    "today": "2026-11-24",
     "note": null
    },
    "v03_shadow": {
@@ -290,7 +290,7 @@
   "reserves_in_range": true,
   "reserves_above_range": false,
   "spread_level": "SAFE",
-  "spread_bps": -5.6,
+  "spread_bps": -5.7,
   "friction_confirmed": false
  },
  "rules": {
@@ -446,6 +446,8 @@
  "heartbeat": {
   "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
+  ]
  }
 }
