@@ -1,13 +1,13 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-24T09:48:00+00:00",
- "as_of": "2026-11-22",
+ "generated_at": "2026-11-24T12:03:56+00:00",
+ "as_of": "2026-11-23",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
  "traffic_light": "YELLOW",
- "weighted_score": 0.019,
+ "weighted_score": 0.043,
  "block_scores": {
-  "central_bank": -0.53,
+  "central_bank": -0.47,
   "rates": -0.1,
   "fiscal": 0.74,
   "banking": 1.0
@@ -24,11 +24,11 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.53,
-   "label": "DRAIN",
+   "score": -0.47,
+   "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-22",
-   "detail": "excess liquidity 2075156.0 M (SAFE) · Δ5s -13048.0 (p36.22) · TOMO 42184.0 M (STRUCTURAL (no price confirmation)) · MLF 48.62687848 M · €STR−DFR -5.7 bp (SAFE) · MonPol 13w -107996.0 · phase QT · APP+PEPP rec RECONCILED",
+   "as_of": "2026-11-23",
+   "detail": "excess liquidity 2072997.0 M (SAFE) · Δ5s -10345.0 (p43.35) · TOMO 42184.0 M (STRUCTURAL (no price confirmation)) · MLF 20.5476685 M · €STR−DFR -5.7 bp (SAFE) · MonPol 13w -107996.0 · phase QT · APP+PEPP rec RECONCILED",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.02,
@@ -45,15 +45,11 @@
    "state": {
     "confirmed": "NEUTRAL",
     "raw": "NEUTRAL",
-    "effective_score": -0.41,
+    "effective_score": -0.425,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-22",
+    "as_of": "2026-11-23",
     "recent": [
-     [
-      "2026-11-15",
-      -0.38
-     ],
      [
       "2026-11-16",
       -0.26
@@ -73,6 +69,10 @@
      [
       "2026-11-22",
       -0.53
+     ],
+     [
+      "2026-11-23",
+      -0.47
      ]
     ],
     "pending_days": null
@@ -81,8 +81,8 @@
     "mode": "mean2",
     "level_weight": 1.0,
     "flow": {
-     "excess_wow_vs_stock": -0.63,
-     "excess_20s_vs_stock": -0.45
+     "excess_wow_vs_stock": -0.5,
+     "excess_20s_vs_stock": -0.43
     },
     "level": {
      "excess_liquidity_level": 0.5,
@@ -94,15 +94,15 @@
      -2.0,
      2.0
     ],
-    "score_v02": -0.53,
-    "score_flows_only": -0.43
+    "score_v02": -0.47,
+    "score_flows_only": -0.37
    }
   },
   "fiscal": {
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.2293,
+   "score": -0.2295,
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-11-23",
@@ -154,7 +154,7 @@
      ],
      [
       "2026-11-23",
-      -0.2293
+      -0.2295
      ]
     ],
     "pending_days": null,
@@ -195,8 +195,8 @@
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
     "raw": -4758.246,
-    "denominator": 2075156.0,
-    "denominator_date": "2026-11-22",
+    "denominator": 2072997.0,
+    "denominator_date": "2026-11-23",
     "today": "2026-11-24",
     "note": null
    },
@@ -236,8 +236,8 @@
    "regime": "NEUTRAL",
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
-   "score": -0.149,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.15 shown for context",
+   "score": -0.107,
+   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score -0.11 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -447,7 +447,7 @@
   "lane": "daily",
   "backfill": false,
   "errors": [
-   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
+   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bonds-2026_en"
   ]
  }
 }
