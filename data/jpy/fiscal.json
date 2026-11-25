@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.2.4",
- "generated_at": "2026-11-25T09:30:35+00:00",
- "as_of": "2026-11-24",
+ "generated_at": "2026-11-25T11:34:12+00:00",
+ "as_of": "2026-11-25",
  "equivalence_quality": "high",
  "equivalence_note": "'Treasury funds and others' in the BoJ daily file IS the daily net fiscal flow (taxes/issuance in, spending/redemptions out) — a DTS at daily resolution, T+1 final with same-day provisional and next-day projection. Government deposits at the BoJ are small (MoF manages cash with T-Bills) and only ten-day.",
  "source_health": {
@@ -685,22 +685,22 @@
    "date": "2026-11-24",
    "next": {
     "date": "2026-11-25",
-    "issue": "40-year",
+    "issue": "40-year(19)",
     "tenor": "40y",
-    "result_href": null
+    "result_href": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/eresul/eresul20261125.htm"
    },
    "next_superlong": {
     "date": "2026-11-25",
-    "issue": "40-year",
+    "issue": "40-year(19)",
     "tenor": "40y",
-    "result_href": null
+    "result_href": "https://www.mof.go.jp/english/policy/jgbs/auction/calendar/eresul/eresul20261125.htm"
    },
    "days_to_superlong": 1,
    "upcoming": [
     {
      "date": "2026-11-25",
      "tenor": "40y",
-     "issue": "40-year"
+     "issue": "40-year(19)"
     },
     {
      "date": "2026-11-30",
@@ -1769,18 +1769,17 @@
    "unit": "x",
    "frequency": "event",
    "status": "fresh",
-   "value": 3.64,
-   "date": "2026-11-18",
-   "prev_value": 3.356,
-   "prev_date": "2026-11-10",
-   "change_abs": 0.284,
-   "change_pct": 8.4625,
-   "zscore": -0.3138,
-   "percentile": 61.11,
+   "value": 2.625,
+   "date": "2026-11-25",
+   "prev_value": 3.64,
+   "prev_date": "2026-11-18",
+   "change_abs": -1.015,
+   "change_pct": -27.8846,
+   "zscore": -1.7592,
+   "percentile": 8.33,
    "window": "36w",
-   "level": "SAFE",
+   "level": "WATCH",
    "sparkline": [
-    3.5,
     3.459,
     2.92,
     2.958,
@@ -1831,7 +1830,8 @@
     3.877,
     5.844,
     3.356,
-    3.64
+    3.64,
+    2.625
    ],
    "high_low": {
     "high": 5.844,
@@ -1839,7 +1839,7 @@
     "low": 2.127,
     "low_date": "2025-07-23"
    },
-   "age_days": 7,
+   "age_days": 0,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
@@ -3597,7 +3597,7 @@
    "score_v02": 0.07,
    "score_flows_only": 0.07
   },
-  "detail": "flow -1800.0 (Z 0.0879) · 5d -46700.0 · 20d -105300.0 (NEUTRAL) · FEFSA/py 0.95 · BTC super-long 3.64",
+  "detail": "flow -1800.0 (Z 0.0879) · 5d -46700.0 · 20d -105300.0 (NEUTRAL) · FEFSA/py 0.95 · BTC super-long 2.625",
   "alerts": [
    {
     "metric": "fiscal_flow_zscore",
@@ -3617,8 +3617,8 @@
    },
    {
     "metric": "bid_to_cover_superlong",
-    "level": "SAFE",
-    "value": 3.64,
+    "level": "WATCH",
+    "value": 2.625,
     "threshold": {
      "WATCH": 2.852,
      "STRESS": 2.59925
@@ -4494,12 +4494,6 @@
   },
   "auctions": [
    {
-    "date": "2026-06-10",
-    "tenor": "30y",
-    "btc": 2.936,
-    "hy": 3.86
-   },
-   {
     "date": "2026-06-23",
     "tenor": "5y",
     "btc": 3.112,
@@ -4712,6 +4706,11 @@
     "hy": 3.782,
     "avg_yield": 3.756,
     "tail_bp": 2.6
+   },
+   {
+    "date": "2026-11-25",
+    "tenor": "40y",
+    "btc": 2.625
    }
   ],
   "signal_log": [
@@ -4746,11 +4745,6 @@
     "score": 0.24
    },
    {
-    "date": "2026-10-29",
-    "label": "INJECTION",
-    "score": 0.24
-   },
-   {
     "date": "2026-10-30",
     "label": "INJECTION",
     "score": -0.04
@@ -5299,6 +5293,11 @@
     "date": "2026-11-20",
     "label": "NEUTRAL",
     "score": 0.12
+   },
+   {
+    "date": "2026-11-24",
+    "label": "NEUTRAL",
+    "score": 0.07
    },
    {
     "date": "2026-11-24",
