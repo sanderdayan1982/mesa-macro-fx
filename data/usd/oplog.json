@@ -1,6 +1,63 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-25T20:24:08+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 2
+   }
+  },
+  {
+   "timestamp": "2026-11-25T20:24:07+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "61b9f0f8662eeb1c",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 22,
+     "fiscal": 10,
+     "general": 32
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-25T20:24:07+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "fiscaldata: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/deposits_withdrawals_operating_cash: The read operation timed out"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-25T20:24:07+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "fiscaldata",
+    "error": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/deposits_withdrawals_operating_cash: The read operation timed out"
+   }
+  },
+  {
    "timestamp": "2026-11-25T05:06:54+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7546,64 +7603,6 @@
     "errors": [],
     "regime": "NEUTRAL",
     "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-16T20:26:30+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "none",
-    "chunks": 0,
-    "ok": 0,
-    "errors": [],
-    "messages": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-16T20:26:30+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "6e8d7c2bb87bd323",
-    "degraded": [],
-    "streaks": {
-     "central_bank": 4,
-     "fiscal": 10,
-     "general": 10
-    }
-   }
-  },
-  {
-   "timestamp": "2026-10-16T20:26:30+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "weekly",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "NEUTRAL",
-    "new_revisions": 14
-   }
-  },
-  {
-   "timestamp": "2026-10-16T20:21:07+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "none",
-    "chunks": 0,
-    "ok": 0,
-    "errors": [],
-    "messages": 0
    }
   }
  ]
