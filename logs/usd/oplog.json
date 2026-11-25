@@ -1,6 +1,63 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-25T23:06:19+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-11-25T23:06:19+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "f9a68b05b26ea30b",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 22,
+     "fiscal": 11,
+     "general": 32
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-25T23:06:19+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "fiscaldata: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/debt_subject_to_limit: The read operation timed out"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-25T23:06:18+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "fiscaldata",
+    "error": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/debt_subject_to_limit: The read operation timed out"
+   }
+  },
+  {
    "timestamp": "2026-11-25T21:24:10+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7534,68 +7591,6 @@
     "ok": 0,
     "errors": [],
     "messages": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-16T22:54:15+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "163ba08d7b3ad40c",
-    "degraded": [],
-    "streaks": {
-     "central_bank": 4,
-     "fiscal": 10,
-     "general": 10
-    }
-   }
-  },
-  {
-   "timestamp": "2026-10-16T22:54:14+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "daily",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-16T21:26:12+00:00",
-   "type": "NOTIFY",
-   "category": "system",
-   "details": {
-    "mode": "none",
-    "chunks": 0,
-    "ok": 0,
-    "errors": [],
-    "messages": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-16T21:26:12+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "163ba08d7b3ad40c",
-    "degraded": [],
-    "streaks": {
-     "central_bank": 4,
-     "fiscal": 10,
-     "general": 10
-    }
    }
   }
  ]

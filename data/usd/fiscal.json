@@ -3,7 +3,7 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.1.1",
- "generated_at": "2026-11-25T21:24:09+00:00",
+ "generated_at": "2026-11-25T23:06:18+00:00",
  "as_of": "2026-11-24",
  "equivalence_quality": "high",
  "equivalence_note": "DTS via Fiscal Data API, ~16:00 ET (22:00 WAT), record_date = previous business day. Views Daily / MTD / FYTD kept as fields on every line item. Net Treasury Flow (MMT sign) = (Withdrawals − Debt Redemptions) − (Deposits − Debt Issues): + = net fiscal injection (NFA creation), − = drain. Reserve impact ≠ NFA: −ΔTGA.",
@@ -13,7 +13,7 @@
   "series_expected": 28,
   "last_fetch_ok": true,
   "errors": [
-   "fiscaldata: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/deposits_withdrawals_operating_cash: The read operation timed out"
+   "fiscaldata: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/debt_subject_to_limit: The read operation timed out"
   ],
   "series_pending": 0
  },
@@ -272,8 +272,8 @@
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
-   "mtd": 2579526.0,
-   "fytd": 6026850.0
+   "mtd": 2948019.0,
+   "fytd": 6395343.0
   },
   "total_withdrawals": {
    "source_id": "DTS:total_withdrawals",
@@ -356,8 +356,8 @@
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
-   "mtd": 2632323.0,
-   "fytd": 6112099.0
+   "mtd": 2941222.0,
+   "fytd": 6420999.0
   },
   "debt_issues": {
    "source_id": "DTS:debt_issues",
@@ -366,18 +366,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1071.0,
-   "date": "2026-11-23",
-   "prev_value": 1055.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 16.0,
-   "change_pct": 1.5166,
-   "zscore": -0.9972,
+   "value": 340938.0,
+   "date": "2026-11-24",
+   "prev_value": 1071.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 339867.0,
+   "change_pct": 31733.6134,
+   "zscore": 1.2848,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2132.0,
     265148.0,
     1215.0,
     1017.0,
@@ -428,7 +427,8 @@
     2445.0,
     296390.0,
     1055.0,
-    1071.0
+    1071.0,
+    340938.0
    ],
    "high_low": {
     "high": 406472.0,
@@ -436,12 +436,12 @@
     "low": 1017.0,
     "low_date": "2026-09-14"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
-   "mtd": 2252936.0,
-   "fytd": 5252009.0
+   "mtd": 2593874.0,
+   "fytd": 5592947.0
   },
   "debt_redemptions": {
    "source_id": "DTS:debt_redemptions",
@@ -450,18 +450,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1072.0,
-   "date": "2026-11-23",
-   "prev_value": 1325.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -253.0,
-   "change_pct": -19.0943,
-   "zscore": -0.9822,
+   "value": 291750.0,
+   "date": "2026-11-24",
+   "prev_value": 1072.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 290678.0,
+   "change_pct": 27115.4851,
+   "zscore": 1.1431,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1277.0,
     292915.0,
     5149.0,
     1240.0,
@@ -512,7 +511,8 @@
     1971.0,
     285076.0,
     1325.0,
-    1072.0
+    1072.0,
+    291750.0
    ],
    "high_low": {
     "high": 358469.0,
@@ -520,12 +520,12 @@
     "low": 1072.0,
     "low_date": "2026-11-23"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
-   "mtd": 2113355.0,
-   "fytd": 4833443.0
+   "mtd": 2405106.0,
+   "fytd": 5125194.0
   },
   "debt_public": {
    "source_id": "DTS:debt_public",
@@ -864,18 +864,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 30373.0,
-   "date": "2026-11-23",
-   "prev_value": 16064.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 14309.0,
-   "change_pct": 89.075,
-   "zscore": 1.4878,
+   "value": 4044.0,
+   "date": "2026-11-24",
+   "prev_value": 30373.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -26329.0,
+   "change_pct": -86.6855,
+   "zscore": -0.9298,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    4716.0,
     10912.0,
     9848.0,
     25072.0,
@@ -926,7 +925,8 @@
     16708.0,
     3672.0,
     16064.0,
-    30373.0
+    30373.0,
+    4044.0
    ],
    "high_low": {
     "high": 47267.0,
@@ -934,13 +934,13 @@
     "low": 3070.0,
     "low_date": "2026-10-27"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "deposits",
-   "mtd": 247736.0,
-   "fytd": 521072.0
+   "mtd": 251780.0,
+   "fytd": 525116.0
   },
   "dep_taxes_non_withheld_ind_seca_electronic": {
    "source_id": "DTS:D|Taxes - Non Withheld Ind/SECA Electronic",
@@ -949,18 +949,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 696.0,
-   "date": "2026-11-23",
-   "prev_value": 523.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 173.0,
-   "change_pct": 33.0784,
-   "zscore": -0.3874,
+   "value": 524.0,
+   "date": "2026-11-24",
+   "prev_value": 696.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -172.0,
+   "change_pct": -24.7126,
+   "zscore": -0.4819,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    3576.0,
     5811.0,
     9476.0,
     20695.0,
@@ -1011,7 +1010,8 @@
     472.0,
     402.0,
     523.0,
-    696.0
+    696.0,
+    524.0
    ],
    "high_low": {
     "high": 43542.0,
@@ -1019,13 +1019,13 @@
     "low": 402.0,
     "low_date": "2026-11-19"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "deposits",
-   "mtd": 9162.0,
-   "fytd": 46659.0
+   "mtd": 9686.0,
+   "fytd": 47182.0
   },
   "dep_taxes_non_withheld_ind_seca_other": {
    "source_id": "DTS:D|Taxes - Non Withheld Ind/SECA Other",
@@ -1034,18 +1034,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 119.0,
-   "date": "2026-11-23",
-   "prev_value": 205.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -86.0,
-   "change_pct": -41.9512,
-   "zscore": -0.6733,
+   "value": 135.0,
+   "date": "2026-11-24",
+   "prev_value": 119.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 16.0,
+   "change_pct": 13.4454,
+   "zscore": -0.6242,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    620.0,
     3027.0,
     1550.0,
     562.0,
@@ -1096,7 +1095,8 @@
     305.0,
     171.0,
     205.0,
-    119.0
+    119.0,
+    135.0
    ],
    "high_low": {
     "high": 7567.0,
@@ -1104,13 +1104,13 @@
     "low": 119.0,
     "low_date": "2026-11-23"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "deposits",
-   "mtd": 3490.0,
-   "fytd": 18439.0
+   "mtd": 3624.0,
+   "fytd": 18574.0
   },
   "dep_taxes_corporate_income": {
    "source_id": "DTS:D|Taxes - Corporate Income",
@@ -1119,18 +1119,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 139.0,
-   "date": "2026-11-23",
-   "prev_value": 120.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 19.0,
-   "change_pct": 15.8333,
-   "zscore": -0.2496,
+   "value": 119.0,
+   "date": "2026-11-24",
+   "prev_value": 139.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -20.0,
+   "change_pct": -14.3885,
+   "zscore": -0.257,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1627.0,
     3778.0,
     8304.0,
     21940.0,
@@ -1181,7 +1180,8 @@
     118.0,
     78.0,
     120.0,
-    139.0
+    139.0,
+    119.0
    ],
    "high_low": {
     "high": 51579.0,
@@ -1189,13 +1189,13 @@
     "low": 54.0,
     "low_date": "2026-11-04"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "deposits",
-   "mtd": 4089.0,
-   "fytd": 25892.0
+   "mtd": 4208.0,
+   "fytd": 26012.0
   },
   "dep_dhs_customs_duties_taxes_and_fees": {
    "source_id": "DTS:D|DHS - Customs Duties, Taxes, and Fees",
@@ -1204,18 +1204,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 611.0,
-   "date": "2026-11-23",
-   "prev_value": 476.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 135.0,
-   "change_pct": 28.3613,
-   "zscore": -0.1284,
+   "value": 19655.0,
+   "date": "2026-11-24",
+   "prev_value": 611.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 19044.0,
+   "change_pct": 3116.8576,
+   "zscore": 5.5995,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    304.0,
     257.0,
     289.0,
     459.0,
@@ -1266,21 +1265,22 @@
     303.0,
     957.0,
     476.0,
-    611.0
+    611.0,
+    19655.0
    ],
    "high_low": {
-    "high": 18919.0,
-    "high_date": "2026-10-23",
+    "high": 19655.0,
+    "high_date": "2026-11-24",
     "low": 257.0,
     "low_date": "2026-09-10"
    },
-   "age_days": 2,
-   "confidence": 100,
-   "latest_outlier": false,
+   "age_days": 1,
+   "confidence": 85,
+   "latest_outlier": true,
    "calendar_status": "fresh",
    "group": "deposits",
-   "mtd": 6179.0,
-   "fytd": 33273.0
+   "mtd": 25834.0,
+   "fytd": 52928.0
   },
   "dep_hhs_medicare_premiums": {
    "source_id": "DTS:D|HHS - Medicare Premiums",
@@ -1289,18 +1289,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1096.0,
-   "date": "2026-11-23",
-   "prev_value": 880.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 216.0,
-   "change_pct": 24.5455,
-   "zscore": 1.7962,
+   "value": 293.0,
+   "date": "2026-11-24",
+   "prev_value": 1096.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -803.0,
+   "change_pct": -73.2664,
+   "zscore": -0.1929,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    55.0,
     411.0,
     581.0,
     74.0,
@@ -1351,7 +1350,8 @@
     119.0,
     318.0,
     880.0,
-    1096.0
+    1096.0,
+    293.0
    ],
    "high_low": {
     "high": 2147.0,
@@ -1359,13 +1359,13 @@
     "low": 12.0,
     "low_date": "2026-11-04"
    },
-   "age_days": 2,
-   "confidence": 92,
-   "latest_outlier": true,
+   "age_days": 1,
+   "confidence": 100,
+   "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "deposits",
-   "mtd": 4501.0,
-   "fytd": 12266.0
+   "mtd": 4794.0,
+   "fytd": 12559.0
   },
   "wd_hhs_federal_hospital_insr_trust_fund": {
    "source_id": "DTS:W|HHS - Federal Hospital Insr Trust Fund",
@@ -1374,18 +1374,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1221.0,
-   "date": "2026-11-23",
-   "prev_value": 1284.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -63.0,
-   "change_pct": -4.9065,
-   "zscore": -0.1182,
+   "value": 1308.0,
+   "date": "2026-11-24",
+   "prev_value": 1221.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 87.0,
+   "change_pct": 7.1253,
+   "zscore": -0.0971,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    839.0,
     1319.0,
     812.0,
     680.0,
@@ -1436,7 +1435,8 @@
     1418.0,
     1156.0,
     1284.0,
-    1221.0
+    1221.0,
+    1308.0
    ],
    "high_low": {
     "high": 19308.0,
@@ -1444,13 +1444,13 @@
     "low": 680.0,
     "low_date": "2026-09-14"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 15025.0,
-   "fytd": 71932.0
+   "mtd": 16334.0,
+   "fytd": 73241.0
   },
   "wd_hhs_federal_supple_med_insr_trust_fund": {
    "source_id": "DTS:W|HHS - Federal Supple Med Insr Trust Fund",
@@ -1459,18 +1459,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1339.0,
-   "date": "2026-11-23",
-   "prev_value": 1257.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 82.0,
-   "change_pct": 6.5235,
-   "zscore": -0.1578,
+   "value": 1212.0,
+   "date": "2026-11-24",
+   "prev_value": 1339.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -127.0,
+   "change_pct": -9.4847,
+   "zscore": -0.1854,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1032.0,
     1322.0,
     967.0,
     1194.0,
@@ -1521,7 +1520,8 @@
     1302.0,
     1251.0,
     1257.0,
-    1339.0
+    1339.0,
+    1212.0
    ],
    "high_low": {
     "high": 30031.0,
@@ -1529,13 +1529,13 @@
     "low": 806.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 18198.0,
-   "fytd": 99866.0
+   "mtd": 19410.0,
+   "fytd": 101078.0
   },
   "wd_hhs_grants_to_states_for_medicaid": {
    "source_id": "DTS:W|HHS - Grants to States for Medicaid",
@@ -1544,18 +1544,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 616.0,
-   "date": "2026-11-23",
-   "prev_value": 572.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 44.0,
-   "change_pct": 7.6923,
-   "zscore": -1.3076,
+   "value": 1695.0,
+   "date": "2026-11-24",
+   "prev_value": 616.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 1079.0,
+   "change_pct": 175.1623,
+   "zscore": -0.613,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    5604.0,
     5021.0,
     5450.0,
     704.0,
@@ -1606,7 +1605,8 @@
     2040.0,
     3759.0,
     572.0,
-    616.0
+    616.0,
+    1695.0
    ],
    "high_low": {
     "high": 6157.0,
@@ -1614,13 +1614,13 @@
     "low": 570.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 44254.0,
-   "fytd": 106919.0
+   "mtd": 45949.0,
+   "fytd": 108614.0
   },
   "wd_hhs_medicare_prescription_drugs": {
    "source_id": "DTS:W|HHS - Medicare Prescription Drugs",
@@ -1630,17 +1630,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 0.0,
-   "date": "2026-11-23",
-   "prev_value": 5.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -5.0,
-   "change_pct": -100.0,
+   "date": "2026-11-24",
+   "prev_value": 0.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 0.0,
+   "change_pct": null,
    "zscore": -0.1859,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    0.0,
     0.0,
     4.0,
     0.0,
@@ -1691,15 +1690,16 @@
     0.0,
     0.0,
     5.0,
+    0.0,
     0.0
    ],
    "high_low": {
     "high": 37574.0,
     "high_date": "2026-10-30",
     "low": 0.0,
-    "low_date": "2026-09-09"
+    "low_date": "2026-09-10"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
@@ -1714,18 +1714,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 3210.0,
-   "date": "2026-11-23",
-   "prev_value": 3115.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 95.0,
-   "change_pct": 3.0498,
-   "zscore": 1.0633,
+   "value": 3377.0,
+   "date": "2026-11-24",
+   "prev_value": 3210.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 167.0,
+   "change_pct": 5.2025,
+   "zscore": 1.2476,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1101.0,
     1391.0,
     3448.0,
     4743.0,
@@ -1776,7 +1775,8 @@
     1820.0,
     2783.0,
     3115.0,
-    3210.0
+    3210.0,
+    3377.0
    ],
    "high_low": {
     "high": 4743.0,
@@ -1784,13 +1784,13 @@
     "low": 146.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 39110.0,
-   "fytd": 81261.0
+   "mtd": 42487.0,
+   "fytd": 84638.0
   },
   "wd_dept_of_health_human_serv_hhs_misc": {
    "source_id": "DTS:W|Dept of Health & Human Serv (HHS) - misc",
@@ -1799,18 +1799,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 28.0,
-   "date": "2026-11-23",
-   "prev_value": 25.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 3.0,
-   "change_pct": 12.0,
-   "zscore": -0.1789,
+   "value": 105.0,
+   "date": "2026-11-24",
+   "prev_value": 28.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 77.0,
+   "change_pct": 275.0,
+   "zscore": 7.6482,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    33.0,
     32.0,
     24.0,
     15.0,
@@ -1861,21 +1860,22 @@
     37.0,
     54.0,
     25.0,
-    28.0
+    28.0,
+    105.0
    ],
    "high_low": {
-    "high": 62.0,
-    "high_date": "2026-09-18",
+    "high": 105.0,
+    "high_date": "2026-11-24",
     "low": 8.0,
     "low_date": "2026-10-05"
    },
-   "age_days": 2,
-   "confidence": 100,
-   "latest_outlier": false,
+   "age_days": 1,
+   "confidence": 85,
+   "latest_outlier": true,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 432.0,
-   "fytd": 1030.0
+   "mtd": 537.0,
+   "fytd": 1135.0
   },
   "wd_usda_supp_nutrition_assist_prog_snap": {
    "source_id": "DTS:W|USDA - Supp Nutrition Assist Prog (SNAP)",
@@ -1884,18 +1884,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 721.0,
-   "date": "2026-11-23",
-   "prev_value": 223.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 498.0,
-   "change_pct": 223.3184,
-   "zscore": 1.3477,
+   "value": 224.0,
+   "date": "2026-11-24",
+   "prev_value": 721.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -497.0,
+   "change_pct": -68.932,
+   "zscore": -0.6442,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    405.0,
     336.0,
     320.0,
     915.0,
@@ -1946,7 +1945,8 @@
     277.0,
     229.0,
     223.0,
-    721.0
+    721.0,
+    224.0
    ],
    "high_low": {
     "high": 1257.0,
@@ -1954,13 +1954,13 @@
     "low": 136.0,
     "low_date": "2026-09-29"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 6307.0,
-   "fytd": 13734.0
+   "mtd": 6531.0,
+   "fytd": 13958.0
   },
   "wd_dol_unemployment_benefits": {
    "source_id": "DTS:W|DOL - Unemployment Benefits",
@@ -1969,18 +1969,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 173.0,
-   "date": "2026-11-23",
-   "prev_value": 54.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 119.0,
-   "change_pct": 220.3704,
-   "zscore": 0.6689,
+   "value": 256.0,
+   "date": "2026-11-24",
+   "prev_value": 173.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 83.0,
+   "change_pct": 47.9769,
+   "zscore": 1.9074,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    228.0,
     116.0,
     65.0,
     177.0,
@@ -2031,7 +2030,8 @@
     123.0,
     65.0,
     54.0,
-    173.0
+    173.0,
+    256.0
    ],
    "high_low": {
     "high": 256.0,
@@ -2039,13 +2039,13 @@
     "low": 47.0,
     "low_date": "2026-10-23"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 2048.0,
-   "fytd": 4675.0
+   "mtd": 2304.0,
+   "fytd": 4931.0
   },
   "wd_taxes_individual_tax_refunds_eft": {
    "source_id": "DTS:W|Taxes - Individual Tax Refunds (EFT)",
@@ -2054,18 +2054,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 56.0,
-   "date": "2026-11-23",
-   "prev_value": 61.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -5.0,
-   "change_pct": -8.1967,
-   "zscore": -0.5751,
+   "value": 262.0,
+   "date": "2026-11-24",
+   "prev_value": 56.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 206.0,
+   "change_pct": 367.8571,
+   "zscore": -0.384,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    89.0,
     1054.0,
     83.0,
     81.0,
@@ -2116,7 +2115,8 @@
     2030.0,
     60.0,
     61.0,
-    56.0
+    56.0,
+    262.0
    ],
    "high_low": {
     "high": 4064.0,
@@ -2124,13 +2124,13 @@
     "low": -15.0,
     "low_date": "2026-11-05"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 8753.0,
-   "fytd": 22451.0
+   "mtd": 9015.0,
+   "fytd": 22713.0
   },
   "wd_interest_on_treasury_securities": {
    "source_id": "DTS:W|Interest on Treasury Securities",
@@ -2139,18 +2139,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 5.0,
-   "date": "2026-11-23",
-   "prev_value": 3.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 2.0,
-   "change_pct": 66.6667,
-   "zscore": -0.2649,
+   "value": 3.0,
+   "date": "2026-11-24",
+   "prev_value": 5.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -2.0,
+   "change_pct": -40.0,
+   "zscore": -0.265,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    2.0,
     91.0,
     23.0,
     6.0,
@@ -2201,7 +2200,8 @@
     10.0,
     3.0,
     3.0,
-    5.0
+    5.0,
+    3.0
    ],
    "high_low": {
     "high": 87360.0,
@@ -2209,13 +2209,13 @@
     "low": -146.0,
     "low_date": "2026-09-25"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 120965.0,
-   "fytd": 132519.0
+   "mtd": 120967.0,
+   "fytd": 132522.0
   },
   "wd_ssa_benefits_payments": {
    "source_id": "DTS:W|SSA - Benefits Payments",
@@ -2224,18 +2224,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 88.0,
-   "date": "2026-11-23",
-   "prev_value": 83.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 5.0,
-   "change_pct": 6.0241,
-   "zscore": -0.5091,
+   "value": -9.0,
+   "date": "2026-11-24",
+   "prev_value": 88.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -97.0,
+   "change_pct": -110.2273,
+   "zscore": -0.5106,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    33057.0,
     140.0,
     95.0,
     95.0,
@@ -2286,7 +2285,8 @@
     32149.0,
     80.0,
     83.0,
-    88.0
+    88.0,
+    -9.0
    ],
    "high_low": {
     "high": 33269.0,
@@ -2294,13 +2294,13 @@
     "low": -13.0,
     "low_date": "2026-10-29"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 93672.0,
-   "fytd": 221963.0
+   "mtd": 93663.0,
+   "fytd": 221954.0
   },
   "wd_ssa_supplemental_security_income": {
    "source_id": "DTS:W|SSA - Supplemental Security Income",
@@ -2310,17 +2310,16 @@
    "frequency": "daily",
    "status": "fresh",
    "value": 13.0,
-   "date": "2026-11-23",
-   "prev_value": 14.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -1.0,
-   "change_pct": -7.1429,
-   "zscore": -0.1902,
+   "date": "2026-11-24",
+   "prev_value": 13.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 0.0,
+   "change_pct": 0.0,
+   "zscore": -0.1901,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    15.0,
     25.0,
     15.0,
     15.0,
@@ -2371,6 +2370,7 @@
     14.0,
     14.0,
     14.0,
+    13.0,
     13.0
    ],
    "high_low": {
@@ -2379,13 +2379,13 @@
     "low": -1.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
    "group": "withdrawals",
-   "mtd": 339.0,
-   "fytd": 11062.0
+   "mtd": 352.0,
+   "fytd": 11075.0
   }
  },
  "derived": {
@@ -2396,18 +2396,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 16816.0,
-   "date": "2026-11-23",
-   "prev_value": 31115.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -14299.0,
-   "change_pct": -45.9553,
-   "zscore": -0.7127,
+   "value": 17149.0,
+   "date": "2026-11-24",
+   "prev_value": 16816.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 333.0,
+   "change_pct": 1.9803,
+   "zscore": -0.6968,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    50980.0,
     24666.0,
     24803.0,
     25503.0,
@@ -2458,7 +2457,8 @@
     49035.0,
     19659.0,
     31115.0,
-    16816.0
+    16816.0,
+    17149.0
    ],
    "high_low": {
     "high": 132099.0,
@@ -2466,7 +2466,7 @@
     "low": 12882.0,
     "low_date": "2026-10-05"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -2478,18 +2478,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 34848.0,
-   "date": "2026-11-23",
-   "prev_value": 20926.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 13922.0,
-   "change_pct": 66.5297,
-   "zscore": 1.0487,
+   "value": 27556.0,
+   "date": "2026-11-24",
+   "prev_value": 34848.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -7292.0,
+   "change_pct": -20.9252,
+   "zscore": 0.4218,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    13811.0,
     26838.0,
     32827.0,
     74750.0,
@@ -2540,7 +2539,8 @@
     19648.0,
     7258.0,
     20926.0,
-    34848.0
+    34848.0,
+    27556.0
    ],
    "high_low": {
     "high": 108744.0,
@@ -2548,7 +2548,7 @@
     "low": 7258.0,
     "low_date": "2026-11-19"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -2560,18 +2560,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": -18032.0,
-   "date": "2026-11-23",
-   "prev_value": 10189.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -28221.0,
-   "change_pct": -276.9752,
-   "zscore": -1.1728,
+   "value": -10407.0,
+   "date": "2026-11-24",
+   "prev_value": -18032.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 7625.0,
+   "change_pct": 42.2859,
+   "zscore": -0.847,
    "percentile": null,
    "window": null,
-   "level": "WATCH",
+   "level": "SAFE",
    "sparkline": [
-    37169.0,
     -2172.0,
     -8024.0,
     -49247.0,
@@ -2622,7 +2621,8 @@
     29387.0,
     12401.0,
     10189.0,
-    -18032.0
+    -18032.0,
+    -10407.0
    ],
    "high_low": {
     "high": 114392.0,
@@ -2630,7 +2630,7 @@
     "low": -77073.0,
     "low_date": "2026-09-15"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh",
@@ -2641,7 +2641,7 @@
      "STRESS": 2.0
     }
    },
-   "badge": "notable drain",
+   "badge": "within normal range",
    "direction": "net fiscal drain — NFA destruction"
   },
   "ntf_mean_30d": {
@@ -2651,18 +2651,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 13076.9,
-   "date": "2026-11-23",
-   "prev_value": 13985.9,
-   "prev_date": "2026-11-20",
-   "change_abs": -909.0,
-   "change_pct": -6.4994,
-   "zscore": 1.0173,
+   "value": 12343.2,
+   "date": "2026-11-24",
+   "prev_value": 13076.9,
+   "prev_date": "2026-11-23",
+   "change_abs": -733.7,
+   "change_pct": -5.6107,
+   "zscore": 0.8074,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    16056.1,
     16134.7,
     15566.6,
     9525.9,
@@ -2713,7 +2712,8 @@
     13478.2,
     13594.3,
     13985.9,
-    13076.9
+    13076.9,
+    12343.2
    ],
    "high_low": {
     "high": 16134.7,
@@ -2721,7 +2721,7 @@
     "low": 439.7,
     "low_date": "2026-10-19"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -2733,18 +2733,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 26525.6,
-   "date": "2026-11-23",
-   "prev_value": 25903.9,
-   "prev_date": "2026-11-20",
-   "change_abs": 621.7,
-   "change_pct": 2.4,
-   "zscore": -0.5439,
+   "value": 26858.5,
+   "date": "2026-11-24",
+   "prev_value": 26525.6,
+   "prev_date": "2026-11-23",
+   "change_abs": 332.9,
+   "change_pct": 1.255,
+   "zscore": -0.3407,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    30673.6,
     30623.7,
     30907.2,
     24639.5,
@@ -2795,7 +2794,8 @@
     26059.6,
     26046.8,
     25903.9,
-    26525.6
+    26525.6,
+    26858.5
    ],
    "high_low": {
     "high": 31973.3,
@@ -2803,7 +2803,7 @@
     "low": 21476.7,
     "low_date": "2026-10-29"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -2815,18 +2815,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 102521.0,
-   "date": "2026-11-23",
-   "prev_value": 119600.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -17079.0,
-   "change_pct": -14.2801,
-   "zscore": 0.1583,
+   "value": 84323.0,
+   "date": "2026-11-24",
+   "prev_value": 102521.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -18198.0,
+   "change_pct": -17.7505,
+   "zscore": -0.127,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    163908.0,
     140967.0,
     50521.0,
     1742.0,
@@ -2877,7 +2876,8 @@
     128607.0,
     153800.0,
     119600.0,
-    102521.0
+    102521.0,
+    84323.0
    ],
    "high_low": {
     "high": 208490.0,
@@ -2885,7 +2885,7 @@
     "low": -153269.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3155,18 +3155,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 192378.0,
-   "date": "2026-11-23",
-   "prev_value": 210409.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -18031.0,
-   "change_pct": -8.5695,
-   "zscore": 0.9887,
+   "value": 181971.0,
+   "date": "2026-11-24",
+   "prev_value": 192378.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -10407.0,
+   "change_pct": -5.4097,
+   "zscore": 0.7701,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    143139.0,
     140967.0,
     132944.0,
     83696.0,
@@ -3217,7 +3216,8 @@
     187821.0,
     200223.0,
     210409.0,
-    192378.0
+    192378.0,
+    181971.0
    ],
    "high_low": {
     "high": 311438.0,
@@ -3225,7 +3225,7 @@
     "low": -12303.0,
     "low_date": "2026-09-21"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3237,18 +3237,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 518968.0,
-   "date": "2026-11-23",
-   "prev_value": 502151.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 16817.0,
-   "change_pct": 3.349,
-   "zscore": 0.8891,
+   "value": 536116.0,
+   "date": "2026-11-24",
+   "prev_value": 518968.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 17148.0,
+   "change_pct": 3.3042,
+   "zscore": 0.9324,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    267571.0,
     292237.0,
     317040.0,
     342543.0,
@@ -3299,7 +3298,8 @@
     451379.0,
     471038.0,
     502151.0,
-    518968.0
+    518968.0,
+    536116.0
    ],
    "high_low": {
     "high": 759689.0,
@@ -3307,7 +3307,7 @@
     "low": 58061.0,
     "low_date": "2026-11-02"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3319,18 +3319,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 326590.0,
-   "date": "2026-11-23",
-   "prev_value": 291742.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 34848.0,
-   "change_pct": 11.9448,
-   "zscore": 0.7784,
+   "value": 354145.0,
+   "date": "2026-11-24",
+   "prev_value": 326590.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 27555.0,
+   "change_pct": 8.4372,
+   "zscore": 0.9679,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    124432.0,
     151270.0,
     184096.0,
     258847.0,
@@ -3381,7 +3380,8 @@
     263558.0,
     270815.0,
     291742.0,
-    326590.0
+    326590.0,
+    354145.0
    ],
    "high_low": {
     "high": 649418.0,
@@ -3389,7 +3389,7 @@
     "low": 30250.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3401,18 +3401,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 503815.0,
-   "date": "2026-11-23",
-   "prev_value": 521847.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -18032.0,
-   "change_pct": -3.4554,
-   "zscore": 1.625,
+   "value": 493409.0,
+   "date": "2026-11-24",
+   "prev_value": 503815.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -10406.0,
+   "change_pct": -2.0654,
+   "zscore": 1.4338,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    1802541.0,
     1800369.0,
     1792345.0,
     1743098.0,
@@ -3463,15 +3462,16 @@
     499258.0,
     511658.0,
     521847.0,
-    503815.0
+    503815.0,
+    493409.0
    ],
    "high_low": {
-    "high": 1802541.0,
-    "high_date": "2026-09-09",
+    "high": 1800369.0,
+    "high_date": "2026-09-10",
     "low": 92316.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3483,18 +3483,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 1278656.0,
-   "date": "2026-11-23",
-   "prev_value": 1261840.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 16816.0,
-   "change_pct": 1.3327,
-   "zscore": 1.731,
+   "value": 1295805.0,
+   "date": "2026-11-24",
+   "prev_value": 1278656.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 17149.0,
+   "change_pct": 1.3412,
+   "zscore": 1.6682,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    7836783.0,
     7861448.0,
     7886251.0,
     7911754.0,
@@ -3545,7 +3544,8 @@
     1211067.0,
     1230725.0,
     1261840.0,
-    1278656.0
+    1278656.0,
+    1295805.0
    ],
    "high_low": {
     "high": 8243474.0,
@@ -3553,7 +3553,7 @@
     "low": 122566.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3565,18 +3565,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 774841.0,
-   "date": "2026-11-23",
-   "prev_value": 739993.0,
-   "prev_date": "2026-11-20",
-   "change_abs": 34848.0,
-   "change_pct": 4.7092,
-   "zscore": 1.7724,
+   "value": 802396.0,
+   "date": "2026-11-24",
+   "prev_value": 774841.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 27555.0,
+   "change_pct": 3.5562,
+   "zscore": 1.8181,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    6034242.0,
     6061079.0,
     6093906.0,
     6168656.0,
@@ -3627,7 +3626,8 @@
     711809.0,
     719067.0,
     739993.0,
-    774841.0
+    774841.0,
+    802396.0
    ],
    "high_low": {
     "high": 6559227.0,
@@ -3635,7 +3635,7 @@
     "low": 30250.0,
     "low_date": "2026-10-01"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3645,7 +3645,7 @@
    "value": null,
    "flag": "",
    "status": "fresh",
-   "date": "2026-11-23"
+   "date": "2026-11-24"
   },
   "ntf_20d": {
    "source_id": null,
@@ -3654,18 +3654,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 343108.0,
-   "date": "2026-11-23",
-   "prev_value": 352517.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -9409.0,
-   "change_pct": -2.6691,
-   "zscore": 1.2257,
+   "value": 346442.0,
+   "date": "2026-11-24",
+   "prev_value": 343108.0,
+   "prev_date": "2026-11-23",
+   "change_abs": 3334.0,
+   "change_pct": 0.9717,
+   "zscore": 1.2411,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    341463.0,
     302877.0,
     284158.0,
     227354.0,
@@ -3716,7 +3715,8 @@
     368665.0,
     352617.0,
     352517.0,
-    343108.0
+    343108.0,
+    346442.0
    ],
    "high_low": {
     "high": 368665.0,
@@ -3724,7 +3724,7 @@
     "low": -57578.0,
     "low_date": "2026-09-30"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
@@ -3736,18 +3736,17 @@
    "unit": "USD millions",
    "frequency": "daily",
    "status": "fresh",
-   "value": 570223.0,
-   "date": "2026-11-23",
-   "prev_value": 621758.0,
-   "prev_date": "2026-11-20",
-   "change_abs": -51535.0,
-   "change_pct": -8.2886,
-   "zscore": 0.9114,
+   "value": 546598.0,
+   "date": "2026-11-24",
+   "prev_value": 570223.0,
+   "prev_date": "2026-11-23",
+   "change_abs": -23625.0,
+   "change_pct": -4.1431,
+   "zscore": 0.7676,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    779883.0,
     801095.0,
     768720.0,
     710458.0,
@@ -3798,7 +3797,8 @@
     569252.0,
     615413.0,
     621758.0,
-    570223.0
+    570223.0,
+    546598.0
    ],
    "high_low": {
     "high": 801095.0,
@@ -3806,52 +3806,52 @@
     "low": 381181.0,
     "low_date": "2026-10-27"
    },
-   "age_days": 2,
+   "age_days": 1,
    "confidence": 100,
    "latest_outlier": false,
    "calendar_status": "fresh"
   },
   "ntf_fytd_vs_prior_fy": {
    "label": "NTF fiscal-year-to-date vs same point of the prior fiscal year",
-   "value": 39.63,
+   "value": 42.91,
    "unit": "%",
    "status": "fresh",
-   "date": "2026-11-23",
-   "prior_fytd": 360813.0,
-   "current_fytd": 503815.0,
+   "date": "2026-11-24",
+   "prior_fytd": 345247.0,
+   "current_fytd": 493409.0,
    "note": "DTS cumulative fields; +% = the deficit runs above last year's pace"
   },
   "fiscal_impulse": {
    "label": "Fiscal impulse score = 50% structural (NTF 60d sign × pace) + 50% daily surprise (Z 30d + 7d sign)",
-   "value": 0.67,
+   "value": 0.74,
    "unit": "score",
    "status": "fresh",
-   "date": "2026-11-23",
-   "structural": 1.71,
-   "surprise": -0.38,
+   "date": "2026-11-24",
+   "structural": 1.63,
+   "surprise": -0.14,
    "inputs": {
-    "ntf_20d": 343108.0,
-    "z20_vs_250": 1.2257,
-    "ntf_60d": 570223.0,
-    "z60_vs_250": 0.9114,
-    "fytd_vs_prior_pct": 39.63
+    "ntf_20d": 346442.0,
+    "z20_vs_250": 1.2411,
+    "ntf_60d": 546598.0,
+    "z60_vs_250": 0.7676,
+    "fytd_vs_prior_pct": 42.91
    }
   },
   "fiscal_regime": {
    "label": "Fiscal regime (daily surprise rule — DTS Tracker)",
    "value": null,
-   "regime": "DRAIN",
+   "regime": "NEUTRAL",
    "status": "fresh",
-   "date": "2026-11-23",
+   "date": "2026-11-24",
    "inputs": {
-    "ntf_7d": 102521.0,
-    "z": -1.1728
+    "ntf_7d": 84323.0,
+    "z": -0.847
    }
   }
  },
  "signals": {
   "traffic_light": "GREEN",
-  "score": 0.67,
+  "score": 0.74,
   "label": "INJECTION",
   "flags": [
    "STRUCTURAL_DEFICIT_INJECTION"
@@ -3860,10 +3860,10 @@
    "mode": "weighted",
    "level_weight": 1.0,
    "flow": {
-    "daily_surprise": -0.38
+    "daily_surprise": -0.14
    },
    "level": {
-    "structural_ntf_60d": 1.71
+    "structural_ntf_60d": 1.63
    },
    "weights": {
     "structural_ntf_60d": 0.5,
@@ -3873,19 +3873,19 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.67,
-   "score_flows_only": -0.19
+   "score_v02": 0.74,
+   "score_flows_only": -0.07
   },
   "components_v04": {
    "mode": "weighted",
    "level_weight": 1.0,
    "flow": {
-    "daily_surprise": -0.38,
+    "daily_surprise": -0.14,
     "tga_reserve_impact_daily": -59594.0,
-    "net_treasury_flow_daily": -18032.0
+    "net_treasury_flow_daily": -10407.0
    },
    "level": {
-    "structural_ntf_60d": 1.71
+    "structural_ntf_60d": 1.63
    },
    "weights": {
     "structural_ntf_60d": 0.5,
@@ -3899,12 +3899,12 @@
    "score_flows_only": -2.0,
    "note": "shadow (U2–U3): DTS daily −ΔTGA reserve impact + Net Treasury Flow (NFA creation) + 60d structural impulse"
   },
-  "detail": "NTF -18032.0 (notable drain) · Z -1.1728 · 7d 102521.0 · 60d 570223.0 (Z250 0.9114) · FYTD 503815.0 vs prior FY 39.63% · structural 1.71 · surprise -0.38 · TGA close 958390.0 · −ΔTGA -59594.0",
+  "detail": "NTF -10407.0 (within normal range) · Z -0.847 · 7d 84323.0 · 60d 546598.0 (Z250 0.7676) · FYTD 493409.0 vs prior FY 42.91% · structural 1.63 · surprise -0.14 · TGA close 958390.0 · −ΔTGA -59594.0",
   "alerts": [
    {
     "metric": "net_treasury_flow",
-    "level": "WATCH",
-    "value": -18032.0,
+    "level": "SAFE",
+    "value": -10407.0,
     "threshold": {
      "WATCH": 1.0,
      "STRESS": 2.0
@@ -4308,7 +4308,7 @@
     296390.0,
     1055.0,
     1071.0,
-    null
+    340938.0
    ],
    "debt_redemptions": [
     1791.0,
@@ -4370,7 +4370,7 @@
     285076.0,
     1325.0,
     1072.0,
-    null
+    291750.0
    ],
    "net_spending": [
     22198.0,
@@ -4432,7 +4432,7 @@
     19659.0,
     31115.0,
     16816.0,
-    null
+    17149.0
    ],
    "net_deposits": [
     14625.0,
@@ -4494,7 +4494,7 @@
     7258.0,
     20926.0,
     34848.0,
-    null
+    27556.0
    ],
    "net_treasury_flow": [
     7573.0,
@@ -4556,7 +4556,7 @@
     12401.0,
     10189.0,
     -18032.0,
-    null
+    -10407.0
    ],
    "ntf_z": [
     -0.1271,
@@ -4618,7 +4618,7 @@
     -0.0458,
     -0.1466,
     -1.1728,
-    null
+    -0.847
    ],
    "ntf_mean": [
     11166.7,
@@ -4680,7 +4680,7 @@
     13594.3,
     13985.9,
     13076.9,
-    null
+    12343.2
    ],
    "ntf_sd": [
     28285.1,
@@ -4742,7 +4742,7 @@
     26046.8,
     25903.9,
     26525.6,
-    null
+    26858.5
    ],
    "debt_public": [
     32340689.0,
@@ -4928,7 +4928,7 @@
     3672.0,
     16064.0,
     30373.0,
-    null
+    4044.0
    ],
    "dep_taxes_non_withheld_ind_seca_electronic": [
     761.0,
@@ -4990,7 +4990,7 @@
     402.0,
     523.0,
     696.0,
-    null
+    524.0
    ],
    "dep_taxes_non_withheld_ind_seca_other": [
     129.0,
@@ -5052,7 +5052,7 @@
     171.0,
     205.0,
     119.0,
-    null
+    135.0
    ],
    "dep_taxes_corporate_income": [
     176.0,
@@ -5114,7 +5114,7 @@
     78.0,
     120.0,
     139.0,
-    null
+    119.0
    ],
    "dep_dhs_customs_duties_taxes_and_fees": [
     425.0,
@@ -5176,7 +5176,7 @@
     957.0,
     476.0,
     611.0,
-    null
+    19655.0
    ],
    "dep_hhs_medicare_premiums": [
     57.0,
@@ -5238,7 +5238,7 @@
     318.0,
     880.0,
     1096.0,
-    null
+    293.0
    ],
    "wd_hhs_federal_hospital_insr_trust_fund": [
     793.0,
@@ -5300,7 +5300,7 @@
     1156.0,
     1284.0,
     1221.0,
-    null
+    1308.0
    ],
    "wd_hhs_federal_supple_med_insr_trust_fund": [
     958.0,
@@ -5362,7 +5362,7 @@
     1251.0,
     1257.0,
     1339.0,
-    null
+    1212.0
    ],
    "wd_hhs_grants_to_states_for_medicaid": [
     1574.0,
@@ -5424,7 +5424,7 @@
     3759.0,
     572.0,
     616.0,
-    null
+    1695.0
    ],
    "wd_hhs_medicare_prescription_drugs": [
     7.0,
@@ -5486,7 +5486,7 @@
     0.0,
     5.0,
     0.0,
-    null
+    0.0
    ],
    "wd_dept_of_defense_dod_misc": [
     3405.0,
@@ -5548,7 +5548,7 @@
     2783.0,
     3115.0,
     3210.0,
-    null
+    3377.0
    ],
    "wd_dept_of_health_human_serv_hhs_misc": [
     44.0,
@@ -5610,7 +5610,7 @@
     54.0,
     25.0,
     28.0,
-    null
+    105.0
    ],
    "wd_usda_supp_nutrition_assist_prog_snap": [
     151.0,
@@ -5672,7 +5672,7 @@
     229.0,
     223.0,
     721.0,
-    null
+    224.0
    ],
    "wd_dol_unemployment_benefits": [
     72.0,
@@ -5734,7 +5734,7 @@
     65.0,
     54.0,
     173.0,
-    null
+    256.0
    ],
    "wd_taxes_individual_tax_refunds_eft": [
     94.0,
@@ -5796,7 +5796,7 @@
     60.0,
     61.0,
     56.0,
-    null
+    262.0
    ],
    "wd_interest_on_treasury_securities": [
     -81.0,
@@ -5858,7 +5858,7 @@
     3.0,
     3.0,
     5.0,
-    null
+    3.0
    ],
    "wd_ssa_benefits_payments": [
     -20.0,
@@ -5920,7 +5920,7 @@
     80.0,
     83.0,
     88.0,
-    null
+    -9.0
    ],
    "wd_ssa_supplemental_security_income": [
     0.0,
@@ -5982,7 +5982,7 @@
     14.0,
     14.0,
     13.0,
-    null
+    13.0
    ]
   },
   "items": [
@@ -5990,91 +5990,91 @@
     "key": "dep_taxes_withheld_individual_fica",
     "label": "Taxes — Withheld Individual / FICA",
     "group": "deposits",
-    "today": 30373.0,
-    "mtd": 247736.0,
-    "fytd": 521072.0,
-    "date": "2026-11-23",
-    "dod": 14309.0
+    "today": 4044.0,
+    "mtd": 251780.0,
+    "fytd": 525116.0,
+    "date": "2026-11-24",
+    "dod": -26329.0
    },
    {
     "key": "dep_taxes_non_withheld_ind_seca_electronic",
     "label": "Taxes — Non Withheld Ind/SECA Electronic",
     "group": "deposits",
-    "today": 696.0,
-    "mtd": 9162.0,
-    "fytd": 46659.0,
-    "date": "2026-11-23",
-    "dod": 173.0
+    "today": 524.0,
+    "mtd": 9686.0,
+    "fytd": 47182.0,
+    "date": "2026-11-24",
+    "dod": -172.0
    },
    {
     "key": "dep_taxes_non_withheld_ind_seca_other",
     "label": "Taxes — Non Withheld Ind/SECA Other",
     "group": "deposits",
-    "today": 119.0,
-    "mtd": 3490.0,
-    "fytd": 18439.0,
-    "date": "2026-11-23",
-    "dod": -86.0
+    "today": 135.0,
+    "mtd": 3624.0,
+    "fytd": 18574.0,
+    "date": "2026-11-24",
+    "dod": 16.0
    },
    {
     "key": "dep_taxes_corporate_income",
     "label": "Taxes — Corporate Income",
     "group": "deposits",
-    "today": 139.0,
-    "mtd": 4089.0,
-    "fytd": 25892.0,
-    "date": "2026-11-23",
-    "dod": 19.0
+    "today": 119.0,
+    "mtd": 4208.0,
+    "fytd": 26012.0,
+    "date": "2026-11-24",
+    "dod": -20.0
    },
    {
     "key": "dep_dhs_customs_duties_taxes_and_fees",
     "label": "DHS — Customs Duties, Taxes & Fees",
     "group": "deposits",
-    "today": 611.0,
-    "mtd": 6179.0,
-    "fytd": 33273.0,
-    "date": "2026-11-23",
-    "dod": 135.0
+    "today": 19655.0,
+    "mtd": 25834.0,
+    "fytd": 52928.0,
+    "date": "2026-11-24",
+    "dod": 19044.0
    },
    {
     "key": "dep_hhs_medicare_premiums",
     "label": "HHS — Medicare Premiums",
     "group": "deposits",
-    "today": 1096.0,
-    "mtd": 4501.0,
-    "fytd": 12266.0,
-    "date": "2026-11-23",
-    "dod": 216.0
+    "today": 293.0,
+    "mtd": 4794.0,
+    "fytd": 12559.0,
+    "date": "2026-11-24",
+    "dod": -803.0
    },
    {
     "key": "wd_hhs_federal_hospital_insr_trust_fund",
     "label": "HHS — Federal Hospital Insurance (Part A)",
     "group": "withdrawals",
-    "today": 1221.0,
-    "mtd": 15025.0,
-    "fytd": 71932.0,
-    "date": "2026-11-23",
-    "dod": -63.0
+    "today": 1308.0,
+    "mtd": 16334.0,
+    "fytd": 73241.0,
+    "date": "2026-11-24",
+    "dod": 87.0
    },
    {
     "key": "wd_hhs_federal_supple_med_insr_trust_fund",
     "label": "HHS — Supplementary Medical Ins. (Part B)",
     "group": "withdrawals",
-    "today": 1339.0,
-    "mtd": 18198.0,
-    "fytd": 99866.0,
-    "date": "2026-11-23",
-    "dod": 82.0
+    "today": 1212.0,
+    "mtd": 19410.0,
+    "fytd": 101078.0,
+    "date": "2026-11-24",
+    "dod": -127.0
    },
    {
     "key": "wd_hhs_grants_to_states_for_medicaid",
     "label": "HHS — Grants to States for Medicaid",
     "group": "withdrawals",
-    "today": 616.0,
-    "mtd": 44254.0,
-    "fytd": 106919.0,
-    "date": "2026-11-23",
-    "dod": 44.0
+    "today": 1695.0,
+    "mtd": 45949.0,
+    "fytd": 108614.0,
+    "date": "2026-11-24",
+    "dod": 1079.0
    },
    {
     "key": "wd_hhs_medicare_prescription_drugs",
@@ -6083,88 +6083,88 @@
     "today": 0.0,
     "mtd": 17.0,
     "fytd": 48102.0,
-    "date": "2026-11-23",
-    "dod": -5.0
+    "date": "2026-11-24",
+    "dod": 0.0
    },
    {
     "key": "wd_dept_of_defense_dod_misc",
     "label": "Dept of Defense (DoD) — Misc",
     "group": "withdrawals",
-    "today": 3210.0,
-    "mtd": 39110.0,
-    "fytd": 81261.0,
-    "date": "2026-11-23",
-    "dod": 95.0
+    "today": 3377.0,
+    "mtd": 42487.0,
+    "fytd": 84638.0,
+    "date": "2026-11-24",
+    "dod": 167.0
    },
    {
     "key": "wd_dept_of_health_human_serv_hhs_misc",
     "label": "Dept of HHS — Misc",
     "group": "withdrawals",
-    "today": 28.0,
-    "mtd": 432.0,
-    "fytd": 1030.0,
-    "date": "2026-11-23",
-    "dod": 3.0
+    "today": 105.0,
+    "mtd": 537.0,
+    "fytd": 1135.0,
+    "date": "2026-11-24",
+    "dod": 77.0
    },
    {
     "key": "wd_usda_supp_nutrition_assist_prog_snap",
     "label": "USDA — SNAP (Food Stamps)",
     "group": "withdrawals",
-    "today": 721.0,
-    "mtd": 6307.0,
-    "fytd": 13734.0,
-    "date": "2026-11-23",
-    "dod": 498.0
+    "today": 224.0,
+    "mtd": 6531.0,
+    "fytd": 13958.0,
+    "date": "2026-11-24",
+    "dod": -497.0
    },
    {
     "key": "wd_dol_unemployment_benefits",
     "label": "DOL — Unemployment Benefits",
     "group": "withdrawals",
-    "today": 173.0,
-    "mtd": 2048.0,
-    "fytd": 4675.0,
-    "date": "2026-11-23",
-    "dod": 119.0
+    "today": 256.0,
+    "mtd": 2304.0,
+    "fytd": 4931.0,
+    "date": "2026-11-24",
+    "dod": 83.0
    },
    {
     "key": "wd_taxes_individual_tax_refunds_eft",
     "label": "Taxes — Individual Tax Refunds (EFT)",
     "group": "withdrawals",
-    "today": 56.0,
-    "mtd": 8753.0,
-    "fytd": 22451.0,
-    "date": "2026-11-23",
-    "dod": -5.0
+    "today": 262.0,
+    "mtd": 9015.0,
+    "fytd": 22713.0,
+    "date": "2026-11-24",
+    "dod": 206.0
    },
    {
     "key": "wd_interest_on_treasury_securities",
     "label": "Interest on Treasury Securities",
     "group": "withdrawals",
-    "today": 5.0,
-    "mtd": 120965.0,
-    "fytd": 132519.0,
-    "date": "2026-11-23",
-    "dod": 2.0
+    "today": 3.0,
+    "mtd": 120967.0,
+    "fytd": 132522.0,
+    "date": "2026-11-24",
+    "dod": -2.0
    },
    {
     "key": "wd_ssa_benefits_payments",
     "label": "SSA — Benefits Payments",
     "group": "withdrawals",
-    "today": 88.0,
-    "mtd": 93672.0,
-    "fytd": 221963.0,
-    "date": "2026-11-23",
-    "dod": 5.0
+    "today": -9.0,
+    "mtd": 93663.0,
+    "fytd": 221954.0,
+    "date": "2026-11-24",
+    "dod": -97.0
    },
    {
     "key": "wd_ssa_supplemental_security_income",
     "label": "SSA — Supplemental Security Income",
     "group": "withdrawals",
     "today": 13.0,
-    "mtd": 339.0,
-    "fytd": 11062.0,
-    "date": "2026-11-23",
-    "dod": -1.0
+    "mtd": 352.0,
+    "fytd": 11075.0,
+    "date": "2026-11-24",
+    "dod": 0.0
    }
   ],
   "seasonal": {
@@ -6188,6 +6188,12 @@
    "2026-11-16": "Mid-Month Settl."
   },
   "signal_log": [
+   {
+    "date": "2026-11-24",
+    "label": "drain",
+    "score": -10407.0,
+    "note": "NTF daily"
+   },
    {
     "date": "2026-11-23",
     "label": "drain",
@@ -6270,12 +6276,6 @@
     "date": "2026-11-03",
     "label": "inject",
     "score": 35925.0,
-    "note": "NTF daily"
-   },
-   {
-    "date": "2026-11-02",
-    "label": "inject",
-    "score": 375.0,
     "note": "NTF daily"
    }
   ]
