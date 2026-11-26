@@ -2,8 +2,7 @@
 # Sólo lee los JSON publicados (agent.json, regime.json, jefe.json); sin secretos → dry run (data/mesa/outbox.json).
 name: mesa-digest
 on:
-  schedule:
-    - cron: "0 6 * * 1-6"
+  # t399u: el calendario pasa al timer g8-mesa-digest del VPS. Queda solo el disparo manual.
   workflow_dispatch:
     inputs:
       preview:
@@ -39,7 +38,7 @@ jobs:
           git config user.email "bot@users.noreply.github.com"
           git add data/mesa
           if git diff --cached --quiet; then echo "no changes"; exit 0; fi
-          git commit -m "mesa: digest $(date -u +%Y-%m-%dT%H:%MZ)"
+          git commit -m "mesa: digest $(date -u +%Y-%m-%dT%H:%MZ) [skip netlify]"
           # eight workflows push to main concurrently and all write data/mesa/*: a plain pull --rebase leaves a conflict behind and
           # the push fails ("Commit data: failure", NZD #15 2026-09-11). Rebase favouring this run's files (-X theirs = the commit
           # being replayed = ours), abort cleanly on anything else, retry the push up to 4 times.
