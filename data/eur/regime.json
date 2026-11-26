@@ -1,6 +1,6 @@
 {
  "currency": "EUR",
- "generated_at": "2026-11-25T21:32:29+00:00",
+ "generated_at": "2026-11-26T08:48:24+00:00",
  "as_of": "2026-11-24",
  "config_version": "0.4.1",
  "regime": "NEUTRAL",
@@ -99,15 +99,15 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 0.1553,
+   "score": 1.4116,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-24",
+   "as_of": "2026-11-25",
    "detail": "govt deposits 82417.0 M (Δw -3699.0, p34.78) · impulse 4w 7166.0 (p74.42) · 13w 4188.0 · deficit -3.2404% GDP (LARGE DEFICIT (injection)) · DE b/c 2.055 (STRONG, avg26 1.57) · TARGET Δ3m -16708.1 · rule NEUTRAL",
-   "raw_regime": "NEUTRAL",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.1427,
     "injection_exit": -0.0359,
@@ -125,17 +125,13 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": -0.157,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 0.151,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-24",
+    "as_of": "2026-11-25",
     "recent": [
-     [
-      "2026-11-17",
-      -0.4369
-     ],
      [
       "2026-11-18",
       0.0757
@@ -155,6 +151,10 @@
      [
       "2026-11-24",
       0.1553
+     ],
+     [
+      "2026-11-25",
+      1.4116
      ]
     ],
     "pending_days": null,
@@ -194,10 +194,10 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 3231.759,
+    "raw": 29371.98,
     "denominator": 2080726.0,
     "denominator_date": "2026-11-24",
-    "today": "2026-11-25",
+    "today": "2026-11-26",
     "note": null
    },
    "v03_shadow": {
@@ -237,7 +237,7 @@
    "confirmed": "NEUTRAL",
    "canonical": "confirmed",
    "score": 0.139,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.14 shown for context",
+   "rule": "partial (NEUTRAL vs INJECTION) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +0.14 shown for context",
    "price_gate": null,
    "dual_weights": {
     "central_bank": 0.7,
@@ -267,7 +267,7 @@
    ],
    "agreement_only": true,
    "era_start": "2022-09-14",
-   "era_weeks": 218,
+   "era_weeks": 219,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -415,18 +415,18 @@
    "id": "L5",
    "name": "Fiscal injection into excess liquidity",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 2,
+   "active": true,
+   "conditions_met": 3,
    "total": 4,
    "unknown": 1,
    "required": [
     "regime.fiscal == INJECTION"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == INJECTION",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_regime == INJECTION",
@@ -446,6 +446,8 @@
  "heartbeat": {
   "lane": "daily",
   "backfill": false,
-  "errors": []
+  "errors": [
+   "eu_v04: HTTP 429 for https://commission.europa.eu/eu-bills-2026_en"
+  ]
  }
 }
