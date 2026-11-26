@@ -1,6 +1,6 @@
 {
  "currency": "NZD",
- "generated_at": "2026-11-26T03:01:05+00:00",
+ "generated_at": "2026-11-26T04:00:55+00:00",
  "as_of": "2026-11-26",
  "config_version": "0.4.0",
  "regime": "NEUTRAL",
@@ -28,7 +28,7 @@
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
    "as_of": "2026-11-26",
-   "detail": "settlement cash 28917.0 (5d -4204.0, 20d 129.0, SAFE) · OMO stock 5098.0 (17.6%) · ORRF 0.0 · phase LSAP_UNWIND",
+   "detail": "settlement cash 28359.0 (5d -5528.0, 20d 3174.0, SAFE) · OMO stock 5098.0 (18.0%) · ORRF 0.0 · phase LSAP_UNWIND",
    "raw_regime": "NEUTRAL",
    "cuts": {
     "injection_enter": 0.375,
@@ -100,7 +100,7 @@
    "label": "INJECTION",
    "traffic_light": "GREEN",
    "as_of": "2026-11-26",
-   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 2.18x at 3.0508% · bond 4.934x tail 0.2 bp · settlements next 5d 0 · non-resident 58.0%",
+   "detail": "CSA 25610.0 (mom -4194.0) · D10 govt cash 5832.6 · T-bill 2.18x at 3.0508% · bond 4.934x tail 0.2 bp · settlements next 5d 250.0 · non-resident 58.0%",
    "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.25,
@@ -201,11 +201,11 @@
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
   "PHASE_LSAP_UNWIND",
-  "OMO_TAKEUP_SURGE"
+  "OMO_TAKEUP_SURGE",
+  "OMO_DEPENDENCE"
  ],
  "overlays": {
-  "OMO_DEPENDENCE_pending_persistence": true,
-  "OMO_DEPENDENCE": "OMO_DEPENDENCE_LOW",
+  "OMO_DEPENDENCE": "OMO_DEPENDENCE_HIGH",
   "OMO_DEPENDENCE_conditions_met": 2
  },
  "inputs": {
@@ -394,7 +394,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "weekly_thu",
+  "lane": "daily",
   "backfill": false,
   "errors": []
  }
