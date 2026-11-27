@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-26T16:32:51+00:00",
+ "generated_at": "2026-11-27T04:00:41+00:00",
  "alerts": [
   {
    "id": "alert_2026-09-14T093629+0000_curve_spike",
@@ -373,7 +373,19 @@
    "level": "WATCH",
    "message": "funding: rates.bank_bill_30d_minus_ocr_bps (level >= WATCH)",
    "status": "active",
-   "last_seen": "2026-11-26T16:32:51+00:00"
+   "last_seen": "2026-11-27T04:00:41+00:00"
+  },
+  {
+   "id": "alert_2026-11-27T040041+0000_omo_reliance",
+   "rule_id": "omo_reliance",
+   "timestamp": "2026-11-27T04:00:41+00:00",
+   "severity": "WARNING",
+   "category": "reserves",
+   "metric": "central_bank.omo_reliance_share",
+   "value": 0.236,
+   "level": "WATCH",
+   "message": "reserves: central_bank.omo_reliance_share (level >= WATCH)",
+   "status": "active"
   },
   {
    "id": "alert_2026-11-26T030105+0000_omo_surge",
@@ -386,7 +398,7 @@
    "level": "WATCH",
    "message": "reserves: central_bank.omo_takeup_wow (level >= WATCH)",
    "status": "active",
-   "last_seen": "2026-11-26T16:32:51+00:00"
+   "last_seen": "2026-11-27T04:00:41+00:00"
   },
   {
    "id": "alert_2026-11-26T030105+0000_curve_spike",
@@ -398,8 +410,21 @@
    "value": -15.0,
    "level": "WATCH",
    "message": "rates: rates.nzgb_10y_5d_change_bps (level >= WATCH)",
-   "status": "active",
-   "last_seen": "2026-11-26T16:32:51+00:00"
+   "status": "resolved",
+   "last_seen": "2026-11-26T16:32:51+00:00",
+   "resolved_at": "2026-11-27T04:00:41+00:00"
+  },
+  {
+   "id": "alert_2026-11-27T040041+0000_omo_outstanding_watch",
+   "rule_id": "omo_outstanding_watch",
+   "timestamp": "2026-11-27T04:00:41+00:00",
+   "severity": "WARNING",
+   "category": "reserves",
+   "metric": "central_bank.omo_outstanding_level",
+   "value": 7176.0,
+   "level": "WATCH",
+   "message": "reserves: central_bank.omo_outstanding_level (level >= WATCH)",
+   "status": "active"
   }
  ]
 }

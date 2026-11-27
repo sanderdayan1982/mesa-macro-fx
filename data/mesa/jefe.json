@@ -9,7 +9,7 @@
    "ccy": "AUD",
    "rank": 1,
    "d13_pct": 8.27,
-   "z": 1.31,
+   "z": 1.18,
    "rank_prev_week": 8,
    "rank_4w_ago": 8,
    "reserves_now": 188015.0,
@@ -21,10 +21,25 @@
    "source_column": "ARBALESBW"
   },
   {
-   "ccy": "USD",
+   "ccy": "NZD",
    "rank": 2,
+   "d13_pct": 3.92,
+   "z": 0.55,
+   "rank_prev_week": 1,
+   "rank_4w_ago": 2,
+   "reserves_now": 30411.0,
+   "reserves_13w_ago": 29264.0,
+   "date_13w_ago": "2026-08-28",
+   "field": "settlement_cash_daily",
+   "object": "settlement cash D12",
+   "as_of": "2026-11-26",
+   "source_column": "D12:settlement_cash"
+  },
+  {
+   "ccy": "USD",
+   "rank": 3,
    "d13_pct": 1.87,
-   "z": 0.38,
+   "z": 0.26,
    "rank_prev_week": 2,
    "rank_4w_ago": 5,
    "reserves_now": 2979656.0,
@@ -37,9 +52,9 @@
   },
   {
    "ccy": "GBP",
-   "rank": 3,
+   "rank": 4,
    "d13_pct": 0.97,
-   "z": 0.25,
+   "z": 0.13,
    "rank_prev_week": 3,
    "rank_4w_ago": 3,
    "reserves_now": 646914.0,
@@ -52,9 +67,9 @@
   },
   {
    "ccy": "CHF",
-   "rank": 4,
+   "rank": 5,
    "d13_pct": -1.67,
-   "z": -0.13,
+   "z": -0.26,
    "rank_prev_week": 5,
    "rank_4w_ago": 4,
    "reserves_now": 424076.0,
@@ -66,25 +81,10 @@
    "source_column": "snbgwdchfsgw:GI"
   },
   {
-   "ccy": "NZD",
-   "rank": 5,
-   "d13_pct": -3.09,
-   "z": -0.34,
-   "rank_prev_week": 1,
-   "rank_4w_ago": 2,
-   "reserves_now": 28359.0,
-   "reserves_13w_ago": 29264.0,
-   "date_13w_ago": "2026-08-28",
-   "field": "settlement_cash_daily",
-   "object": "settlement cash D12",
-   "as_of": "2026-11-25",
-   "source_column": "D12:settlement_cash"
-  },
-  {
    "ccy": "JPY",
    "rank": 6,
    "d13_pct": -3.74,
-   "z": -0.43,
+   "z": -0.56,
    "rank_prev_week": 6,
    "rank_4w_ago": 7,
    "reserves_now": 4089800.0,
@@ -99,7 +99,7 @@
    "ccy": "CAD",
    "rank": 7,
    "d13_pct": -4.39,
-   "z": -0.52,
+   "z": -0.65,
    "rank_prev_week": 4,
    "rank_4w_ago": 1,
    "reserves_now": 70900.0,
@@ -114,7 +114,7 @@
    "ccy": "EUR",
    "rank": 8,
    "d13_pct": -4.44,
-   "z": -0.53,
+   "z": -0.66,
    "rank_prev_week": 7,
    "rank_4w_ago": 6,
    "reserves_now": 2053537.0,
@@ -126,10 +126,10 @@
    "source_column": "ILM.D.U2.C.EXLIQ.U2.EUR"
   }
  ],
- "sigma_week": 4.363,
+ "sigma_week": 4.533,
  "sigma_pooled": 6.894,
  "sigma_week_p20_era": 4.444,
- "low_dispersion": true,
+ "low_dispersion": false,
  "sigma_history_weeks": 218,
  "pair_max_z_gap": {
   "reserves_growth": "AUD",
@@ -147,7 +147,7 @@
    "AUD": 11,
    "JPY": 53,
    "CHF": 11,
-   "NZD": 57,
+   "NZD": 58,
    "USD": 11,
    "EUR": 82
   }
@@ -373,7 +373,7 @@
     0.44,
     -0.74,
     0.0,
-    -0.52
+    -0.65
    ],
    "GBP": [
     0.37,
@@ -427,7 +427,7 @@
     0.17,
     0.33,
     0.02,
-    0.25
+    0.13
    ],
    "AUD": [
     0.62,
@@ -481,7 +481,7 @@
     -1.34,
     -1.41,
     -1.35,
-    1.31
+    1.18
    ],
    "JPY": [
     -0.71,
@@ -535,7 +535,7 @@
     -0.5,
     0.06,
     -0.59,
-    -0.43
+    -0.56
    ],
    "CHF": [
     0.47,
@@ -589,7 +589,7 @@
     -0.03,
     -0.01,
     -0.53,
-    -0.13
+    -0.26
    ],
    "NZD": [
     -0.73,
@@ -643,7 +643,7 @@
     1.82,
     1.65,
     2.93,
-    -0.34
+    0.55
    ],
    "USD": [
     -0.89,
@@ -697,7 +697,7 @@
     -0.22,
     0.35,
     0.12,
-    0.38
+    0.26
    ],
    "EUR": [
     -0.49,
@@ -751,7 +751,7 @@
     -0.34,
     -0.22,
     -0.6,
-    -0.53
+    -0.66
    ]
   },
   "treasury": {
@@ -1264,16 +1264,16 @@
   "EUR": "escasa"
  },
  "labels": {
-  "CAD": "sin señal (compresión)",
-  "GBP": "sin señal (compresión)",
-  "AUD": "sin señal (compresión)",
-  "JPY": "sin señal (compresión)",
-  "CHF": "sin señal (compresión)",
-  "NZD": "sin señal (compresión)",
-  "USD": "sin señal (compresión)",
-  "EUR": "sin señal (compresión)"
+  "CAD": "sin señal",
+  "GBP": "sin señal",
+  "AUD": "abundante",
+  "JPY": "escasa",
+  "CHF": "sin señal",
+  "NZD": "abundante",
+  "USD": "sin señal",
+  "EUR": "escasa"
  },
- "labels_rule": "sin señal (compresión): σ semanal 4.363 < p20 de la era 4.444; la lectura por terciles queda en labels_tercile",
+ "labels_rule": "terciles (techo de n/3) de las Z de BC y Tesoro + puerta de precio (regimes.general.price_gate); vulnerable sólo con puerta activa",
  "completeness": {
   "CAD": {
    "bc": {
@@ -2087,6 +2087,6 @@
    }
   }
  },
- "generated_at": "2026-11-27T03:45:26+00:00",
- "stamp": "477995e740fb"
+ "generated_at": "2026-11-27T04:00:42+00:00",
+ "stamp": "e2655fd5fc82"
 }
