@@ -3,8 +3,8 @@
  "block": "fiscal",
  "schema_version": "0.3.0",
  "config_version": "0.4.1",
- "generated_at": "2026-11-20T16:28:25+00:00",
- "as_of": "2026-11-18",
+ "generated_at": "2026-11-27T08:00:42+00:00",
+ "as_of": "2026-11-25",
  "equivalence_quality": "medium-high",
  "equivalence_note": "Government deposits at the RBA are WEEKLY (A1) — a true TGA analogue at weekly resolution (better than GBP, worse than CAD's daily Receiver General). Issuance/tenders from AOFM (event). Monthly financial statements from Finance for the NFA flow.",
  "source_health": {
@@ -23,18 +23,17 @@
    "unit": "AUD millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 42152.0,
-   "date": "2026-11-18",
-   "prev_value": 47292.0,
-   "prev_date": "2026-11-11",
-   "change_abs": -5140.0,
-   "change_pct": -10.8686,
-   "zscore": -1.341,
+   "value": 65564.0,
+   "date": "2026-11-25",
+   "prev_value": 42152.0,
+   "prev_date": "2026-11-18",
+   "change_abs": 23412.0,
+   "change_pct": 55.5418,
+   "zscore": 0.3536,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    52293.0,
     64842.0,
     60329.0,
     57445.0,
@@ -85,7 +84,8 @@
     51122.0,
     51605.0,
     47292.0,
-    42152.0
+    42152.0,
+    65564.0
    ],
    "high_low": {
     "high": 89983.0,
@@ -95,7 +95,8 @@
    },
    "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "aofm_bond_tenders": {
    "source_id": "AOFM:treasury bonds - issuance.xlsx",
@@ -288,6 +289,7 @@
    "age_days": null,
    "confidence": 0,
    "latest_outlier": false,
+   "calendar_status": "unavailable",
    "equivalence_note": "aofm headline_cash_balance.csv / Finance monthly statements"
   },
   "receipts_payments_monthly": {
@@ -317,6 +319,7 @@
    "age_days": null,
    "confidence": 0,
    "latest_outlier": false,
+   "calendar_status": "unavailable",
    "equivalence_note": "Receipts and payments (Finance monthly statements)"
   },
   "tnotes_on_issue": {
@@ -492,18 +495,17 @@
    "unit": "AUD millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 5140.0,
-   "date": "2026-11-18",
-   "prev_value": 4313.0,
-   "prev_date": "2026-11-11",
-   "change_abs": 827.0,
-   "change_pct": 19.1746,
-   "zscore": 0.4609,
+   "value": -23412.0,
+   "date": "2026-11-25",
+   "prev_value": 5140.0,
+   "prev_date": "2026-11-18",
+   "change_abs": -28552.0,
+   "change_pct": -555.4864,
+   "zscore": -2.2897,
    "percentile": null,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    17185.0,
     -12549.0,
     4513.0,
     2884.0,
@@ -554,7 +556,8 @@
     277.0,
     -483.0,
     4313.0,
-    5140.0
+    5140.0,
+    -23412.0
    ],
    "high_low": {
     "high": 26761.0,
@@ -565,7 +568,8 @@
    "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
-   "equivalence_note": "positive = government deposits fell = net injection into ES balances (spending/redemptions > receipts/issuance)"
+   "equivalence_note": "positive = government deposits fell = net injection into ES balances (spending/redemptions > receipts/issuance)",
+   "calendar_status": "fresh"
   },
   "fiscal_flow_zscore": {
    "source_id": null,
@@ -574,18 +578,17 @@
    "unit": "σ",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 0.4609,
-   "date": "2026-11-18",
-   "prev_value": 0.378,
-   "prev_date": "2026-11-11",
-   "change_abs": 0.0829,
-   "change_pct": 21.9312,
-   "zscore": 0.4032,
+   "value": -2.2897,
+   "date": "2026-11-25",
+   "prev_value": 0.4609,
+   "prev_date": "2026-11-18",
+   "change_abs": -2.7506,
+   "change_pct": -596.7889,
+   "zscore": -2.051,
    "percentile": null,
    "window": null,
-   "level": "SAFE",
+   "level": "STRESS",
    "sparkline": [
-    1.6976,
     -1.4,
     0.4718,
     0.2951,
@@ -636,7 +639,8 @@
     -0.0137,
     -0.0826,
     0.378,
-    0.4609
+    0.4609,
+    -2.2897
    ],
    "high_low": {
     "high": 2.9029,
@@ -646,7 +650,8 @@
    },
    "age_days": 2,
    "confidence": 100,
-   "latest_outlier": false
+   "latest_outlier": false,
+   "calendar_status": "fresh"
   },
   "fiscal_flow_4w_cum": {
    "source_id": null,
@@ -655,18 +660,17 @@
    "unit": "AUD millions",
    "frequency": "weekly",
    "status": "fresh",
-   "value": 9247.0,
-   "date": "2026-11-18",
-   "prev_value": -3107.0,
-   "prev_date": "2026-11-11",
-   "change_abs": 12354.0,
-   "change_pct": 397.6183,
-   "zscore": 0.3851,
-   "percentile": 64.29,
+   "value": -14442.0,
+   "date": "2026-11-25",
+   "prev_value": 9247.0,
+   "prev_date": "2026-11-18",
+   "change_abs": -23689.0,
+   "change_pct": -256.1804,
+   "zscore": -0.7605,
+   "percentile": 21.18,
    "window": null,
    "level": "SAFE",
    "sparkline": [
-    18727.0,
     4905.0,
     3306.0,
     12033.0,
@@ -717,7 +721,8 @@
     1359.0,
     -8769.0,
     -3107.0,
-    9247.0
+    9247.0,
+    -14442.0
    ],
    "high_low": {
     "high": 37196.0,
@@ -728,14 +733,15 @@
    "age_days": 2,
    "confidence": 100,
    "latest_outlier": false,
+   "calendar_status": "fresh",
    "signal": "NEUTRAL"
   },
   "fiscal_big_week": {
    "label": "FISCAL_BIG_WEEK (|flow| ≥ 15bn or |Z| ≥ 2)",
-   "value": false,
-   "direction": null,
+   "value": true,
+   "direction": "DRAIN",
    "status": "fresh",
-   "date": "2026-11-18",
+   "date": "2026-11-25",
    "note": "seasonally annotated: 21st monthly PAYG/GST, 28th after quarter-end BAS, company tax instalments, super guarantee 28 Jul/Oct/Jan/Apr, EOFY 30-Jun (cash rebuild Jul–Oct), AOFM cash-buffer management — none of these is scarcity"
   },
   "fiscal_regime": {
@@ -743,17 +749,17 @@
    "value": null,
    "regime": "NEUTRAL",
    "status": "fresh",
-   "date": "2026-11-18"
+   "date": "2026-11-25"
   },
   "fiscal_regime_score": {
    "label": "Fiscal regime score",
-   "value": 0.46,
+   "value": -2.0,
    "range": [
     -2,
     2
    ],
    "status": "fresh",
-   "date": "2026-11-18"
+   "date": "2026-11-25"
   },
   "net_issuance_event": {
    "label": "AOFM tenders net of maturities",
@@ -2489,14 +2495,16 @@
  },
  "signals": {
   "traffic_light": "YELLOW",
-  "score": 0.46,
+  "score": -2.0,
   "label": "NEUTRAL",
-  "flags": [],
+  "flags": [
+   "FISCAL_BIG_WEEK"
+  ],
   "components": {
    "mode": "sum",
    "level_weight": 1.0,
    "flow": {
-    "fiscal_flow_z": 0.46
+    "fiscal_flow_z": -2.0
    },
    "level": {},
    "weights": {},
@@ -2504,15 +2512,15 @@
     -2.0,
     2.0
    ],
-   "score_v02": 0.46,
-   "score_flows_only": 0.46
+   "score_v02": -2.0,
+   "score_flows_only": -2.0
   },
-  "detail": "flow 5140.0 (Z 0.4609) · 4w cum 9247.0 (NEUTRAL) · gov deposits 42152.0",
+  "detail": "flow -23412.0 (Z -2.2897) · 4w cum -14442.0 (NEUTRAL) · gov deposits 65564.0",
   "alerts": [
    {
     "metric": "fiscal_flow_zscore",
-    "level": "SAFE",
-    "value": 0.4609,
+    "level": "STRESS",
+    "value": -2.2897,
     "threshold": null,
     "status": "fresh",
     "action_hint": "|Z| ≥ 2 = extraordinary weekly flow (tax/issuance/AOFM cash)"
@@ -2520,7 +2528,7 @@
    {
     "metric": "fiscal_flow_4w_cum",
     "level": "SAFE",
-    "value": 9247.0,
+    "value": -14442.0,
     "threshold": null,
     "status": "fresh",
     "action_hint": "4-week cumulative below p20 = fiscal drain"
@@ -2548,7 +2556,6 @@
  },
  "history": {
   "dates": [
-   "2025-11-26",
    "2025-12-03",
    "2025-12-10",
    "2025-12-17",
@@ -2599,11 +2606,11 @@
    "2026-10-28",
    "2026-11-04",
    "2026-11-11",
-   "2026-11-18"
+   "2026-11-18",
+   "2026-11-25"
   ],
   "rows": {
    "government_account": [
-    52293.0,
     64842.0,
     60329.0,
     57445.0,
@@ -2654,10 +2661,10 @@
     51122.0,
     51605.0,
     47292.0,
-    42152.0
+    42152.0,
+    65564.0
    ],
    "fiscal_flow_weekly": [
-    17185.0,
     -12549.0,
     4513.0,
     2884.0,
@@ -2708,10 +2715,10 @@
     277.0,
     -483.0,
     4313.0,
-    5140.0
+    5140.0,
+    -23412.0
    ],
    "fiscal_flow_4w_cum": [
-    18727.0,
     4905.0,
     3306.0,
     12033.0,
@@ -2762,10 +2769,10 @@
     1359.0,
     -8769.0,
     -3107.0,
-    9247.0
+    9247.0,
+    -14442.0
    ],
    "fiscal_flow_zscore": [
-    1.6976,
     -1.4,
     0.4718,
     0.2951,
@@ -2816,7 +2823,8 @@
     -0.0137,
     -0.0826,
     0.378,
-    0.4609
+    0.4609,
+    -2.2897
    ]
   },
   "signal_log": [
@@ -2989,6 +2997,11 @@
     "date": "2026-11-18",
     "label": "NEUTRAL",
     "score": 0.46
+   },
+   {
+    "date": "2026-11-25",
+    "label": "NEUTRAL",
+    "score": -2.0
    }
   ]
  }
