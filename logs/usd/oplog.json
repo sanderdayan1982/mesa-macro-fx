@@ -1,6 +1,63 @@
 {
  "entries": [
   {
+   "timestamp": "2026-11-27T02:58:15+00:00",
+   "type": "NOTIFY",
+   "category": "system",
+   "details": {
+    "mode": "telegram",
+    "chunks": 1,
+    "ok": 1,
+    "errors": [],
+    "messages": 1
+   }
+  },
+  {
+   "timestamp": "2026-11-27T02:58:14+00:00",
+   "type": "AGENT_DAILY_LOG",
+   "category": "system",
+   "details": {
+    "gate": true,
+    "failures": [],
+    "hash": "ecbe893c01a77571",
+    "degraded": [],
+    "streaks": {
+     "central_bank": 22,
+     "fiscal": 11,
+     "general": 32
+    }
+   }
+  },
+  {
+   "timestamp": "2026-11-27T02:58:14+00:00",
+   "type": "REFRESH_AUTO",
+   "category": "system",
+   "details": {
+    "lane": "daily",
+    "backfill": false,
+    "blocks": [
+     "central_bank",
+     "fiscal",
+     "banking",
+     "rates"
+    ],
+    "errors": [
+     "fiscaldata: https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance: HTTP Error 504: Gateway Time-out"
+    ],
+    "regime": "NEUTRAL",
+    "new_revisions": 0
+   }
+  },
+  {
+   "timestamp": "2026-11-27T02:58:14+00:00",
+   "type": "SOURCE_ERROR",
+   "category": "system",
+   "details": {
+    "source": "fiscaldata",
+    "error": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance: HTTP Error 504: Gateway Time-out"
+   }
+  },
+  {
    "timestamp": "2026-11-26T23:00:37+00:00",
    "type": "NOTIFY",
    "category": "system",
@@ -7587,58 +7644,6 @@
     "ok": 0,
     "errors": [],
     "messages": 1
-   }
-  },
-  {
-   "timestamp": "2026-10-18T10:23:01+00:00",
-   "type": "AGENT_DAILY_LOG",
-   "category": "system",
-   "details": {
-    "gate": true,
-    "failures": [],
-    "hash": "851a11734ec0281c",
-    "degraded": [],
-    "streaks": {
-     "central_bank": 4,
-     "fiscal": 10,
-     "general": 10
-    }
-   }
-  },
-  {
-   "timestamp": "2026-10-18T10:23:01+00:00",
-   "type": "REFRESH_AUTO",
-   "category": "system",
-   "details": {
-    "lane": "all",
-    "backfill": false,
-    "blocks": [
-     "central_bank",
-     "fiscal",
-     "banking",
-     "rates"
-    ],
-    "errors": [],
-    "regime": "NEUTRAL",
-    "new_revisions": 0
-   }
-  },
-  {
-   "timestamp": "2026-10-18T10:23:00+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "fiscaldata",
-    "error": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance: <urlopen error [Errno 8] nodename nor servname provided, or not known>"
-   }
-  },
-  {
-   "timestamp": "2026-10-18T10:22:48+00:00",
-   "type": "SOURCE_ERROR",
-   "category": "system",
-   "details": {
-    "source": "fred_monthly",
-    "error": "https://fred.stlouisfed.org/graph/fredgraph.csv: <urlopen error [Errno 8] nodename nor servname provided, or not known> (no FRED_API_KEY for the API fallback)"
    }
   }
  ]
