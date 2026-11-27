@@ -1,14 +1,14 @@
 {
  "currency": "CAD",
- "generated_at": "2026-11-27T03:44:36+00:00",
- "as_of": "2026-11-18",
+ "generated_at": "2026-11-27T19:00:43+00:00",
+ "as_of": "2026-11-25",
  "config_version": "0.4.1",
  "regime": "FLOOR_FRICTION",
  "traffic_light": "YELLOW",
- "weighted_score": 0.755,
+ "weighted_score": 1.13,
  "block_scores": {
   "central_bank": 1.26,
-  "rates": -1.25,
+  "rates": 0.25,
   "fiscal": 2.0,
   "banking": 1.0
  },
@@ -21,15 +21,15 @@
  "blocks_used": 4,
  "regimes": {
   "central_bank": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
    "score": 1.26,
    "label": "INJECTION",
    "traffic_light": "GREEN",
-   "as_of": "2026-11-18",
-   "detail": "NetLiq BAND_HIGH · reserves SAFE (out of range) · phase NORMALIZATION",
-   "raw_regime": "NEUTRAL",
+   "as_of": "2026-11-25",
+   "detail": "NetLiq BAND_HIGH · reserves SAFE (out of range) · phase QE",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 0.375,
     "injection_exit": 0.05,
@@ -41,19 +41,19 @@
     "drain": "frecuencia_de_era"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": 0.13,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 1.26,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-18",
+    "as_of": "2026-11-25",
     "recent": [
      [
-      "2026-11-11",
-      -1.0
+      "2026-11-18",
+      1.26
      ],
      [
-      "2026-11-18",
+      "2026-11-25",
       1.26
      ]
     ],
@@ -64,7 +64,7 @@
     "level_weight": 1.0,
     "flow": {
      "net_liquidity_band": 1.0,
-     "reserves_wow": 0.8904400000000001
+     "reserves_wow": 0.89619
     },
     "level": {
      "reserves_vs_range": 0.0
@@ -79,15 +79,15 @@
    }
   },
   "fiscal": {
-   "regime": "NEUTRAL",
-   "confirmed": "NEUTRAL",
+   "regime": "INJECTION",
+   "confirmed": "INJECTION",
    "canonical": "confirmed",
-   "score": 5.1904,
+   "score": 2.2458,
    "label": "NEUTRAL",
    "traffic_light": "YELLOW",
-   "as_of": "2026-11-18",
-   "detail": "7d cum 204.024 · Z 2.1459 · weekly Valet cross-check 3680.0",
-   "raw_regime": "NEUTRAL",
+   "as_of": "2026-11-25",
+   "detail": "7d cum 204.024 · Z 2.1459 · weekly Valet cross-check 1735.0",
+   "raw_regime": "INJECTION",
    "cuts": {
     "injection_enter": 2.2412,
     "injection_exit": 0.9705,
@@ -105,20 +105,20 @@
     "reason": "sin evidencia B significativa en ninguna variante → manda la verdad contable: v0.4 base por liquidación (cobertura 1.00, corte estable)"
    },
    "state": {
-    "confirmed": "NEUTRAL",
-    "raw": "NEUTRAL",
-    "effective_score": -1.054,
+    "confirmed": "INJECTION",
+    "raw": "INJECTION",
+    "effective_score": 3.718,
     "candidate": null,
     "candidate_since": null,
-    "as_of": "2026-11-18",
+    "as_of": "2026-11-25",
     "recent": [
-     [
-      "2026-11-11",
-      -7.2992
-     ],
      [
       "2026-11-18",
       5.1904
+     ],
+     [
+      "2026-11-25",
+      2.2458
      ]
     ],
     "pending_days": null,
@@ -151,9 +151,9 @@
    },
    "selected": "replay-v04 2026-09-11 (runner, 8-year archives)",
    "print": {
-    "raw": 3680.0,
-    "denominator": 70900.0,
-    "denominator_date": "2026-11-18",
+    "raw": 1735.0,
+    "denominator": 77254.0,
+    "denominator_date": "2026-11-25",
     "today": "2026-11-27",
     "note": null
    },
@@ -167,21 +167,21 @@
      "drain_enter": -0.67,
      "drain_exit": -0.265
     },
-    "as_of": "2026-11-18",
+    "as_of": "2026-11-25",
     "state": {
      "confirmed": "INJECTION",
      "raw": "INJECTION",
      "effective_score": 2.0,
      "candidate": null,
      "candidate_since": null,
-     "as_of": "2026-11-18",
+     "as_of": "2026-11-25",
      "recent": [
       [
-       "2026-11-11",
+       "2026-11-18",
        2.0
       ],
       [
-       "2026-11-18",
+       "2026-11-25",
        2.0
       ]
      ],
@@ -194,7 +194,7 @@
    "confirmed": "FLOOR_FRICTION",
    "canonical": "confirmed",
    "score": 1.556,
-   "rule": "partial (NEUTRAL vs NEUTRAL) → NEUTRAL by the agreement rule (v0.3: no dual weights); dual score +1.56 shown for context",
+   "rule": "agreement: both inject",
    "price_gate": "price gate: reserves ample AND friction confirmed",
    "dual_weights": {
     "central_bank": 0.6,
@@ -224,7 +224,7 @@
    ],
    "agreement_only": true,
    "era_start": "2020-03-23",
-   "era_weeks": 347,
+   "era_weeks": 348,
    "persistence": {
     "entry_days": 7,
     "exit_days": 0,
@@ -236,15 +236,15 @@
  },
  "composite_note": "weighted_score = 4-block desk composite (context); the reported regime is the general regime from central bank + treasury",
  "flags": [
-  "PHASE_NORMALIZATION"
+  "PHASE_QE"
  ],
  "overlays": {},
  "inputs": {
   "reserves_level": "SAFE",
   "reserves_in_range": false,
   "reserves_above_range": true,
-  "spread_level": "CRISIS",
-  "spread_bps": 10.0,
+  "spread_level": "WATCH",
+  "spread_bps": 9.0,
   "friction_confirmed": true
  },
  "rules": {
@@ -286,18 +286,18 @@
    "id": "L2",
    "name": "Silent Fiscal Easing",
    "bias": "FISCAL INJECTION",
-   "active": false,
-   "conditions_met": 1,
+   "active": true,
+   "conditions_met": 2,
    "total": 4,
    "unknown": 0,
    "required": [
     "regime.fiscal == INJECTION"
    ],
-   "required_met": false,
+   "required_met": true,
    "details": [
     {
      "condition": "regime.fiscal == INJECTION",
-     "met": false
+     "met": true
     },
     {
      "condition": "fiscal.fiscal_flow_7d_cum >= injection",
@@ -343,17 +343,17 @@
    "name": "Funding Stress",
    "bias": "FUNDING STRESS",
    "active": false,
-   "conditions_met": 1,
+   "conditions_met": 0,
    "total": 3,
    "unknown": 0,
    "required": [
     "rates.overnight_minus_policy_bps level >= STRESS"
    ],
-   "required_met": true,
+   "required_met": false,
    "details": [
     {
      "condition": "rates.overnight_minus_policy_bps level >= STRESS",
-     "met": true
+     "met": false
     },
     {
      "condition": "central_bank.reserves level >= STRESS",
@@ -417,7 +417,7 @@
   }
  ],
  "heartbeat": {
-  "lane": "daily",
+  "lane": "weekly",
   "backfill": false,
   "errors": []
  }
